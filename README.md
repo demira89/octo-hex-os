@@ -13,7 +13,7 @@
 - EFI kernel modules
 
 ## Compiling
- For compilation of the respective targets, ELF GNU binutils and compilers are needed. The makefile calls the programs (as, gcc, objdump) using the standard target prefixes, e.g. x86_64-elf-gcc. Adapt the variables in the makefile accrodingly. Another area of concern is the creation of the disk image for IBM compatible systems. It uses a FAT16 images and needs the mkdosfs utility as well as a way to mount disk images. Currently compilation occurs in a MSYS2 UCRT environment, for linux hosts the image creation has to occur via mount of loopback devices.
+ For compilation of the respective targets, ELF GNU binutils and compilers are needed. The makefile calls the programs (as, gcc, objdump) using the standard target prefixes, e.g. x86_64-elf-gcc. Adapt the variables in the makefile accrodingly. Another area of concern is the creation of the disk image for IBM compatible systems. It uses a FAT16 images and needs the mkdosfs utility as well as a way to mount disk images. Currently compilation occurs in a MSYS2 UCRT environment, for linux hosts the image creation has to occur via mount of loopback devices. If using the windows enviroment, the image creation has to occur using an administrator account as imdisk needs to mount the devices (here on letter W:)
 
 ## Usage
  To use the system use the disk image prog.img or prog.qed in your virtualization software of choice. E.g.
