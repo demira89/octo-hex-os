@@ -1100,8 +1100,10 @@ idt_init:
 	mov word ptr[idtr], ax
 	lidt [idtr]
 
-	mov ecx, ( ( idt_end-idt ) / 8 ) # <- only suse patch
+	mov ecx,  ( idt_end - idt ) / 8 
+
 #	mov ecx, 48 # zero extend in amd64
+
 idt_i1:
 	dec ecx
 	IGI ecx

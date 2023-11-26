@@ -237,13 +237,17 @@ uint64_t early_entry(int mode)
 		puts("listing root directory contents of boot drive:");
 		call_int15(1000000); /* delay 1000ms */
 		//for (i = 0; i < 0xffffffff / 4; i++); /* mega dangerous */
+
 		puts("SIZE       CLSTR NAME    EXT");
-		ct = bpb->iRootSize * 32;
-		ct = ct / bpb->iSectSize + (ct % bpb->iSectSize) ? 1 : 0;
+		ct = bpb->iRootSize * 32; /* normally FAT16 224*32 */
+		ct = ct / bpb->iSectSize + (ct % bpb->iSectSize) ? 1 : 0; /*  */
 		bs = bpb->iResSect + bpb->iFatCnt * bpb->iFatSize;
+		nput32(bpb->iSectSize, 10);
 		/* reads every root directory sector */
 		for (i = 0; i < ct; i++) {
+				puts("r");
 				read_lba_sector(p0->lba + bs + i);
+				puts("d");
 				/* and iterates over the entries */
 				for (fn = ptr; fn < ptr + 0x200; fn += 32) {
 						if (fn[11] == 0x0f) { /* LFN */
@@ -278,6 +282,7 @@ uint64_t early_entry(int mode)
 				}
 		}
 		put_nl();
+		call_int15(1000000); /* delay 1000ms */
 
 		if (!fils)
 				goto abrt;

@@ -2,11 +2,11 @@
 #AS=i686-elf-as
 #LD=i686-elf-ln -L./ -llibgcc.a
 #OD=i686-elf-objdump
-CC=gcc -fno-builtin -ffreestanding -nostdlib -fno-asynchronous-unwind-tables -g -m32 -fstrict-volatile-bitfields
-AS=as
-LD=gcc -Wl,--oformat,binary,--Map,ld_x.map,-cref,-melf_i386 -ffreestanding -nostdlib
-LD2=gcc -Wl,--oformat,binary,-melf_i386 -ffreestanding -nostdlib
-OD=objdump
+CC=i686-elf-gcc -fno-builtin -ffreestanding -nostdlib -fno-asynchronous-unwind-tables -g -m32 -fstrict-volatile-bitfields
+AS=i686-elf-as
+LD=i686-elf-gcc -Wl,--oformat,binary,--Map,ld_x.map,-cref,-melf_i386 -ffreestanding -nostdlib
+LD2=i686-elf-gcc -Wl,--oformat,binary,-melf_i386 -ffreestanding -nostdlib
+OD=i686-elf-objdump
 SRCS= boot.s stage2.s pge.s vga.s
 CSRCS= base.c min_mm.c longmath.c loader.c elf.c vga_mode.c
 HDRS= fixmem.h basedefs.h
