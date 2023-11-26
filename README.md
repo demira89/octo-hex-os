@@ -17,6 +17,6 @@
 
 ## Usage
  To use the system use the disk image prog.img or prog.qed in your virtualization software of choice. E.g.
-```
+```sh
 qemu-system-x86_64 -machine q35 -hda prog.qed
-´´´
+```
