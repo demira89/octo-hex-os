@@ -1,8 +1,8 @@
 CC32=i686-elf-gcc -fno-builtin -ffreestanding -nostdlib -fno-asynchronous-unwind-tables \
-	 -g -m32 -fstrict-volatile-bitfields -std=gnu99 -Wall -Wextra
+	 -g -m32 -fstrict-volatile-bitfields -std=gnu99 -Wall -Wextra -mincoming-stack-boundary=4
 CC64=x86_64-elf-gcc -fno-builtin -ffreestanding -nostdlib -fno-asynchronous-unwind-tables \
 	 -g -m64 -fstrict-volatile-bitfields -mno-red-zone -std=gnu99 -Wall -Wextra \
-	 -mcmodel=kernel
+	 -mcmodel=kernel -mincoming-stack-boundary=4
 AS32=i686-elf-as
 AS64=x86_64-elf-as
 LD32=i686-elf-gcc -Wl,--oformat,elf32-i386,--Map,ld_32.map,-cref -ffreestanding -nostdlib \
@@ -28,7 +28,7 @@ F16FILS=kernel32.elf kernel64.elf ld32.map ld64.map MODULES.MOD $(KOBJS32) $(KOB
 # # list only those we use
 .SUFFIXES: .o32 .o64 .s .S .c
 
-all: prog.img
+all: prog.img boot/Makefile
 
 .S.o32 : 
 	$(CC32) -E -m32 $< > fil.s
@@ -98,7 +98,6 @@ file.k64: file.o64 partition.o64 disk_cache.o64
 ld32.map ld64.map: kernel32.elf kernel64.elf
 	./ld2nm.awk ld_32.map > ld32.map
 	./ld2nm.awk ld_64.map > ld64.map
-	cp -t ~/Downloads/smnt/ ld32.map ld64.map
 
 kernel64.elf: $(OBJS64)
 	$(LD64) -o $@ $^
