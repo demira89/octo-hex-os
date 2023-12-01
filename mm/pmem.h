@@ -7,7 +7,7 @@ extern struct fme
 		uint64_t size;
 		uint64_t free_pages;
 		uint64_t reclaimable_pages;
-		uint32_t ec;
+		uint64_t ec;
 		uint64_t pmu; /* physical ptr at this time */
 		uint64_t rcp; /* likewise */
 } * const fmm;
