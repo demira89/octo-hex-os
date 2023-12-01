@@ -27,6 +27,7 @@ extern void breakpoint();
 extern void print_stacktrace();
 extern void print_exception(void* eip, unsigned int code)
 {
+		while (eip);
 		switch (code) {
 				case 0:
 					printf("#DE at %p\n", eip);
@@ -1297,6 +1298,9 @@ void do_cpuid()
 				__cpuid(0x80000007, eax, ebx, ecx, edx);
 				cpu.invariant_tsc = !!(edx & (1 << 8));
 		}
+
+		/* FIXME: using enable_sse due to framebuffer on x64 */
+		enable_sse();
 }
 void cpu_info()
 {
@@ -1344,16 +1348,20 @@ void cpu_info()
 
 extern void _start()
 {
+		extern int fb_no_malloc;
 		/* set cpu to correct values */
 		do_cpuid();
 
 		/* transfer the frambuffer mappings */
 		void fb_video_setup();
+		fb_no_malloc = 1;
 		fb_video_setup();
 
 		/* transfer mmgr data from known locations */
 		extern void mmgr_reinit();
 		mmgr_reinit();
+		fb_no_malloc = 0;
+
 
 		/* use the correct GDT */
 		extern void gdt_init();

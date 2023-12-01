@@ -151,6 +151,9 @@ uint64_t map_elf64(uint32_t pct, struct page_range* pr, int prc)
 								put64(phdr->p_vaddr);
 								putstr(" SZ: ");
 								put64(phdr->p_memsz);
+								putstr(phdr->p_flags & PF_R ? " R" : "  ");
+								putstr(phdr->p_flags & PF_W ? "W" : " ");
+								putstr(phdr->p_flags & PF_X ? "X" : " ");
 								put_nl();
 								mm_perform_mapping(2, phdr->p_offset, pr, prc,
 												phdr->p_vaddr, phdr->p_filesz, phdr->p_memsz, pr2, pr2c,
@@ -232,6 +235,9 @@ uint64_t map_elf32(int mode, uint32_t pct, struct page_range* pr, int prc)
 								put32(phdr->p_vaddr);
 								putstr(" SZ: ");
 								put32(phdr->p_memsz);
+								putstr(phdr->p_flags & PF_R ? " R" : "  ");
+								putstr(phdr->p_flags & PF_W ? "W" : " ");
+								putstr(phdr->p_flags & PF_X ? "X" : " ");
 								put_nl();
 								mm_perform_mapping(mode, phdr->p_offset, pr, prc,
 												phdr->p_vaddr, phdr->p_filesz, phdr->p_memsz, pr2, pr2c,

@@ -675,6 +675,9 @@ done:
 		if (pr_o < pr_ct) {
 				pr[pr_o].base = 0;
 				pr[pr_o].count = 0;
+		} else if (pr_o > 1) { /* when list */
+			put32(pr_o); putstr(" < "); put32(pr_ct); put_nl();
+			puts("pr not null-terminated");
 		}
 		return rv;
 }
@@ -1303,11 +1306,12 @@ void mm_initialize(int mode)
 		}
 
 		/* and print the info for now */
-//		for (size_t i = 0; i < fm_ofs; i++) {
-//				put64(fmm[i].base);
-//				putstr("-");
-//				put64(fmm[i].base + fmm[i].size);
-//		}
+		for (size_t i = 0; i < fm_ofs; i++) {
+				put64(fmm[i].base);
+				putstr("-");
+				put64(fmm[i].base + fmm[i].size);
+		}
+		while (1);
 
 		/* set the counts and create the rcp/pmu's,
 		 *  -> this time we preallocate them all */
@@ -1833,7 +1837,8 @@ void mm_perform_mapping(int mode, uint64_t ofs, struct page_range* pr, int prc,
 		if (pcm > pcf) {
 				size_t zc = pcm - pcf;
 				if (w) {
-						zc -= mm_alloc_pm(zc, pr + pro, pr2c);
+						zc -= mm_alloc_pm(zc, pr2 + pro, pr2c);
+						pro++; pr2c--;
 				} else { /* use the single zero page (wastes many ranges) */
 						while (zc && pr2c) {
 								pr2[pro].base = pm_zero;

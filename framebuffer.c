@@ -15,6 +15,8 @@ void* vga_mem_ptr = (void*)0xb8000;
 void* vga_pmem = (void*)0xb8000;
 size_t vga_pmem_size = 0x8000; /* b8000-c0000 color TM */
 const char* vga_font = NULL;
+int fb_no_malloc = 0;
+struct rct rc_initial = {0};
 
 struct vmdesc {
 		uint64_t vga_base;
@@ -195,6 +197,29 @@ int generate_char_colors(const char* font, char c, char fmt, size_t btpp,
 		return rv;
 }
 
+#ifdef __x86_64__
+#define move_128(s,d) do { \
+		__asm__ ("mov %1, %%rax\n" \
+				 "mov %0, %%rdx\n" \
+				 "movaps (%%rax), %%xmm0\n" \
+				 "movaps %%xmm0, (%%rdx)\n" \
+				: "=m" (d) : "m" (s) : "xmm0", "rax", "rdx"); \
+		} while (0)
+
+#define move_64(s,d) do { \
+		__asm__ ("mov %1, %%rax\n" \
+				 "mov %0, %%rdx\n" \
+				 "movq (%%rax), %%mm0\n" \
+				 "movq %%mm0, (%%rdx)\n" \
+				 : "=m" (d) : "m" (s) : "mm0", "rax", "rdx"); \
+		} while(0)
+#elif defined(__riscv)
+#error Implement RISCV copy
+#elif defined(__arm__)
+#error Implement ARM copy
+#elif defined(__aarch64__)
+#error Implement AARCH64 copy
+#else
 #define move_128(s,d) do { \
 		__asm__ ("mov %1, %%eax\n" \
 				 "mov %0, %%edx\n" \
@@ -210,6 +235,7 @@ int generate_char_colors(const char* font, char c, char fmt, size_t btpp,
 				 "movq %%mm0, (%%edx)\n" \
 				 : "=m" (d) : "m" (s) : "mm0", "eax", "edx"); \
 		} while(0)
+#endif
 
 
 /* we're generating 4byte colorvalues /w unknown alignment. To enable
@@ -821,7 +847,7 @@ uint64_t fb_rdt = 0;
 void framebuffer_redraw_region(struct framebuffer* fb, struct kio_region* r);
 void framebuffer_redraw(struct framebuffer* fb)
 {
-		struct kio_region r = {0};
+		struct kio_region r = {0}; /* sse alignment */
 		r.lx = fb->chw_x; r.ly = fb->chw_y;
 		r.x = fb->cho_x; r.y = fb->cho_y;
 		framebuffer_redraw_region(fb, &r);
@@ -1100,13 +1126,14 @@ Pos1:
 						__sync_fetch_and_sub(&ptr->r_ct, 1);
 				/* we need a new container */
 				if (!ptr->next) {
+						while (fb_no_malloc);
 						struct rct* rn = kmalloc(sizeof(struct rct));
 						rn->r_ct = 1;
 						rn->r[0] = r2;
 						rn->next = NULL;
 						if (__sync_bool_compare_and_swap(&ptr->next, NULL, rn))
 								break;
-						else { /* someone was faster */
+						else if (!fb_no_malloc) { /* someone was faster */
 								kfree(rn);
 								//goto Pos1; ptr=next
 						}
@@ -1114,16 +1141,19 @@ Pos1:
 				ptr = ptr->next;
 		}
 		/* else extend the list */
-		if (!fb->r_ud) {
-				struct rct* rn = kmalloc(sizeof(struct rct));
-				rn->r_ct = 1;
-				rn->r[0] = r2;
-				rn->next = NULL;
-				if (!__sync_bool_compare_and_swap(&fb->r_ud, NULL, rn)) {
-						/* someone was faster */
-						kfree(rn);
-						goto Pos1;
-				}	
+		if (!fb->r_ud) 
+				if (fb_no_malloc) {
+					fb->r_ud = &rc_initial;
+				} else {
+						struct rct* rn = kmalloc(sizeof(struct rct));
+						rn->r_ct = 1;
+						rn->r[0] = r2;
+						rn->next = NULL;
+						if (!__sync_bool_compare_and_swap(&fb->r_ud, NULL, rn)) {
+								/* someone was faster */
+								kfree(rn);
+								goto Pos1;
+						}	
 		}
 }
 
