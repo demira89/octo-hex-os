@@ -361,8 +361,8 @@ uint32_t mm_fmrc_alloc_pm(struct fme* fm, uint32_t pg_ct, int free,
 		for (i = 0; i < fm->ec; i++) {
 				struct pmu* p = (void*)(size_t)mem;
 				/* skip if above limit */
-				if (mem + 4096 > 0x100000000)
-						break;
+				/*if (mem + 4096 > 0x100000000)
+						break; - no idea what that was */ 
 
 				/* operate on pmu/rcp */
 				if (p->free_ct[0] == 0xffff) {
@@ -448,6 +448,7 @@ retry:
 
 done:
 		if (!rv) { /* OOM */
+				while (1);
 				die("OOM");
 		}
 
@@ -612,7 +613,7 @@ struct mm_cpu_ctx mm_create_ctx()
 void mm_fm_init(struct fme* fm)
 {
 		uint64_t b = fm->base - 2 * fm->ec * 4096, b1;
-		uint32_t ec2 = fm->ec; b1 = b + fm->ec * 4096;
+		uint64_t ec2 = (uint64_t)fm->ec; b1 = b + fm->ec * 4096;
 		struct pmu *p, *r; struct page_range pr; uint16_t rec;
 		uint32_t lst = 0;
 
@@ -627,17 +628,18 @@ void mm_fm_init(struct fme* fm)
 		p = cur_pmu; r = cur_rcp;
 		pm_count += fm->size;
 	
-		/* add sizes */
+		/* cap sizes */
+		if ((VM_PMU_LIMIT - cur_pmu < ec2 * 4096)
+			|| (VM_RCP_LIMIT - cur_rcp < ec2 * 4096)) {
+				/* we should cap and inform the user */
+				ec2 = (VM_PMU_LIMIT - cur_pmu) / 4096; /* only on PMUs as LIMITS are identical*/
+				cprintf(KFMT_WARN, "%llu PMUs discarded -> %lluM of memory lost\n",
+								fm->ec - ec2, (fm->ec - ec2) * 64);
+				fm->ec = ec2;
+		}
+		/* and advance */
 		cur_pmu += ec2 * 4096;
 		cur_rcp += ec2 * 4096;
-		if (cur_pmu >= VM_PMU_LIMIT || cur_rcp >= VM_RCP_LIMIT) {
-				/* we should cap and inform the user */
-				ec2 = (cur_pmu - VM_PMU_LIMIT) / 4096; /* only on PMUs as LIMITS are identical*/
-				cprintf(KFMT_WARN, "%u PMUs discarded -> %uM of memory lost\n",
-								ec2, ec2 * 64);
-				fm->ec -= ec2;
-				ec2 = fm->ec;
-		}
 
 		/* skip completely if neccessary */
 		if (!ec2)
@@ -652,7 +654,7 @@ void mm_fm_init(struct fme* fm)
 		mm_map(&mm_kernel, r, &pr, 1, MMGR_MAP_WRITE | MMGR_MAP_KERNEL);
 
 		/* now init the leftovers */
-		for (uint32_t i = 0; i < ec2; i++) {
+		for (uint64_t i = 0; i < ec2; i++) {
 				struct pmu* pt = NULL; int rd = 0;
 				/* check for exception */
 				if (b > 0x100000000 - 4096)
@@ -707,6 +709,7 @@ void mmgr_reinit()
 #endif
 
 		/* map the pmus & initialize high pmus */
+		while (ptr);
 		for (size_t i = fm_begin; i < fm_ofs; i++) {
 				mm_fm_init(fmm + i);
 		}
@@ -775,7 +778,7 @@ void mm_dump_pmu(size_t fm, size_t n, int is_rcp)
 						printf("Map %lu: %016llx-%016llx\n", n,
 								fmm[n].base, fmm[n].base + fmm[n].size);
 						pu = (void*)fmm[n].pmu;
-						printf("\tEntry count: %u\n", fmm[n].ec);
+						printf("\tEntry count: %llu\n", fmm[n].ec);
 				}
 				return;
 		}

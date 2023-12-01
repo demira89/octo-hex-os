@@ -25,6 +25,12 @@ ep32c:
 	mov cr0, eax
 
 	mov eax, [ep_ptr]
+	
+	# realign esp
+	mov esp, 0x00080000
+	sub esp, 0x8 # _start
+	mov ebp, esp
+
 	jmp eax
 
 # as in osdev
@@ -79,6 +85,12 @@ LongMode:
 	rep stosq
 
 	pop rax
+
+	# realign stack
+	mov rsp, 0x00080000
+	sub rsp, 0x8
+	mov rbp, rsp
+
 	jmp rax
 
 nope64:

@@ -1,0 +1,794 @@
+
+ata_drive.o64:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000000000000 <memcpy>:
+   0:	55                   	push   rbp
+   1:	48 89 e5             	mov    rbp,rsp
+   4:	48 83 ec 28          	sub    rsp,0x28
+   8:	48 89 7d e8          	mov    QWORD PTR [rbp-0x18],rdi
+   c:	48 89 75 e0          	mov    QWORD PTR [rbp-0x20],rsi
+  10:	48 89 55 d8          	mov    QWORD PTR [rbp-0x28],rdx
+  14:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+  18:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
+  1c:	48 8b 45 e0          	mov    rax,QWORD PTR [rbp-0x20]
+  20:	48 89 45 f0          	mov    QWORD PTR [rbp-0x10],rax
+  24:	eb 1d                	jmp    43 <memcpy+0x43>
+  26:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
+  2a:	48 8d 42 01          	lea    rax,[rdx+0x1]
+  2e:	48 89 45 f0          	mov    QWORD PTR [rbp-0x10],rax
+  32:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+  36:	48 8d 48 01          	lea    rcx,[rax+0x1]
+  3a:	48 89 4d f8          	mov    QWORD PTR [rbp-0x8],rcx
+  3e:	0f b6 12             	movzx  edx,BYTE PTR [rdx]
+  41:	88 10                	mov    BYTE PTR [rax],dl
+  43:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
+  47:	48 8d 50 ff          	lea    rdx,[rax-0x1]
+  4b:	48 89 55 d8          	mov    QWORD PTR [rbp-0x28],rdx
+  4f:	48 85 c0             	test   rax,rax
+  52:	75 d2                	jne    26 <memcpy+0x26>
+  54:	90                   	nop
+  55:	90                   	nop
+  56:	c9                   	leave
+  57:	c3                   	ret
+
+0000000000000058 <__list_add>:
+  58:	55                   	push   rbp
+  59:	48 89 e5             	mov    rbp,rsp
+  5c:	48 83 ec 18          	sub    rsp,0x18
+  60:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
+  64:	48 89 75 f0          	mov    QWORD PTR [rbp-0x10],rsi
+  68:	48 89 55 e8          	mov    QWORD PTR [rbp-0x18],rdx
+  6c:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+  70:	48 8b 55 f8          	mov    rdx,QWORD PTR [rbp-0x8]
+  74:	48 89 10             	mov    QWORD PTR [rax],rdx
+  77:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+  7b:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
+  7f:	48 89 50 08          	mov    QWORD PTR [rax+0x8],rdx
+  83:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+  87:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
+  8b:	48 89 10             	mov    QWORD PTR [rax],rdx
+  8e:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
+  92:	48 8b 55 f8          	mov    rdx,QWORD PTR [rbp-0x8]
+  96:	48 89 50 08          	mov    QWORD PTR [rax+0x8],rdx
+  9a:	90                   	nop
+  9b:	c9                   	leave
+  9c:	c3                   	ret
+
+000000000000009d <list_add_tail>:
+  9d:	55                   	push   rbp
+  9e:	48 89 e5             	mov    rbp,rsp
+  a1:	48 83 ec 10          	sub    rsp,0x10
+  a5:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
+  a9:	48 89 75 f0          	mov    QWORD PTR [rbp-0x10],rsi
+  ad:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
+  b1:	48 83 c0 10          	add    rax,0x10
+  b5:	48 89 c7             	mov    rdi,rax
+  b8:	e8 00 00 00 00       	call   bd <list_add_tail+0x20>
+  bd:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
+  c1:	48 8b 08             	mov    rcx,QWORD PTR [rax]
+  c4:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
+  c8:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+  cc:	48 89 ce             	mov    rsi,rcx
+  cf:	48 89 c7             	mov    rdi,rax
+  d2:	e8 81 ff ff ff       	call   58 <__list_add>
+  d7:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
+  db:	48 83 c0 10          	add    rax,0x10
+  df:	48 89 c7             	mov    rdi,rax
+  e2:	e8 00 00 00 00       	call   e7 <list_add_tail+0x4a>
+  e7:	90                   	nop
+  e8:	c9                   	leave
+  e9:	c3                   	ret
+
+00000000000000ea <sd_format_disk_name>:
+{
+  ea:	55                   	push   rbp
+  eb:	48 89 e5             	mov    rbp,rsp
+  ee:	48 83 ec 50          	sub    rsp,0x50
+  f2:	48 89 7d c8          	mov    QWORD PTR [rbp-0x38],rdi
+  f6:	89 75 c4             	mov    DWORD PTR [rbp-0x3c],esi
+  f9:	48 89 55 b8          	mov    QWORD PTR [rbp-0x48],rdx
+  fd:	89 4d c0             	mov    DWORD PTR [rbp-0x40],ecx
+		const int base = 'z' - 'a' + 1;
+ 100:	c7 45 f4 1a 00 00 00 	mov    DWORD PTR [rbp-0xc],0x1a
+		char *begin = buf + strlen(prefix);
+ 107:	48 8b 45 c8          	mov    rax,QWORD PTR [rbp-0x38]
+ 10b:	48 89 c7             	mov    rdi,rax
+ 10e:	e8 00 00 00 00       	call   113 <sd_format_disk_name+0x29>
+ 113:	48 8b 55 b8          	mov    rdx,QWORD PTR [rbp-0x48]
+ 117:	48 01 d0             	add    rax,rdx
+ 11a:	48 89 45 e8          	mov    QWORD PTR [rbp-0x18],rax
+		char *end = buf + buflen;
+ 11e:	8b 45 c0             	mov    eax,DWORD PTR [rbp-0x40]
+ 121:	48 63 d0             	movsxd rdx,eax
+ 124:	48 8b 45 b8          	mov    rax,QWORD PTR [rbp-0x48]
+ 128:	48 01 d0             	add    rax,rdx
+ 12b:	48 89 45 e0          	mov    QWORD PTR [rbp-0x20],rax
+		p = end - 1;
+ 12f:	48 8b 45 e0          	mov    rax,QWORD PTR [rbp-0x20]
+ 133:	48 83 e8 01          	sub    rax,0x1
+ 137:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
+		*p = '\0';
+ 13b:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+ 13f:	c6 00 00             	mov    BYTE PTR [rax],0x0
+		unit = base;
+ 142:	8b 45 f4             	mov    eax,DWORD PTR [rbp-0xc]
+ 145:	89 45 dc             	mov    DWORD PTR [rbp-0x24],eax
+				if (p == begin)
+ 148:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+ 14c:	48 3b 45 e8          	cmp    rax,QWORD PTR [rbp-0x18]
+ 150:	75 07                	jne    159 <sd_format_disk_name+0x6f>
+						return -EINVAL;
+ 152:	b8 ea ff ff ff       	mov    eax,0xffffffea
+ 157:	eb 71                	jmp    1ca <sd_format_disk_name+0xe0>
+				*--p = 'a' + (index % unit);
+ 159:	8b 45 c4             	mov    eax,DWORD PTR [rbp-0x3c]
+ 15c:	99                   	cdq
+ 15d:	f7 7d dc             	idiv   DWORD PTR [rbp-0x24]
+ 160:	89 d0                	mov    eax,edx
+ 162:	83 c0 61             	add    eax,0x61
+ 165:	48 83 6d f8 01       	sub    QWORD PTR [rbp-0x8],0x1
+ 16a:	89 c2                	mov    edx,eax
+ 16c:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+ 170:	88 10                	mov    BYTE PTR [rax],dl
+				index = (index / unit) - 1;
+ 172:	8b 45 c4             	mov    eax,DWORD PTR [rbp-0x3c]
+ 175:	99                   	cdq
+ 176:	f7 7d dc             	idiv   DWORD PTR [rbp-0x24]
+ 179:	83 e8 01             	sub    eax,0x1
+ 17c:	89 45 c4             	mov    DWORD PTR [rbp-0x3c],eax
+		} while (index >= 0);
+ 17f:	83 7d c4 00          	cmp    DWORD PTR [rbp-0x3c],0x0
+ 183:	79 c3                	jns    148 <sd_format_disk_name+0x5e>
+		memmove(begin, p, end - p);
+ 185:	48 8b 45 e0          	mov    rax,QWORD PTR [rbp-0x20]
+ 189:	48 2b 45 f8          	sub    rax,QWORD PTR [rbp-0x8]
+ 18d:	48 89 c2             	mov    rdx,rax
+ 190:	48 8b 4d f8          	mov    rcx,QWORD PTR [rbp-0x8]
+ 194:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+ 198:	48 89 ce             	mov    rsi,rcx
+ 19b:	48 89 c7             	mov    rdi,rax
+ 19e:	e8 00 00 00 00       	call   1a3 <sd_format_disk_name+0xb9>
+		memcpy(buf, prefix, strlen(prefix));
+ 1a3:	48 8b 45 c8          	mov    rax,QWORD PTR [rbp-0x38]
+ 1a7:	48 89 c7             	mov    rdi,rax
+ 1aa:	e8 00 00 00 00       	call   1af <sd_format_disk_name+0xc5>
+ 1af:	48 89 c2             	mov    rdx,rax
+ 1b2:	48 8b 4d c8          	mov    rcx,QWORD PTR [rbp-0x38]
+ 1b6:	48 8b 45 b8          	mov    rax,QWORD PTR [rbp-0x48]
+ 1ba:	48 89 ce             	mov    rsi,rcx
+ 1bd:	48 89 c7             	mov    rdi,rax
+ 1c0:	e8 3b fe ff ff       	call   0 <memcpy>
+		return 0;
+ 1c5:	b8 00 00 00 00       	mov    eax,0x0
+}
+ 1ca:	c9                   	leave
+ 1cb:	c3                   	ret
+
+00000000000001cc <init_ata_dd>:
+{
+ 1cc:	55                   	push   rbp
+ 1cd:	48 89 e5             	mov    rbp,rsp
+		if (!spin_trylock(&ata_lock)) {
+ 1d0:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+ 1d7:	e8 00 00 00 00       	call   1dc <init_ata_dd+0x10>
+ 1dc:	85 c0                	test   eax,eax
+ 1de:	75 18                	jne    1f8 <init_ata_dd+0x2c>
+				while (!ata_init)
+ 1e0:	eb 0a                	jmp    1ec <init_ata_dd+0x20>
+						task_yield();
+ 1e2:	b8 00 00 00 00       	mov    eax,0x0
+ 1e7:	e8 00 00 00 00       	call   1ec <init_ata_dd+0x20>
+				while (!ata_init)
+ 1ec:	8b 05 00 00 00 00    	mov    eax,DWORD PTR [rip+0x0]        # 1f2 <init_ata_dd+0x26>
+ 1f2:	85 c0                	test   eax,eax
+ 1f4:	74 ec                	je     1e2 <init_ata_dd+0x16>
+				return;
+ 1f6:	eb 4c                	jmp    244 <init_ata_dd+0x78>
+		if (register_device(&dd_ata) == INVALID_DEVICE) {
+ 1f8:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+ 1ff:	e8 00 00 00 00       	call   204 <init_ata_dd+0x38>
+ 204:	48 83 f8 ff          	cmp    rax,0xffffffffffffffff
+ 208:	75 24                	jne    22e <init_ata_dd+0x62>
+				cprintf(KFMT_ERROR, "unable to register ATA device object.\n");
+ 20a:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
+ 211:	bf 0c 00 00 00       	mov    edi,0xc
+ 216:	b8 00 00 00 00       	mov    eax,0x0
+ 21b:	e8 00 00 00 00       	call   220 <init_ata_dd+0x54>
+				spin_unlock(&ata_lock);
+ 220:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+ 227:	e8 00 00 00 00       	call   22c <init_ata_dd+0x60>
+				return;
+ 22c:	eb 16                	jmp    244 <init_ata_dd+0x78>
+		ata_init = 1;
+ 22e:	c7 05 00 00 00 00 01 00 00 00 	mov    DWORD PTR [rip+0x0],0x1        # 238 <init_ata_dd+0x6c>
+		spin_unlock(&ata_lock);
+ 238:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+ 23f:	e8 00 00 00 00       	call   244 <init_ata_dd+0x78>
+}
+ 244:	5d                   	pop    rbp
+ 245:	c3                   	ret
+
+0000000000000246 <register_ata_device>:
+{
+ 246:	55                   	push   rbp
+ 247:	48 89 e5             	mov    rbp,rsp
+ 24a:	48 83 ec 40          	sub    rsp,0x40
+ 24e:	48 89 7d d8          	mov    QWORD PTR [rbp-0x28],rdi
+ 252:	48 89 75 d0          	mov    QWORD PTR [rbp-0x30],rsi
+ 256:	89 d0                	mov    eax,edx
+ 258:	48 89 4d c0          	mov    QWORD PTR [rbp-0x40],rcx
+ 25c:	66 89 45 cc          	mov    WORD PTR [rbp-0x34],ax
+		if (!ata_init)
+ 260:	8b 05 00 00 00 00    	mov    eax,DWORD PTR [rip+0x0]        # 266 <register_ata_device+0x20>
+ 266:	85 c0                	test   eax,eax
+ 268:	75 0a                	jne    274 <register_ata_device+0x2e>
+				init_ata_dd();
+ 26a:	b8 00 00 00 00       	mov    eax,0x0
+ 26f:	e8 00 00 00 00       	call   274 <register_ata_device+0x2e>
+		struct ata_node* n = kzalloc(sizeof(*n));
+ 274:	bf 80 00 00 00       	mov    edi,0x80
+ 279:	e8 00 00 00 00       	call   27e <register_ata_device+0x38>
+ 27e:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
+		if (!n)
+ 282:	48 83 7d f8 00       	cmp    QWORD PTR [rbp-0x8],0x0
+ 287:	75 0a                	jne    293 <register_ata_device+0x4d>
+				return -ENOMEM;
+ 289:	b8 f4 ff ff ff       	mov    eax,0xfffffff4
+ 28e:	e9 42 03 00 00       	jmp    5d5 <register_ata_device+0x38f>
+		n->ad = ad;
+ 293:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+ 297:	48 8b 55 d8          	mov    rdx,QWORD PTR [rbp-0x28]
+ 29b:	48 89 50 20          	mov    QWORD PTR [rax+0x20],rdx
+		n->id = id;
+ 29f:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+ 2a3:	48 8b 55 c0          	mov    rdx,QWORD PTR [rbp-0x40]
+ 2a7:	48 89 50 30          	mov    QWORD PTR [rax+0x30],rdx
+		n->pt = p - ad->ptr->port;
+ 2ab:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
+ 2af:	48 8b 40 08          	mov    rax,QWORD PTR [rax+0x8]
+ 2b3:	48 05 00 01 00 00    	add    rax,0x100
+ 2b9:	48 8b 55 d0          	mov    rdx,QWORD PTR [rbp-0x30]
+ 2bd:	48 29 c2             	sub    rdx,rax
+ 2c0:	48 89 d0             	mov    rax,rdx
+ 2c3:	48 c1 f8 07          	sar    rax,0x7
+ 2c7:	89 c2                	mov    edx,eax
+ 2c9:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+ 2cd:	66 89 50 40          	mov    WORD PTR [rax+0x40],dx
+		n->pmprt = pmprt;
+ 2d1:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+ 2d5:	0f b7 55 cc          	movzx  edx,WORD PTR [rbp-0x34]
+ 2d9:	66 89 50 42          	mov    WORD PTR [rax+0x42],dx
+		n->index = __sync_fetch_and_add(&ata_device.cur_idx, 1);
+ 2dd:	ba 01 00 00 00       	mov    edx,0x1
+ 2e2:	f0 0f c1 15 00 00 00 00 	lock xadd DWORD PTR [rip+0x0],edx        # 2ea <register_ata_device+0xa4>
+ 2ea:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+ 2ee:	89 10                	mov    DWORD PTR [rax],edx
+		if (!id->lba_supp) {
+ 2f0:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+ 2f4:	0f b6 40 63          	movzx  eax,BYTE PTR [rax+0x63]
+ 2f8:	83 e0 02             	and    eax,0x2
+ 2fb:	84 c0                	test   al,al
+ 2fd:	75 30                	jne    32f <register_ata_device+0xe9>
+				die("LBA needed\n");
+ 2ff:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
+ 306:	bf 0c 00 00 00       	mov    edi,0xc
+ 30b:	b8 00 00 00 00       	mov    eax,0x0
+ 310:	e8 00 00 00 00       	call   315 <register_ata_device+0xcf>
+ 315:	b8 00 00 00 00       	mov    eax,0x0
+ 31a:	e8 00 00 00 00       	call   31f <register_ata_device+0xd9>
+ 31f:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+ 326:	e8 00 00 00 00       	call   32b <register_ata_device+0xe5>
+ 32b:	fa                   	cli
+ 32c:	f4                   	hlt
+ 32d:	eb fd                	jmp    32c <register_ata_device+0xe6>
+		} else if (id->has_lba48 || id->has_lba48_alt)
+ 32f:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+ 333:	0f b6 80 a7 00 00 00 	movzx  eax,BYTE PTR [rax+0xa7]
+ 33a:	83 e0 04             	and    eax,0x4
+ 33d:	84 c0                	test   al,al
+ 33f:	75 12                	jne    353 <register_ata_device+0x10d>
+ 341:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+ 345:	0f b6 80 ad 00 00 00 	movzx  eax,BYTE PTR [rax+0xad]
+ 34c:	83 e0 04             	and    eax,0x4
+ 34f:	84 c0                	test   al,al
+ 351:	74 15                	je     368 <register_ata_device+0x122>
+				n->gm.max_lba = id->num_logical_sectors;
+ 353:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+ 357:	48 8b 90 c8 00 00 00 	mov    rdx,QWORD PTR [rax+0xc8]
+ 35e:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+ 362:	48 89 50 58          	mov    QWORD PTR [rax+0x58],rdx
+ 366:	eb 11                	jmp    379 <register_ata_device+0x133>
+				n->gm.max_lba = id->max_lba28;
+ 368:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+ 36c:	8b 40 78             	mov    eax,DWORD PTR [rax+0x78]
+ 36f:	89 c2                	mov    edx,eax
+ 371:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+ 375:	48 89 50 58          	mov    QWORD PTR [rax+0x58],rdx
+		if (id->has_multiple_logical_per_physical_sectors) {
+ 379:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+ 37d:	0f b6 80 d5 00 00 00 	movzx  eax,BYTE PTR [rax+0xd5]
+ 384:	83 e0 20             	and    eax,0x20
+ 387:	84 c0                	test   al,al
+ 389:	74 28                	je     3b3 <register_ata_device+0x16d>
+				n->gm.lpp = 1 << id->num_pwr2_logical_per_phys;
+ 38b:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+ 38f:	0f b6 80 d4 00 00 00 	movzx  eax,BYTE PTR [rax+0xd4]
+ 396:	83 e0 0f             	and    eax,0xf
+ 399:	0f b6 c0             	movzx  eax,al
+ 39c:	ba 01 00 00 00       	mov    edx,0x1
+ 3a1:	89 c1                	mov    ecx,eax
+ 3a3:	d3 e2                	shl    edx,cl
+ 3a5:	89 d0                	mov    eax,edx
+ 3a7:	89 c2                	mov    edx,eax
+ 3a9:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+ 3ad:	66 89 50 48          	mov    WORD PTR [rax+0x48],dx
+ 3b1:	eb 0a                	jmp    3bd <register_ata_device+0x177>
+				n->gm.lpp = 1;
+ 3b3:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+ 3b7:	66 c7 40 48 01 00    	mov    WORD PTR [rax+0x48],0x1
+		if (id->logical_sector_longer_than_512bt) {
+ 3bd:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+ 3c1:	0f b6 80 d5 00 00 00 	movzx  eax,BYTE PTR [rax+0xd5]
+ 3c8:	83 e0 10             	and    eax,0x10
+ 3cb:	84 c0                	test   al,al
+ 3cd:	74 16                	je     3e5 <register_ata_device+0x19f>
+				n->gm.lss = 2 * id->logical_sector_size;
+ 3cf:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+ 3d3:	8b 80 ea 00 00 00    	mov    eax,DWORD PTR [rax+0xea]
+ 3d9:	8d 14 00             	lea    edx,[rax+rax*1]
+ 3dc:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+ 3e0:	89 50 4c             	mov    DWORD PTR [rax+0x4c],edx
+ 3e3:	eb 0b                	jmp    3f0 <register_ata_device+0x1aa>
+				n->gm.lss = 512;
+ 3e5:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+ 3e9:	c7 40 4c 00 02 00 00 	mov    DWORD PTR [rax+0x4c],0x200
+		n->gm.lof = id->logical_sector_offset;
+ 3f0:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+ 3f4:	0f b6 90 a2 01 00 00 	movzx  edx,BYTE PTR [rax+0x1a2]
+ 3fb:	0f b6 80 a3 01 00 00 	movzx  eax,BYTE PTR [rax+0x1a3]
+ 402:	83 e0 3f             	and    eax,0x3f
+ 405:	48 c1 e0 08          	shl    rax,0x8
+ 409:	48 09 d0             	or     rax,rdx
+ 40c:	89 c2                	mov    edx,eax
+ 40e:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+ 412:	66 89 50 4a          	mov    WORD PTR [rax+0x4a],dx
+		n->cache = create_disk_cache(&n->gm);
+ 416:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+ 41a:	48 83 c0 48          	add    rax,0x48
+ 41e:	48 89 c7             	mov    rdi,rax
+ 421:	b8 00 00 00 00       	mov    eax,0x0
+ 426:	e8 00 00 00 00       	call   42b <register_ata_device+0x1e5>
+ 42b:	48 98                	cdqe
+ 42d:	48 89 c2             	mov    rdx,rax
+ 430:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+ 434:	48 89 50 38          	mov    QWORD PTR [rax+0x38],rdx
+		list_add_tail(&n->lst, &ata_device.nodes);
+ 438:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+ 43c:	48 83 c0 08          	add    rax,0x8
+ 440:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
+ 447:	48 89 c7             	mov    rdi,rax
+ 44a:	e8 4e fc ff ff       	call   9d <list_add_tail>
+		struct inode *in_dev = get_special_inode(INO_DEV), *in;
+ 44f:	bf 01 00 00 00       	mov    edi,0x1
+ 454:	e8 00 00 00 00       	call   459 <register_ata_device+0x213>
+ 459:	48 89 45 f0          	mov    QWORD PTR [rbp-0x10],rax
+		in = ino_allocate(S_IFBLK); /* times have been set */
+ 45d:	bf 00 60 00 00       	mov    edi,0x6000
+ 462:	e8 00 00 00 00       	call   467 <register_ata_device+0x221>
+ 467:	48 89 45 e8          	mov    QWORD PTR [rbp-0x18],rax
+		if (!in_dev || !in) {
+ 46b:	48 83 7d f0 00       	cmp    QWORD PTR [rbp-0x10],0x0
+ 470:	74 07                	je     479 <register_ata_device+0x233>
+ 472:	48 83 7d e8 00       	cmp    QWORD PTR [rbp-0x18],0x0
+ 477:	75 30                	jne    4a9 <register_ata_device+0x263>
+				die("/dev is not present or inode allocation failed\n");
+ 479:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
+ 480:	bf 0c 00 00 00       	mov    edi,0xc
+ 485:	b8 00 00 00 00       	mov    eax,0x0
+ 48a:	e8 00 00 00 00       	call   48f <register_ata_device+0x249>
+ 48f:	b8 00 00 00 00       	mov    eax,0x0
+ 494:	e8 00 00 00 00       	call   499 <register_ata_device+0x253>
+ 499:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+ 4a0:	e8 00 00 00 00       	call   4a5 <register_ata_device+0x25f>
+ 4a5:	fa                   	cli
+ 4a6:	f4                   	hlt
+ 4a7:	eb fd                	jmp    4a6 <register_ata_device+0x260>
+		in->in_pddat = n;
+ 4a9:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+ 4ad:	48 8b 55 f8          	mov    rdx,QWORD PTR [rbp-0x8]
+ 4b1:	48 89 90 80 00 00 00 	mov    QWORD PTR [rax+0x80],rdx
+		in->in_stat.st_dev = ata_device.id;
+ 4b8:	48 8b 15 00 00 00 00 	mov    rdx,QWORD PTR [rip+0x0]        # 4bf <register_ata_device+0x279>
+ 4bf:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+ 4c3:	48 89 10             	mov    QWORD PTR [rax],rdx
+		in->in_stat.st_blksize = n->gm.pss; /* preferred blocksize */
+ 4c6:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+ 4ca:	8b 40 50             	mov    eax,DWORD PTR [rax+0x50]
+ 4cd:	89 c2                	mov    edx,eax
+ 4cf:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+ 4d3:	48 89 50 38          	mov    QWORD PTR [rax+0x38],rdx
+		in->in_stat.st_blocks = n->gm.max_lba * n->gm.lss / 512; /* LBA48 no overflow */
+ 4d7:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+ 4db:	48 8b 40 58          	mov    rax,QWORD PTR [rax+0x58]
+ 4df:	48 8b 55 f8          	mov    rdx,QWORD PTR [rbp-0x8]
+ 4e3:	8b 52 4c             	mov    edx,DWORD PTR [rdx+0x4c]
+ 4e6:	89 d2                	mov    edx,edx
+ 4e8:	48 0f af c2          	imul   rax,rdx
+ 4ec:	48 c1 e8 09          	shr    rax,0x9
+ 4f0:	48 89 c2             	mov    rdx,rax
+ 4f3:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+ 4f7:	48 89 50 40          	mov    QWORD PTR [rax+0x40],rdx
+		in->in_stat.st_size = n->gm.max_lba * n->gm.lss;
+ 4fb:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+ 4ff:	48 8b 40 58          	mov    rax,QWORD PTR [rax+0x58]
+ 503:	48 8b 55 f8          	mov    rdx,QWORD PTR [rbp-0x8]
+ 507:	8b 52 4c             	mov    edx,DWORD PTR [rdx+0x4c]
+ 50a:	89 d2                	mov    edx,edx
+ 50c:	48 0f af c2          	imul   rax,rdx
+ 510:	48 89 c2             	mov    rdx,rax
+ 513:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+ 517:	48 89 50 30          	mov    QWORD PTR [rax+0x30],rdx
+		dd_d = get_device(in_dev->in_stat.st_dev);
+ 51b:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
+ 51f:	48 8b 00             	mov    rax,QWORD PTR [rax]
+ 522:	48 89 c7             	mov    rdi,rax
+ 525:	e8 00 00 00 00       	call   52a <register_ata_device+0x2e4>
+ 52a:	48 89 45 e0          	mov    QWORD PTR [rbp-0x20],rax
+		if (sd_format_disk_name("sd", n->index, n->name, sizeof(n->name)))
+ 52e:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+ 532:	48 83 c0 68          	add    rax,0x68
+ 536:	48 8b 55 f8          	mov    rdx,QWORD PTR [rbp-0x8]
+ 53a:	8b 12                	mov    edx,DWORD PTR [rdx]
+ 53c:	89 d6                	mov    esi,edx
+ 53e:	b9 14 00 00 00       	mov    ecx,0x14
+ 543:	48 89 c2             	mov    rdx,rax
+ 546:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+ 54d:	e8 00 00 00 00       	call   552 <register_ata_device+0x30c>
+ 552:	85 c0                	test   eax,eax
+ 554:	74 16                	je     56c <register_ata_device+0x326>
+				cprintf(KFMT_WARN, "too many sdX devices\n");
+ 556:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
+ 55d:	bf 0e 00 00 00       	mov    edi,0xe
+ 562:	b8 00 00 00 00       	mov    eax,0x0
+ 567:	e8 00 00 00 00       	call   56c <register_ata_device+0x326>
+		if (dd_d->fn_set_subnode(in_dev, in, n->name) == 0)
+ 56c:	48 8b 45 e0          	mov    rax,QWORD PTR [rbp-0x20]
+ 570:	4c 8b 40 50          	mov    r8,QWORD PTR [rax+0x50]
+ 574:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+ 578:	48 8d 50 68          	lea    rdx,[rax+0x68]
+ 57c:	48 8b 4d e8          	mov    rcx,QWORD PTR [rbp-0x18]
+ 580:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
+ 584:	48 89 ce             	mov    rsi,rcx
+ 587:	48 89 c7             	mov    rdi,rax
+ 58a:	41 ff d0             	call   r8
+ 58d:	85 c0                	test   eax,eax
+ 58f:	75 23                	jne    5b4 <register_ata_device+0x36e>
+				cprintf(KFMT_OK, "registered ATA device at dev/%s\n", n->name);
+ 591:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+ 595:	48 83 c0 68          	add    rax,0x68
+ 599:	48 89 c2             	mov    rdx,rax
+ 59c:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
+ 5a3:	bf 0a 00 00 00       	mov    edi,0xa
+ 5a8:	b8 00 00 00 00       	mov    eax,0x0
+ 5ad:	e8 00 00 00 00       	call   5b2 <register_ata_device+0x36c>
+ 5b2:	eb 21                	jmp    5d5 <register_ata_device+0x38f>
+				cprintf(KFMT_WARN, "unable to register ATA device at dev/%s\n", n->name);
+ 5b4:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+ 5b8:	48 83 c0 68          	add    rax,0x68
+ 5bc:	48 89 c2             	mov    rdx,rax
+ 5bf:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
+ 5c6:	bf 0e 00 00 00       	mov    edi,0xe
+ 5cb:	b8 00 00 00 00       	mov    eax,0x0
+ 5d0:	e8 00 00 00 00       	call   5d5 <register_ata_device+0x38f>
+}
+ 5d5:	c9                   	leave
+ 5d6:	c3                   	ret
+
+00000000000005d7 <ata_register_device>:
+{
+ 5d7:	55                   	push   rbp
+ 5d8:	48 89 e5             	mov    rbp,rsp
+ 5db:	48 83 ec 30          	sub    rsp,0x30
+ 5df:	48 89 7d d8          	mov    QWORD PTR [rbp-0x28],rdi
+		ata_device.id = d;
+ 5e3:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
+ 5e7:	48 89 05 00 00 00 00 	mov    QWORD PTR [rip+0x0],rax        # 5ee <ata_register_device+0x17>
+		ata_device.cur_idx = 0;
+ 5ee:	c7 05 00 00 00 00 00 00 00 00 	mov    DWORD PTR [rip+0x0],0x0        # 5f8 <ata_register_device+0x21>
+		ata_device.nodes = LIST_HEAD_INIT(ata_device.nodes);
+ 5f8:	48 c7 05 00 00 00 00 00 00 00 00 	mov    QWORD PTR [rip+0x0],0x0        # 603 <ata_register_device+0x2c>
+ 603:	48 c7 05 00 00 00 00 00 00 00 00 	mov    QWORD PTR [rip+0x0],0x0        # 60e <ata_register_device+0x37>
+ 60e:	66 c7 05 00 00 00 00 00 00 	mov    WORD PTR [rip+0x0],0x0        # 617 <ata_register_device+0x40>
+		return 0;
+ 617:	b8 00 00 00 00       	mov    eax,0x0
+}
+ 61c:	c9                   	leave
+ 61d:	c3                   	ret
+
+000000000000061e <ata_unregister_device>:
+{
+ 61e:	55                   	push   rbp
+ 61f:	48 89 e5             	mov    rbp,rsp
+		return -1;
+ 622:	b8 ff ff ff ff       	mov    eax,0xffffffff
+}
+ 627:	5d                   	pop    rbp
+ 628:	c3                   	ret
+
+0000000000000629 <ata_open>:
+{
+ 629:	55                   	push   rbp
+ 62a:	48 89 e5             	mov    rbp,rsp
+ 62d:	48 83 ec 20          	sub    rsp,0x20
+ 631:	48 89 7d e8          	mov    QWORD PTR [rbp-0x18],rdi
+ 635:	89 75 e4             	mov    DWORD PTR [rbp-0x1c],esi
+		if (!in || in->in_stat.st_dev != ata_device.id) {
+ 638:	48 83 7d e8 00       	cmp    QWORD PTR [rbp-0x18],0x0
+ 63d:	74 13                	je     652 <ata_open+0x29>
+ 63f:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+ 643:	48 8b 10             	mov    rdx,QWORD PTR [rax]
+ 646:	48 8b 05 00 00 00 00 	mov    rax,QWORD PTR [rip+0x0]        # 64d <ata_open+0x24>
+ 64d:	48 39 c2             	cmp    rdx,rax
+ 650:	74 11                	je     663 <ata_open+0x3a>
+				errno = EINVAL;
+ 652:	c7 05 00 00 00 00 16 00 00 00 	mov    DWORD PTR [rip+0x0],0x16        # 65c <ata_open+0x33>
+				return -1;
+ 65c:	b8 ff ff ff ff       	mov    eax,0xffffffff
+ 661:	eb 54                	jmp    6b7 <ata_open+0x8e>
+		fd = fil_fd_allocate(in, &rv);
+ 663:	48 8d 55 f4          	lea    rdx,[rbp-0xc]
+ 667:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+ 66b:	48 89 d6             	mov    rsi,rdx
+ 66e:	48 89 c7             	mov    rdi,rax
+ 671:	e8 00 00 00 00       	call   676 <ata_open+0x4d>
+ 676:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
+		if (!fd) {
+ 67a:	48 83 7d f8 00       	cmp    QWORD PTR [rbp-0x8],0x0
+ 67f:	75 11                	jne    692 <ata_open+0x69>
+				errno = ENOMEM;
+ 681:	c7 05 00 00 00 00 0c 00 00 00 	mov    DWORD PTR [rip+0x0],0xc        # 68b <ata_open+0x62>
+				return -1;
+ 68b:	b8 ff ff ff ff       	mov    eax,0xffffffff
+ 690:	eb 25                	jmp    6b7 <ata_open+0x8e>
+		fd->flags = flags;
+ 692:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+ 696:	8b 55 e4             	mov    edx,DWORD PTR [rbp-0x1c]
+ 699:	89 50 10             	mov    DWORD PTR [rax+0x10],edx
+		fd->seek_offset = 0;
+ 69c:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+ 6a0:	48 c7 40 08 00 00 00 00 	mov    QWORD PTR [rax+0x8],0x0
+		__sync_fetch_and_add((int*)in->in_ddat, 1);
+ 6a8:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+ 6ac:	48 83 c0 78          	add    rax,0x78
+ 6b0:	f0 83 00 01          	lock add DWORD PTR [rax],0x1
+		return rv;
+ 6b4:	8b 45 f4             	mov    eax,DWORD PTR [rbp-0xc]
+}
+ 6b7:	c9                   	leave
+ 6b8:	c3                   	ret
+
+00000000000006b9 <ata_read>:
+{
+ 6b9:	55                   	push   rbp
+ 6ba:	48 89 e5             	mov    rbp,rsp
+ 6bd:	48 81 ec a0 00 00 00 	sub    rsp,0xa0
+ 6c4:	48 89 bd 78 ff ff ff 	mov    QWORD PTR [rbp-0x88],rdi
+ 6cb:	89 b5 74 ff ff ff    	mov    DWORD PTR [rbp-0x8c],esi
+ 6d1:	48 89 95 68 ff ff ff 	mov    QWORD PTR [rbp-0x98],rdx
+ 6d8:	48 89 8d 60 ff ff ff 	mov    QWORD PTR [rbp-0xa0],rcx
+		struct fil_fd* f; ssize_t rv = 0;
+ 6df:	c7 45 fc 00 00 00 00 	mov    DWORD PTR [rbp-0x4],0x0
+		if (!in || !buf || in->in_stat.st_dev != ata_device.id) {
+ 6e6:	48 83 bd 78 ff ff ff 00 	cmp    QWORD PTR [rbp-0x88],0x0
+ 6ee:	74 20                	je     710 <ata_read+0x57>
+ 6f0:	48 83 bd 68 ff ff ff 00 	cmp    QWORD PTR [rbp-0x98],0x0
+ 6f8:	74 16                	je     710 <ata_read+0x57>
+ 6fa:	48 8b 85 78 ff ff ff 	mov    rax,QWORD PTR [rbp-0x88]
+ 701:	48 8b 10             	mov    rdx,QWORD PTR [rax]
+ 704:	48 8b 05 00 00 00 00 	mov    rax,QWORD PTR [rip+0x0]        # 70b <ata_read+0x52>
+ 70b:	48 39 c2             	cmp    rdx,rax
+ 70e:	74 14                	je     724 <ata_read+0x6b>
+				errno = EINVAL;
+ 710:	c7 05 00 00 00 00 16 00 00 00 	mov    DWORD PTR [rip+0x0],0x16        # 71a <ata_read+0x61>
+				return -1;
+ 71a:	b8 ff ff ff ff       	mov    eax,0xffffffff
+ 71f:	e9 66 01 00 00       	jmp    88a <ata_read+0x1d1>
+		f = fil_fd_get(fd);
+ 724:	8b 85 74 ff ff ff    	mov    eax,DWORD PTR [rbp-0x8c]
+ 72a:	89 c7                	mov    edi,eax
+ 72c:	e8 00 00 00 00       	call   731 <ata_read+0x78>
+ 731:	48 89 45 f0          	mov    QWORD PTR [rbp-0x10],rax
+		n = in->in_pddat;
+ 735:	48 8b 85 78 ff ff ff 	mov    rax,QWORD PTR [rbp-0x88]
+ 73c:	48 8b 80 80 00 00 00 	mov    rax,QWORD PTR [rax+0x80]
+ 743:	48 89 45 e8          	mov    QWORD PTR [rbp-0x18],rax
+		if (!f || (f->flags & O_WRONLY)
+ 747:	48 83 7d f0 00       	cmp    QWORD PTR [rbp-0x10],0x0
+ 74c:	74 0e                	je     75c <ata_read+0xa3>
+ 74e:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
+ 752:	8b 40 10             	mov    eax,DWORD PTR [rax+0x10]
+ 755:	83 e0 01             	and    eax,0x1
+ 758:	85 c0                	test   eax,eax
+ 75a:	74 14                	je     770 <ata_read+0xb7>
+				errno = EBADF;
+ 75c:	c7 05 00 00 00 00 09 00 00 00 	mov    DWORD PTR [rip+0x0],0x9        # 766 <ata_read+0xad>
+				return -1;
+ 766:	b8 ff ff ff ff       	mov    eax,0xffffffff
+ 76b:	e9 1a 01 00 00       	jmp    88a <ata_read+0x1d1>
+		lba = f->seek_offset / n->gm.lss;
+ 770:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
+ 774:	48 8b 40 08          	mov    rax,QWORD PTR [rax+0x8]
+ 778:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
+ 77c:	8b 52 4c             	mov    edx,DWORD PTR [rdx+0x4c]
+ 77f:	89 d6                	mov    esi,edx
+ 781:	48 99                	cqo
+ 783:	48 f7 fe             	idiv   rsi
+ 786:	48 89 45 e0          	mov    QWORD PTR [rbp-0x20],rax
+		if (f->seek_offset % n->gm.lss) {
+ 78a:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
+ 78e:	48 8b 40 08          	mov    rax,QWORD PTR [rax+0x8]
+ 792:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
+ 796:	8b 52 4c             	mov    edx,DWORD PTR [rdx+0x4c]
+ 799:	89 d1                	mov    ecx,edx
+ 79b:	48 99                	cqo
+ 79d:	48 f7 f9             	idiv   rcx
+ 7a0:	48 89 d0             	mov    rax,rdx
+ 7a3:	48 85 c0             	test   rax,rax
+ 7a6:	74 30                	je     7d8 <ata_read+0x11f>
+				die("not sector aligned\n");
+ 7a8:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
+ 7af:	bf 0c 00 00 00       	mov    edi,0xc
+ 7b4:	b8 00 00 00 00       	mov    eax,0x0
+ 7b9:	e8 00 00 00 00       	call   7be <ata_read+0x105>
+ 7be:	b8 00 00 00 00       	mov    eax,0x0
+ 7c3:	e8 00 00 00 00       	call   7c8 <ata_read+0x10f>
+ 7c8:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+ 7cf:	e8 00 00 00 00       	call   7d4 <ata_read+0x11b>
+ 7d4:	fa                   	cli
+ 7d5:	f4                   	hlt
+ 7d6:	eb fd                	jmp    7d5 <ata_read+0x11c>
+		if (noct > n->gm.lss)
+ 7d8:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+ 7dc:	8b 40 4c             	mov    eax,DWORD PTR [rax+0x4c]
+ 7df:	89 c0                	mov    eax,eax
+ 7e1:	48 3b 85 60 ff ff ff 	cmp    rax,QWORD PTR [rbp-0xa0]
+ 7e8:	73 10                	jae    7fa <ata_read+0x141>
+				noct = n->gm.lss;
+ 7ea:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+ 7ee:	8b 40 4c             	mov    eax,DWORD PTR [rax+0x4c]
+ 7f1:	89 c0                	mov    eax,eax
+ 7f3:	48 89 85 60 ff ff ff 	mov    QWORD PTR [rbp-0xa0],rax
+		struct wait_queue_head wh = WAIT_QUEUE_HEAD(wh);
+ 7fa:	48 8d 45 c0          	lea    rax,[rbp-0x40]
+ 7fe:	48 89 45 c0          	mov    QWORD PTR [rbp-0x40],rax
+ 802:	48 8d 45 c0          	lea    rax,[rbp-0x40]
+ 806:	48 89 45 c8          	mov    QWORD PTR [rbp-0x38],rax
+ 80a:	66 c7 45 d0 00 00    	mov    WORD PTR [rbp-0x30],0x0
+ 810:	c7 45 d4 00 00 00 00 	mov    DWORD PTR [rbp-0x2c],0x0
+		ahci_issue_command(n->ad, n->pt, n->pmprt, disk_cmd_read, lba, noct, buf, &wh, &st);
+ 817:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+ 81b:	0f b7 40 42          	movzx  eax,WORD PTR [rax+0x42]
+ 81f:	0f b7 d0             	movzx  edx,ax
+ 822:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+ 826:	0f b7 40 40          	movzx  eax,WORD PTR [rax+0x40]
+ 82a:	0f b7 f0             	movzx  esi,ax
+ 82d:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+ 831:	48 8b 40 20          	mov    rax,QWORD PTR [rax+0x20]
+ 835:	4c 8b 85 60 ff ff ff 	mov    r8,QWORD PTR [rbp-0xa0]
+ 83c:	48 8b 7d e0          	mov    rdi,QWORD PTR [rbp-0x20]
+ 840:	48 83 ec 08          	sub    rsp,0x8
+ 844:	48 8d 4d 80          	lea    rcx,[rbp-0x80]
+ 848:	51                   	push   rcx
+ 849:	48 8d 4d c0          	lea    rcx,[rbp-0x40]
+ 84d:	51                   	push   rcx
+ 84e:	ff b5 68 ff ff ff    	push   QWORD PTR [rbp-0x98]
+ 854:	4d 89 c1             	mov    r9,r8
+ 857:	49 89 f8             	mov    r8,rdi
+ 85a:	b9 01 00 00 00       	mov    ecx,0x1
+ 85f:	48 89 c7             	mov    rdi,rax
+ 862:	e8 00 00 00 00       	call   867 <ata_read+0x1ae>
+ 867:	48 83 c4 20          	add    rsp,0x20
+		wait_on_event(&wh);
+ 86b:	48 8d 45 c0          	lea    rax,[rbp-0x40]
+ 86f:	48 89 c7             	mov    rdi,rax
+ 872:	e8 00 00 00 00       	call   877 <ata_read+0x1be>
+		if (st.state == cmd_state_completed) {
+ 877:	8b 45 80             	mov    eax,DWORD PTR [rbp-0x80]
+ 87a:	83 f8 03             	cmp    eax,0x3
+ 87d:	75 06                	jne    885 <ata_read+0x1cc>
+				return (ssize_t)st.bts_cur;
+ 87f:	48 8b 45 90          	mov    rax,QWORD PTR [rbp-0x70]
+ 883:	eb 05                	jmp    88a <ata_read+0x1d1>
+				return -1;
+ 885:	b8 ff ff ff ff       	mov    eax,0xffffffff
+}
+ 88a:	c9                   	leave
+ 88b:	c3                   	ret
+
+000000000000088c <ata_write>:
+{
+ 88c:	55                   	push   rbp
+ 88d:	48 89 e5             	mov    rbp,rsp
+ 890:	48 83 ec 20          	sub    rsp,0x20
+ 894:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
+ 898:	89 75 f4             	mov    DWORD PTR [rbp-0xc],esi
+ 89b:	48 89 55 e8          	mov    QWORD PTR [rbp-0x18],rdx
+ 89f:	48 89 4d e0          	mov    QWORD PTR [rbp-0x20],rcx
+		return -1;
+ 8a3:	b8 ff ff ff ff       	mov    eax,0xffffffff
+}
+ 8a8:	c9                   	leave
+ 8a9:	c3                   	ret
+
+00000000000008aa <ata_close>:
+{
+ 8aa:	55                   	push   rbp
+ 8ab:	48 89 e5             	mov    rbp,rsp
+ 8ae:	48 83 ec 10          	sub    rsp,0x10
+ 8b2:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
+ 8b6:	89 75 f4             	mov    DWORD PTR [rbp-0xc],esi
+		return -1;
+ 8b9:	b8 ff ff ff ff       	mov    eax,0xffffffff
+}
+ 8be:	c9                   	leave
+ 8bf:	c3                   	ret
+
+00000000000008c0 <ata_lseek>:
+{
+ 8c0:	55                   	push   rbp
+ 8c1:	48 89 e5             	mov    rbp,rsp
+ 8c4:	48 83 ec 18          	sub    rsp,0x18
+ 8c8:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
+ 8cc:	89 75 f4             	mov    DWORD PTR [rbp-0xc],esi
+ 8cf:	48 89 55 e8          	mov    QWORD PTR [rbp-0x18],rdx
+ 8d3:	89 4d f0             	mov    DWORD PTR [rbp-0x10],ecx
+		return -1;
+ 8d6:	48 c7 c0 ff ff ff ff 	mov    rax,0xffffffffffffffff
+}
+ 8dd:	c9                   	leave
+ 8de:	c3                   	ret
+
+00000000000008df <ata_unlink>:
+{
+ 8df:	55                   	push   rbp
+ 8e0:	48 89 e5             	mov    rbp,rsp
+ 8e3:	48 83 ec 20          	sub    rsp,0x20
+ 8e7:	48 89 7d e8          	mov    QWORD PTR [rbp-0x18],rdi
+ 8eb:	48 89 75 e0          	mov    QWORD PTR [rbp-0x20],rsi
+		if (in0 || !in1)
+ 8ef:	48 83 7d e8 00       	cmp    QWORD PTR [rbp-0x18],0x0
+ 8f4:	75 07                	jne    8fd <ata_unlink+0x1e>
+ 8f6:	48 83 7d e0 00       	cmp    QWORD PTR [rbp-0x20],0x0
+ 8fb:	75 07                	jne    904 <ata_unlink+0x25>
+				return -EINVAL;
+ 8fd:	b8 ea ff ff ff       	mov    eax,0xffffffea
+ 902:	eb 53                	jmp    957 <ata_unlink+0x78>
+		if (__sync_sub_and_fetch(&in1->in_stat.st_nlink, 1) == 0) {
+ 904:	48 8b 45 e0          	mov    rax,QWORD PTR [rbp-0x20]
+ 908:	48 8d 50 18          	lea    rdx,[rax+0x18]
+ 90c:	b8 01 00 00 00       	mov    eax,0x1
+ 911:	48 f7 d8             	neg    rax
+ 914:	48 89 c1             	mov    rcx,rax
+ 917:	48 89 c8             	mov    rax,rcx
+ 91a:	f0 48 0f c1 02       	lock xadd QWORD PTR [rdx],rax
+ 91f:	48 01 c8             	add    rax,rcx
+ 922:	48 85 c0             	test   rax,rax
+ 925:	75 30                	jne    957 <ata_unlink+0x78>
+				struct ata_node* n = in1->in_pddat;
+ 927:	48 8b 45 e0          	mov    rax,QWORD PTR [rbp-0x20]
+ 92b:	48 8b 80 80 00 00 00 	mov    rax,QWORD PTR [rax+0x80]
+ 932:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
+				cprintf(KFMT_INFO, "ATA device at dev/%s reached link count zero.\n", n->name);
+ 936:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+ 93a:	48 83 c0 68          	add    rax,0x68
+ 93e:	48 89 c2             	mov    rdx,rax
+ 941:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
+ 948:	bf 0b 00 00 00       	mov    edi,0xb
+ 94d:	b8 00 00 00 00       	mov    eax,0x0
+ 952:	e8 00 00 00 00       	call   957 <ata_unlink+0x78>
+}
+ 957:	c9                   	leave
+ 958:	c3                   	ret

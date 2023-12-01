@@ -811,6 +811,7 @@ void mm_protect(struct mm* mm, void* virt_address, size_t num_pages, int flags)
 void* mm_reserve_vmem(struct mm* mm, size_t pg_ct, int flags)
 {
 		void* rv = __sync_fetch_and_add(&mm->qnd_ptr, pg_ct * 4096);
+		printf("mm reserved at %x\n", rv);
 		if (rv + pg_ct * 4096 > VM_QND_LIMIT)
 				die("Out of QnD VM reservation ranges. Impelment a map!\n");
 		return rv;
