@@ -2,7 +2,7 @@
 #AS=i686-elf-as
 #LD=i686-elf-ln -L./ -llibgcc.a
 #OD=i686-elf-objdump
-CC=i686-elf-gcc -fno-builtin -ffreestanding -nostdlib -fno-asynchronous-unwind-tables -g -m32 -fstrict-volatile-bitfields
+CC=i686-elf-gcc -fno-builtin -ffreestanding -nostdlib -fno-asynchronous-unwind-tables -g -m32 -fstrict-volatile-bitfields -mincoming-stack-boundary=4
 AS=i686-elf-as
 LD=i686-elf-gcc -Wl,--oformat,binary,--Map,ld_x.map,-cref,-melf_i386 -ffreestanding -nostdlib
 LD2=i686-elf-gcc -Wl,--oformat,binary,-melf_i386 -ffreestanding -nostdlib
@@ -41,7 +41,7 @@ early.o: FORCE  # for updating the builddate
 .PHONY: FORCE
 
 # headers dependency
-$(OBJS): $(HDRS)
+$(OBJS): $(HDRS) $(CSRCS) $(SRCS)
 
 boot.img: $(OBJS)
 	$(LD) -T boot.ld -o $@ $(OBJS)
