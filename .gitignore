@@ -3,7 +3,11 @@
 
 # Object files
 *.o
+*.o32
+*.o64
 *.ko
+*.ko32
+*.ko64
 *.obj
 *.elf
 
