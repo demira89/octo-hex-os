@@ -28,7 +28,7 @@ F16FILS=kernel32.elf kernel64.elf ld32.map ld64.map MODULES.MOD $(KOBJS32) $(KOB
 # # list only those we use
 .SUFFIXES: .o32 .o64 .s .S .c
 
-all: prog.img boot/Makefile
+all: boot prog.img
 
 .S.o32 : 
 	$(CC32) -E -m32 $< > fil.s
@@ -105,8 +105,10 @@ kernel64.elf: $(OBJS64)
 kernel32.elf: $(OBJS32)
 	$(LD32) -o $@ $^
 
-boot/boot.img:
-	make -C boot/
+boot: FORCE
+	cd boot && $(MAKE)
+
+FORCE: ;
 
 f16_part.img: $(F16FILS)
 	dd if=/dev/zero of=f16_part.img bs=1024 count=4096 # 8M partition
@@ -120,7 +122,7 @@ f16_part.img: $(F16FILS)
 	cp -t /w/ $(KOBJS32) $(KOBJS64) ld32.map ld64.map
 	imdisk -D -m W:
 
-prog.img: boot/boot.img f16_part.img
+prog.img: boot f16_part.img
 	cp boot/boot.img boot.bin
 	truncate -s 64512 boot.bin
 	cat boot.bin f16_part.img > prog.img

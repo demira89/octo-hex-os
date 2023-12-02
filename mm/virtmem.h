@@ -2,6 +2,7 @@
  * */
 
 #ifdef __x86_64__
+#define VM_VIDEO_MEMORY         ((void*)0xffffffffe0000000)
 #define VM_KERNEL_BASE          ((void*)0xffffffff80000000)
 #define VM_QND_BASE             ((void*)0xffff000000000000)
 #define VM_QND_LIMIT            ((void*)0xffffffff80000000)
@@ -20,6 +21,7 @@
 /* used until mm has rb_tree? */
 #define VM_QND_BASE             ((void*)0x90000000)
 #define VM_QND_LIMIT            ((void*)0xa0000000)
+#define VM_VIDEO_MEMORY         ((void*)0xe0000000)
 #define VM_KERNEL_STACK_BASE    ((void*)0xfe000000)
 #define VM_KERNEL_STACK_LIMIT   ((void*)0xff000000)
 /* also consider PAE(up to 38) */

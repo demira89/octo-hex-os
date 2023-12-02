@@ -4,6 +4,7 @@
 
 #include "fixmem.h"
 #include "basedefs.h"
+#include "../mm/virtmem.h"
 
 static struct mp {
 		uint64_t base;
@@ -18,7 +19,7 @@ static struct fme
 		uint64_t size;
 		uint64_t free_pages;
 		uint64_t reclaimable_pages;
-		uint32_t ec;
+		uint64_t ec;
 		uint64_t pmu; /* physical ptr at this time */
 		uint64_t rcp; /* likewise */
 } * const fmm = FM_FREE_MEMORY_MAP;
@@ -1298,7 +1299,7 @@ void mm_initialize(int mode)
 		/* set fm_begin and page-align */
 		for (size_t i = 0; i < fm_ofs; i++) {
 				if (i && fmm[i - 1].base < 0x100000)
-						fm_begin = i; /* works better this way */
+						fm_begin = i; /* works better this way, i.e. base=1 */
 				if (fmm[i].base % 4096) {
 						fmm[i].size -= fmm[i].base % 4096;
 						fmm[i].base += fmm[i].base % 4096;
@@ -1307,11 +1308,12 @@ void mm_initialize(int mode)
 
 		/* and print the info for now */
 		for (size_t i = 0; i < fm_ofs; i++) {
+				put32(i);
 				put64(fmm[i].base);
 				putstr("-");
-				put64(fmm[i].base + fmm[i].size);
+				put64(fmm[i].size);
+				put_nl();
 		}
-		while (1);
 
 		/* set the counts and create the rcp/pmu's,
 		 *  -> this time we preallocate them all */
@@ -1422,6 +1424,8 @@ new_pdpt:
 				pp->extra_pdpts[pp->ec_pdpt].idx = pml4e;
 				pp->extra_pdpts[pp->ec_pdpt].pdpt = pl;
 				pp->extra_pdpts[pp->ec_pdpt++].map = m;
+				if (pp->ec_pdpt > 8)
+					while (1); /* exhausted too */
 
 				/* and set the reference in the PML4 */
 				p[pml4e].addr = (uint64_t)pl / 4096;
@@ -1468,6 +1472,8 @@ new_pd:
 				pp->extra_pds[pp->ec_pd].idx = (pml4e << 9) | pdpte;
 				pp->extra_pds[pp->ec_pd].pd = pd;
 				pp->extra_pds[pp->ec_pd++].map = n;
+				if (pp->ec_pd > 24)
+					while (1); /* exhausted too */
 
 				/* and set the reference in the PDPT */
 				pl[pdpte].addr = (uint64_t)pd / 4096;
@@ -1510,6 +1516,8 @@ new_pt:
 				pp->extra_pts[pp->ec_pt].idx = (pml4e << 18)
 					   	| (pdpte << 9) | pde;
 				pp->extra_pts[pp->ec_pt++].pt = pt;
+				if (pp->ec_pt > 64)
+					while (1); /* exhausted too */
 
 				/* and set the reference in the PD */
 				pd[pde].addr = (uint64_t)pt / 4096;
@@ -1614,6 +1622,8 @@ new_pt:
 				/* store the physical pointers */
 				pp->extra_pts[pp->ec_pt].idx = (pdpte << 9) | pde;
 				pp->extra_pts[pp->ec_pt++].pt = pt;
+				if (pp->ec_pt > 64)
+					while (1); /* exhausted too */
 
 				/* and set the reference in the PD */
 				pd[pde].addr = (uint64_t)pt / 4096;
@@ -1702,6 +1712,8 @@ new_pt:
 				/* store the physical pointers */
 				pp->extra_pts[pp->ec_pt].idx = pde;
 				pp->extra_pts[pp->ec_pt++].pt = pt;
+				if (pp->ec_pt > 64)
+					while (1); /* exhausted too */
 
 				/* and set the reference in the PD */
 				pd[pde].addr = (uint32_t)pt / 4096;
@@ -1873,38 +1885,62 @@ void mm_perform_mapping(int mode, uint64_t ofs, struct page_range* pr, int prc,
 				mm_map64(cur, pr2, pro, x, w, 0);
 }
 
+
+void mm_mmap(int mode, uint64_t vaddr, struct page_range* pr, int prc, int x, int w, int wc)
+{
+		if (!mode)
+				mm_map32((uint32_t)vaddr, pr, prc, x, w, wc);
+		else if (mode == 1)
+				mm_map36((uint32_t)vaddr, pr, prc, x, w, wc);
+		else
+				mm_map64(vaddr, pr, prc, x, w, wc);
+}
+
 void* mm_register_video_memory(int mode, uint64_t vga_pmem, uint64_t vga_pmem_size)
 {
-		struct vmdesc vd; void* rv;
+		struct vmdesc vd, *pvd;
 		struct page_range pr = { vga_pmem, rdiv(vga_pmem_size, 4096) };
 		vd.vga_base = vga_pmem;
 		vd.vga_size = vga_pmem_size;
-		switch (mode) {
-				case 0: {
-						struct vm_pg_ptrs32* vp = vm_mapping;
-						vd.vga_virt = 0xe0000000;
-						vp->video_memory = vd;
-						mm_map32((uint32_t)vd.vga_virt, &pr, 1, 0, 1, 1);
-						rv = &vp->video_memory;
-						break;
-				}
-				case 1: {
-						struct vm_pg_ptrs36* vp = vm_mapping;
-						vd.vga_virt = 0xe0000000;
-						vp->video_memory = vd;
-						mm_map36((uint32_t)vd.vga_virt, &pr, 1, 0, 1, 1);
-						rv = &vp->video_memory;
-						break;
-				}
-				case 2: {
-						struct vm_pg_ptrs64* vp = vm_mapping;
-						vd.vga_virt = 0xffffffffe0000000;
-						vp->video_memory = vd;
-						mm_map64(vd.vga_virt, &pr, 1, 0, 1, 1);
-						rv = &vp->video_memory;
-						break;
-				}
-		}
-		return rv;
+		vd.vga_virt = VM_VIDEO_MEMORY;
+		if (!mode)
+			pvd = &((struct vm_pg_ptrs32*)vm_mapping)->video_memory;
+		else if (mode == 1)
+			pvd = &((struct vm_pg_ptrs36*)vm_mapping)->video_memory;
+		else
+			pvd = &((struct vm_pg_ptrs64*)vm_mapping)->video_memory;
+		mm_mmap(mode, vd.vga_virt, &pr, 1, 0, 1, 1);
+		*pvd = vd;
+		return pvd;
 }
+
+void mm_preallocate_maps(int mode)
+{
+			struct page_range pr;
+			uint64_t mem_ranges[] = {
+				VM_PMU_BASE, 1,
+				VM_RCP_BASE, 1,
+				VM_MM_PER_CPU_BASE, 1,
+				VM_KERNEL_STACK_BASE, 1,
+				VM_QND_BASE, 1
+			}, *mr_pt;
+
+
+			/* Pre-allocate the required ranges */
+			for (mr_pt = &mem_ranges[0]; (mr_pt - mem_ranges) < 10; mr_pt += 2) {
+					/* get some inital space for tables / stuff */
+					putstr("allocating map for "); put64(mr_pt[0]);
+					putstr(" of count "); put64(mr_pt[1]); put_nl();
+					mm_alloc_pm(mr_pt[1], &pr, 1);
+					if (pr.count < mr_pt[1]) {
+							putstr("unable to allocate basic memory");
+							while (1);
+					}
+					/* and then map it accordingly */
+					mm_mmap(mode, mr_pt[0], &pr, 1, 0, 1, 0);
+			}
+
+			puts("done");
+}
+
 

@@ -142,6 +142,10 @@ void base_entry()
 		void vga_init(int mode);
 		vga_init(mode);
 
+		/* Preallocate memory map tables in VM */
+		void mm_preallocate_maps(int mode);
+		mm_preallocate_maps(mode);
+
 		/* enable paging (and LM?) and jump into
 		 * the kernel */
 		mm_enable_paging(mode, ep);
