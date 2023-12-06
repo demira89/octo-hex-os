@@ -5,7 +5,7 @@
 CC=i686-elf-gcc -fno-builtin -ffreestanding -nostdlib -fno-asynchronous-unwind-tables -g -m32 -fstrict-volatile-bitfields -mincoming-stack-boundary=4
 AS=i686-elf-as
 LD=i686-elf-gcc -Wl,--oformat,binary,--Map,ld_x.map,-cref,-melf_i386 -ffreestanding -nostdlib
-LD2=i686-elf-gcc -Wl,--oformat,binary,-melf_i386 -ffreestanding -nostdlib
+LD2=i686-elf-gcc -Wl,-melf_i386 -ffreestanding -nostdlib
 OD=i686-elf-objdump
 SRCS= boot.s stage2.s pge.s vga.s
 CSRCS= base.c min_mm.c longmath.c loader.c elf.c vga_mode.c
@@ -45,6 +45,9 @@ $(OBJS): $(HDRS) $(CSRCS) $(SRCS)
 
 boot.img: $(OBJS)
 	$(LD) -T boot.ld -o $@ $(OBJS)
+	$(LD2) -T boot.ld -o boot.elf $(OBJS)
+	objcopy --only-keep-debug boot.elf boot.dbg
+	rm boot.elf
 
 clean:
 	rm $(OBJS) boot.img

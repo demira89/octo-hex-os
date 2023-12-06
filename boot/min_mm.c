@@ -1372,13 +1372,13 @@ void mm_enable_paging(int mode, uint64_t ep)
 		while (1);
 }
 
-void mm_map64(uint64_t vaddr, struct page_range* pr, int prc, int x, int w, int wc)
+void mm_map64(uint64_t vaddr, struct page_range* pr, int prc, int x, int w, int wc, int us)
 {
 		uint64_t low48;
 		struct vm_pg_ptrs64* vp = vm_mapping;
 		struct pm_pg64_ptrs* pp = pm_mapping;
 		uint32_t pml4e, pdpte, pde, pte;
-		struct page_range pr_copy;
+		struct page_range pr_copy = *pr;
 
 		/* physical pointers */
 		struct pte64 *p = pp->p;
@@ -1412,6 +1412,8 @@ new_pdpt:
 				vp->pml4e[pml4e] = vp->cur;
 				vp->cur -= 4096;
 				pl = (void*)pr2.base;
+				/* make it known in VM */
+				mm_map64(vp->pml4e[pml4e], &pr2, 1, 1, 1, 1, 0);
 				/* do the same for the map (2 pages) */
 				if (mm_alloc_pm(2, &pr2, 1) != 2) {
 						puts("cont alloc 2 failed.");
@@ -1432,6 +1434,9 @@ new_pdpt:
 				p[pml4e].u = 1;
 				p[pml4e].w = 1;
 				p[pml4e].p = 1;
+
+				/* and make it known in later VM */
+				mm_map64(vp->pdpte[pml4e], &pr2, 1, 1, 1, 1, 0);
 
 		} else { /* find PP in pp */
 				for (size_t i = 0; i < pp->ec_pdpt; i++)
@@ -1480,6 +1485,9 @@ new_pd:
 				pl[pdpte].u = 1;
 				pl[pdpte].w = 1;
 				pl[pdpte].p = 1;
+
+				/* and make it known in later VM */
+				mm_map64(m->pds[pdpte], &pr2, 1, 1, 1, 1, 0);
 		} else {
 				uint32_t id = (pml4e << 9) | pdpte;
 				/* find PD in pp */
@@ -1524,6 +1532,9 @@ new_pt:
 				pd[pde].u = 1;
 				pd[pde].w = 1;
 				pd[pde].p = 1;
+
+				/* and make it known in later VM */
+				mm_map64(n->pts[pde], &pr2, 1, 1, 1, 1, 0);
 		} else {
 				uint32_t id = (pml4e << 18) | (pdpte << 9) | pde;
 				/* find PT in pp */
@@ -1545,10 +1556,9 @@ new_pt:
 		}
 
 		/* now map the pages */
-		pr_copy = *pr++;
 		while (prc) {
 				pt[pte].addr = pr_copy.base / 4096;
-				pt[pte].u = 1; /* FIXME: for now */
+				pt[pte].u = (us ? 1 : 0);
 				pt[pte].xd = (x ? 0 : 1);
 				pt[pte].w = (w ? 1 : 0);
 				pt[pte].p = 1;
@@ -1583,18 +1593,18 @@ new_pt:
 				}
 				pr_copy.base += 4096;
 				if (!--pr_copy.count) {
-						if (prc--)
+						if (--prc)
 								pr_copy = *pr++;
 				}
 		}
 }
 
-void mm_map36(uint32_t vaddr, struct page_range* pr, int prc, int x, int w, int wc)
+void mm_map36(uint32_t vaddr, struct page_range* pr, int prc, int x, int w, int wc, int us)
 {
 		struct vm_pg_ptrs36* vp = vm_mapping;
 		struct pm_pg36_ptrs* pp = pm_mapping;
 		uint32_t pdpte, pde, pte;
-		struct page_range pr_copy;
+		struct page_range pr_copy = *pr;
 
 		/* physical pointers */
 		struct pte64* pd = 0;
@@ -1630,6 +1640,9 @@ new_pt:
 				pd[pde].u = 1;
 				pd[pde].w = 1;
 				pd[pde].p = 1;
+
+				/* and make it known in later VM */
+				mm_map36(vp->pts[pdpte * 512 + pde], &pr2, 1, 1, 1, 1, 0);
 		} else {
 				uint32_t id = (pdpte << 9) | pde;
 				/* find PT in pp */
@@ -1651,10 +1664,9 @@ new_pt:
 		}
 
 		/* now map the pages */
-		pr_copy = *pr++;
 		while (prc) {
 				pt[pte].addr = pr_copy.base / 4096;
-				pt[pte].u = 1; /* FIXME: for now */
+				pt[pte].u = (us ? 1 : 0);
 	//			pt[pte].xd = (x ? 0 : 1); /* TODO: check if XD is supp */
 				pt[pte].w = (w ? 1 : 0);
 				pt[pte].p = 1;
@@ -1677,18 +1689,18 @@ new_pt:
 				}
 				pr_copy.base += 4096;
 				if (!--pr_copy.count) {
-						if (prc--)
+						if (--prc)
 								pr_copy = *pr++;
 				}
 		}
 }
 
-void mm_map32(uint32_t vaddr, struct page_range* pr, int prc, int x, int w, int wc)
+void mm_map32(uint32_t vaddr, struct page_range* pr, int prc, int x, int w, int wc, int us)
 {
 		struct vm_pg_ptrs32* vp = vm_mapping;
 		struct pm_pg32_ptrs* pp = pm_mapping;
 		uint32_t pde, pte;
-		struct page_range pr_copy;
+		struct page_range pr_copy = *pr;
 
 		/* physical pointers */
 		struct pte32* pd = pp->pd;
@@ -1720,6 +1732,9 @@ new_pt:
 				pd[pde].u = 1;
 				pd[pde].w = 1;
 				pd[pde].p = 1;
+
+				/* and make it known in later VM */
+				mm_map32(vp->pts[pde], &pr2, 1, 1, 1, 1, 0);
 		} else {
 				uint32_t id = pde;
 				/* find PT in pp */
@@ -1744,10 +1759,9 @@ new_pt:
 		}
 
 		/* now map the pages */
-		pr_copy = *pr++;
 		while (prc) {
 				pt[pte].addr = pr_copy.base / 4096;
-				pt[pte].u = 1; /* FIXME: for now */
+				pt[pte].u = (us ? 1 : 0);
 				pt[pte].w = (w ? 1 : 0);
 				pt[pte].p = 1;
 //				pt[pte].s = (wc ? 1 : 0); /* PAT bit */
@@ -1763,7 +1777,7 @@ new_pt:
 				}
 				pr_copy.base += 4096;
 				if (!--pr_copy.count) {
-						if (prc--)
+						if (--prc)
 								pr_copy = *pr++;
 				}
 		}
@@ -1878,22 +1892,22 @@ void mm_perform_mapping(int mode, uint64_t ofs, struct page_range* pr, int prc,
 		}
 
 		if (!mode)
-				mm_map32((uint32_t)cur, pr2, pro, x, w, 0);
+				mm_map32((uint32_t)cur, pr2, pro, x, w, 0, 0);
 		else if (mode == 1)
-				mm_map36((uint32_t)cur, pr2, pro, x, w, 0);
+				mm_map36((uint32_t)cur, pr2, pro, x, w, 0, 0);
 		else
-				mm_map64(cur, pr2, pro, x, w, 0);
+				mm_map64(cur, pr2, pro, x, w, 0, 0);
 }
 
 
-void mm_mmap(int mode, uint64_t vaddr, struct page_range* pr, int prc, int x, int w, int wc)
+void mm_mmap(int mode, uint64_t vaddr, struct page_range* pr, int prc, int x, int w, int wc, int us)
 {
 		if (!mode)
-				mm_map32((uint32_t)vaddr, pr, prc, x, w, wc);
+				mm_map32((uint32_t)vaddr, pr, prc, x, w, wc, us);
 		else if (mode == 1)
-				mm_map36((uint32_t)vaddr, pr, prc, x, w, wc);
+				mm_map36((uint32_t)vaddr, pr, prc, x, w, wc, us);
 		else
-				mm_map64(vaddr, pr, prc, x, w, wc);
+				mm_map64(vaddr, pr, prc, x, w, wc, us);
 }
 
 void* mm_register_video_memory(int mode, uint64_t vga_pmem, uint64_t vga_pmem_size)
@@ -1909,7 +1923,7 @@ void* mm_register_video_memory(int mode, uint64_t vga_pmem, uint64_t vga_pmem_si
 			pvd = &((struct vm_pg_ptrs36*)vm_mapping)->video_memory;
 		else
 			pvd = &((struct vm_pg_ptrs64*)vm_mapping)->video_memory;
-		mm_mmap(mode, vd.vga_virt, &pr, 1, 0, 1, 1);
+		mm_mmap(mode, vd.vga_virt, &pr, 1, 0, 1, 1, 0);
 		*pvd = vd;
 		return pvd;
 }
@@ -1937,7 +1951,7 @@ void mm_preallocate_maps(int mode)
 							while (1);
 					}
 					/* and then map it accordingly */
-					mm_mmap(mode, mr_pt[0], &pr, 1, 0, 1, 0);
+					mm_mmap(mode, mr_pt[0], &pr, 1, 0, 1, 0, 0);
 			}
 
 			puts("done");

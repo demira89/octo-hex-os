@@ -24,4 +24,5 @@
 #endif
 
 extern void* gdt;
+extern void* idt;
 

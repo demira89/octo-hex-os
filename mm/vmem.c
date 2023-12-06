@@ -63,7 +63,10 @@ struct pte64 {
 #define PTE_INVALID (void*)0xffffffff
 #endif
 
-/* try to enter critical section*/
+/* Synchronization: if ptr is NULL it is set to PTE_INVALID which signifies the
+ * lock. The lock is released by setting ptr to something else. If ptr is not
+ * NULL lock acquisition always fails. SPIN_CS will wait until ptr != PTE_INVALID. 
+ * In short: anyone can initialize using ENTER, losers need to SPIN to wait for init done. */
 #define ENTER_CS_PTE(ptr) __sync_bool_compare_and_swap(&ptr, NULL, PTE_INVALID)
 #define SPIN_CS(ptr) while (*(void** volatile)(&ptr) == PTE_INVALID)
 
@@ -116,7 +119,7 @@ static inline void flush_tlb_single(void* addr)
 		asm volatile("invlpg (%0)" ::"r" (addr) : "memory");
 }
 
-static inline void flush_tlb_full()
+void flush_tlb_full()
 {
 #ifdef __x86_64__
 		asm volatile("mov %%cr3, %%rax\nmov %%rax, %%cr3\n" : : : "%eax");
@@ -824,7 +827,7 @@ void mm_aoa_range(struct mm* mm, void* virt_address, size_t pg_ct, int flags)
 			cd = flags & MMGR_MAP_NO_CACHING, g = flags & MMGR_MAP_GLOBAL,
 			u = !(flags & MMGR_MAP_KERNEL);
 		int avl = MMGR_AVL_AOA, lvl; uint32_t ofs;
-		void *p, *e, **cntr, **cntrm;
+		void *p, *e, **cntr, **cntrm; /* page walk: cntr (last one), cntrm (missing)*/
 
 		while (pg_ct) {
 redo:
@@ -843,10 +846,10 @@ present:
 								/* get a new X table */
 								ptr = mm_alloc_page(&b);
 								/* register it */
-								p[ofs].addr = b / 4096;
-								p[ofs].u = 1;
-								p[ofs].w = 1;
-								p[ofs].p = 1;
+								p->addr = b / 4096;
+								p->u = 1;
+								p->w = 1;
+								p->p = 1;
 								/* allocate container if needed */
 								if (cntrm) {
 										void* map;
@@ -1005,7 +1008,7 @@ void* mm_alloc_vmem(struct mm* mm, void* virt_address, size_t pg_ct, int flags)
 		if (!virt_address)
 				virt_address = mm_reserve_vmem(mm, pg_ct, flags);
 
-		if (flags & MMGR_ALLOC_CONTIGUOUS) {
+		if ((flags & MMGR_ALLOC_CONTIGUOUS) == MMGR_ALLOC_CONTIGUOUS) {
 				struct page_range pr; size_t ct;
 				/* FIXME: Implement cont. allocator for PMEM */
 				ct = mm_alloc_pm(pg_ct, &pr, 1);
@@ -1013,7 +1016,7 @@ void* mm_alloc_vmem(struct mm* mm, void* virt_address, size_t pg_ct, int flags)
 						die("Contiguous allocation failed\n");
 				}
 				return mm_map(mm, virt_address, &pr, 1, flags);
-		} else if (flags & MMGR_ALLOC_ZERO_COW) {
+		} else if ((flags & MMGR_ALLOC_ZERO_COW) == MMGR_ALLOC_ZERO_COW) {
 				void* rv = virt_address;
 				struct page_range pr = { pm_zero, 1 };
 				while (pg_ct) {
@@ -1021,7 +1024,7 @@ void* mm_alloc_vmem(struct mm* mm, void* virt_address, size_t pg_ct, int flags)
 						virt_address += 4096;
 				}
 				return rv;
-		} else if (flags & MMGR_ALLOC_NP_AOA) {
+		} else if ((flags & MMGR_ALLOC_NP_AOA) == MMGR_ALLOC_NP_AOA) {
 				void* rv = virt_address;
 				mm_aoa_range(mm, virt_address, pg_ct, flags);
 				return rv;
@@ -1420,5 +1423,15 @@ print_help:
 				}
 		}
 		stc--;
+}
+
+void mm_idt_init()
+{
+		extern void idt_init();
+		mm_protect(&mm_kernel, idt, 1, MMGR_MAP_SET | MMGR_MAP_WRITE);
+		flush_tlb_single(idt);
+		idt_init();
+		mm_protect(&mm_kernel, idt, 1, MMGR_MAP_UNSET | MMGR_MAP_WRITE);
+		flush_tlb_single(idt);
 }
 

@@ -4,7 +4,7 @@
 #ifdef __x86_64__
 #define VM_VIDEO_MEMORY         ((void*)0xffffffffe0000000)
 #define VM_KERNEL_BASE          ((void*)0xffffffff80000000)
-#define VM_QND_BASE             ((void*)0xffff000000000000)
+#define VM_QND_BASE             ((void*)0xfffff00000000000)
 #define VM_QND_LIMIT            ((void*)0xffffffff80000000)
 #define VM_KERNEL_STACK_BASE    ((void*)0xfffffffffe000000)
 #define VM_KERNEL_STACK_LIMIT   ((void*)0xffffffffff000000)

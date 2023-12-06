@@ -5,50 +5,50 @@ kernel.o32:     file format elf32-i386
 Disassembly of section .text:
 
 00000000 <per_cpu_ptr>:
-		outb(PIC2_COMMAND, 0xff);
 		outb(PIC1_COMMAND, 0xff);
 }
 
 uint16_t pic_get_irr() /* currently requested interrupts */
 {
+		outb(PIC1_COMMAND, 0x0a); /* PIC_READ_IRR */
        0:	55                   	push   ebp
        1:	89 e5                	mov    ebp,esp
        3:	83 ec 10             	sub    esp,0x10
-		outb(PIC1_COMMAND, 0x0a); /* PIC_READ_IRR */
 		outb(PIC2_COMMAND, 0x0a);
 		return (inb(PIC2_COMMAND) << 8) | inb(PIC1_COMMAND);
 }
 
+uint16_t pic_get_isr() /* currently serviced interrput */
        6:	64 a1 00 00 00 00    	mov    eax,fs:0x0
        c:	89 45 fc             	mov    DWORD PTR [ebp-0x4],eax
-uint16_t pic_get_isr() /* currently serviced interrput */
 {
-       f:	8b 45 fc             	mov    eax,DWORD PTR [ebp-0x4]
 		outb(PIC1_COMMAND, 0x0b); /* PIC_READ_ISR */
+       f:	8b 45 fc             	mov    eax,DWORD PTR [ebp-0x4]
+		outb(PIC2_COMMAND, 0x0b);
       12:	c9                   	leave
       13:	c3                   	ret
 
 00000014 <io_wait>:
-void com_status()
 {
 		for (int i = 0; i < 4; i++)
 				if (com_ports[i]) {
 						uint16_t port = com_ports[i];
 						uint8_t lsr;
+						lsr = inb(port + 5);
       14:	55                   	push   ebp
       15:	89 e5                	mov    ebp,esp
-						lsr = inb(port + 5);
+						printf("COM%d lsr: %08b\n", i, lsr);
       17:	b8 00 00 00 00       	mov    eax,0x0
       1c:	e6 80                	out    0x80,al
-						printf("COM%d lsr: %08b\n", i, lsr);
+				}
       1e:	90                   	nop
       1f:	5d                   	pop    ebp
       20:	c3                   	ret
 
 00000021 <outb>:
-				}
 }
 
+int is_transit_empty(uint16_t port)
       21:	55                   	push   ebp
       22:	89 e5                	mov    ebp,esp
       24:	83 ec 08             	sub    esp,0x8
@@ -56,55 +56,55 @@ void com_status()
       2a:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
       2d:	66 89 55 fc          	mov    WORD PTR [ebp-0x4],dx
       31:	88 45 f8             	mov    BYTE PTR [ebp-0x8],al
-int is_transit_empty(uint16_t port)
+{
       34:	0f b6 45 f8          	movzx  eax,BYTE PTR [ebp-0x8]
       38:	0f b7 55 fc          	movzx  edx,WORD PTR [ebp-0x4]
       3c:	ee                   	out    dx,al
-{
+		return inb(port + 5) & 0x20;
       3d:	90                   	nop
       3e:	c9                   	leave
       3f:	c3                   	ret
 
 00000040 <inb>:
-		return inb(port + 5) & 0x20;
 }
 
+void putDebugChar(char c)
       40:	55                   	push   ebp
       41:	89 e5                	mov    ebp,esp
       43:	83 ec 14             	sub    esp,0x14
       46:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
       49:	66 89 45 ec          	mov    WORD PTR [ebp-0x14],ax
-void putDebugChar(char c)
 {
+		while (!is_transit_empty(def_port));
       4d:	0f b7 45 ec          	movzx  eax,WORD PTR [ebp-0x14]
       51:	89 c2                	mov    edx,eax
       53:	ec                   	in     al,dx
       54:	88 45 ff             	mov    BYTE PTR [ebp-0x1],al
-		while (!is_transit_empty(def_port));
-      57:	0f b6 45 ff          	movzx  eax,BYTE PTR [ebp-0x1]
 		outb(def_port, c);
+      57:	0f b6 45 ff          	movzx  eax,BYTE PTR [ebp-0x1]
+}
       5b:	c9                   	leave
       5c:	c3                   	ret
 
 0000005d <memcpy>:
-		struct irqe* pt;
 		if (!irq || irq > 15)
 				return;
 		pt = irq_funs[--irq]; /* 1 based */
 		while (pt) {
 				if (pt->fun(irq + 1)) /* handled */
+						break;
       5d:	55                   	push   ebp
       5e:	89 e5                	mov    ebp,esp
       60:	83 ec 10             	sub    esp,0x10
-						break;
+				pt = pt->next;
       63:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
       66:	89 45 fc             	mov    DWORD PTR [ebp-0x4],eax
-				pt = pt->next;
+		}
       69:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
       6c:	89 45 f8             	mov    DWORD PTR [ebp-0x8],eax
-		}
-      6f:	eb 17                	jmp    88 <memcpy+0x2b>
 }
+      6f:	eb 17                	jmp    88 <memcpy+0x2b>
+
       71:	8b 55 f8             	mov    edx,DWORD PTR [ebp-0x8]
       74:	8d 42 01             	lea    eax,[edx+0x1]
       77:	89 45 f8             	mov    DWORD PTR [ebp-0x8],eax
@@ -113,45 +113,45 @@ void putDebugChar(char c)
       80:	89 4d fc             	mov    DWORD PTR [ebp-0x4],ecx
       83:	0f b6 12             	movzx  edx,BYTE PTR [edx]
       86:	88 10                	mov    BYTE PTR [eax],dl
-		}
+}
       88:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
       8b:	8d 50 ff             	lea    edx,[eax-0x1]
       8e:	89 55 10             	mov    DWORD PTR [ebp+0x10],edx
       91:	85 c0                	test   eax,eax
       93:	75 dc                	jne    71 <memcpy+0x14>
-
+int install_irq_handler(unsigned int irq, irq_handler_function fun)
       95:	90                   	nop
       96:	90                   	nop
       97:	c9                   	leave
       98:	c3                   	ret
 
 00000099 <if_enabled>:
-								putc_prc(&km_regC, KFMT_ERROR, '|', i, 0);
 						else if (i < l_n)
 								putc_prc(&km_regC, KFMT_WARN, '|', i, 0);
 						else if (i < l_u)
 								putc_prc(&km_regC, KFMT_INFO, '|', i, 0);
 						else
+								putc_prc(&km_regC, KFMT_NORMAL, ' ', i, 0);
       99:	55                   	push   ebp
       9a:	89 e5                	mov    ebp,esp
       9c:	83 ec 10             	sub    esp,0x10
-								putc_prc(&km_regC, KFMT_NORMAL, ' ', i, 0);
 				}
+				/* also written */
       9f:	9c                   	pushf
       a0:	58                   	pop    eax
       a1:	89 45 fc             	mov    DWORD PTR [ebp-0x4],eax
-								? 1 : 0));
 				pc_b = min(9, 10 - cpu_pcs[0].vals[4]);
 				if (pc_a == 100)
 						pc_b = 0;
 				crprintf(KFMT_NORMAL, &km_regC, "%3u.%1u%%", pc_a, pc_b);
 		}
+}
       a4:	8b 45 fc             	mov    eax,DWORD PTR [ebp-0x4]
       a7:	83 e0 20             	and    eax,0x20
       aa:	85 c0                	test   eax,eax
       ac:	0f 95 c0             	setne  al
       af:	0f b6 c0             	movzx  eax,al
-}
+
       b2:	c9                   	leave
       b3:	c3                   	ret
 
@@ -2942,7 +2942,6 @@ start:
     1c86:	c3                   	ret
 
 00001c87 <print_counter>:
-
 void print_counter()
 {
     1c87:	55                   	push   ebp
@@ -5461,15 +5460,14 @@ extern void _start()
 		fb_no_malloc = 0;
     34e7:	c7 05 00 00 00 00 00 00 00 00 	mov    DWORD PTR ds:0x0,0x0
 
-
 		/* use the correct GDT */
 		extern void gdt_init();
 		gdt_init();
     34f1:	e8 fc ff ff ff       	call   34f2 <_start+0x2a>
 
 		/* do the IDT setup & remap PIC */
-		extern void idt_init();
-		idt_init();
+		extern void mm_idt_init();
+		mm_idt_init();
     34f6:	e8 fc ff ff ff       	call   34f7 <_start+0x2f>
 		PIC_remap(0x20, 0x28);
     34fb:	83 ec 08             	sub    esp,0x8

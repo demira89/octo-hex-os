@@ -13,7 +13,6 @@ struct IDTDescr {
 		uint8_t type_attr; // type and attributes, see below
 		uint16_t offset_2; // offset bits 16..31
 };
-extern void* idt;
 extern void exceptionHandler(int i, void* ptr)
 {
 		struct IDTDescr* dt = &idt;
@@ -1362,14 +1361,13 @@ extern void _start()
 		mmgr_reinit();
 		fb_no_malloc = 0;
 
-
 		/* use the correct GDT */
 		extern void gdt_init();
 		gdt_init();
 
 		/* do the IDT setup & remap PIC */
-		extern void idt_init();
-		idt_init();
+		extern void mm_idt_init();
+		mm_idt_init();
 		PIC_remap(0x20, 0x28);
 		asm("sti");
 
