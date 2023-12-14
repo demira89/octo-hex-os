@@ -71,14 +71,14 @@ void* elf_offset(struct page_range* pr, int prc, Elf64_Off o, size_t len)
 						continue;
 				}
 				if (o + len <= bc) { /* same range */
-						void* rv = (void*)(pr[i].base + o);
+						void* rv = (void*)(size_t)(pr[i].base + o);
 						return rv;
 				} else if (i + 1 < prc) {
 						/* cont? */
 						if (pr[i].base + bc == pr[i + 1].base) {
 								bc += pr[i + 1].count * 4096;
 								if (o + len <= bc)
-										return (void*)(pr[i].base + o);
+										return (void*)(size_t)(pr[i].base + o);
 								else
 										return 0;
 						} else
@@ -93,11 +93,11 @@ void* elf_offset(struct page_range* pr, int prc, Elf64_Off o, size_t len)
 uint64_t map_elf64(uint32_t pct, struct page_range* pr, int prc)
 {
 		Elf64_Addr rv;
-		Elf64_Ehdr* hdr = (Elf64_Ehdr*)pr->base;
-		Elf64_Shdr* shdr; size_t i;
+		Elf64_Ehdr* hdr = (Elf64_Ehdr*)(size_t)pr->base;
+		/*Elf64_Shdr* shdr; not needed */ size_t i;
 		Elf64_Phdr* phdr;
 
-		puts("ELF64 mapping");
+		putstr("ELF64 mapping"); put32(pct); puts(" pages");
 
 		/* perform basic checks */
 		if (strncmp((const char*)hdr->e_ident, ELFMAG, SELFMAG) != 0)
@@ -177,10 +177,10 @@ uint64_t map_elf32(int mode, uint32_t pct, struct page_range* pr, int prc)
 {
 		Elf32_Addr rv;
 		Elf32_Ehdr* hdr = (Elf32_Ehdr*)(size_t)pr->base;
-		Elf32_Shdr* shdr; size_t i;
+		/*Elf32_Shdr* shdr; not needed*/ size_t i;
 		Elf32_Phdr* phdr;
 
-		puts("ELF32 mapping");
+		putstr("ELF32 mapping"); put32(pct); puts(" pages");
 
 		/* perform basic checks */
 		if (strncmp((const char*)hdr->e_ident, ELFMAG, SELFMAG) != 0)

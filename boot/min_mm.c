@@ -723,7 +723,7 @@ redo:
 }
 
 extern uint64_t cr3_val;
-uint32_t bits_to_set = 0;
+uint32_t bits_to_set = 0, has_nx = 0;
 void* vm_mapping = FM_VIRTUAL_MAPPING;
 void* pm_mapping;
 uint64_t pm_zero;
@@ -971,20 +971,20 @@ la_meme:
 		pl2[511].p = 1;
 		pl2[511].w = 1;
 		pl2[511].u = 1;
-		pl2[511].addr = (size_t)pt2	/ 4096;
+		pl2[511].addr = (size_t)pt2 / 4096;
 
 		/* and set the entries */
 		for (size_t i = 0; i < 256; i++) {
 				/* identity CD */
 				pt1[i].p = 1;
 				pt1[i].w = 1;
-				pt1[i].u = 1;
+				pt1[i].u = 0;
 				//pt1[i].xd = 1;
 				pt1[i].addr = i; /* identity */
 		}
 
 		/* now do the paging-structures mapping stored in vp,m,n */
-		uint64_t bse = 0xffffffffffe00000; /* last PD */
+		uint64_t bse = 0xffffffffffe00000; /* base of last PD used to calculate idx */
 		size_t idx;
 		/* first the PML4 */
 		idx = (vp->pml4 - bse) / 4096;
@@ -992,6 +992,7 @@ la_meme:
 		pt2[idx].w = 1;
 		pt2[idx].u = 0; /* only supervisor access to pts */
 		pt2[idx].addr = cr3_val / 4096;
+		pt2[idx].xd = (has_nx ? 1 : 0);
 		/* vp is identity mapped -> no need for doing sth. (TODO: protection) */		
 		/* then the 2 PDPTs */
 		idx = (vp->pml4e[0] - bse) / 4096;
@@ -999,63 +1000,75 @@ la_meme:
 		pt2[idx].w = 1;
 		pt2[idx].u = 0;
 		pt2[idx].addr = (uint64_t)p1 / 4096;
+		pt2[idx].xd = (has_nx ? 1 : 0);
 		idx = (vp->pml4e[511] - bse) / 4096;
 		pt2[idx].p = 1;
 		pt2[idx].w = 1;
 		pt2[idx].u = 0;
 		pt2[idx].addr = (uint64_t)p2 / 4096;
+		pt2[idx].xd = (has_nx ? 1 : 0);
 		/* now the two container structures (each 2 pages size, for PDPTEs(PDs & PDEs)) */
 		idx = (vp->pdpte[0] - bse) / 4096;	
 		pt2[idx].p = 1;
 		pt2[idx].w = 1;
 		pt2[idx].u = 0;
 		pt2[idx].addr = (uint64_t)m1 / 4096;
+		pt2[idx].xd = (has_nx ? 1 : 0);
 		pt2[idx + 1].p = 1;
 		pt2[idx + 1].w = 1;
 		pt2[idx + 1].u = 0;
 		pt2[idx + 1].addr = (uint64_t)m1 / 4096 + 1;
+		pt2[idx + 1].xd = (has_nx ? 1 : 0);
 		idx = (vp->pdpte[511] - bse) / 4096;	
 		pt2[idx].p = 1;
 		pt2[idx].w = 1;
 		pt2[idx].u = 0;
 		pt2[idx].addr = (uint64_t)m2 / 4096;
+		pt2[idx].xd = (has_nx ? 1 : 0);
 		pt2[idx + 1].p = 1;
 		pt2[idx + 1].w = 1;
 		pt2[idx + 1].u = 0;
 		pt2[idx + 1].addr = (uint64_t)m2 / 4096 + 1;
+		pt2[idx + 1].xd = (has_nx ? 1 : 0);
 		/* followed by the two PDs */
 		idx = (m1->pds[0] - bse) / 4096;
 		pt2[idx].p = 1;
 		pt2[idx].w = 1;
 		pt2[idx].u = 0;
 		pt2[idx].addr = (uint64_t)pl1 / 4096;
+		pt2[idx].xd = (has_nx ? 1 : 0);
 		idx = (m2->pds[511] - bse) / 4096;
 		pt2[idx].p = 1;
 		pt2[idx].w = 1;
 		pt2[idx].u = 0;
 		pt2[idx].addr = (uint64_t)pl2 / 4096;
+		pt2[idx].xd = (has_nx ? 1 : 0);
 		/* and the two PT pointer containers */
 		idx = (m1->pdes[0] - bse) / 4096;
 		pt2[idx].p = 1;
 		pt2[idx].w = 1;
 		pt2[idx].u = 0;
 		pt2[idx].addr = (uint64_t)n1 / 4096;
+		pt2[idx].xd = (has_nx ? 1 : 0);
 		idx = (m2->pdes[511] - bse) / 4096;
 		pt2[idx].p = 1;
 		pt2[idx].w = 1;
 		pt2[idx].u = 0;
 		pt2[idx].addr = (uint64_t)n2 / 4096;
+		pt2[idx].xd = (has_nx ? 1 : 0);
 		/* and finally the PTs */
 		idx = (n1->pts[0] - bse) / 4096;
 		pt2[idx].p = 1;
 		pt2[idx].w = 1;
 		pt2[idx].u = 0;
 		pt2[idx].addr = (uint64_t)pt1 / 4096;
+		pt2[idx].xd = (has_nx ? 1 : 0);
 		idx = (n2->pts[511] - bse) / 4096;
 		pt2[idx].p = 1;
 		pt2[idx].w = 1;
 		pt2[idx].u = 0;
 		pt2[idx].addr = (uint64_t)pt2 / 4096;
+		pt2[idx].xd = (has_nx ? 1 : 0);
 
 		/* and get the zero (read only) page */
 		mm_alloc_pm(1, &pr, 1);
@@ -1135,7 +1148,7 @@ void mm_pg36_init()
 				/* identity CD */
 				pt1[i].p = 1;
 				pt1[i].w = 1;
-				pt1[i].u = 1;
+				pt1[i].u = 0;
 				//pt1[i].xd = 1;
 				pt1[i].addr = i; /* identity */
 		}
@@ -1150,6 +1163,7 @@ void mm_pg36_init()
 				pt2[idx].w = 1;
 				pt2[idx].u = 0; /* only supervisor access to pts */
 				pt2[idx].addr = (uint64_t)p[i] / 4096;
+				pt2[idx].xd = (has_nx ? 1 : 0);
 		}
 		/* vp is identity mapped -> no need for doing sth.
 		 * (TODO: protection) */
@@ -1160,11 +1174,13 @@ void mm_pg36_init()
 		pt2[idx].w = 1;
 		pt2[idx].u = 0;
 		pt2[idx].addr = (uint64_t)pt1 / 4096;
+		pt2[idx].xd = (has_nx ? 1 : 0);
 		idx = (vp->pts[2047] - bse) / 4096;
 		pt2[idx].p = 1;
 		pt2[idx].w = 1;
 		pt2[idx].u = 0;
 		pt2[idx].addr = (uint64_t)pt2 / 4096;
+		pt2[idx].xd = (has_nx ? 1 : 0);
 
 		/* and get the zero (read only) page */
 		mm_alloc_pm(1, &pr, 1);
@@ -1223,7 +1239,7 @@ void mm_pg32_init()
 				/* identity CD */
 				pt1[i].p = 1;
 				pt1[i].w = 1;
-				pt1[i].u = 1;
+				pt1[i].u = 0;
 				//pt1[i].xd = 1; <- NOT in 32-bit paging
 				pt1[i].addr = i; /* identity */
 		}
@@ -1273,10 +1289,11 @@ void mm_prepare_paging(int mode)
 				mm_pg64_init();
 }
 
-void mm_initialize(int mode)
+void mm_initialize(int mode, int nx)
 {
 		/* prepare the BIOS-provided memory map */
 		struct mp* map = mem_map;
+		has_nx = nx ? 1 : 0;
 		do {
 				if (map->type == 1)
 						mm_add_free(map->base, map->size);
@@ -1386,6 +1403,14 @@ void mm_map64(uint64_t vaddr, struct page_range* pr, int prc, int x, int w, int 
 		struct pte64* pd = 0;
 		struct pte64* pt = 0;
 
+#ifdef VM_DIAG
+		/* diag */
+		putstr("mm_map: "); put64(vaddr); putc(' '); put32(prc); put_nl();
+		for (int o = 0; o < prc; o++) {
+			put64(pr[o].base); putc(' '); put32(pr[o].count); put_nl();
+		}
+#endif
+
 		/* mappings */
 		struct vm_pdpte_ptr* m;
 		struct vm_pde_ptr* n;
@@ -1413,7 +1438,8 @@ new_pdpt:
 				vp->cur -= 4096;
 				pl = (void*)pr2.base;
 				/* make it known in VM */
-				mm_map64(vp->pml4e[pml4e], &pr2, 1, 1, 1, 1, 0);
+				mm_map64(vp->pml4e[pml4e], &pr2, 1, 0, 1, 0, 0);
+
 				/* do the same for the map (2 pages) */
 				if (mm_alloc_pm(2, &pr2, 1) != 2) {
 						puts("cont alloc 2 failed.");
@@ -1421,6 +1447,10 @@ new_pdpt:
 				}
 				vp->pdpte[pml4e] = vp->cur - 4096;
 				vp->cur -= 8192;
+				/* and make it known in later VM */
+				mm_map64(vp->pdpte[pml4e], &pr2, 1, 0, 1, 0, 0);
+
+				/* PMEM ptr */
 				m = (void*)pr2.base;
 				/* store the physical pointers */
 				pp->extra_pdpts[pp->ec_pdpt].idx = pml4e;
@@ -1434,10 +1464,6 @@ new_pdpt:
 				p[pml4e].u = 1;
 				p[pml4e].w = 1;
 				p[pml4e].p = 1;
-
-				/* and make it known in later VM */
-				mm_map64(vp->pdpte[pml4e], &pr2, 1, 1, 1, 1, 0);
-
 		} else { /* find PP in pp */
 				for (size_t i = 0; i < pp->ec_pdpt; i++)
 						if (pp->extra_pdpts[i].idx == pml4e) {
@@ -1468,10 +1494,17 @@ new_pd:
 				m->pds[pdpte] = vp->cur;
 				vp->cur -= 4096;
 				pd = (void*)pr2.base;
+				/* and make it known in later VM */
+				mm_map64(m->pds[pdpte], &pr2, 1, 0, 1, 0, 0);
+
 				/* do the same for the map */
 				mm_alloc_pm(1, &pr2, 1);
 				m->pdes[pdpte] = vp->cur;
 				vp->cur -= 4096;
+				/* and make it known in later VM */
+				mm_map64(m->pdes[pdpte], &pr2, 1, 0, 1, 0, 0);
+
+				/* PMEM pointer */
 				n = (void*)pr2.base;
 				/* store the physical pointers (avoid 0*x) */
 				pp->extra_pds[pp->ec_pd].idx = (pml4e << 9) | pdpte;
@@ -1485,9 +1518,6 @@ new_pd:
 				pl[pdpte].u = 1;
 				pl[pdpte].w = 1;
 				pl[pdpte].p = 1;
-
-				/* and make it known in later VM */
-				mm_map64(m->pds[pdpte], &pr2, 1, 1, 1, 1, 0);
 		} else {
 				uint32_t id = (pml4e << 9) | pdpte;
 				/* find PD in pp */
@@ -1534,7 +1564,7 @@ new_pt:
 				pd[pde].p = 1;
 
 				/* and make it known in later VM */
-				mm_map64(n->pts[pde], &pr2, 1, 1, 1, 1, 0);
+				mm_map64(n->pts[pde], &pr2, 1, 0, 1, 0, 0);
 		} else {
 				uint32_t id = (pml4e << 18) | (pdpte << 9) | pde;
 				/* find PT in pp */
@@ -1557,14 +1587,26 @@ new_pt:
 
 		/* now map the pages */
 		while (prc) {
+#ifdef VM_DIAG
+				putb(pte); putc(' '); put32(pr_copy.base); putstr("   ");
+#endif
 				pt[pte].addr = pr_copy.base / 4096;
 				pt[pte].u = (us ? 1 : 0);
-				pt[pte].xd = (x ? 0 : 1);
+				pt[pte].xd = ((x || !has_nx) ? 0 : 1);
 				pt[pte].w = (w ? 1 : 0);
 				pt[pte].p = 1;
 				//pt[pte].s = (wc ? 1 : 0); /* PAT bit */
 				pt[pte].wt = (wc ? 1 : 0);
+
 				/* advance */
+				pr_copy.base += 4096;
+				if (!--pr_copy.count) {
+						if (--prc)
+								pr_copy = *++pr; /* important: advance then dereference */
+						if (!pr_copy.count)
+							break; /* skip alloc if done */
+				}
+				/* allocate if needed */
 				if (pte++ == 511) {
 						if (pde++ == 511) {
 								if (pdpte++ == 511) {
@@ -1590,11 +1632,6 @@ new_pt:
 						put64(pr->base);
 						put32(pr->count);
 						while (1);
-				}
-				pr_copy.base += 4096;
-				if (!--pr_copy.count) {
-						if (--prc)
-								pr_copy = *pr++;
 				}
 		}
 }
@@ -1642,7 +1679,7 @@ new_pt:
 				pd[pde].p = 1;
 
 				/* and make it known in later VM */
-				mm_map36(vp->pts[pdpte * 512 + pde], &pr2, 1, 1, 1, 1, 0);
+				mm_map36(vp->pts[pdpte * 512 + pde], &pr2, 1, 0, 1, 0, 0);
 		} else {
 				uint32_t id = (pdpte << 9) | pde;
 				/* find PT in pp */
@@ -1667,12 +1704,20 @@ new_pt:
 		while (prc) {
 				pt[pte].addr = pr_copy.base / 4096;
 				pt[pte].u = (us ? 1 : 0);
-	//			pt[pte].xd = (x ? 0 : 1); /* TODO: check if XD is supp */
+				pt[pte].xd = ((x || !has_nx) ? 0 : 1);
 				pt[pte].w = (w ? 1 : 0);
 				pt[pte].p = 1;
 				//pt[pte].s = (wc ? 1 : 0); /* PAT bit */
 				pt[pte].wt = (wc ? 1 : 0);
-				/* advance */
+
+				/* advance if needed */
+				pr_copy.base += 4096;
+				if (!--pr_copy.count) {
+						if (--prc)
+								pr_copy = *++pr; /* important: advance then dereference */
+						if (!pr_copy.count)
+							break;
+				}
 				if (pte++ == 511) {
 						if (pde++ == 511) {
 								if (pdpte++ == 3) {
@@ -1686,11 +1731,6 @@ new_pt:
 						}
 						pte = 0;
 						goto new_pt;
-				}
-				pr_copy.base += 4096;
-				if (!--pr_copy.count) {
-						if (--prc)
-								pr_copy = *pr++;
 				}
 		}
 }
@@ -1734,7 +1774,7 @@ new_pt:
 				pd[pde].p = 1;
 
 				/* and make it known in later VM */
-				mm_map32(vp->pts[pde], &pr2, 1, 1, 1, 1, 0);
+				mm_map32(vp->pts[pde], &pr2, 1, 0, 1, 0, 0);
 		} else {
 				uint32_t id = pde;
 				/* find PT in pp */
@@ -1766,7 +1806,15 @@ new_pt:
 				pt[pte].p = 1;
 //				pt[pte].s = (wc ? 1 : 0); /* PAT bit */
 				pt[pte].wt = (wc ? 1 : 0);
-				/* advance */
+
+				/* advance if needed */
+				pr_copy.base += 4096;
+				if (!--pr_copy.count) {
+						if (--prc)
+								pr_copy = *++pr; /* important: advance then dereference */
+						if (!pr_copy.count)
+							break;
+				}
 				if (pte++ == 1023) {
 						if (pde++ == 1023) {
 								puts("end of 4G address space");
@@ -1774,11 +1822,6 @@ new_pt:
 						}
 						pte = 0;
 						goto new_pt;
-				}
-				pr_copy.base += 4096;
-				if (!--pr_copy.count) {
-						if (--prc)
-								pr_copy = *pr++;
 				}
 		}
 }
@@ -1830,21 +1873,34 @@ void mm_perform_mapping(int mode, uint64_t ofs, struct page_range* pr, int prc,
 						puts("out of PRCs");
 						while (1);
 				}
+#ifdef VM_DIAG
+				puts("discontinuity: new pr2");
+#endif
 				pro++; pr2c--; pr++; prc--;
 				pr2[pro] = *pr;
 		}
-		if (pcf_c) { /* restrict last pr */
+		if (pcf_c) { /* restrict last pr to actual size in memory */
 				pr2[pro].count = pcf_c;
 		}
 		/* and zero */
 		if (zeros) {
 				/* duplicate the critical last page */
 				void* end = (void*)(pr2[pro].base + 4096 * --pr2[pro].count);
-				pro++;
+				pro++; /* and advance for a new entry for the duplicate */
 				if (mm_alloc_pm(1, pr2 + pro, --pr2c)) {
 						void* dst = (void*)pr2[pro].base;
 						mem_cpy(dst, end, 4096 - zeros);
+#ifdef VM_DIAG
+						putstr("allocated page duplicate at "); put64((uint64_t)dst); put_nl();
+#endif
 						if (!pr2[pro - 1].count) { /* remove zero length */
+#ifdef VM_DIAG
+								put32(pcf_c);
+								puts("removing mapping, was:");
+								for (int o = 0; o < pro; o++) {
+									put64(pr2[o].base); putc(' '); put32(pr2[o].count); put_nl();
+								}
+#endif
 								pr2[pro - 1] = pr2[pro];
 								pr2c++; pro--;
 						}
@@ -1862,8 +1918,15 @@ void mm_perform_mapping(int mode, uint64_t ofs, struct page_range* pr, int prc,
 		/* now add the zero pages */
 		if (pcm > pcf) {
 				size_t zc = pcm - pcf;
+#ifdef VM_DIAG
+				putstr("zero count: "); put32(zc); put_nl();
+#endif
 				if (w) {
 						zc -= mm_alloc_pm(zc, pr2 + pro, pr2c);
+#ifdef VM_DIAG
+						putstr("zero mem at "); put64((pr2 + pro)->base);
+						putstr(" for "); put32((pr2 + pro)->count); puts("pages");
+#endif
 						pro++; pr2c--;
 				} else { /* use the single zero page (wastes many ranges) */
 						while (zc && pr2c) {
@@ -1890,6 +1953,14 @@ void mm_perform_mapping(int mode, uint64_t ofs, struct page_range* pr, int prc,
 				}
 				return; /* TODO: possible NX setup */
 		}
+
+		/* now map the physical memory in pr2[0-pro] */
+#ifdef VM_DIAG
+		putstr("mapping "); put32(pro); putstr("entries at "); put64(cur); putc(x ? 'X' : ' '); putc(w ? 'W' : ' '); put_nl();
+		for (int o = 0; o < pro; o++) {
+			put32(o); putstr(": "); put64(pr2[o].base); putstr(" "); put32(pr2[o].count); put_nl();
+		}
+#endif
 
 		if (!mode)
 				mm_map32((uint32_t)cur, pr2, pro, x, w, 0, 0);

@@ -11,10 +11,10 @@ struct vmd {
 		int32_t width, height; uint32_t bpsl;
 		uint32_t fnt, txt; uint32_t ptr;
 };
-struct vmd video_mode = {1, 0, 80, 25, 0, 160};
-void* vga_mem_ptr = (void*)0xb8000;
+struct vmd video_mode = {1, 0, 0, 80, 25, 0, 0, (uint32_t)FM_VGA_TEST, 0};
+void* vga_mem_ptr = (void*)FM_VIDEO_MEMORY;
 /* used for paging the pmem */
-void* vga_pmem = (void*)0xb8000;
+void* vga_pmem = (void*)FM_VIDEO_MEMORY;
 size_t vga_pmem_size = 0x8000; /* b8000-c0000 color TM */
 const char* vga_font = NULL;
 

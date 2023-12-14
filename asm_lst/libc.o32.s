@@ -423,7 +423,7 @@ long int strtol(const char* str, char** endptr, int base)
 {
      25e:	55                   	push   ebp
      25f:	89 e5                	mov    ebp,esp
-     261:	83 ec 10             	sub    esp,0x10
+     261:	83 ec 14             	sub    esp,0x14
 		unsigned long int rv = 0, isN = 0;
      264:	c7 45 fc 00 00 00 00 	mov    DWORD PTR [ebp-0x4],0x0
      26b:	c7 45 f8 00 00 00 00 	mov    DWORD PTR [ebp-0x8],0x0
@@ -441,7 +441,7 @@ long int strtol(const char* str, char** endptr, int base)
      28a:	c7 05 00 00 00 00 16 00 00 00 	mov    DWORD PTR ds:0x0,0x16
 				return 0L;
      294:	b8 00 00 00 00       	mov    eax,0x0
-     299:	e9 f2 01 00 00       	jmp    490 <strtol+0x232>
+     299:	e9 f1 01 00 00       	jmp    48f <strtol+0x231>
 		}
 		while (isspace(*str))
 				str++;
@@ -450,2164 +450,2124 @@ long int strtol(const char* str, char** endptr, int base)
      2a2:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
      2a5:	0f b6 00             	movzx  eax,BYTE PTR [eax]
      2a8:	0f be c0             	movsx  eax,al
-     2ab:	50                   	push   eax
-     2ac:	e8 fc ff ff ff       	call   2ad <strtol+0x4f>
-     2b1:	83 c4 04             	add    esp,0x4
-     2b4:	85 c0                	test   eax,eax
-     2b6:	75 e6                	jne    29e <strtol+0x40>
+     2ab:	89 04 24             	mov    DWORD PTR [esp],eax
+     2ae:	e8 fc ff ff ff       	call   2af <strtol+0x51>
+     2b3:	85 c0                	test   eax,eax
+     2b5:	75 e7                	jne    29e <strtol+0x40>
 		if (!base) {
-     2b8:	83 7d 10 00          	cmp    DWORD PTR [ebp+0x10],0x0
-     2bc:	75 3d                	jne    2fb <strtol+0x9d>
+     2b7:	83 7d 10 00          	cmp    DWORD PTR [ebp+0x10],0x0
+     2bb:	75 3d                	jne    2fa <strtol+0x9c>
 				/* read prefix */
 				if (*str == '0') {
-     2be:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     2c1:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     2c4:	3c 30                	cmp    al,0x30
-     2c6:	75 2c                	jne    2f4 <strtol+0x96>
+     2bd:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     2c0:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     2c3:	3c 30                	cmp    al,0x30
+     2c5:	75 2c                	jne    2f3 <strtol+0x95>
 						base = 8;
-     2c8:	c7 45 10 08 00 00 00 	mov    DWORD PTR [ebp+0x10],0x8
+     2c7:	c7 45 10 08 00 00 00 	mov    DWORD PTR [ebp+0x10],0x8
 						str++;
-     2cf:	83 45 08 01          	add    DWORD PTR [ebp+0x8],0x1
+     2ce:	83 45 08 01          	add    DWORD PTR [ebp+0x8],0x1
 						if (*str == 'x' || *str == 'X') {
-     2d3:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     2d6:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     2d9:	3c 78                	cmp    al,0x78
-     2db:	74 0a                	je     2e7 <strtol+0x89>
-     2dd:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     2e0:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     2e3:	3c 58                	cmp    al,0x58
-     2e5:	75 14                	jne    2fb <strtol+0x9d>
+     2d2:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     2d5:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     2d8:	3c 78                	cmp    al,0x78
+     2da:	74 0a                	je     2e6 <strtol+0x88>
+     2dc:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     2df:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     2e2:	3c 58                	cmp    al,0x58
+     2e4:	75 14                	jne    2fa <strtol+0x9c>
 								base = 16;
-     2e7:	c7 45 10 10 00 00 00 	mov    DWORD PTR [ebp+0x10],0x10
+     2e6:	c7 45 10 10 00 00 00 	mov    DWORD PTR [ebp+0x10],0x10
 								str++;
-     2ee:	83 45 08 01          	add    DWORD PTR [ebp+0x8],0x1
-     2f2:	eb 07                	jmp    2fb <strtol+0x9d>
+     2ed:	83 45 08 01          	add    DWORD PTR [ebp+0x8],0x1
+     2f1:	eb 07                	jmp    2fa <strtol+0x9c>
 						}
 				} else
 						base = 10;
-     2f4:	c7 45 10 0a 00 00 00 	mov    DWORD PTR [ebp+0x10],0xa
+     2f3:	c7 45 10 0a 00 00 00 	mov    DWORD PTR [ebp+0x10],0xa
 		}
 		num_max = ((base >= 10) ? '9' : ('0' + base - 1));
-     2fb:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-     2fe:	ba 0a 00 00 00       	mov    edx,0xa
-     303:	39 d0                	cmp    eax,edx
-     305:	0f 4f c2             	cmovg  eax,edx
-     308:	83 c0 2f             	add    eax,0x2f
-     30b:	88 45 f6             	mov    BYTE PTR [ebp-0xa],al
+     2fa:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+     2fd:	ba 0a 00 00 00       	mov    edx,0xa
+     302:	39 d0                	cmp    eax,edx
+     304:	0f 4f c2             	cmovg  eax,edx
+     307:	83 c0 2f             	add    eax,0x2f
+     30a:	88 45 f6             	mov    BYTE PTR [ebp-0xa],al
 		char_max = ((base <= 10) ? ('A' - 1) : ('A' + base - 11));
-     30e:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-     311:	ba 0a 00 00 00       	mov    edx,0xa
-     316:	39 d0                	cmp    eax,edx
-     318:	0f 4c c2             	cmovl  eax,edx
-     31b:	83 c0 36             	add    eax,0x36
-     31e:	88 45 f5             	mov    BYTE PTR [ebp-0xb],al
+     30d:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+     310:	ba 0a 00 00 00       	mov    edx,0xa
+     315:	39 d0                	cmp    eax,edx
+     317:	0f 4c c2             	cmovl  eax,edx
+     31a:	83 c0 36             	add    eax,0x36
+     31d:	88 45 f5             	mov    BYTE PTR [ebp-0xb],al
 		char2_max = ((base <= 10) ? ('a' - 1) : ('a' + base - 11));
-     321:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-     324:	ba 0a 00 00 00       	mov    edx,0xa
-     329:	39 d0                	cmp    eax,edx
-     32b:	0f 4c c2             	cmovl  eax,edx
-     32e:	83 c0 56             	add    eax,0x56
-     331:	88 45 f4             	mov    BYTE PTR [ebp-0xc],al
+     320:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+     323:	ba 0a 00 00 00       	mov    edx,0xa
+     328:	39 d0                	cmp    eax,edx
+     32a:	0f 4c c2             	cmovl  eax,edx
+     32d:	83 c0 56             	add    eax,0x56
+     330:	88 45 f4             	mov    BYTE PTR [ebp-0xc],al
 		if (*str == '-' || *str == '+')
-     334:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     337:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     33a:	3c 2d                	cmp    al,0x2d
-     33c:	74 0a                	je     348 <strtol+0xea>
-     33e:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     341:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     344:	3c 2b                	cmp    al,0x2b
-     346:	75 17                	jne    35f <strtol+0x101>
+     333:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     336:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     339:	3c 2d                	cmp    al,0x2d
+     33b:	74 0a                	je     347 <strtol+0xe9>
+     33d:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     340:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     343:	3c 2b                	cmp    al,0x2b
+     345:	75 17                	jne    35e <strtol+0x100>
 				isN = (*str++ == '-');
-     348:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     34b:	8d 50 01             	lea    edx,[eax+0x1]
-     34e:	89 55 08             	mov    DWORD PTR [ebp+0x8],edx
-     351:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     354:	3c 2d                	cmp    al,0x2d
-     356:	0f 94 c0             	sete   al
-     359:	0f b6 c0             	movzx  eax,al
-     35c:	89 45 f8             	mov    DWORD PTR [ebp-0x8],eax
+     347:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     34a:	8d 50 01             	lea    edx,[eax+0x1]
+     34d:	89 55 08             	mov    DWORD PTR [ebp+0x8],edx
+     350:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     353:	3c 2d                	cmp    al,0x2d
+     355:	0f 94 c0             	sete   al
+     358:	0f b6 c0             	movzx  eax,al
+     35b:	89 45 f8             	mov    DWORD PTR [ebp-0x8],eax
 		while (1) {
 				uint8_t addv = 0xff;
-     35f:	c6 45 f7 ff          	mov    BYTE PTR [ebp-0x9],0xff
+     35e:	c6 45 f7 ff          	mov    BYTE PTR [ebp-0x9],0xff
 				if(*str >= '0' && *str <= num_max)
-     363:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     366:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     369:	3c 2f                	cmp    al,0x2f
-     36b:	7e 19                	jle    386 <strtol+0x128>
-     36d:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     370:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     373:	38 45 f6             	cmp    BYTE PTR [ebp-0xa],al
-     376:	7c 0e                	jl     386 <strtol+0x128>
+     362:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     365:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     368:	3c 2f                	cmp    al,0x2f
+     36a:	7e 19                	jle    385 <strtol+0x127>
+     36c:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     36f:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     372:	38 45 f6             	cmp    BYTE PTR [ebp-0xa],al
+     375:	7c 0e                	jl     385 <strtol+0x127>
 						addv = *str - '0';
-     378:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     37b:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     37e:	83 e8 30             	sub    eax,0x30
-     381:	88 45 f7             	mov    BYTE PTR [ebp-0x9],al
-     384:	eb 44                	jmp    3ca <strtol+0x16c>
+     377:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     37a:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     37d:	83 e8 30             	sub    eax,0x30
+     380:	88 45 f7             	mov    BYTE PTR [ebp-0x9],al
+     383:	eb 44                	jmp    3c9 <strtol+0x16b>
 				else if (*str >= 'A' && *str <= char_max)
-     386:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     389:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     38c:	3c 40                	cmp    al,0x40
-     38e:	7e 19                	jle    3a9 <strtol+0x14b>
-     390:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     393:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     396:	38 45 f5             	cmp    BYTE PTR [ebp-0xb],al
-     399:	7c 0e                	jl     3a9 <strtol+0x14b>
+     385:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     388:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     38b:	3c 40                	cmp    al,0x40
+     38d:	7e 19                	jle    3a8 <strtol+0x14a>
+     38f:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     392:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     395:	38 45 f5             	cmp    BYTE PTR [ebp-0xb],al
+     398:	7c 0e                	jl     3a8 <strtol+0x14a>
 						addv = (*str - 'A') + 10;
-     39b:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     39e:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     3a1:	83 e8 37             	sub    eax,0x37
-     3a4:	88 45 f7             	mov    BYTE PTR [ebp-0x9],al
-     3a7:	eb 21                	jmp    3ca <strtol+0x16c>
+     39a:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     39d:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     3a0:	83 e8 37             	sub    eax,0x37
+     3a3:	88 45 f7             	mov    BYTE PTR [ebp-0x9],al
+     3a6:	eb 21                	jmp    3c9 <strtol+0x16b>
 				else if (*str >= 'a' && *str <= char2_max)
-     3a9:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     3ac:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     3af:	3c 60                	cmp    al,0x60
-     3b1:	7e 17                	jle    3ca <strtol+0x16c>
-     3b3:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     3b6:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     3b9:	38 45 f4             	cmp    BYTE PTR [ebp-0xc],al
-     3bc:	7c 0c                	jl     3ca <strtol+0x16c>
+     3a8:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     3ab:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     3ae:	3c 60                	cmp    al,0x60
+     3b0:	7e 17                	jle    3c9 <strtol+0x16b>
+     3b2:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     3b5:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     3b8:	38 45 f4             	cmp    BYTE PTR [ebp-0xc],al
+     3bb:	7c 0c                	jl     3c9 <strtol+0x16b>
 						addv = (*str - 'a') + 10;
-     3be:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     3c1:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     3c4:	83 e8 57             	sub    eax,0x57
-     3c7:	88 45 f7             	mov    BYTE PTR [ebp-0x9],al
+     3bd:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     3c0:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     3c3:	83 e8 57             	sub    eax,0x57
+     3c6:	88 45 f7             	mov    BYTE PTR [ebp-0x9],al
 
 				if (addv == 0xff) {
-     3ca:	80 7d f7 ff          	cmp    BYTE PTR [ebp-0x9],0xff
-     3ce:	75 50                	jne    420 <strtol+0x1c2>
+     3c9:	80 7d f7 ff          	cmp    BYTE PTR [ebp-0x9],0xff
+     3cd:	75 50                	jne    41f <strtol+0x1c1>
 						if (endptr)
-     3d0:	83 7d 0c 00          	cmp    DWORD PTR [ebp+0xc],0x0
-     3d4:	74 08                	je     3de <strtol+0x180>
+     3cf:	83 7d 0c 00          	cmp    DWORD PTR [ebp+0xc],0x0
+     3d3:	74 08                	je     3dd <strtol+0x17f>
 								*endptr = (char*)str;
-     3d6:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     3d9:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
-     3dc:	89 10                	mov    DWORD PTR [eax],edx
+     3d5:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     3d8:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
+     3db:	89 10                	mov    DWORD PTR [eax],edx
 						if (isN == 2 || isN == 3) {
-     3de:	83 7d f8 02          	cmp    DWORD PTR [ebp-0x8],0x2
-     3e2:	74 06                	je     3ea <strtol+0x18c>
-     3e4:	83 7d f8 03          	cmp    DWORD PTR [ebp-0x8],0x3
-     3e8:	75 24                	jne    40e <strtol+0x1b0>
+     3dd:	83 7d f8 02          	cmp    DWORD PTR [ebp-0x8],0x2
+     3e1:	74 06                	je     3e9 <strtol+0x18b>
+     3e3:	83 7d f8 03          	cmp    DWORD PTR [ebp-0x8],0x3
+     3e7:	75 24                	jne    40d <strtol+0x1af>
 								errno = ERANGE;
-     3ea:	c7 05 00 00 00 00 22 00 00 00 	mov    DWORD PTR ds:0x0,0x22
+     3e9:	c7 05 00 00 00 00 22 00 00 00 	mov    DWORD PTR ds:0x0,0x22
 								return isN == 2 ? LONG_MAX : LONG_MIN;
-     3f4:	83 7d f8 02          	cmp    DWORD PTR [ebp-0x8],0x2
-     3f8:	75 0a                	jne    404 <strtol+0x1a6>
-     3fa:	b8 ff ff ff 7f       	mov    eax,0x7fffffff
-     3ff:	e9 8c 00 00 00       	jmp    490 <strtol+0x232>
-     404:	b8 00 00 00 80       	mov    eax,0x80000000
-     409:	e9 82 00 00 00       	jmp    490 <strtol+0x232>
+     3f3:	83 7d f8 02          	cmp    DWORD PTR [ebp-0x8],0x2
+     3f7:	75 0a                	jne    403 <strtol+0x1a5>
+     3f9:	b8 ff ff ff 7f       	mov    eax,0x7fffffff
+     3fe:	e9 8c 00 00 00       	jmp    48f <strtol+0x231>
+     403:	b8 00 00 00 80       	mov    eax,0x80000000
+     408:	e9 82 00 00 00       	jmp    48f <strtol+0x231>
 						}
 						return isN ? -rv : rv;
-     40e:	83 7d f8 00          	cmp    DWORD PTR [ebp-0x8],0x0
-     412:	74 07                	je     41b <strtol+0x1bd>
-     414:	8b 45 fc             	mov    eax,DWORD PTR [ebp-0x4]
-     417:	f7 d8                	neg    eax
-     419:	eb 75                	jmp    490 <strtol+0x232>
-     41b:	8b 45 fc             	mov    eax,DWORD PTR [ebp-0x4]
-     41e:	eb 70                	jmp    490 <strtol+0x232>
+     40d:	83 7d f8 00          	cmp    DWORD PTR [ebp-0x8],0x0
+     411:	74 07                	je     41a <strtol+0x1bc>
+     413:	8b 45 fc             	mov    eax,DWORD PTR [ebp-0x4]
+     416:	f7 d8                	neg    eax
+     418:	eb 75                	jmp    48f <strtol+0x231>
+     41a:	8b 45 fc             	mov    eax,DWORD PTR [ebp-0x4]
+     41d:	eb 70                	jmp    48f <strtol+0x231>
 				} else {
 						if (isN == 0) {
-     420:	83 7d f8 00          	cmp    DWORD PTR [ebp-0x8],0x0
-     424:	75 30                	jne    456 <strtol+0x1f8>
+     41f:	83 7d f8 00          	cmp    DWORD PTR [ebp-0x8],0x0
+     423:	75 30                	jne    455 <strtol+0x1f7>
 								if (rv * base + addv > LONG_MAX)
-     426:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-     429:	0f af 45 fc          	imul   eax,DWORD PTR [ebp-0x4]
-     42d:	89 c2                	mov    edx,eax
-     42f:	0f b6 45 f7          	movzx  eax,BYTE PTR [ebp-0x9]
-     433:	01 d0                	add    eax,edx
-     435:	85 c0                	test   eax,eax
-     437:	79 09                	jns    442 <strtol+0x1e4>
+     425:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+     428:	0f af 45 fc          	imul   eax,DWORD PTR [ebp-0x4]
+     42c:	89 c2                	mov    edx,eax
+     42e:	0f b6 45 f7          	movzx  eax,BYTE PTR [ebp-0x9]
+     432:	01 d0                	add    eax,edx
+     434:	85 c0                	test   eax,eax
+     436:	79 09                	jns    441 <strtol+0x1e3>
 										isN = 2;
-     439:	c7 45 f8 02 00 00 00 	mov    DWORD PTR [ebp-0x8],0x2
-     440:	eb 45                	jmp    487 <strtol+0x229>
+     438:	c7 45 f8 02 00 00 00 	mov    DWORD PTR [ebp-0x8],0x2
+     43f:	eb 45                	jmp    486 <strtol+0x228>
 								else
 										rv = rv * base + addv;
-     442:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-     445:	0f af 45 fc          	imul   eax,DWORD PTR [ebp-0x4]
-     449:	89 c2                	mov    edx,eax
-     44b:	0f b6 45 f7          	movzx  eax,BYTE PTR [ebp-0x9]
-     44f:	01 d0                	add    eax,edx
-     451:	89 45 fc             	mov    DWORD PTR [ebp-0x4],eax
-     454:	eb 31                	jmp    487 <strtol+0x229>
+     441:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+     444:	0f af 45 fc          	imul   eax,DWORD PTR [ebp-0x4]
+     448:	89 c2                	mov    edx,eax
+     44a:	0f b6 45 f7          	movzx  eax,BYTE PTR [ebp-0x9]
+     44e:	01 d0                	add    eax,edx
+     450:	89 45 fc             	mov    DWORD PTR [ebp-0x4],eax
+     453:	eb 31                	jmp    486 <strtol+0x228>
 						} else {
 								if ((rv * base + addv) > (unsigned long int)(LONG_MAX) + 1)
-     456:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-     459:	0f af 45 fc          	imul   eax,DWORD PTR [ebp-0x4]
-     45d:	89 c2                	mov    edx,eax
-     45f:	0f b6 45 f7          	movzx  eax,BYTE PTR [ebp-0x9]
-     463:	01 d0                	add    eax,edx
-     465:	3d 00 00 00 80       	cmp    eax,0x80000000
-     46a:	76 09                	jbe    475 <strtol+0x217>
+     455:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+     458:	0f af 45 fc          	imul   eax,DWORD PTR [ebp-0x4]
+     45c:	89 c2                	mov    edx,eax
+     45e:	0f b6 45 f7          	movzx  eax,BYTE PTR [ebp-0x9]
+     462:	01 d0                	add    eax,edx
+     464:	3d 00 00 00 80       	cmp    eax,0x80000000
+     469:	76 09                	jbe    474 <strtol+0x216>
 										isN = 3;
-     46c:	c7 45 f8 03 00 00 00 	mov    DWORD PTR [ebp-0x8],0x3
-     473:	eb 12                	jmp    487 <strtol+0x229>
+     46b:	c7 45 f8 03 00 00 00 	mov    DWORD PTR [ebp-0x8],0x3
+     472:	eb 12                	jmp    486 <strtol+0x228>
 								else
 										rv = rv * base + addv;
-     475:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-     478:	0f af 45 fc          	imul   eax,DWORD PTR [ebp-0x4]
-     47c:	89 c2                	mov    edx,eax
-     47e:	0f b6 45 f7          	movzx  eax,BYTE PTR [ebp-0x9]
-     482:	01 d0                	add    eax,edx
-     484:	89 45 fc             	mov    DWORD PTR [ebp-0x4],eax
+     474:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+     477:	0f af 45 fc          	imul   eax,DWORD PTR [ebp-0x4]
+     47b:	89 c2                	mov    edx,eax
+     47d:	0f b6 45 f7          	movzx  eax,BYTE PTR [ebp-0x9]
+     481:	01 d0                	add    eax,edx
+     483:	89 45 fc             	mov    DWORD PTR [ebp-0x4],eax
 						}
 				}
 				str++;
-     487:	83 45 08 01          	add    DWORD PTR [ebp+0x8],0x1
+     486:	83 45 08 01          	add    DWORD PTR [ebp+0x8],0x1
 		while (1) {
-     48b:	e9 cf fe ff ff       	jmp    35f <strtol+0x101>
+     48a:	e9 cf fe ff ff       	jmp    35e <strtol+0x100>
 		}
 }
-     490:	c9                   	leave
-     491:	c3                   	ret
+     48f:	c9                   	leave
+     490:	c3                   	ret
 
-00000492 <atoi>:
+00000491 <atoi>:
 
 int atoi(const char* str)
 {
-     492:	55                   	push   ebp
-     493:	89 e5                	mov    ebp,esp
-     495:	83 ec 10             	sub    esp,0x10
+     491:	55                   	push   ebp
+     492:	89 e5                	mov    ebp,esp
+     494:	83 ec 14             	sub    esp,0x14
 		unsigned int rv = 0, isN = 0;
-     498:	c7 45 fc 00 00 00 00 	mov    DWORD PTR [ebp-0x4],0x0
-     49f:	c7 45 f8 00 00 00 00 	mov    DWORD PTR [ebp-0x8],0x0
+     497:	c7 45 fc 00 00 00 00 	mov    DWORD PTR [ebp-0x4],0x0
+     49e:	c7 45 f8 00 00 00 00 	mov    DWORD PTR [ebp-0x8],0x0
 		if (!str)
-     4a6:	83 7d 08 00          	cmp    DWORD PTR [ebp+0x8],0x0
-     4aa:	75 0e                	jne    4ba <atoi+0x28>
+     4a5:	83 7d 08 00          	cmp    DWORD PTR [ebp+0x8],0x0
+     4a9:	75 0e                	jne    4b9 <atoi+0x28>
 				return 0;
-     4ac:	b8 00 00 00 00       	mov    eax,0x0
-     4b1:	e9 92 00 00 00       	jmp    548 <atoi+0xb6>
+     4ab:	b8 00 00 00 00       	mov    eax,0x0
+     4b0:	e9 91 00 00 00       	jmp    546 <atoi+0xb5>
 		while (isspace(*str))
 				str++;
-     4b6:	83 45 08 01          	add    DWORD PTR [ebp+0x8],0x1
+     4b5:	83 45 08 01          	add    DWORD PTR [ebp+0x8],0x1
 		while (isspace(*str))
-     4ba:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     4bd:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     4c0:	0f be c0             	movsx  eax,al
-     4c3:	50                   	push   eax
-     4c4:	e8 fc ff ff ff       	call   4c5 <atoi+0x33>
-     4c9:	83 c4 04             	add    esp,0x4
-     4cc:	85 c0                	test   eax,eax
-     4ce:	75 e6                	jne    4b6 <atoi+0x24>
+     4b9:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     4bc:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     4bf:	0f be c0             	movsx  eax,al
+     4c2:	89 04 24             	mov    DWORD PTR [esp],eax
+     4c5:	e8 fc ff ff ff       	call   4c6 <atoi+0x35>
+     4ca:	85 c0                	test   eax,eax
+     4cc:	75 e7                	jne    4b5 <atoi+0x24>
 		if (*str == '-') {
-     4d0:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     4d3:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     4d6:	3c 2d                	cmp    al,0x2d
-     4d8:	75 0d                	jne    4e7 <atoi+0x55>
+     4ce:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     4d1:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     4d4:	3c 2d                	cmp    al,0x2d
+     4d6:	75 0d                	jne    4e5 <atoi+0x54>
 				isN = 1;
-     4da:	c7 45 f8 01 00 00 00 	mov    DWORD PTR [ebp-0x8],0x1
+     4d8:	c7 45 f8 01 00 00 00 	mov    DWORD PTR [ebp-0x8],0x1
 				str++;
-     4e1:	83 45 08 01          	add    DWORD PTR [ebp+0x8],0x1
-     4e5:	eb 37                	jmp    51e <atoi+0x8c>
+     4df:	83 45 08 01          	add    DWORD PTR [ebp+0x8],0x1
+     4e3:	eb 37                	jmp    51c <atoi+0x8b>
 		} else if (*str == '+')
-     4e7:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     4ea:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     4ed:	3c 2b                	cmp    al,0x2b
-     4ef:	75 2d                	jne    51e <atoi+0x8c>
+     4e5:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     4e8:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     4eb:	3c 2b                	cmp    al,0x2b
+     4ed:	75 2d                	jne    51c <atoi+0x8b>
 				str++;
-     4f1:	83 45 08 01          	add    DWORD PTR [ebp+0x8],0x1
+     4ef:	83 45 08 01          	add    DWORD PTR [ebp+0x8],0x1
 		while (*str >= '0' && *str <= '9') {
-     4f5:	eb 27                	jmp    51e <atoi+0x8c>
+     4f3:	eb 27                	jmp    51c <atoi+0x8b>
 				rv *= 10;
-     4f7:	8b 55 fc             	mov    edx,DWORD PTR [ebp-0x4]
-     4fa:	89 d0                	mov    eax,edx
-     4fc:	c1 e0 02             	shl    eax,0x2
-     4ff:	01 d0                	add    eax,edx
-     501:	01 c0                	add    eax,eax
-     503:	89 45 fc             	mov    DWORD PTR [ebp-0x4],eax
+     4f5:	8b 55 fc             	mov    edx,DWORD PTR [ebp-0x4]
+     4f8:	89 d0                	mov    eax,edx
+     4fa:	c1 e0 02             	shl    eax,0x2
+     4fd:	01 d0                	add    eax,edx
+     4ff:	01 c0                	add    eax,eax
+     501:	89 45 fc             	mov    DWORD PTR [ebp-0x4],eax
 				rv += *str - '0';
-     506:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     509:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     50c:	0f be d0             	movsx  edx,al
-     50f:	8b 45 fc             	mov    eax,DWORD PTR [ebp-0x4]
-     512:	01 d0                	add    eax,edx
-     514:	83 e8 30             	sub    eax,0x30
-     517:	89 45 fc             	mov    DWORD PTR [ebp-0x4],eax
+     504:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     507:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     50a:	0f be d0             	movsx  edx,al
+     50d:	8b 45 fc             	mov    eax,DWORD PTR [ebp-0x4]
+     510:	01 d0                	add    eax,edx
+     512:	83 e8 30             	sub    eax,0x30
+     515:	89 45 fc             	mov    DWORD PTR [ebp-0x4],eax
 				str++;
-     51a:	83 45 08 01          	add    DWORD PTR [ebp+0x8],0x1
+     518:	83 45 08 01          	add    DWORD PTR [ebp+0x8],0x1
 		while (*str >= '0' && *str <= '9') {
-     51e:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     521:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     524:	3c 2f                	cmp    al,0x2f
-     526:	7e 0a                	jle    532 <atoi+0xa0>
-     528:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     52b:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     52e:	3c 39                	cmp    al,0x39
-     530:	7e c5                	jle    4f7 <atoi+0x65>
+     51c:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     51f:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     522:	3c 2f                	cmp    al,0x2f
+     524:	7e 0a                	jle    530 <atoi+0x9f>
+     526:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     529:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     52c:	3c 39                	cmp    al,0x39
+     52e:	7e c5                	jle    4f5 <atoi+0x64>
 		}
 		if (isN && rv)
-     532:	83 7d f8 00          	cmp    DWORD PTR [ebp-0x8],0x0
-     536:	74 0d                	je     545 <atoi+0xb3>
-     538:	83 7d fc 00          	cmp    DWORD PTR [ebp-0x4],0x0
-     53c:	74 07                	je     545 <atoi+0xb3>
+     530:	83 7d f8 00          	cmp    DWORD PTR [ebp-0x8],0x0
+     534:	74 0d                	je     543 <atoi+0xb2>
+     536:	83 7d fc 00          	cmp    DWORD PTR [ebp-0x4],0x0
+     53a:	74 07                	je     543 <atoi+0xb2>
 				return (int)-rv;
-     53e:	8b 45 fc             	mov    eax,DWORD PTR [ebp-0x4]
-     541:	f7 d8                	neg    eax
-     543:	eb 03                	jmp    548 <atoi+0xb6>
+     53c:	8b 45 fc             	mov    eax,DWORD PTR [ebp-0x4]
+     53f:	f7 d8                	neg    eax
+     541:	eb 03                	jmp    546 <atoi+0xb5>
 		else
 				return (int)rv;
-     545:	8b 45 fc             	mov    eax,DWORD PTR [ebp-0x4]
+     543:	8b 45 fc             	mov    eax,DWORD PTR [ebp-0x4]
 
 }
-     548:	c9                   	leave
-     549:	c3                   	ret
+     546:	c9                   	leave
+     547:	c3                   	ret
 
-0000054a <strchr>:
+00000548 <strchr>:
 
 char* strchr(const char* str, int character)
 {
-     54a:	55                   	push   ebp
-     54b:	89 e5                	mov    ebp,esp
+     548:	55                   	push   ebp
+     549:	89 e5                	mov    ebp,esp
 		if (!str)
-     54d:	83 7d 08 00          	cmp    DWORD PTR [ebp+0x8],0x0
-     551:	75 1c                	jne    56f <strchr+0x25>
+     54b:	83 7d 08 00          	cmp    DWORD PTR [ebp+0x8],0x0
+     54f:	75 1c                	jne    56d <strchr+0x25>
 				return NULL;
-     553:	b8 00 00 00 00       	mov    eax,0x0
-     558:	eb 25                	jmp    57f <strchr+0x35>
+     551:	b8 00 00 00 00       	mov    eax,0x0
+     556:	eb 25                	jmp    57d <strchr+0x35>
 		while (*str != (char)character)
 				if (*str == '\0')
-     55a:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     55d:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     560:	84 c0                	test   al,al
-     562:	75 07                	jne    56b <strchr+0x21>
+     558:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     55b:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     55e:	84 c0                	test   al,al
+     560:	75 07                	jne    569 <strchr+0x21>
 						return NULL;
-     564:	b8 00 00 00 00       	mov    eax,0x0
-     569:	eb 14                	jmp    57f <strchr+0x35>
+     562:	b8 00 00 00 00       	mov    eax,0x0
+     567:	eb 14                	jmp    57d <strchr+0x35>
 				else
 						str++;
-     56b:	83 45 08 01          	add    DWORD PTR [ebp+0x8],0x1
+     569:	83 45 08 01          	add    DWORD PTR [ebp+0x8],0x1
 		while (*str != (char)character)
-     56f:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     572:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     575:	8b 55 0c             	mov    edx,DWORD PTR [ebp+0xc]
-     578:	38 d0                	cmp    al,dl
-     57a:	75 de                	jne    55a <strchr+0x10>
+     56d:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     570:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     573:	8b 55 0c             	mov    edx,DWORD PTR [ebp+0xc]
+     576:	38 d0                	cmp    al,dl
+     578:	75 de                	jne    558 <strchr+0x10>
 		return (char*)str;
-     57c:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     57a:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
 }
-     57f:	5d                   	pop    ebp
-     580:	c3                   	ret
+     57d:	5d                   	pop    ebp
+     57e:	c3                   	ret
 
-00000581 <strndup>:
+0000057f <strndup>:
 
 char* strndup(const char* s, size_t n)
 {
-     581:	55                   	push   ebp
-     582:	89 e5                	mov    ebp,esp
-     584:	83 ec 18             	sub    esp,0x18
+     57f:	55                   	push   ebp
+     580:	89 e5                	mov    ebp,esp
+     582:	83 ec 28             	sub    esp,0x28
 		size_t l; char* rv;
 		if (!s)
-     587:	83 7d 08 00          	cmp    DWORD PTR [ebp+0x8],0x0
-     58b:	75 0a                	jne    597 <strndup+0x16>
+     585:	83 7d 08 00          	cmp    DWORD PTR [ebp+0x8],0x0
+     589:	75 07                	jne    592 <strndup+0x13>
 				return NULL;
-     58d:	b8 00 00 00 00       	mov    eax,0x0
-     592:	e9 80 00 00 00       	jmp    617 <strndup+0x96>
+     58b:	b8 00 00 00 00       	mov    eax,0x0
+     590:	eb 7c                	jmp    60e <strndup+0x8f>
 		l = strlen(s);
-     597:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-     59a:	e8 fc ff ff ff       	call   59b <strndup+0x1a>
-     59f:	83 c4 04             	add    esp,0x4
-     5a2:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
+     592:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     595:	89 04 24             	mov    DWORD PTR [esp],eax
+     598:	e8 fc ff ff ff       	call   599 <strndup+0x1a>
+     59d:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
 		rv = kmalloc(1 + (l = min(l, n)));
-     5a5:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-     5a8:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     5ab:	39 c2                	cmp    edx,eax
-     5ad:	0f 46 c2             	cmovbe eax,edx
-     5b0:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
-     5b3:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     5b6:	83 c0 01             	add    eax,0x1
-     5b9:	83 ec 0c             	sub    esp,0xc
-     5bc:	50                   	push   eax
-     5bd:	e8 fc ff ff ff       	call   5be <strndup+0x3d>
-     5c2:	83 c4 10             	add    esp,0x10
-     5c5:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
+     5a0:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+     5a3:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     5a6:	39 c2                	cmp    edx,eax
+     5a8:	0f 46 c2             	cmovbe eax,edx
+     5ab:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
+     5ae:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     5b1:	83 c0 01             	add    eax,0x1
+     5b4:	89 04 24             	mov    DWORD PTR [esp],eax
+     5b7:	e8 fc ff ff ff       	call   5b8 <strndup+0x39>
+     5bc:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
 		if (!rv) {
-     5c8:	83 7d f0 00          	cmp    DWORD PTR [ebp-0x10],0x0
-     5cc:	75 11                	jne    5df <strndup+0x5e>
+     5bf:	83 7d f0 00          	cmp    DWORD PTR [ebp-0x10],0x0
+     5c3:	75 11                	jne    5d6 <strndup+0x57>
 				errno = ENOMEM;
-     5ce:	c7 05 00 00 00 00 0c 00 00 00 	mov    DWORD PTR ds:0x0,0xc
+     5c5:	c7 05 00 00 00 00 0c 00 00 00 	mov    DWORD PTR ds:0x0,0xc
 				return NULL;
-     5d8:	b8 00 00 00 00       	mov    eax,0x0
-     5dd:	eb 38                	jmp    617 <strndup+0x96>
+     5cf:	b8 00 00 00 00       	mov    eax,0x0
+     5d4:	eb 38                	jmp    60e <strndup+0x8f>
 		}
 		for (n = 0; n < l; n++)
-     5df:	c7 45 0c 00 00 00 00 	mov    DWORD PTR [ebp+0xc],0x0
-     5e6:	eb 19                	jmp    601 <strndup+0x80>
+     5d6:	c7 45 0c 00 00 00 00 	mov    DWORD PTR [ebp+0xc],0x0
+     5dd:	eb 19                	jmp    5f8 <strndup+0x79>
 				rv[n] = s[n];
-     5e8:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
-     5eb:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     5ee:	01 d0                	add    eax,edx
-     5f0:	8b 4d f0             	mov    ecx,DWORD PTR [ebp-0x10]
-     5f3:	8b 55 0c             	mov    edx,DWORD PTR [ebp+0xc]
-     5f6:	01 ca                	add    edx,ecx
-     5f8:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     5fb:	88 02                	mov    BYTE PTR [edx],al
+     5df:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
+     5e2:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     5e5:	01 d0                	add    eax,edx
+     5e7:	8b 4d f0             	mov    ecx,DWORD PTR [ebp-0x10]
+     5ea:	8b 55 0c             	mov    edx,DWORD PTR [ebp+0xc]
+     5ed:	01 ca                	add    edx,ecx
+     5ef:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     5f2:	88 02                	mov    BYTE PTR [edx],al
 		for (n = 0; n < l; n++)
-     5fd:	83 45 0c 01          	add    DWORD PTR [ebp+0xc],0x1
-     601:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     604:	3b 45 f4             	cmp    eax,DWORD PTR [ebp-0xc]
-     607:	72 df                	jb     5e8 <strndup+0x67>
+     5f4:	83 45 0c 01          	add    DWORD PTR [ebp+0xc],0x1
+     5f8:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     5fb:	3b 45 f4             	cmp    eax,DWORD PTR [ebp-0xc]
+     5fe:	72 df                	jb     5df <strndup+0x60>
 		rv[n] = '\0';
-     609:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
-     60c:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     60f:	01 d0                	add    eax,edx
-     611:	c6 00 00             	mov    BYTE PTR [eax],0x0
+     600:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
+     603:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     606:	01 d0                	add    eax,edx
+     608:	c6 00 00             	mov    BYTE PTR [eax],0x0
 		return rv;
-     614:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+     60b:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
 }
-     617:	c9                   	leave
-     618:	c3                   	ret
+     60e:	c9                   	leave
+     60f:	c3                   	ret
 
-00000619 <strdup>:
+00000610 <strdup>:
 
 char* strdup(const char* s)
 {
-     619:	55                   	push   ebp
-     61a:	89 e5                	mov    ebp,esp
-     61c:	83 ec 18             	sub    esp,0x18
+     610:	55                   	push   ebp
+     611:	89 e5                	mov    ebp,esp
+     613:	83 ec 28             	sub    esp,0x28
 		char* rv; size_t l, n;
 		if (!s)
-     61f:	83 7d 08 00          	cmp    DWORD PTR [ebp+0x8],0x0
-     623:	75 07                	jne    62c <strdup+0x13>
+     616:	83 7d 08 00          	cmp    DWORD PTR [ebp+0x8],0x0
+     61a:	75 07                	jne    623 <strdup+0x13>
 				return NULL;
-     625:	b8 00 00 00 00       	mov    eax,0x0
-     62a:	eb 5a                	jmp    686 <strdup+0x6d>
+     61c:	b8 00 00 00 00       	mov    eax,0x0
+     621:	eb 57                	jmp    67a <strdup+0x6a>
 		l = strlen(s) + 1;
-     62c:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-     62f:	e8 fc ff ff ff       	call   630 <strdup+0x17>
-     634:	83 c4 04             	add    esp,0x4
-     637:	83 c0 01             	add    eax,0x1
-     63a:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
+     623:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     626:	89 04 24             	mov    DWORD PTR [esp],eax
+     629:	e8 fc ff ff ff       	call   62a <strdup+0x1a>
+     62e:	83 c0 01             	add    eax,0x1
+     631:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
 		rv = kmalloc(l);
-     63d:	83 ec 0c             	sub    esp,0xc
-     640:	ff 75 f0             	push   DWORD PTR [ebp-0x10]
-     643:	e8 fc ff ff ff       	call   644 <strdup+0x2b>
-     648:	83 c4 10             	add    esp,0x10
-     64b:	89 45 ec             	mov    DWORD PTR [ebp-0x14],eax
+     634:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+     637:	89 04 24             	mov    DWORD PTR [esp],eax
+     63a:	e8 fc ff ff ff       	call   63b <strdup+0x2b>
+     63f:	89 45 ec             	mov    DWORD PTR [ebp-0x14],eax
 		for (n = 0; n < l; n++)
-     64e:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
-     655:	eb 19                	jmp    670 <strdup+0x57>
+     642:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
+     649:	eb 19                	jmp    664 <strdup+0x54>
 				rv[n] = s[n];
-     657:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
-     65a:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     65d:	01 d0                	add    eax,edx
-     65f:	8b 4d ec             	mov    ecx,DWORD PTR [ebp-0x14]
-     662:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-     665:	01 ca                	add    edx,ecx
-     667:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     66a:	88 02                	mov    BYTE PTR [edx],al
+     64b:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
+     64e:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     651:	01 d0                	add    eax,edx
+     653:	8b 4d ec             	mov    ecx,DWORD PTR [ebp-0x14]
+     656:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+     659:	01 ca                	add    edx,ecx
+     65b:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     65e:	88 02                	mov    BYTE PTR [edx],al
 		for (n = 0; n < l; n++)
-     66c:	83 45 f4 01          	add    DWORD PTR [ebp-0xc],0x1
-     670:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     673:	3b 45 f0             	cmp    eax,DWORD PTR [ebp-0x10]
-     676:	72 df                	jb     657 <strdup+0x3e>
+     660:	83 45 f4 01          	add    DWORD PTR [ebp-0xc],0x1
+     664:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     667:	3b 45 f0             	cmp    eax,DWORD PTR [ebp-0x10]
+     66a:	72 df                	jb     64b <strdup+0x3b>
 		rv[n] = '\0';
-     678:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
-     67b:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     67e:	01 d0                	add    eax,edx
-     680:	c6 00 00             	mov    BYTE PTR [eax],0x0
+     66c:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
+     66f:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     672:	01 d0                	add    eax,edx
+     674:	c6 00 00             	mov    BYTE PTR [eax],0x0
 		return rv;
-     683:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+     677:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
 }
-     686:	c9                   	leave
-     687:	c3                   	ret
+     67a:	c9                   	leave
+     67b:	c3                   	ret
 
-00000688 <strncpy>:
+0000067c <strncpy>:
 
 char* strncpy(char* dest, const char* src, size_t n)
 {
-     688:	55                   	push   ebp
-     689:	89 e5                	mov    ebp,esp
-     68b:	83 ec 10             	sub    esp,0x10
+     67c:	55                   	push   ebp
+     67d:	89 e5                	mov    ebp,esp
+     67f:	83 ec 10             	sub    esp,0x10
 		size_t i;
 		if (!dest)
-     68e:	83 7d 08 00          	cmp    DWORD PTR [ebp+0x8],0x0
-     692:	75 07                	jne    69b <strncpy+0x13>
+     682:	83 7d 08 00          	cmp    DWORD PTR [ebp+0x8],0x0
+     686:	75 07                	jne    68f <strncpy+0x13>
 				return NULL;
-     694:	b8 00 00 00 00       	mov    eax,0x0
-     699:	eb 58                	jmp    6f3 <strncpy+0x6b>
+     688:	b8 00 00 00 00       	mov    eax,0x0
+     68d:	eb 58                	jmp    6e7 <strncpy+0x6b>
 		for (i = 0; i < n; i++) {
-     69b:	c7 45 fc 00 00 00 00 	mov    DWORD PTR [ebp-0x4],0x0
-     6a2:	eb 44                	jmp    6e8 <strncpy+0x60>
+     68f:	c7 45 fc 00 00 00 00 	mov    DWORD PTR [ebp-0x4],0x0
+     696:	eb 44                	jmp    6dc <strncpy+0x60>
 				dest[i] = src ? *src : '\0';
-     6a4:	83 7d 0c 00          	cmp    DWORD PTR [ebp+0xc],0x0
-     6a8:	74 08                	je     6b2 <strncpy+0x2a>
-     6aa:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     6ad:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     6b0:	eb 05                	jmp    6b7 <strncpy+0x2f>
-     6b2:	b8 00 00 00 00       	mov    eax,0x0
-     6b7:	8b 4d 08             	mov    ecx,DWORD PTR [ebp+0x8]
-     6ba:	8b 55 fc             	mov    edx,DWORD PTR [ebp-0x4]
-     6bd:	01 ca                	add    edx,ecx
-     6bf:	88 02                	mov    BYTE PTR [edx],al
+     698:	83 7d 0c 00          	cmp    DWORD PTR [ebp+0xc],0x0
+     69c:	74 08                	je     6a6 <strncpy+0x2a>
+     69e:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     6a1:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     6a4:	eb 05                	jmp    6ab <strncpy+0x2f>
+     6a6:	b8 00 00 00 00       	mov    eax,0x0
+     6ab:	8b 4d 08             	mov    ecx,DWORD PTR [ebp+0x8]
+     6ae:	8b 55 fc             	mov    edx,DWORD PTR [ebp-0x4]
+     6b1:	01 ca                	add    edx,ecx
+     6b3:	88 02                	mov    BYTE PTR [edx],al
 				if (src && !(*src))
-     6c1:	83 7d 0c 00          	cmp    DWORD PTR [ebp+0xc],0x0
-     6c5:	74 13                	je     6da <strncpy+0x52>
-     6c7:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     6ca:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     6cd:	84 c0                	test   al,al
-     6cf:	75 09                	jne    6da <strncpy+0x52>
+     6b5:	83 7d 0c 00          	cmp    DWORD PTR [ebp+0xc],0x0
+     6b9:	74 13                	je     6ce <strncpy+0x52>
+     6bb:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     6be:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     6c1:	84 c0                	test   al,al
+     6c3:	75 09                	jne    6ce <strncpy+0x52>
 						src = NULL;
-     6d1:	c7 45 0c 00 00 00 00 	mov    DWORD PTR [ebp+0xc],0x0
-     6d8:	eb 0a                	jmp    6e4 <strncpy+0x5c>
+     6c5:	c7 45 0c 00 00 00 00 	mov    DWORD PTR [ebp+0xc],0x0
+     6cc:	eb 0a                	jmp    6d8 <strncpy+0x5c>
 				else if (src)
-     6da:	83 7d 0c 00          	cmp    DWORD PTR [ebp+0xc],0x0
-     6de:	74 04                	je     6e4 <strncpy+0x5c>
+     6ce:	83 7d 0c 00          	cmp    DWORD PTR [ebp+0xc],0x0
+     6d2:	74 04                	je     6d8 <strncpy+0x5c>
 						src++;
-     6e0:	83 45 0c 01          	add    DWORD PTR [ebp+0xc],0x1
+     6d4:	83 45 0c 01          	add    DWORD PTR [ebp+0xc],0x1
 		for (i = 0; i < n; i++) {
-     6e4:	83 45 fc 01          	add    DWORD PTR [ebp-0x4],0x1
-     6e8:	8b 45 fc             	mov    eax,DWORD PTR [ebp-0x4]
-     6eb:	3b 45 10             	cmp    eax,DWORD PTR [ebp+0x10]
-     6ee:	72 b4                	jb     6a4 <strncpy+0x1c>
+     6d8:	83 45 fc 01          	add    DWORD PTR [ebp-0x4],0x1
+     6dc:	8b 45 fc             	mov    eax,DWORD PTR [ebp-0x4]
+     6df:	3b 45 10             	cmp    eax,DWORD PTR [ebp+0x10]
+     6e2:	72 b4                	jb     698 <strncpy+0x1c>
 		}
 		return dest;
-     6f0:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     6e4:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
 }
-     6f3:	c9                   	leave
-     6f4:	c3                   	ret
+     6e7:	c9                   	leave
+     6e8:	c3                   	ret
 
-000006f5 <strcpy>:
+000006e9 <strcpy>:
 
 char* strcpy(char* dest, char* src)
 {
-     6f5:	55                   	push   ebp
-     6f6:	89 e5                	mov    ebp,esp
-     6f8:	83 ec 10             	sub    esp,0x10
+     6e9:	55                   	push   ebp
+     6ea:	89 e5                	mov    ebp,esp
+     6ec:	83 ec 10             	sub    esp,0x10
 		char* rv = dest;
-     6fb:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     6fe:	89 45 fc             	mov    DWORD PTR [ebp-0x4],eax
+     6ef:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     6f2:	89 45 fc             	mov    DWORD PTR [ebp-0x4],eax
 		if (!dest || !src)
-     701:	83 7d 08 00          	cmp    DWORD PTR [ebp+0x8],0x0
-     705:	74 06                	je     70d <strcpy+0x18>
-     707:	83 7d 0c 00          	cmp    DWORD PTR [ebp+0xc],0x0
-     70b:	75 07                	jne    714 <strcpy+0x1f>
+     6f5:	83 7d 08 00          	cmp    DWORD PTR [ebp+0x8],0x0
+     6f9:	74 06                	je     701 <strcpy+0x18>
+     6fb:	83 7d 0c 00          	cmp    DWORD PTR [ebp+0xc],0x0
+     6ff:	75 07                	jne    708 <strcpy+0x1f>
 				return NULL;
-     70d:	b8 00 00 00 00       	mov    eax,0x0
-     712:	eb 24                	jmp    738 <strcpy+0x43>
+     701:	b8 00 00 00 00       	mov    eax,0x0
+     706:	eb 24                	jmp    72c <strcpy+0x43>
 		do {
 			*(dest++) = *(src++);
-     714:	8b 55 0c             	mov    edx,DWORD PTR [ebp+0xc]
-     717:	8d 42 01             	lea    eax,[edx+0x1]
-     71a:	89 45 0c             	mov    DWORD PTR [ebp+0xc],eax
-     71d:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     720:	8d 48 01             	lea    ecx,[eax+0x1]
-     723:	89 4d 08             	mov    DWORD PTR [ebp+0x8],ecx
-     726:	0f b6 12             	movzx  edx,BYTE PTR [edx]
-     729:	88 10                	mov    BYTE PTR [eax],dl
+     708:	8b 55 0c             	mov    edx,DWORD PTR [ebp+0xc]
+     70b:	8d 42 01             	lea    eax,[edx+0x1]
+     70e:	89 45 0c             	mov    DWORD PTR [ebp+0xc],eax
+     711:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     714:	8d 48 01             	lea    ecx,[eax+0x1]
+     717:	89 4d 08             	mov    DWORD PTR [ebp+0x8],ecx
+     71a:	0f b6 12             	movzx  edx,BYTE PTR [edx]
+     71d:	88 10                	mov    BYTE PTR [eax],dl
 		} while (*src);
-     72b:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     72e:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     731:	84 c0                	test   al,al
-     733:	75 df                	jne    714 <strcpy+0x1f>
+     71f:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     722:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     725:	84 c0                	test   al,al
+     727:	75 df                	jne    708 <strcpy+0x1f>
 		return rv;
-     735:	8b 45 fc             	mov    eax,DWORD PTR [ebp-0x4]
+     729:	8b 45 fc             	mov    eax,DWORD PTR [ebp-0x4]
 }
-     738:	c9                   	leave
-     739:	c3                   	ret
+     72c:	c9                   	leave
+     72d:	c3                   	ret
 
-0000073a <strtok_r>:
+0000072e <strtok_r>:
 
 char* strtok_r(char* str, const char* delim, char** saveptr)
 {
-     73a:	55                   	push   ebp
-     73b:	89 e5                	mov    ebp,esp
-     73d:	83 ec 10             	sub    esp,0x10
+     72e:	55                   	push   ebp
+     72f:	89 e5                	mov    ebp,esp
+     731:	83 ec 14             	sub    esp,0x14
 		size_t l = strlen(delim);
-     740:	ff 75 0c             	push   DWORD PTR [ebp+0xc]
-     743:	e8 fc ff ff ff       	call   744 <strtok_r+0xa>
-     748:	83 c4 04             	add    esp,0x4
-     74b:	89 45 f8             	mov    DWORD PTR [ebp-0x8],eax
+     734:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     737:	89 04 24             	mov    DWORD PTR [esp],eax
+     73a:	e8 fc ff ff ff       	call   73b <strtok_r+0xd>
+     73f:	89 45 f8             	mov    DWORD PTR [ebp-0x8],eax
 		if (str)
-     74e:	83 7d 08 00          	cmp    DWORD PTR [ebp+0x8],0x0
-     752:	74 08                	je     75c <strtok_r+0x22>
+     742:	83 7d 08 00          	cmp    DWORD PTR [ebp+0x8],0x0
+     746:	74 08                	je     750 <strtok_r+0x22>
 				*saveptr = str;
-     754:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-     757:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
-     75a:	89 10                	mov    DWORD PTR [eax],edx
+     748:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+     74b:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
+     74e:	89 10                	mov    DWORD PTR [eax],edx
 		str = *saveptr;
-     75c:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-     75f:	8b 00                	mov    eax,DWORD PTR [eax]
-     761:	89 45 08             	mov    DWORD PTR [ebp+0x8],eax
+     750:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+     753:	8b 00                	mov    eax,DWORD PTR [eax]
+     755:	89 45 08             	mov    DWORD PTR [ebp+0x8],eax
 		if (!l) { /* return full token only once */
-     764:	83 7d f8 00          	cmp    DWORD PTR [ebp-0x8],0x0
-     768:	75 7c                	jne    7e6 <strtok_r+0xac>
+     758:	83 7d f8 00          	cmp    DWORD PTR [ebp-0x8],0x0
+     75c:	75 7b                	jne    7d9 <strtok_r+0xab>
 				*saveptr = NULL;
-     76a:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-     76d:	c7 00 00 00 00 00    	mov    DWORD PTR [eax],0x0
+     75e:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+     761:	c7 00 00 00 00 00    	mov    DWORD PTR [eax],0x0
 				return str;
-     773:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     776:	e9 99 00 00 00       	jmp    814 <strtok_r+0xda>
+     767:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     76a:	e9 98 00 00 00       	jmp    807 <strtok_r+0xd9>
 		}
 		while (*str) {
 				for (size_t i = 0; i < l; i++)
-     77b:	c7 45 fc 00 00 00 00 	mov    DWORD PTR [ebp-0x4],0x0
-     782:	eb 56                	jmp    7da <strtok_r+0xa0>
+     76f:	c7 45 fc 00 00 00 00 	mov    DWORD PTR [ebp-0x4],0x0
+     776:	eb 55                	jmp    7cd <strtok_r+0x9f>
 						if (*str == delim[i]) {
-     784:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     787:	0f b6 10             	movzx  edx,BYTE PTR [eax]
-     78a:	8b 4d 0c             	mov    ecx,DWORD PTR [ebp+0xc]
-     78d:	8b 45 fc             	mov    eax,DWORD PTR [ebp-0x4]
-     790:	01 c8                	add    eax,ecx
-     792:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     795:	38 c2                	cmp    dl,al
-     797:	75 3d                	jne    7d6 <strtok_r+0x9c>
+     778:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     77b:	0f b6 10             	movzx  edx,BYTE PTR [eax]
+     77e:	8b 4d 0c             	mov    ecx,DWORD PTR [ebp+0xc]
+     781:	8b 45 fc             	mov    eax,DWORD PTR [ebp-0x4]
+     784:	01 c8                	add    eax,ecx
+     786:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     789:	38 c2                	cmp    dl,al
+     78b:	75 3c                	jne    7c9 <strtok_r+0x9b>
 								*str = '\0';
-     799:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     79c:	c6 00 00             	mov    BYTE PTR [eax],0x0
+     78d:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     790:	c6 00 00             	mov    BYTE PTR [eax],0x0
 								if (strlen(*saveptr)) {
-     79f:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-     7a2:	8b 00                	mov    eax,DWORD PTR [eax]
-     7a4:	50                   	push   eax
-     7a5:	e8 fc ff ff ff       	call   7a6 <strtok_r+0x6c>
-     7aa:	83 c4 04             	add    esp,0x4
-     7ad:	85 c0                	test   eax,eax
-     7af:	74 18                	je     7c9 <strtok_r+0x8f>
+     793:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+     796:	8b 00                	mov    eax,DWORD PTR [eax]
+     798:	89 04 24             	mov    DWORD PTR [esp],eax
+     79b:	e8 fc ff ff ff       	call   79c <strtok_r+0x6e>
+     7a0:	85 c0                	test   eax,eax
+     7a2:	74 18                	je     7bc <strtok_r+0x8e>
 										char* rv = *saveptr;
-     7b1:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-     7b4:	8b 00                	mov    eax,DWORD PTR [eax]
-     7b6:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
+     7a4:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+     7a7:	8b 00                	mov    eax,DWORD PTR [eax]
+     7a9:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
 										*saveptr = str + 1;
-     7b9:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     7bc:	8d 50 01             	lea    edx,[eax+0x1]
-     7bf:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-     7c2:	89 10                	mov    DWORD PTR [eax],edx
+     7ac:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     7af:	8d 50 01             	lea    edx,[eax+0x1]
+     7b2:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+     7b5:	89 10                	mov    DWORD PTR [eax],edx
 										return rv;
-     7c4:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-     7c7:	eb 4b                	jmp    814 <strtok_r+0xda>
+     7b7:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+     7ba:	eb 4b                	jmp    807 <strtok_r+0xd9>
 								} else
 										*saveptr = str + 1;
-     7c9:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     7cc:	8d 50 01             	lea    edx,[eax+0x1]
-     7cf:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-     7d2:	89 10                	mov    DWORD PTR [eax],edx
+     7bc:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     7bf:	8d 50 01             	lea    edx,[eax+0x1]
+     7c2:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+     7c5:	89 10                	mov    DWORD PTR [eax],edx
 								break;
-     7d4:	eb 0c                	jmp    7e2 <strtok_r+0xa8>
+     7c7:	eb 0c                	jmp    7d5 <strtok_r+0xa7>
 				for (size_t i = 0; i < l; i++)
-     7d6:	83 45 fc 01          	add    DWORD PTR [ebp-0x4],0x1
-     7da:	8b 45 fc             	mov    eax,DWORD PTR [ebp-0x4]
-     7dd:	3b 45 f8             	cmp    eax,DWORD PTR [ebp-0x8]
-     7e0:	72 a2                	jb     784 <strtok_r+0x4a>
+     7c9:	83 45 fc 01          	add    DWORD PTR [ebp-0x4],0x1
+     7cd:	8b 45 fc             	mov    eax,DWORD PTR [ebp-0x4]
+     7d0:	3b 45 f8             	cmp    eax,DWORD PTR [ebp-0x8]
+     7d3:	72 a3                	jb     778 <strtok_r+0x4a>
 						}
 				str++;
-     7e2:	83 45 08 01          	add    DWORD PTR [ebp+0x8],0x1
+     7d5:	83 45 08 01          	add    DWORD PTR [ebp+0x8],0x1
 		while (*str) {
-     7e6:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     7e9:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     7ec:	84 c0                	test   al,al
-     7ee:	75 8b                	jne    77b <strtok_r+0x41>
+     7d9:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     7dc:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     7df:	84 c0                	test   al,al
+     7e1:	75 8c                	jne    76f <strtok_r+0x41>
 		}
 		/* in case of no delims return full token once */
 		if (str == *saveptr)
-     7f0:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-     7f3:	8b 00                	mov    eax,DWORD PTR [eax]
-     7f5:	39 45 08             	cmp    DWORD PTR [ebp+0x8],eax
-     7f8:	75 07                	jne    801 <strtok_r+0xc7>
+     7e3:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+     7e6:	8b 00                	mov    eax,DWORD PTR [eax]
+     7e8:	39 45 08             	cmp    DWORD PTR [ebp+0x8],eax
+     7eb:	75 07                	jne    7f4 <strtok_r+0xc6>
 				return NULL;
-     7fa:	b8 00 00 00 00       	mov    eax,0x0
-     7ff:	eb 13                	jmp    814 <strtok_r+0xda>
+     7ed:	b8 00 00 00 00       	mov    eax,0x0
+     7f2:	eb 13                	jmp    807 <strtok_r+0xd9>
 		else {
 				char* rv = *saveptr;
-     801:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-     804:	8b 00                	mov    eax,DWORD PTR [eax]
-     806:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
+     7f4:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+     7f7:	8b 00                	mov    eax,DWORD PTR [eax]
+     7f9:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
 				*saveptr = str;
-     809:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-     80c:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
-     80f:	89 10                	mov    DWORD PTR [eax],edx
+     7fc:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+     7ff:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
+     802:	89 10                	mov    DWORD PTR [eax],edx
 				return rv;
-     811:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     804:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
 		}
 }
-     814:	c9                   	leave
-     815:	c3                   	ret
+     807:	c9                   	leave
+     808:	c3                   	ret
 
-00000816 <strtok>:
+00000809 <strtok>:
 
 char* strtok(char* str, const char* delim)
 {
-     816:	55                   	push   ebp
-     817:	89 e5                	mov    ebp,esp
+     809:	55                   	push   ebp
+     80a:	89 e5                	mov    ebp,esp
+     80c:	83 ec 0c             	sub    esp,0xc
 		static char* ptr;
 		return strtok_r(str, delim, &ptr);
-     819:	68 08 00 00 00       	push   0x8
-     81e:	ff 75 0c             	push   DWORD PTR [ebp+0xc]
-     821:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-     824:	e8 fc ff ff ff       	call   825 <strtok+0xf>
-     829:	83 c4 0c             	add    esp,0xc
+     80f:	c7 44 24 08 00 00 00 00 	mov    DWORD PTR [esp+0x8],0x0
+     817:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     81a:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+     81e:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     821:	89 04 24             	mov    DWORD PTR [esp],eax
+     824:	e8 fc ff ff ff       	call   825 <strtok+0x1c>
 }
-     82c:	c9                   	leave
-     82d:	c3                   	ret
+     829:	c9                   	leave
+     82a:	c3                   	ret
 
-0000082e <asctime_r>:
+0000082b <asctime_r>:
 
 char* asctime_r(const struct tm* timep, char* result)
 {
-     82e:	55                   	push   ebp
-     82f:	89 e5                	mov    ebp,esp
-     831:	57                   	push   edi
-     832:	56                   	push   esi
-     833:	53                   	push   ebx
-     834:	83 ec 2c             	sub    esp,0x2c
+     82b:	55                   	push   ebp
+     82c:	89 e5                	mov    ebp,esp
+     82e:	57                   	push   edi
+     82f:	56                   	push   esi
+     830:	53                   	push   ebx
+     831:	83 ec 5c             	sub    esp,0x5c
 		};
 		static char mon_name[12][3] = {
 			"Jan", "Feb", "Mar", "Apr", "May", "Jun",
 			"Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
 		};
 		char zerobt = 0;
-     837:	c6 45 e7 00          	mov    BYTE PTR [ebp-0x19],0x0
+     834:	c6 45 e7 00          	mov    BYTE PTR [ebp-0x19],0x0
 		sprintf(result, "%.3s %.3s%3d %.2d:%.2d:%.2d %d\n",
 			wday_name[timep->tm_wday],
 			mon_name[timep->tm_mon],
 			timep->tm_mday, timep->tm_hour,
 			timep->tm_min, timep->tm_sec,
 			1900 + timep->tm_year);
-     83b:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     83e:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
+     838:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     83b:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
 		sprintf(result, "%.3s %.3s%3d %.2d:%.2d:%.2d %d\n",
-     841:	05 6c 07 00 00       	add    eax,0x76c
-     846:	89 45 d4             	mov    DWORD PTR [ebp-0x2c],eax
+     83e:	05 6c 07 00 00       	add    eax,0x76c
+     843:	89 45 d4             	mov    DWORD PTR [ebp-0x2c],eax
 			timep->tm_min, timep->tm_sec,
-     849:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     84c:	8b 08                	mov    ecx,DWORD PTR [eax]
-     84e:	89 4d d0             	mov    DWORD PTR [ebp-0x30],ecx
-     851:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     854:	8b 78 04             	mov    edi,DWORD PTR [eax+0x4]
+     846:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     849:	8b 08                	mov    ecx,DWORD PTR [eax]
+     84b:	89 4d d0             	mov    DWORD PTR [ebp-0x30],ecx
+     84e:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     851:	8b 78 04             	mov    edi,DWORD PTR [eax+0x4]
 			timep->tm_mday, timep->tm_hour,
-     857:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     85a:	8b 70 08             	mov    esi,DWORD PTR [eax+0x8]
-     85d:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     860:	8b 58 0c             	mov    ebx,DWORD PTR [eax+0xc]
+     854:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     857:	8b 70 08             	mov    esi,DWORD PTR [eax+0x8]
+     85a:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     85d:	8b 58 0c             	mov    ebx,DWORD PTR [eax+0xc]
 			mon_name[timep->tm_mon],
-     863:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     866:	8b 50 10             	mov    edx,DWORD PTR [eax+0x10]
-     869:	89 d0                	mov    eax,edx
-     86b:	01 c0                	add    eax,eax
-     86d:	01 d0                	add    eax,edx
-     86f:	8d 88 00 00 00 00    	lea    ecx,[eax+0x0]
+     860:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     863:	8b 50 10             	mov    edx,DWORD PTR [eax+0x10]
+     866:	89 d0                	mov    eax,edx
+     868:	01 c0                	add    eax,eax
+     86a:	01 d0                	add    eax,edx
+     86c:	8d 88 00 00 00 00    	lea    ecx,[eax+0x0]
 			wday_name[timep->tm_wday],
-     875:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     878:	8b 50 18             	mov    edx,DWORD PTR [eax+0x18]
-     87b:	89 d0                	mov    eax,edx
-     87d:	01 c0                	add    eax,eax
-     87f:	01 d0                	add    eax,edx
-     881:	05 24 00 00 00       	add    eax,0x24
+     872:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     875:	8b 50 18             	mov    edx,DWORD PTR [eax+0x18]
+     878:	89 d0                	mov    eax,edx
+     87a:	01 c0                	add    eax,eax
+     87c:	01 d0                	add    eax,edx
+     87e:	05 24 00 00 00       	add    eax,0x24
 		sprintf(result, "%.3s %.3s%3d %.2d:%.2d:%.2d %d\n",
-     886:	83 ec 0c             	sub    esp,0xc
-     889:	ff 75 d4             	push   DWORD PTR [ebp-0x2c]
-     88c:	ff 75 d0             	push   DWORD PTR [ebp-0x30]
-     88f:	57                   	push   edi
-     890:	56                   	push   esi
-     891:	53                   	push   ebx
-     892:	51                   	push   ecx
-     893:	50                   	push   eax
-     894:	68 00 00 00 00       	push   0x0
-     899:	ff 75 0c             	push   DWORD PTR [ebp+0xc]
-     89c:	e8 fc ff ff ff       	call   89d <asctime_r+0x6f>
-     8a1:	83 c4 30             	add    esp,0x30
+     883:	8b 55 d4             	mov    edx,DWORD PTR [ebp-0x2c]
+     886:	89 54 24 20          	mov    DWORD PTR [esp+0x20],edx
+     88a:	8b 55 d0             	mov    edx,DWORD PTR [ebp-0x30]
+     88d:	89 54 24 1c          	mov    DWORD PTR [esp+0x1c],edx
+     891:	89 7c 24 18          	mov    DWORD PTR [esp+0x18],edi
+     895:	89 74 24 14          	mov    DWORD PTR [esp+0x14],esi
+     899:	89 5c 24 10          	mov    DWORD PTR [esp+0x10],ebx
+     89d:	89 4c 24 0c          	mov    DWORD PTR [esp+0xc],ecx
+     8a1:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+     8a5:	c7 44 24 04 00 00 00 00 	mov    DWORD PTR [esp+0x4],0x0
+     8ad:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     8b0:	89 04 24             	mov    DWORD PTR [esp],eax
+     8b3:	e8 fc ff ff ff       	call   8b4 <asctime_r+0x89>
 		return result;
-     8a4:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     8b8:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
 }
-     8a7:	8d 65 f4             	lea    esp,[ebp-0xc]
-     8aa:	5b                   	pop    ebx
-     8ab:	5e                   	pop    esi
-     8ac:	5f                   	pop    edi
-     8ad:	5d                   	pop    ebp
-     8ae:	c3                   	ret
+     8bb:	83 c4 5c             	add    esp,0x5c
+     8be:	5b                   	pop    ebx
+     8bf:	5e                   	pop    esi
+     8c0:	5f                   	pop    edi
+     8c1:	5d                   	pop    ebp
+     8c2:	c3                   	ret
 
-000008af <asctime>:
+000008c3 <asctime>:
 
 char* asctime(const struct tm* timep)
 {
-     8af:	55                   	push   ebp
-     8b0:	89 e5                	mov    ebp,esp
-     8b2:	83 ec 08             	sub    esp,0x8
+     8c3:	55                   	push   ebp
+     8c4:	89 e5                	mov    ebp,esp
+     8c6:	83 ec 18             	sub    esp,0x18
 		static char result[26];
 		return asctime_r(timep, result);
-     8b5:	83 ec 08             	sub    esp,0x8
-     8b8:	68 0c 00 00 00       	push   0xc
-     8bd:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-     8c0:	e8 fc ff ff ff       	call   8c1 <asctime+0x12>
-     8c5:	83 c4 10             	add    esp,0x10
+     8c9:	c7 44 24 04 04 00 00 00 	mov    DWORD PTR [esp+0x4],0x4
+     8d1:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     8d4:	89 04 24             	mov    DWORD PTR [esp],eax
+     8d7:	e8 fc ff ff ff       	call   8d8 <asctime+0x15>
 }
-     8c8:	c9                   	leave
-     8c9:	c3                   	ret
+     8dc:	c9                   	leave
+     8dd:	c3                   	ret
 
-000008ca <ctime>:
+000008de <ctime>:
 
 char* ctime(const time_t* timep)
 {
-     8ca:	55                   	push   ebp
-     8cb:	89 e5                	mov    ebp,esp
-     8cd:	83 ec 08             	sub    esp,0x8
+     8de:	55                   	push   ebp
+     8df:	89 e5                	mov    ebp,esp
+     8e1:	83 ec 18             	sub    esp,0x18
 		return asctime(localtime(timep));
-     8d0:	83 ec 0c             	sub    esp,0xc
-     8d3:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-     8d6:	e8 fc ff ff ff       	call   8d7 <ctime+0xd>
-     8db:	83 c4 10             	add    esp,0x10
-     8de:	83 ec 0c             	sub    esp,0xc
-     8e1:	50                   	push   eax
-     8e2:	e8 fc ff ff ff       	call   8e3 <ctime+0x19>
-     8e7:	83 c4 10             	add    esp,0x10
+     8e4:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     8e7:	89 04 24             	mov    DWORD PTR [esp],eax
+     8ea:	e8 fc ff ff ff       	call   8eb <ctime+0xd>
+     8ef:	89 04 24             	mov    DWORD PTR [esp],eax
+     8f2:	e8 fc ff ff ff       	call   8f3 <ctime+0x15>
 }
-     8ea:	c9                   	leave
-     8eb:	c3                   	ret
+     8f7:	c9                   	leave
+     8f8:	c3                   	ret
 
-000008ec <ctime_r>:
+000008f9 <ctime_r>:
 
 char* ctime_r(const time_t* timep, char* result)
 {
-     8ec:	55                   	push   ebp
-     8ed:	89 e5                	mov    ebp,esp
-     8ef:	83 ec 08             	sub    esp,0x8
+     8f9:	55                   	push   ebp
+     8fa:	89 e5                	mov    ebp,esp
+     8fc:	83 ec 18             	sub    esp,0x18
 		return asctime_r(localtime(timep), result);
-     8f2:	83 ec 0c             	sub    esp,0xc
-     8f5:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-     8f8:	e8 fc ff ff ff       	call   8f9 <ctime_r+0xd>
-     8fd:	83 c4 10             	add    esp,0x10
-     900:	83 ec 08             	sub    esp,0x8
-     903:	ff 75 0c             	push   DWORD PTR [ebp+0xc]
-     906:	50                   	push   eax
-     907:	e8 fc ff ff ff       	call   908 <ctime_r+0x1c>
-     90c:	83 c4 10             	add    esp,0x10
+     8ff:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     902:	89 04 24             	mov    DWORD PTR [esp],eax
+     905:	e8 fc ff ff ff       	call   906 <ctime_r+0xd>
+     90a:	8b 55 0c             	mov    edx,DWORD PTR [ebp+0xc]
+     90d:	89 54 24 04          	mov    DWORD PTR [esp+0x4],edx
+     911:	89 04 24             	mov    DWORD PTR [esp],eax
+     914:	e8 fc ff ff ff       	call   915 <ctime_r+0x1c>
 }
-     90f:	c9                   	leave
-     910:	c3                   	ret
+     919:	c9                   	leave
+     91a:	c3                   	ret
 
-00000911 <time>:
+0000091b <time>:
 
 time_t time(time_t* timep)
 {
-     911:	55                   	push   ebp
-     912:	89 e5                	mov    ebp,esp
+     91b:	55                   	push   ebp
+     91c:	89 e5                	mov    ebp,esp
 }
-     914:	90                   	nop
-     915:	5d                   	pop    ebp
-     916:	c3                   	ret
+     91e:	90                   	nop
+     91f:	5d                   	pop    ebp
+     920:	c3                   	ret
 
-00000917 <mktime>:
+00000921 <mktime>:
 
 time_t mktime(struct tm* timep)
 {
-     917:	55                   	push   ebp
-     918:	89 e5                	mov    ebp,esp
+     921:	55                   	push   ebp
+     922:	89 e5                	mov    ebp,esp
 }
-     91a:	90                   	nop
-     91b:	5d                   	pop    ebp
-     91c:	c3                   	ret
+     924:	90                   	nop
+     925:	5d                   	pop    ebp
+     926:	c3                   	ret
 
-0000091d <gmtime_r>:
+00000927 <gmtime_r>:
 
 #define COUNT_LEAPS(Y)   ( ((Y)-1)/4 - ((Y)-1)/100 + ((Y)-1)/400 )
 #define COUNT_DAYS(Y)  ( ((Y)-1)*365 + COUNT_LEAPS(Y) )
 #define IS_LEAP_YEAR(Y)     ( ((Y)>0) && !((Y)%4) && ( ((Y)%100) || !((Y)%400) ) )
 struct tm* gmtime_r(const time_t* timep, struct tm* result)
 {
-     91d:	55                   	push   ebp
-     91e:	89 e5                	mov    ebp,esp
-     920:	57                   	push   edi
-     921:	56                   	push   esi
-     922:	53                   	push   ebx
-     923:	83 ec 3c             	sub    esp,0x3c
+     927:	55                   	push   ebp
+     928:	89 e5                	mov    ebp,esp
+     92a:	57                   	push   edi
+     92b:	56                   	push   esi
+     92c:	53                   	push   ebx
+     92d:	83 ec 4c             	sub    esp,0x4c
 		int dayct = *timep / 86400, isl, rem;
-     926:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     929:	8b 50 04             	mov    edx,DWORD PTR [eax+0x4]
-     92c:	8b 00                	mov    eax,DWORD PTR [eax]
-     92e:	6a 00                	push   0x0
-     930:	68 80 51 01 00       	push   0x15180
-     935:	52                   	push   edx
-     936:	50                   	push   eax
-     937:	e8 fc ff ff ff       	call   938 <gmtime_r+0x1b>
-     93c:	83 c4 10             	add    esp,0x10
-     93f:	89 45 e4             	mov    DWORD PTR [ebp-0x1c],eax
+     930:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     933:	8b 50 04             	mov    edx,DWORD PTR [eax+0x4]
+     936:	8b 00                	mov    eax,DWORD PTR [eax]
+     938:	c7 44 24 08 80 51 01 00 	mov    DWORD PTR [esp+0x8],0x15180
+     940:	c7 44 24 0c 00 00 00 00 	mov    DWORD PTR [esp+0xc],0x0
+     948:	89 04 24             	mov    DWORD PTR [esp],eax
+     94b:	89 54 24 04          	mov    DWORD PTR [esp+0x4],edx
+     94f:	e8 fc ff ff ff       	call   950 <gmtime_r+0x29>
+     954:	89 45 e4             	mov    DWORD PTR [ebp-0x1c],eax
 		*result = (struct tm){0};
-     942:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     945:	89 c3                	mov    ebx,eax
-     947:	b8 00 00 00 00       	mov    eax,0x0
-     94c:	ba 09 00 00 00       	mov    edx,0x9
-     951:	89 df                	mov    edi,ebx
-     953:	89 d1                	mov    ecx,edx
-     955:	f3 ab                	rep stos DWORD PTR es:[edi],eax
+     957:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     95a:	89 c3                	mov    ebx,eax
+     95c:	b8 00 00 00 00       	mov    eax,0x0
+     961:	ba 09 00 00 00       	mov    edx,0x9
+     966:	89 df                	mov    edi,ebx
+     968:	89 d1                	mov    ecx,edx
+     96a:	f3 ab                	rep stos DWORD PTR es:[edi],eax
 		result->tm_wday = (dayct + 4) % 7; /* Jan 1 1970 is Thu */
-     957:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
-     95a:	8d 48 04             	lea    ecx,[eax+0x4]
-     95d:	ba 93 24 49 92       	mov    edx,0x92492493
-     962:	89 c8                	mov    eax,ecx
-     964:	f7 ea                	imul   edx
-     966:	8d 04 0a             	lea    eax,[edx+ecx*1]
-     969:	c1 f8 02             	sar    eax,0x2
-     96c:	89 ca                	mov    edx,ecx
-     96e:	c1 fa 1f             	sar    edx,0x1f
-     971:	29 d0                	sub    eax,edx
-     973:	89 c2                	mov    edx,eax
-     975:	c1 e2 03             	shl    edx,0x3
-     978:	29 c2                	sub    edx,eax
-     97a:	89 c8                	mov    eax,ecx
-     97c:	29 d0                	sub    eax,edx
-     97e:	8b 55 0c             	mov    edx,DWORD PTR [ebp+0xc]
-     981:	89 42 18             	mov    DWORD PTR [edx+0x18],eax
+     96c:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
+     96f:	8d 48 04             	lea    ecx,[eax+0x4]
+     972:	ba 93 24 49 92       	mov    edx,0x92492493
+     977:	89 c8                	mov    eax,ecx
+     979:	f7 ea                	imul   edx
+     97b:	8d 04 0a             	lea    eax,[edx+ecx*1]
+     97e:	c1 f8 02             	sar    eax,0x2
+     981:	89 ca                	mov    edx,ecx
+     983:	c1 fa 1f             	sar    edx,0x1f
+     986:	29 d0                	sub    eax,edx
+     988:	89 c2                	mov    edx,eax
+     98a:	c1 e2 03             	shl    edx,0x3
+     98d:	29 c2                	sub    edx,eax
+     98f:	89 c8                	mov    eax,ecx
+     991:	29 d0                	sub    eax,edx
+     993:	8b 55 0c             	mov    edx,DWORD PTR [ebp+0xc]
+     996:	89 42 18             	mov    DWORD PTR [edx+0x18],eax
 		while (COUNT_DAYS(1900 + result->tm_year) - COUNT_DAYS(1970) <= dayct)
-     984:	eb 0f                	jmp    995 <gmtime_r+0x78>
+     999:	eb 0f                	jmp    9aa <gmtime_r+0x83>
 			result->tm_year++;
-     986:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     989:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
-     98c:	8d 50 01             	lea    edx,[eax+0x1]
-     98f:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     992:	89 50 14             	mov    DWORD PTR [eax+0x14],edx
+     99b:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     99e:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
+     9a1:	8d 50 01             	lea    edx,[eax+0x1]
+     9a4:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     9a7:	89 50 14             	mov    DWORD PTR [eax+0x14],edx
 		while (COUNT_DAYS(1900 + result->tm_year) - COUNT_DAYS(1970) <= dayct)
-     995:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     998:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
-     99b:	05 6b 07 00 00       	add    eax,0x76b
-     9a0:	69 d8 6d 01 00 00    	imul   ebx,eax,0x16d
-     9a6:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     9a9:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
-     9ac:	05 6b 07 00 00       	add    eax,0x76b
-     9b1:	8d 50 03             	lea    edx,[eax+0x3]
-     9b4:	85 c0                	test   eax,eax
-     9b6:	0f 48 c2             	cmovs  eax,edx
-     9b9:	c1 f8 02             	sar    eax,0x2
-     9bc:	89 c6                	mov    esi,eax
-     9be:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     9c1:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
-     9c4:	8d 88 6b 07 00 00    	lea    ecx,[eax+0x76b]
-     9ca:	ba 1f 85 eb 51       	mov    edx,0x51eb851f
-     9cf:	89 c8                	mov    eax,ecx
-     9d1:	f7 ea                	imul   edx
-     9d3:	89 d0                	mov    eax,edx
-     9d5:	c1 f8 05             	sar    eax,0x5
-     9d8:	c1 f9 1f             	sar    ecx,0x1f
-     9db:	89 ca                	mov    edx,ecx
-     9dd:	29 c2                	sub    edx,eax
-     9df:	01 d6                	add    esi,edx
-     9e1:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     9e4:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
-     9e7:	8d 88 6b 07 00 00    	lea    ecx,[eax+0x76b]
-     9ed:	ba 1f 85 eb 51       	mov    edx,0x51eb851f
-     9f2:	89 c8                	mov    eax,ecx
-     9f4:	f7 ea                	imul   edx
-     9f6:	c1 fa 07             	sar    edx,0x7
-     9f9:	89 c8                	mov    eax,ecx
-     9fb:	c1 f8 1f             	sar    eax,0x1f
-     9fe:	29 c2                	sub    edx,eax
-     a00:	8d 04 16             	lea    eax,[esi+edx*1]
-     a03:	01 d8                	add    eax,ebx
-     a05:	2d 3a f9 0a 00       	sub    eax,0xaf93a
-     a0a:	39 45 e4             	cmp    DWORD PTR [ebp-0x1c],eax
-     a0d:	0f 8d 73 ff ff ff    	jge    986 <gmtime_r+0x69>
+     9aa:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     9ad:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
+     9b0:	05 6b 07 00 00       	add    eax,0x76b
+     9b5:	69 d8 6d 01 00 00    	imul   ebx,eax,0x16d
+     9bb:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     9be:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
+     9c1:	05 6b 07 00 00       	add    eax,0x76b
+     9c6:	8d 50 03             	lea    edx,[eax+0x3]
+     9c9:	85 c0                	test   eax,eax
+     9cb:	0f 48 c2             	cmovs  eax,edx
+     9ce:	c1 f8 02             	sar    eax,0x2
+     9d1:	89 c6                	mov    esi,eax
+     9d3:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     9d6:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
+     9d9:	8d 88 6b 07 00 00    	lea    ecx,[eax+0x76b]
+     9df:	ba 1f 85 eb 51       	mov    edx,0x51eb851f
+     9e4:	89 c8                	mov    eax,ecx
+     9e6:	f7 ea                	imul   edx
+     9e8:	89 d0                	mov    eax,edx
+     9ea:	c1 f8 05             	sar    eax,0x5
+     9ed:	c1 f9 1f             	sar    ecx,0x1f
+     9f0:	89 ca                	mov    edx,ecx
+     9f2:	29 c2                	sub    edx,eax
+     9f4:	01 d6                	add    esi,edx
+     9f6:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     9f9:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
+     9fc:	8d 88 6b 07 00 00    	lea    ecx,[eax+0x76b]
+     a02:	ba 1f 85 eb 51       	mov    edx,0x51eb851f
+     a07:	89 c8                	mov    eax,ecx
+     a09:	f7 ea                	imul   edx
+     a0b:	c1 fa 07             	sar    edx,0x7
+     a0e:	89 c8                	mov    eax,ecx
+     a10:	c1 f8 1f             	sar    eax,0x1f
+     a13:	29 c2                	sub    edx,eax
+     a15:	8d 04 16             	lea    eax,[esi+edx*1]
+     a18:	01 d8                	add    eax,ebx
+     a1a:	2d 3a f9 0a 00       	sub    eax,0xaf93a
+     a1f:	39 45 e4             	cmp    DWORD PTR [ebp-0x1c],eax
+     a22:	0f 8d 73 ff ff ff    	jge    99b <gmtime_r+0x74>
 		result->tm_year--;
-     a13:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     a16:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
-     a19:	8d 50 ff             	lea    edx,[eax-0x1]
-     a1c:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     a1f:	89 50 14             	mov    DWORD PTR [eax+0x14],edx
+     a28:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     a2b:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
+     a2e:	8d 50 ff             	lea    edx,[eax-0x1]
+     a31:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     a34:	89 50 14             	mov    DWORD PTR [eax+0x14],edx
 		isl = IS_LEAP_YEAR(result->tm_year);
-     a22:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     a25:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
-     a28:	85 c0                	test   eax,eax
-     a2a:	7e 63                	jle    a8f <gmtime_r+0x172>
-     a2c:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     a2f:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
-     a32:	83 e0 03             	and    eax,0x3
-     a35:	85 c0                	test   eax,eax
-     a37:	75 56                	jne    a8f <gmtime_r+0x172>
-     a39:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     a3c:	8b 48 14             	mov    ecx,DWORD PTR [eax+0x14]
-     a3f:	ba 1f 85 eb 51       	mov    edx,0x51eb851f
-     a44:	89 c8                	mov    eax,ecx
-     a46:	f7 ea                	imul   edx
-     a48:	89 d0                	mov    eax,edx
-     a4a:	c1 f8 05             	sar    eax,0x5
-     a4d:	89 ca                	mov    edx,ecx
-     a4f:	c1 fa 1f             	sar    edx,0x1f
-     a52:	29 d0                	sub    eax,edx
-     a54:	6b d0 64             	imul   edx,eax,0x64
-     a57:	89 c8                	mov    eax,ecx
-     a59:	29 d0                	sub    eax,edx
-     a5b:	85 c0                	test   eax,eax
-     a5d:	75 29                	jne    a88 <gmtime_r+0x16b>
-     a5f:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     a62:	8b 48 14             	mov    ecx,DWORD PTR [eax+0x14]
-     a65:	ba 1f 85 eb 51       	mov    edx,0x51eb851f
-     a6a:	89 c8                	mov    eax,ecx
-     a6c:	f7 ea                	imul   edx
-     a6e:	89 d0                	mov    eax,edx
-     a70:	c1 f8 07             	sar    eax,0x7
-     a73:	89 ca                	mov    edx,ecx
-     a75:	c1 fa 1f             	sar    edx,0x1f
-     a78:	29 d0                	sub    eax,edx
-     a7a:	69 d0 90 01 00 00    	imul   edx,eax,0x190
-     a80:	89 c8                	mov    eax,ecx
-     a82:	29 d0                	sub    eax,edx
-     a84:	85 c0                	test   eax,eax
-     a86:	75 07                	jne    a8f <gmtime_r+0x172>
-     a88:	b8 01 00 00 00       	mov    eax,0x1
-     a8d:	eb 05                	jmp    a94 <gmtime_r+0x177>
-     a8f:	b8 00 00 00 00       	mov    eax,0x0
-     a94:	89 45 e0             	mov    DWORD PTR [ebp-0x20],eax
+     a37:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     a3a:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
+     a3d:	85 c0                	test   eax,eax
+     a3f:	7e 63                	jle    aa4 <gmtime_r+0x17d>
+     a41:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     a44:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
+     a47:	83 e0 03             	and    eax,0x3
+     a4a:	85 c0                	test   eax,eax
+     a4c:	75 56                	jne    aa4 <gmtime_r+0x17d>
+     a4e:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     a51:	8b 48 14             	mov    ecx,DWORD PTR [eax+0x14]
+     a54:	ba 1f 85 eb 51       	mov    edx,0x51eb851f
+     a59:	89 c8                	mov    eax,ecx
+     a5b:	f7 ea                	imul   edx
+     a5d:	89 d0                	mov    eax,edx
+     a5f:	c1 f8 05             	sar    eax,0x5
+     a62:	89 ca                	mov    edx,ecx
+     a64:	c1 fa 1f             	sar    edx,0x1f
+     a67:	29 d0                	sub    eax,edx
+     a69:	6b d0 64             	imul   edx,eax,0x64
+     a6c:	89 c8                	mov    eax,ecx
+     a6e:	29 d0                	sub    eax,edx
+     a70:	85 c0                	test   eax,eax
+     a72:	75 29                	jne    a9d <gmtime_r+0x176>
+     a74:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     a77:	8b 48 14             	mov    ecx,DWORD PTR [eax+0x14]
+     a7a:	ba 1f 85 eb 51       	mov    edx,0x51eb851f
+     a7f:	89 c8                	mov    eax,ecx
+     a81:	f7 ea                	imul   edx
+     a83:	89 d0                	mov    eax,edx
+     a85:	c1 f8 07             	sar    eax,0x7
+     a88:	89 ca                	mov    edx,ecx
+     a8a:	c1 fa 1f             	sar    edx,0x1f
+     a8d:	29 d0                	sub    eax,edx
+     a8f:	69 d0 90 01 00 00    	imul   edx,eax,0x190
+     a95:	89 c8                	mov    eax,ecx
+     a97:	29 d0                	sub    eax,edx
+     a99:	85 c0                	test   eax,eax
+     a9b:	75 07                	jne    aa4 <gmtime_r+0x17d>
+     a9d:	b8 01 00 00 00       	mov    eax,0x1
+     aa2:	eb 05                	jmp    aa9 <gmtime_r+0x182>
+     aa4:	b8 00 00 00 00       	mov    eax,0x0
+     aa9:	89 45 e0             	mov    DWORD PTR [ebp-0x20],eax
 		dayct -= COUNT_DAYS(1900 + result->tm_year) - COUNT_DAYS(1970);
-     a97:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     a9a:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
-     a9d:	05 6b 07 00 00       	add    eax,0x76b
-     aa2:	69 d8 6d 01 00 00    	imul   ebx,eax,0x16d
-     aa8:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     aab:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
-     aae:	05 6b 07 00 00       	add    eax,0x76b
-     ab3:	8d 50 03             	lea    edx,[eax+0x3]
-     ab6:	85 c0                	test   eax,eax
-     ab8:	0f 48 c2             	cmovs  eax,edx
-     abb:	c1 f8 02             	sar    eax,0x2
-     abe:	89 c6                	mov    esi,eax
-     ac0:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     ac3:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
-     ac6:	8d 88 6b 07 00 00    	lea    ecx,[eax+0x76b]
-     acc:	ba 1f 85 eb 51       	mov    edx,0x51eb851f
-     ad1:	89 c8                	mov    eax,ecx
-     ad3:	f7 ea                	imul   edx
-     ad5:	89 d0                	mov    eax,edx
-     ad7:	c1 f8 05             	sar    eax,0x5
-     ada:	c1 f9 1f             	sar    ecx,0x1f
-     add:	89 ca                	mov    edx,ecx
-     adf:	29 c2                	sub    edx,eax
-     ae1:	01 d6                	add    esi,edx
-     ae3:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     ae6:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
-     ae9:	8d 88 6b 07 00 00    	lea    ecx,[eax+0x76b]
-     aef:	ba 1f 85 eb 51       	mov    edx,0x51eb851f
-     af4:	89 c8                	mov    eax,ecx
-     af6:	f7 ea                	imul   edx
-     af8:	c1 fa 07             	sar    edx,0x7
-     afb:	89 c8                	mov    eax,ecx
-     afd:	c1 f8 1f             	sar    eax,0x1f
-     b00:	29 c2                	sub    edx,eax
-     b02:	8d 04 16             	lea    eax,[esi+edx*1]
-     b05:	01 d8                	add    eax,ebx
-     b07:	2d 3a f9 0a 00       	sub    eax,0xaf93a
-     b0c:	29 45 e4             	sub    DWORD PTR [ebp-0x1c],eax
+     aac:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     aaf:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
+     ab2:	05 6b 07 00 00       	add    eax,0x76b
+     ab7:	69 d8 6d 01 00 00    	imul   ebx,eax,0x16d
+     abd:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     ac0:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
+     ac3:	05 6b 07 00 00       	add    eax,0x76b
+     ac8:	8d 50 03             	lea    edx,[eax+0x3]
+     acb:	85 c0                	test   eax,eax
+     acd:	0f 48 c2             	cmovs  eax,edx
+     ad0:	c1 f8 02             	sar    eax,0x2
+     ad3:	89 c6                	mov    esi,eax
+     ad5:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     ad8:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
+     adb:	8d 88 6b 07 00 00    	lea    ecx,[eax+0x76b]
+     ae1:	ba 1f 85 eb 51       	mov    edx,0x51eb851f
+     ae6:	89 c8                	mov    eax,ecx
+     ae8:	f7 ea                	imul   edx
+     aea:	89 d0                	mov    eax,edx
+     aec:	c1 f8 05             	sar    eax,0x5
+     aef:	c1 f9 1f             	sar    ecx,0x1f
+     af2:	89 ca                	mov    edx,ecx
+     af4:	29 c2                	sub    edx,eax
+     af6:	01 d6                	add    esi,edx
+     af8:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     afb:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
+     afe:	8d 88 6b 07 00 00    	lea    ecx,[eax+0x76b]
+     b04:	ba 1f 85 eb 51       	mov    edx,0x51eb851f
+     b09:	89 c8                	mov    eax,ecx
+     b0b:	f7 ea                	imul   edx
+     b0d:	c1 fa 07             	sar    edx,0x7
+     b10:	89 c8                	mov    eax,ecx
+     b12:	c1 f8 1f             	sar    eax,0x1f
+     b15:	29 c2                	sub    edx,eax
+     b17:	8d 04 16             	lea    eax,[esi+edx*1]
+     b1a:	01 d8                	add    eax,ebx
+     b1c:	2d 3a f9 0a 00       	sub    eax,0xaf93a
+     b21:	29 45 e4             	sub    DWORD PTR [ebp-0x1c],eax
 		result->tm_yday = dayct;
-     b0f:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     b12:	8b 55 e4             	mov    edx,DWORD PTR [ebp-0x1c]
-     b15:	89 50 1c             	mov    DWORD PTR [eax+0x1c],edx
+     b24:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     b27:	8b 55 e4             	mov    edx,DWORD PTR [ebp-0x1c]
+     b2a:	89 50 1c             	mov    DWORD PTR [eax+0x1c],edx
 		static const int dayct_nl[] = { 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, INT_MAX };
 		static const int dayct_lp[] = { 0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, INT_MAX };
 		while ((isl ? dayct_lp : dayct_nl)[result->tm_mon] < result->tm_yday)
-     b18:	eb 0f                	jmp    b29 <gmtime_r+0x20c>
+     b2d:	eb 0f                	jmp    b3e <gmtime_r+0x217>
 			result->tm_mon++;
-     b1a:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     b1d:	8b 40 10             	mov    eax,DWORD PTR [eax+0x10]
-     b20:	8d 50 01             	lea    edx,[eax+0x1]
-     b23:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     b26:	89 50 10             	mov    DWORD PTR [eax+0x10],edx
+     b2f:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     b32:	8b 40 10             	mov    eax,DWORD PTR [eax+0x10]
+     b35:	8d 50 01             	lea    edx,[eax+0x1]
+     b38:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     b3b:	89 50 10             	mov    DWORD PTR [eax+0x10],edx
 		while ((isl ? dayct_lp : dayct_nl)[result->tm_mon] < result->tm_yday)
-     b29:	83 7d e0 00          	cmp    DWORD PTR [ebp-0x20],0x0
-     b2d:	74 07                	je     b36 <gmtime_r+0x219>
-     b2f:	ba 20 00 00 00       	mov    edx,0x20
-     b34:	eb 05                	jmp    b3b <gmtime_r+0x21e>
-     b36:	ba 60 00 00 00       	mov    edx,0x60
-     b3b:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     b3e:	8b 40 10             	mov    eax,DWORD PTR [eax+0x10]
-     b41:	c1 e0 02             	shl    eax,0x2
-     b44:	01 d0                	add    eax,edx
-     b46:	8b 10                	mov    edx,DWORD PTR [eax]
-     b48:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     b4b:	8b 40 1c             	mov    eax,DWORD PTR [eax+0x1c]
-     b4e:	39 c2                	cmp    edx,eax
-     b50:	7c c8                	jl     b1a <gmtime_r+0x1fd>
+     b3e:	83 7d e0 00          	cmp    DWORD PTR [ebp-0x20],0x0
+     b42:	74 07                	je     b4b <gmtime_r+0x224>
+     b44:	ba 20 00 00 00       	mov    edx,0x20
+     b49:	eb 05                	jmp    b50 <gmtime_r+0x229>
+     b4b:	ba 60 00 00 00       	mov    edx,0x60
+     b50:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     b53:	8b 40 10             	mov    eax,DWORD PTR [eax+0x10]
+     b56:	c1 e0 02             	shl    eax,0x2
+     b59:	01 d0                	add    eax,edx
+     b5b:	8b 10                	mov    edx,DWORD PTR [eax]
+     b5d:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     b60:	8b 40 1c             	mov    eax,DWORD PTR [eax+0x1c]
+     b63:	39 c2                	cmp    edx,eax
+     b65:	7c c8                	jl     b2f <gmtime_r+0x208>
 		result->tm_mon--;
-     b52:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     b55:	8b 40 10             	mov    eax,DWORD PTR [eax+0x10]
-     b58:	8d 50 ff             	lea    edx,[eax-0x1]
-     b5b:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     b5e:	89 50 10             	mov    DWORD PTR [eax+0x10],edx
+     b67:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     b6a:	8b 40 10             	mov    eax,DWORD PTR [eax+0x10]
+     b6d:	8d 50 ff             	lea    edx,[eax-0x1]
+     b70:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     b73:	89 50 10             	mov    DWORD PTR [eax+0x10],edx
 		dayct -= (isl ? dayct_lp : dayct_nl)[result->tm_mon]; /* 0 based */
-     b61:	83 7d e0 00          	cmp    DWORD PTR [ebp-0x20],0x0
-     b65:	74 07                	je     b6e <gmtime_r+0x251>
-     b67:	ba 20 00 00 00       	mov    edx,0x20
-     b6c:	eb 05                	jmp    b73 <gmtime_r+0x256>
-     b6e:	ba 60 00 00 00       	mov    edx,0x60
-     b73:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     b76:	8b 40 10             	mov    eax,DWORD PTR [eax+0x10]
-     b79:	c1 e0 02             	shl    eax,0x2
-     b7c:	01 d0                	add    eax,edx
-     b7e:	8b 00                	mov    eax,DWORD PTR [eax]
-     b80:	29 45 e4             	sub    DWORD PTR [ebp-0x1c],eax
+     b76:	83 7d e0 00          	cmp    DWORD PTR [ebp-0x20],0x0
+     b7a:	74 07                	je     b83 <gmtime_r+0x25c>
+     b7c:	ba 20 00 00 00       	mov    edx,0x20
+     b81:	eb 05                	jmp    b88 <gmtime_r+0x261>
+     b83:	ba 60 00 00 00       	mov    edx,0x60
+     b88:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     b8b:	8b 40 10             	mov    eax,DWORD PTR [eax+0x10]
+     b8e:	c1 e0 02             	shl    eax,0x2
+     b91:	01 d0                	add    eax,edx
+     b93:	8b 00                	mov    eax,DWORD PTR [eax]
+     b95:	29 45 e4             	sub    DWORD PTR [ebp-0x1c],eax
 		result->tm_mday = dayct + 1; /* 1 based */
-     b83:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
-     b86:	8d 50 01             	lea    edx,[eax+0x1]
-     b89:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     b8c:	89 50 0c             	mov    DWORD PTR [eax+0xc],edx
+     b98:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
+     b9b:	8d 50 01             	lea    edx,[eax+0x1]
+     b9e:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     ba1:	89 50 0c             	mov    DWORD PTR [eax+0xc],edx
 		/* time logic */
 		rem = *timep % 86400;
-     b8f:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     b92:	8b 50 04             	mov    edx,DWORD PTR [eax+0x4]
-     b95:	8b 00                	mov    eax,DWORD PTR [eax]
-     b97:	6a 00                	push   0x0
-     b99:	68 80 51 01 00       	push   0x15180
-     b9e:	52                   	push   edx
-     b9f:	50                   	push   eax
-     ba0:	e8 fc ff ff ff       	call   ba1 <gmtime_r+0x284>
-     ba5:	83 c4 10             	add    esp,0x10
-     ba8:	89 45 dc             	mov    DWORD PTR [ebp-0x24],eax
+     ba4:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     ba7:	8b 50 04             	mov    edx,DWORD PTR [eax+0x4]
+     baa:	8b 00                	mov    eax,DWORD PTR [eax]
+     bac:	c7 44 24 08 80 51 01 00 	mov    DWORD PTR [esp+0x8],0x15180
+     bb4:	c7 44 24 0c 00 00 00 00 	mov    DWORD PTR [esp+0xc],0x0
+     bbc:	89 04 24             	mov    DWORD PTR [esp],eax
+     bbf:	89 54 24 04          	mov    DWORD PTR [esp+0x4],edx
+     bc3:	e8 fc ff ff ff       	call   bc4 <gmtime_r+0x29d>
+     bc8:	89 45 dc             	mov    DWORD PTR [ebp-0x24],eax
 		result->tm_hour = rem / 3600;
-     bab:	8b 4d dc             	mov    ecx,DWORD PTR [ebp-0x24]
-     bae:	ba c5 b3 a2 91       	mov    edx,0x91a2b3c5
-     bb3:	89 c8                	mov    eax,ecx
-     bb5:	f7 ea                	imul   edx
-     bb7:	8d 04 0a             	lea    eax,[edx+ecx*1]
-     bba:	c1 f8 0b             	sar    eax,0xb
-     bbd:	89 c2                	mov    edx,eax
-     bbf:	89 c8                	mov    eax,ecx
-     bc1:	c1 f8 1f             	sar    eax,0x1f
-     bc4:	29 c2                	sub    edx,eax
-     bc6:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     bc9:	89 50 08             	mov    DWORD PTR [eax+0x8],edx
+     bcb:	8b 4d dc             	mov    ecx,DWORD PTR [ebp-0x24]
+     bce:	ba c5 b3 a2 91       	mov    edx,0x91a2b3c5
+     bd3:	89 c8                	mov    eax,ecx
+     bd5:	f7 ea                	imul   edx
+     bd7:	8d 04 0a             	lea    eax,[edx+ecx*1]
+     bda:	c1 f8 0b             	sar    eax,0xb
+     bdd:	89 c2                	mov    edx,eax
+     bdf:	89 c8                	mov    eax,ecx
+     be1:	c1 f8 1f             	sar    eax,0x1f
+     be4:	29 c2                	sub    edx,eax
+     be6:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     be9:	89 50 08             	mov    DWORD PTR [eax+0x8],edx
 		rem %= 3600;
-     bcc:	8b 4d dc             	mov    ecx,DWORD PTR [ebp-0x24]
-     bcf:	ba c5 b3 a2 91       	mov    edx,0x91a2b3c5
-     bd4:	89 c8                	mov    eax,ecx
-     bd6:	f7 ea                	imul   edx
-     bd8:	8d 04 0a             	lea    eax,[edx+ecx*1]
-     bdb:	c1 f8 0b             	sar    eax,0xb
-     bde:	89 c2                	mov    edx,eax
-     be0:	89 c8                	mov    eax,ecx
-     be2:	c1 f8 1f             	sar    eax,0x1f
-     be5:	29 c2                	sub    edx,eax
-     be7:	69 c2 10 0e 00 00    	imul   eax,edx,0xe10
-     bed:	29 c1                	sub    ecx,eax
-     bef:	89 ca                	mov    edx,ecx
-     bf1:	89 55 dc             	mov    DWORD PTR [ebp-0x24],edx
+     bec:	8b 4d dc             	mov    ecx,DWORD PTR [ebp-0x24]
+     bef:	ba c5 b3 a2 91       	mov    edx,0x91a2b3c5
+     bf4:	89 c8                	mov    eax,ecx
+     bf6:	f7 ea                	imul   edx
+     bf8:	8d 04 0a             	lea    eax,[edx+ecx*1]
+     bfb:	c1 f8 0b             	sar    eax,0xb
+     bfe:	89 c2                	mov    edx,eax
+     c00:	89 c8                	mov    eax,ecx
+     c02:	c1 f8 1f             	sar    eax,0x1f
+     c05:	29 c2                	sub    edx,eax
+     c07:	69 c2 10 0e 00 00    	imul   eax,edx,0xe10
+     c0d:	29 c1                	sub    ecx,eax
+     c0f:	89 ca                	mov    edx,ecx
+     c11:	89 55 dc             	mov    DWORD PTR [ebp-0x24],edx
 		result->tm_min = rem / 60;
-     bf4:	8b 4d dc             	mov    ecx,DWORD PTR [ebp-0x24]
-     bf7:	ba 89 88 88 88       	mov    edx,0x88888889
-     bfc:	89 c8                	mov    eax,ecx
-     bfe:	f7 ea                	imul   edx
-     c00:	8d 04 0a             	lea    eax,[edx+ecx*1]
-     c03:	c1 f8 05             	sar    eax,0x5
-     c06:	89 c2                	mov    edx,eax
-     c08:	89 c8                	mov    eax,ecx
-     c0a:	c1 f8 1f             	sar    eax,0x1f
-     c0d:	29 c2                	sub    edx,eax
-     c0f:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     c12:	89 50 04             	mov    DWORD PTR [eax+0x4],edx
+     c14:	8b 4d dc             	mov    ecx,DWORD PTR [ebp-0x24]
+     c17:	ba 89 88 88 88       	mov    edx,0x88888889
+     c1c:	89 c8                	mov    eax,ecx
+     c1e:	f7 ea                	imul   edx
+     c20:	8d 04 0a             	lea    eax,[edx+ecx*1]
+     c23:	c1 f8 05             	sar    eax,0x5
+     c26:	89 c2                	mov    edx,eax
+     c28:	89 c8                	mov    eax,ecx
+     c2a:	c1 f8 1f             	sar    eax,0x1f
+     c2d:	29 c2                	sub    edx,eax
+     c2f:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     c32:	89 50 04             	mov    DWORD PTR [eax+0x4],edx
 		rem %= 60;
-     c15:	8b 4d dc             	mov    ecx,DWORD PTR [ebp-0x24]
-     c18:	ba 89 88 88 88       	mov    edx,0x88888889
-     c1d:	89 c8                	mov    eax,ecx
-     c1f:	f7 ea                	imul   edx
-     c21:	8d 04 0a             	lea    eax,[edx+ecx*1]
-     c24:	c1 f8 05             	sar    eax,0x5
-     c27:	89 c2                	mov    edx,eax
-     c29:	89 c8                	mov    eax,ecx
-     c2b:	c1 f8 1f             	sar    eax,0x1f
-     c2e:	29 c2                	sub    edx,eax
-     c30:	6b c2 3c             	imul   eax,edx,0x3c
-     c33:	29 c1                	sub    ecx,eax
-     c35:	89 ca                	mov    edx,ecx
-     c37:	89 55 dc             	mov    DWORD PTR [ebp-0x24],edx
+     c35:	8b 4d dc             	mov    ecx,DWORD PTR [ebp-0x24]
+     c38:	ba 89 88 88 88       	mov    edx,0x88888889
+     c3d:	89 c8                	mov    eax,ecx
+     c3f:	f7 ea                	imul   edx
+     c41:	8d 04 0a             	lea    eax,[edx+ecx*1]
+     c44:	c1 f8 05             	sar    eax,0x5
+     c47:	89 c2                	mov    edx,eax
+     c49:	89 c8                	mov    eax,ecx
+     c4b:	c1 f8 1f             	sar    eax,0x1f
+     c4e:	29 c2                	sub    edx,eax
+     c50:	6b c2 3c             	imul   eax,edx,0x3c
+     c53:	29 c1                	sub    ecx,eax
+     c55:	89 ca                	mov    edx,ecx
+     c57:	89 55 dc             	mov    DWORD PTR [ebp-0x24],edx
 		result->tm_sec = rem;
-     c3a:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     c3d:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
-     c40:	89 10                	mov    DWORD PTR [eax],edx
+     c5a:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     c5d:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
+     c60:	89 10                	mov    DWORD PTR [eax],edx
 		/* gmtime isdst=0 */
 		return result;
-     c42:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     c62:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
 }
-     c45:	8d 65 f4             	lea    esp,[ebp-0xc]
-     c48:	5b                   	pop    ebx
-     c49:	5e                   	pop    esi
-     c4a:	5f                   	pop    edi
-     c4b:	5d                   	pop    ebp
-     c4c:	c3                   	ret
+     c65:	83 c4 4c             	add    esp,0x4c
+     c68:	5b                   	pop    ebx
+     c69:	5e                   	pop    esi
+     c6a:	5f                   	pop    edi
+     c6b:	5d                   	pop    ebp
+     c6c:	c3                   	ret
 
-00000c4d <gmtime>:
+00000c6d <gmtime>:
 
 struct tm* gmtime(const time_t* timep)
 {
-     c4d:	55                   	push   ebp
-     c4e:	89 e5                	mov    ebp,esp
-     c50:	83 ec 08             	sub    esp,0x8
+     c6d:	55                   	push   ebp
+     c6e:	89 e5                	mov    ebp,esp
+     c70:	83 ec 18             	sub    esp,0x18
 		static struct tm lts;
 		return gmtime_r(timep, &lts);
-     c53:	83 ec 08             	sub    esp,0x8
-     c56:	68 40 00 00 00       	push   0x40
-     c5b:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-     c5e:	e8 fc ff ff ff       	call   c5f <gmtime+0x12>
-     c63:	83 c4 10             	add    esp,0x10
+     c73:	c7 44 24 04 20 00 00 00 	mov    DWORD PTR [esp+0x4],0x20
+     c7b:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     c7e:	89 04 24             	mov    DWORD PTR [esp],eax
+     c81:	e8 fc ff ff ff       	call   c82 <gmtime+0x15>
 }
-     c66:	c9                   	leave
-     c67:	c3                   	ret
+     c86:	c9                   	leave
+     c87:	c3                   	ret
 
-00000c68 <localtime_r>:
+00000c88 <localtime_r>:
 
 struct tm* localtime_r(const time_t* timep, struct tm* result)
 {
-     c68:	55                   	push   ebp
-     c69:	89 e5                	mov    ebp,esp
-     c6b:	83 ec 08             	sub    esp,0x8
+     c88:	55                   	push   ebp
+     c89:	89 e5                	mov    ebp,esp
+     c8b:	83 ec 18             	sub    esp,0x18
 		/*TODO: +- time_t offset */
 		return gmtime_r(timep, result);
-     c6e:	83 ec 08             	sub    esp,0x8
-     c71:	ff 75 0c             	push   DWORD PTR [ebp+0xc]
-     c74:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-     c77:	e8 fc ff ff ff       	call   c78 <localtime_r+0x10>
-     c7c:	83 c4 10             	add    esp,0x10
+     c8e:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     c91:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+     c95:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     c98:	89 04 24             	mov    DWORD PTR [esp],eax
+     c9b:	e8 fc ff ff ff       	call   c9c <localtime_r+0x14>
 }
-     c7f:	c9                   	leave
-     c80:	c3                   	ret
+     ca0:	c9                   	leave
+     ca1:	c3                   	ret
 
-00000c81 <localtime>:
+00000ca2 <localtime>:
 
 struct tm* localtime(const time_t* timep)
 {
-     c81:	55                   	push   ebp
-     c82:	89 e5                	mov    ebp,esp
-     c84:	83 ec 08             	sub    esp,0x8
+     ca2:	55                   	push   ebp
+     ca3:	89 e5                	mov    ebp,esp
+     ca5:	83 ec 18             	sub    esp,0x18
 		static struct tm lts;
 		return localtime_r(timep, &lts);
-     c87:	83 ec 08             	sub    esp,0x8
-     c8a:	68 80 00 00 00       	push   0x80
-     c8f:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-     c92:	e8 fc ff ff ff       	call   c93 <localtime+0x12>
-     c97:	83 c4 10             	add    esp,0x10
+     ca8:	c7 44 24 04 60 00 00 00 	mov    DWORD PTR [esp+0x4],0x60
+     cb0:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     cb3:	89 04 24             	mov    DWORD PTR [esp],eax
+     cb6:	e8 fc ff ff ff       	call   cb7 <localtime+0x15>
 }
-     c9a:	c9                   	leave
-     c9b:	c3                   	ret
+     cbb:	c9                   	leave
+     cbc:	c3                   	ret
 
-00000c9c <difftime>:
-
-double difftime(time_t end, time_t beg)
-{
-     c9c:	55                   	push   ebp
-     c9d:	89 e5                	mov    ebp,esp
-     c9f:	83 ec 18             	sub    esp,0x18
-     ca2:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     ca5:	89 45 f8             	mov    DWORD PTR [ebp-0x8],eax
-     ca8:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     cab:	89 45 fc             	mov    DWORD PTR [ebp-0x4],eax
-     cae:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-     cb1:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
-     cb4:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
-     cb7:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
-		return (double)(end - beg); /* our time_t is in seconds */
-     cba:	8b 45 f8             	mov    eax,DWORD PTR [ebp-0x8]
-     cbd:	8b 55 fc             	mov    edx,DWORD PTR [ebp-0x4]
-     cc0:	2b 45 f0             	sub    eax,DWORD PTR [ebp-0x10]
-     cc3:	1b 55 f4             	sbb    edx,DWORD PTR [ebp-0xc]
-     cc6:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
-     cc9:	89 55 ec             	mov    DWORD PTR [ebp-0x14],edx
-     ccc:	df 6d e8             	fild   QWORD PTR [ebp-0x18]
-}
-     ccf:	c9                   	leave
-     cd0:	c3                   	ret
-
-00000cd1 <__umoddi3>:
+00000cbd <__umoddi3>:
 		return q;
 }
 
 UDWtype
 __umoddi3 (UDWtype u, UDWtype v)
 {
-     cd1:	55                   	push   ebp
-     cd2:	89 e5                	mov    ebp,esp
-     cd4:	83 ec 60             	sub    esp,0x60
-     cd7:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     cda:	89 45 a8             	mov    DWORD PTR [ebp-0x58],eax
-     cdd:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     ce0:	89 45 ac             	mov    DWORD PTR [ebp-0x54],eax
-     ce3:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-     ce6:	89 45 a0             	mov    DWORD PTR [ebp-0x60],eax
-     ce9:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
-     cec:	89 45 a4             	mov    DWORD PTR [ebp-0x5c],eax
-     cef:	8b 45 a8             	mov    eax,DWORD PTR [ebp-0x58]
-     cf2:	8b 55 ac             	mov    edx,DWORD PTR [ebp-0x54]
-     cf5:	89 45 f8             	mov    DWORD PTR [ebp-0x8],eax
-     cf8:	89 55 fc             	mov    DWORD PTR [ebp-0x4],edx
-     cfb:	8b 45 a0             	mov    eax,DWORD PTR [ebp-0x60]
-     cfe:	8b 55 a4             	mov    edx,DWORD PTR [ebp-0x5c]
-     d01:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
-     d04:	89 55 f4             	mov    DWORD PTR [ebp-0xc],edx
-     d07:	8d 45 b8             	lea    eax,[ebp-0x48]
-     d0a:	89 45 ec             	mov    DWORD PTR [ebp-0x14],eax
+     cbd:	55                   	push   ebp
+     cbe:	89 e5                	mov    ebp,esp
+     cc0:	83 ec 60             	sub    esp,0x60
+     cc3:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     cc6:	89 45 a8             	mov    DWORD PTR [ebp-0x58],eax
+     cc9:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     ccc:	89 45 ac             	mov    DWORD PTR [ebp-0x54],eax
+     ccf:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+     cd2:	89 45 a0             	mov    DWORD PTR [ebp-0x60],eax
+     cd5:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
+     cd8:	89 45 a4             	mov    DWORD PTR [ebp-0x5c],eax
+     cdb:	8b 45 a8             	mov    eax,DWORD PTR [ebp-0x58]
+     cde:	8b 55 ac             	mov    edx,DWORD PTR [ebp-0x54]
+     ce1:	89 45 f8             	mov    DWORD PTR [ebp-0x8],eax
+     ce4:	89 55 fc             	mov    DWORD PTR [ebp-0x4],edx
+     ce7:	8b 45 a0             	mov    eax,DWORD PTR [ebp-0x60]
+     cea:	8b 55 a4             	mov    edx,DWORD PTR [ebp-0x5c]
+     ced:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
+     cf0:	89 55 f4             	mov    DWORD PTR [ebp-0xc],edx
+     cf3:	8d 45 b8             	lea    eax,[ebp-0x48]
+     cf6:	89 45 ec             	mov    DWORD PTR [ebp-0x14],eax
 		UDWtype q = 0, r = n, y = d;
-     d0d:	c7 45 e0 00 00 00 00 	mov    DWORD PTR [ebp-0x20],0x0
-     d14:	c7 45 e4 00 00 00 00 	mov    DWORD PTR [ebp-0x1c],0x0
-     d1b:	8b 45 f8             	mov    eax,DWORD PTR [ebp-0x8]
-     d1e:	8b 55 fc             	mov    edx,DWORD PTR [ebp-0x4]
-     d21:	89 45 d8             	mov    DWORD PTR [ebp-0x28],eax
-     d24:	89 55 dc             	mov    DWORD PTR [ebp-0x24],edx
-     d27:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-     d2a:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-     d2d:	89 45 d0             	mov    DWORD PTR [ebp-0x30],eax
-     d30:	89 55 d4             	mov    DWORD PTR [ebp-0x2c],edx
+     cf9:	c7 45 e0 00 00 00 00 	mov    DWORD PTR [ebp-0x20],0x0
+     d00:	c7 45 e4 00 00 00 00 	mov    DWORD PTR [ebp-0x1c],0x0
+     d07:	8b 45 f8             	mov    eax,DWORD PTR [ebp-0x8]
+     d0a:	8b 55 fc             	mov    edx,DWORD PTR [ebp-0x4]
+     d0d:	89 45 d8             	mov    DWORD PTR [ebp-0x28],eax
+     d10:	89 55 dc             	mov    DWORD PTR [ebp-0x24],edx
+     d13:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+     d16:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+     d19:	89 45 d0             	mov    DWORD PTR [ebp-0x30],eax
+     d1c:	89 55 d4             	mov    DWORD PTR [ebp-0x2c],edx
 		if (y <= r)
-     d33:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-     d36:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
-     d39:	3b 45 d0             	cmp    eax,DWORD PTR [ebp-0x30]
-     d3c:	89 d0                	mov    eax,edx
-     d3e:	1b 45 d4             	sbb    eax,DWORD PTR [ebp-0x2c]
-     d41:	0f 82 4f 01 00 00    	jb     e96 <__umoddi3+0x1c5>
+     d1f:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+     d22:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
+     d25:	3b 45 d0             	cmp    eax,DWORD PTR [ebp-0x30]
+     d28:	89 d0                	mov    eax,edx
+     d2a:	1b 45 d4             	sbb    eax,DWORD PTR [ebp-0x2c]
+     d2d:	0f 82 4f 01 00 00    	jb     e82 <__umoddi3+0x1c5>
 				lz1 = __builtin_clzll (d);
-     d47:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-     d4a:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-     d4d:	85 d2                	test   edx,edx
-     d4f:	74 08                	je     d59 <__umoddi3+0x88>
-     d51:	0f bd c2             	bsr    eax,edx
-     d54:	83 f0 1f             	xor    eax,0x1f
-     d57:	eb 09                	jmp    d62 <__umoddi3+0x91>
-     d59:	0f bd c0             	bsr    eax,eax
-     d5c:	83 f0 1f             	xor    eax,0x1f
-     d5f:	83 c0 20             	add    eax,0x20
-     d62:	89 45 cc             	mov    DWORD PTR [ebp-0x34],eax
+     d33:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+     d36:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+     d39:	85 d2                	test   edx,edx
+     d3b:	74 08                	je     d45 <__umoddi3+0x88>
+     d3d:	0f bd c2             	bsr    eax,edx
+     d40:	83 f0 1f             	xor    eax,0x1f
+     d43:	eb 09                	jmp    d4e <__umoddi3+0x91>
+     d45:	0f bd c0             	bsr    eax,eax
+     d48:	83 f0 1f             	xor    eax,0x1f
+     d4b:	83 c0 20             	add    eax,0x20
+     d4e:	89 45 cc             	mov    DWORD PTR [ebp-0x34],eax
 				lz2 = __builtin_clzll (n);
-     d65:	8b 45 f8             	mov    eax,DWORD PTR [ebp-0x8]
-     d68:	8b 55 fc             	mov    edx,DWORD PTR [ebp-0x4]
-     d6b:	85 d2                	test   edx,edx
-     d6d:	74 08                	je     d77 <__umoddi3+0xa6>
-     d6f:	0f bd c2             	bsr    eax,edx
-     d72:	83 f0 1f             	xor    eax,0x1f
-     d75:	eb 09                	jmp    d80 <__umoddi3+0xaf>
-     d77:	0f bd c0             	bsr    eax,eax
-     d7a:	83 f0 1f             	xor    eax,0x1f
-     d7d:	83 c0 20             	add    eax,0x20
-     d80:	89 45 c8             	mov    DWORD PTR [ebp-0x38],eax
+     d51:	8b 45 f8             	mov    eax,DWORD PTR [ebp-0x8]
+     d54:	8b 55 fc             	mov    edx,DWORD PTR [ebp-0x4]
+     d57:	85 d2                	test   edx,edx
+     d59:	74 08                	je     d63 <__umoddi3+0xa6>
+     d5b:	0f bd c2             	bsr    eax,edx
+     d5e:	83 f0 1f             	xor    eax,0x1f
+     d61:	eb 09                	jmp    d6c <__umoddi3+0xaf>
+     d63:	0f bd c0             	bsr    eax,eax
+     d66:	83 f0 1f             	xor    eax,0x1f
+     d69:	83 c0 20             	add    eax,0x20
+     d6c:	89 45 c8             	mov    DWORD PTR [ebp-0x38],eax
 				k = lz1 - lz2;
-     d83:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-     d86:	2b 45 c8             	sub    eax,DWORD PTR [ebp-0x38]
-     d89:	89 45 c4             	mov    DWORD PTR [ebp-0x3c],eax
+     d6f:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+     d72:	2b 45 c8             	sub    eax,DWORD PTR [ebp-0x38]
+     d75:	89 45 c4             	mov    DWORD PTR [ebp-0x3c],eax
 				y = (y << k);
-     d8c:	8b 4d c4             	mov    ecx,DWORD PTR [ebp-0x3c]
-     d8f:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-     d92:	8b 55 d4             	mov    edx,DWORD PTR [ebp-0x2c]
-     d95:	0f a5 c2             	shld   edx,eax,cl
-     d98:	d3 e0                	shl    eax,cl
-     d9a:	f6 c1 20             	test   cl,0x20
-     d9d:	74 04                	je     da3 <__umoddi3+0xd2>
-     d9f:	89 c2                	mov    edx,eax
-     da1:	31 c0                	xor    eax,eax
-     da3:	89 45 d0             	mov    DWORD PTR [ebp-0x30],eax
-     da6:	89 55 d4             	mov    DWORD PTR [ebp-0x2c],edx
+     d78:	8b 4d c4             	mov    ecx,DWORD PTR [ebp-0x3c]
+     d7b:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+     d7e:	8b 55 d4             	mov    edx,DWORD PTR [ebp-0x2c]
+     d81:	0f a5 c2             	shld   edx,eax,cl
+     d84:	d3 e0                	shl    eax,cl
+     d86:	f6 c1 20             	test   cl,0x20
+     d89:	74 04                	je     d8f <__umoddi3+0xd2>
+     d8b:	89 c2                	mov    edx,eax
+     d8d:	31 c0                	xor    eax,eax
+     d8f:	89 45 d0             	mov    DWORD PTR [ebp-0x30],eax
+     d92:	89 55 d4             	mov    DWORD PTR [ebp-0x2c],edx
 				if (r >= y)
-     da9:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-     dac:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
-     daf:	3b 45 d0             	cmp    eax,DWORD PTR [ebp-0x30]
-     db2:	89 d0                	mov    eax,edx
-     db4:	1b 45 d4             	sbb    eax,DWORD PTR [ebp-0x2c]
-     db7:	72 2d                	jb     de6 <__umoddi3+0x115>
+     d95:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+     d98:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
+     d9b:	3b 45 d0             	cmp    eax,DWORD PTR [ebp-0x30]
+     d9e:	89 d0                	mov    eax,edx
+     da0:	1b 45 d4             	sbb    eax,DWORD PTR [ebp-0x2c]
+     da3:	72 2d                	jb     dd2 <__umoddi3+0x115>
 						r = r - y;
-     db9:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-     dbc:	8b 55 d4             	mov    edx,DWORD PTR [ebp-0x2c]
-     dbf:	29 45 d8             	sub    DWORD PTR [ebp-0x28],eax
-     dc2:	19 55 dc             	sbb    DWORD PTR [ebp-0x24],edx
+     da5:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+     da8:	8b 55 d4             	mov    edx,DWORD PTR [ebp-0x2c]
+     dab:	29 45 d8             	sub    DWORD PTR [ebp-0x28],eax
+     dae:	19 55 dc             	sbb    DWORD PTR [ebp-0x24],edx
 						q =  (1ULL << k);
-     dc5:	8b 4d c4             	mov    ecx,DWORD PTR [ebp-0x3c]
-     dc8:	b8 01 00 00 00       	mov    eax,0x1
-     dcd:	ba 00 00 00 00       	mov    edx,0x0
-     dd2:	0f a5 c2             	shld   edx,eax,cl
-     dd5:	d3 e0                	shl    eax,cl
-     dd7:	f6 c1 20             	test   cl,0x20
-     dda:	74 04                	je     de0 <__umoddi3+0x10f>
-     ddc:	89 c2                	mov    edx,eax
-     dde:	31 c0                	xor    eax,eax
-     de0:	89 45 e0             	mov    DWORD PTR [ebp-0x20],eax
-     de3:	89 55 e4             	mov    DWORD PTR [ebp-0x1c],edx
+     db1:	8b 4d c4             	mov    ecx,DWORD PTR [ebp-0x3c]
+     db4:	b8 01 00 00 00       	mov    eax,0x1
+     db9:	ba 00 00 00 00       	mov    edx,0x0
+     dbe:	0f a5 c2             	shld   edx,eax,cl
+     dc1:	d3 e0                	shl    eax,cl
+     dc3:	f6 c1 20             	test   cl,0x20
+     dc6:	74 04                	je     dcc <__umoddi3+0x10f>
+     dc8:	89 c2                	mov    edx,eax
+     dca:	31 c0                	xor    eax,eax
+     dcc:	89 45 e0             	mov    DWORD PTR [ebp-0x20],eax
+     dcf:	89 55 e4             	mov    DWORD PTR [ebp-0x1c],edx
 				if (k > 0)
-     de6:	83 7d c4 00          	cmp    DWORD PTR [ebp-0x3c],0x0
-     dea:	0f 84 a6 00 00 00    	je     e96 <__umoddi3+0x1c5>
+     dd2:	83 7d c4 00          	cmp    DWORD PTR [ebp-0x3c],0x0
+     dd6:	0f 84 a6 00 00 00    	je     e82 <__umoddi3+0x1c5>
 						y = y >> 1;
-     df0:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-     df3:	8b 55 d4             	mov    edx,DWORD PTR [ebp-0x2c]
-     df6:	0f ac d0 01          	shrd   eax,edx,0x1
-     dfa:	d1 ea                	shr    edx,1
-     dfc:	89 45 d0             	mov    DWORD PTR [ebp-0x30],eax
-     dff:	89 55 d4             	mov    DWORD PTR [ebp-0x2c],edx
+     ddc:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+     ddf:	8b 55 d4             	mov    edx,DWORD PTR [ebp-0x2c]
+     de2:	0f ac d0 01          	shrd   eax,edx,0x1
+     de6:	d1 ea                	shr    edx,1
+     de8:	89 45 d0             	mov    DWORD PTR [ebp-0x30],eax
+     deb:	89 55 d4             	mov    DWORD PTR [ebp-0x2c],edx
 						i = k;
-     e02:	8b 45 c4             	mov    eax,DWORD PTR [ebp-0x3c]
-     e05:	89 45 c0             	mov    DWORD PTR [ebp-0x40],eax
+     dee:	8b 45 c4             	mov    eax,DWORD PTR [ebp-0x3c]
+     df1:	89 45 c0             	mov    DWORD PTR [ebp-0x40],eax
 								if (r >= y)
-     e08:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-     e0b:	8b 55 d4             	mov    edx,DWORD PTR [ebp-0x2c]
-     e0e:	8b 4d dc             	mov    ecx,DWORD PTR [ebp-0x24]
-     e11:	39 45 d8             	cmp    DWORD PTR [ebp-0x28],eax
-     e14:	19 d1                	sbb    ecx,edx
-     e16:	72 1e                	jb     e36 <__umoddi3+0x165>
+     df4:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+     df7:	8b 55 d4             	mov    edx,DWORD PTR [ebp-0x2c]
+     dfa:	8b 4d dc             	mov    ecx,DWORD PTR [ebp-0x24]
+     dfd:	39 45 d8             	cmp    DWORD PTR [ebp-0x28],eax
+     e00:	19 d1                	sbb    ecx,edx
+     e02:	72 1e                	jb     e22 <__umoddi3+0x165>
 										r = ((r - y) << 1) + 1;
-     e18:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-     e1b:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
-     e1e:	2b 45 d0             	sub    eax,DWORD PTR [ebp-0x30]
-     e21:	1b 55 d4             	sbb    edx,DWORD PTR [ebp-0x2c]
-     e24:	01 c0                	add    eax,eax
-     e26:	11 d2                	adc    edx,edx
-     e28:	83 c0 01             	add    eax,0x1
-     e2b:	83 d2 00             	adc    edx,0x0
-     e2e:	89 45 d8             	mov    DWORD PTR [ebp-0x28],eax
-     e31:	89 55 dc             	mov    DWORD PTR [ebp-0x24],edx
-     e34:	eb 10                	jmp    e46 <__umoddi3+0x175>
+     e04:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+     e07:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
+     e0a:	2b 45 d0             	sub    eax,DWORD PTR [ebp-0x30]
+     e0d:	1b 55 d4             	sbb    edx,DWORD PTR [ebp-0x2c]
+     e10:	01 c0                	add    eax,eax
+     e12:	11 d2                	adc    edx,edx
+     e14:	83 c0 01             	add    eax,0x1
+     e17:	83 d2 00             	adc    edx,0x0
+     e1a:	89 45 d8             	mov    DWORD PTR [ebp-0x28],eax
+     e1d:	89 55 dc             	mov    DWORD PTR [ebp-0x24],edx
+     e20:	eb 10                	jmp    e32 <__umoddi3+0x175>
 										r =  (r << 1);
-     e36:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-     e39:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
-     e3c:	01 c0                	add    eax,eax
-     e3e:	11 d2                	adc    edx,edx
-     e40:	89 45 d8             	mov    DWORD PTR [ebp-0x28],eax
-     e43:	89 55 dc             	mov    DWORD PTR [ebp-0x24],edx
+     e22:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+     e25:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
+     e28:	01 c0                	add    eax,eax
+     e2a:	11 d2                	adc    edx,edx
+     e2c:	89 45 d8             	mov    DWORD PTR [ebp-0x28],eax
+     e2f:	89 55 dc             	mov    DWORD PTR [ebp-0x24],edx
 								i = i - 1;
-     e46:	83 6d c0 01          	sub    DWORD PTR [ebp-0x40],0x1
+     e32:	83 6d c0 01          	sub    DWORD PTR [ebp-0x40],0x1
 						} while (i != 0);
-     e4a:	83 7d c0 00          	cmp    DWORD PTR [ebp-0x40],0x0
-     e4e:	75 b8                	jne    e08 <__umoddi3+0x137>
+     e36:	83 7d c0 00          	cmp    DWORD PTR [ebp-0x40],0x0
+     e3a:	75 b8                	jne    df4 <__umoddi3+0x137>
 						q = q + r;
-     e50:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-     e53:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
-     e56:	01 45 e0             	add    DWORD PTR [ebp-0x20],eax
-     e59:	11 55 e4             	adc    DWORD PTR [ebp-0x1c],edx
+     e3c:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+     e3f:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
+     e42:	01 45 e0             	add    DWORD PTR [ebp-0x20],eax
+     e45:	11 55 e4             	adc    DWORD PTR [ebp-0x1c],edx
 						r = r >> k;
-     e5c:	8b 4d c4             	mov    ecx,DWORD PTR [ebp-0x3c]
-     e5f:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-     e62:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
-     e65:	0f ad d0             	shrd   eax,edx,cl
-     e68:	d3 ea                	shr    edx,cl
-     e6a:	f6 c1 20             	test   cl,0x20
-     e6d:	74 04                	je     e73 <__umoddi3+0x1a2>
-     e6f:	89 d0                	mov    eax,edx
-     e71:	31 d2                	xor    edx,edx
-     e73:	89 45 d8             	mov    DWORD PTR [ebp-0x28],eax
-     e76:	89 55 dc             	mov    DWORD PTR [ebp-0x24],edx
+     e48:	8b 4d c4             	mov    ecx,DWORD PTR [ebp-0x3c]
+     e4b:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+     e4e:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
+     e51:	0f ad d0             	shrd   eax,edx,cl
+     e54:	d3 ea                	shr    edx,cl
+     e56:	f6 c1 20             	test   cl,0x20
+     e59:	74 04                	je     e5f <__umoddi3+0x1a2>
+     e5b:	89 d0                	mov    eax,edx
+     e5d:	31 d2                	xor    edx,edx
+     e5f:	89 45 d8             	mov    DWORD PTR [ebp-0x28],eax
+     e62:	89 55 dc             	mov    DWORD PTR [ebp-0x24],edx
 						q = q - (r << k);
-     e79:	8b 4d c4             	mov    ecx,DWORD PTR [ebp-0x3c]
-     e7c:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-     e7f:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
-     e82:	0f a5 c2             	shld   edx,eax,cl
-     e85:	d3 e0                	shl    eax,cl
-     e87:	f6 c1 20             	test   cl,0x20
-     e8a:	74 04                	je     e90 <__umoddi3+0x1bf>
-     e8c:	89 c2                	mov    edx,eax
-     e8e:	31 c0                	xor    eax,eax
-     e90:	29 45 e0             	sub    DWORD PTR [ebp-0x20],eax
-     e93:	19 55 e4             	sbb    DWORD PTR [ebp-0x1c],edx
+     e65:	8b 4d c4             	mov    ecx,DWORD PTR [ebp-0x3c]
+     e68:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+     e6b:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
+     e6e:	0f a5 c2             	shld   edx,eax,cl
+     e71:	d3 e0                	shl    eax,cl
+     e73:	f6 c1 20             	test   cl,0x20
+     e76:	74 04                	je     e7c <__umoddi3+0x1bf>
+     e78:	89 c2                	mov    edx,eax
+     e7a:	31 c0                	xor    eax,eax
+     e7c:	29 45 e0             	sub    DWORD PTR [ebp-0x20],eax
+     e7f:	19 55 e4             	sbb    DWORD PTR [ebp-0x1c],edx
 		if (rp)
-     e96:	83 7d ec 00          	cmp    DWORD PTR [ebp-0x14],0x0
-     e9a:	74 0e                	je     eaa <__umoddi3+0x1d9>
+     e82:	83 7d ec 00          	cmp    DWORD PTR [ebp-0x14],0x0
+     e86:	74 0e                	je     e96 <__umoddi3+0x1d9>
 				*rp = r;
-     e9c:	8b 4d ec             	mov    ecx,DWORD PTR [ebp-0x14]
-     e9f:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-     ea2:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
-     ea5:	89 01                	mov    DWORD PTR [ecx],eax
-     ea7:	89 51 04             	mov    DWORD PTR [ecx+0x4],edx
+     e88:	8b 4d ec             	mov    ecx,DWORD PTR [ebp-0x14]
+     e8b:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+     e8e:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
+     e91:	89 01                	mov    DWORD PTR [ecx],eax
+     e93:	89 51 04             	mov    DWORD PTR [ecx+0x4],edx
 		UDWtype w;
 
 		(void) __udivmoddi4 (u, v, &w);
 
 		return w;
-     eaa:	8b 45 b8             	mov    eax,DWORD PTR [ebp-0x48]
-     ead:	8b 55 bc             	mov    edx,DWORD PTR [ebp-0x44]
+     e96:	8b 45 b8             	mov    eax,DWORD PTR [ebp-0x48]
+     e99:	8b 55 bc             	mov    edx,DWORD PTR [ebp-0x44]
 }
-     eb0:	c9                   	leave
-     eb1:	c3                   	ret
+     e9c:	c9                   	leave
+     e9d:	c3                   	ret
 
-00000eb2 <__udivdi3>:
+00000e9e <__udivdi3>:
 
 UDWtype
 __udivdi3 (UDWtype n, UDWtype d)
 {
-     eb2:	55                   	push   ebp
-     eb3:	89 e5                	mov    ebp,esp
-     eb5:	83 ec 50             	sub    esp,0x50
-     eb8:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     ebb:	89 45 b8             	mov    DWORD PTR [ebp-0x48],eax
-     ebe:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     ec1:	89 45 bc             	mov    DWORD PTR [ebp-0x44],eax
-     ec4:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-     ec7:	89 45 b0             	mov    DWORD PTR [ebp-0x50],eax
-     eca:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
-     ecd:	89 45 b4             	mov    DWORD PTR [ebp-0x4c],eax
-     ed0:	8b 45 b8             	mov    eax,DWORD PTR [ebp-0x48]
-     ed3:	8b 55 bc             	mov    edx,DWORD PTR [ebp-0x44]
-     ed6:	89 45 f8             	mov    DWORD PTR [ebp-0x8],eax
-     ed9:	89 55 fc             	mov    DWORD PTR [ebp-0x4],edx
-     edc:	8b 45 b0             	mov    eax,DWORD PTR [ebp-0x50]
-     edf:	8b 55 b4             	mov    edx,DWORD PTR [ebp-0x4c]
-     ee2:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
-     ee5:	89 55 f4             	mov    DWORD PTR [ebp-0xc],edx
-     ee8:	c7 45 ec 00 00 00 00 	mov    DWORD PTR [ebp-0x14],0x0
+     e9e:	55                   	push   ebp
+     e9f:	89 e5                	mov    ebp,esp
+     ea1:	83 ec 50             	sub    esp,0x50
+     ea4:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     ea7:	89 45 b8             	mov    DWORD PTR [ebp-0x48],eax
+     eaa:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     ead:	89 45 bc             	mov    DWORD PTR [ebp-0x44],eax
+     eb0:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+     eb3:	89 45 b0             	mov    DWORD PTR [ebp-0x50],eax
+     eb6:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
+     eb9:	89 45 b4             	mov    DWORD PTR [ebp-0x4c],eax
+     ebc:	8b 45 b8             	mov    eax,DWORD PTR [ebp-0x48]
+     ebf:	8b 55 bc             	mov    edx,DWORD PTR [ebp-0x44]
+     ec2:	89 45 f8             	mov    DWORD PTR [ebp-0x8],eax
+     ec5:	89 55 fc             	mov    DWORD PTR [ebp-0x4],edx
+     ec8:	8b 45 b0             	mov    eax,DWORD PTR [ebp-0x50]
+     ecb:	8b 55 b4             	mov    edx,DWORD PTR [ebp-0x4c]
+     ece:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
+     ed1:	89 55 f4             	mov    DWORD PTR [ebp-0xc],edx
+     ed4:	c7 45 ec 00 00 00 00 	mov    DWORD PTR [ebp-0x14],0x0
 		UDWtype q = 0, r = n, y = d;
-     eef:	c7 45 e0 00 00 00 00 	mov    DWORD PTR [ebp-0x20],0x0
-     ef6:	c7 45 e4 00 00 00 00 	mov    DWORD PTR [ebp-0x1c],0x0
-     efd:	8b 45 f8             	mov    eax,DWORD PTR [ebp-0x8]
-     f00:	8b 55 fc             	mov    edx,DWORD PTR [ebp-0x4]
-     f03:	89 45 d8             	mov    DWORD PTR [ebp-0x28],eax
-     f06:	89 55 dc             	mov    DWORD PTR [ebp-0x24],edx
-     f09:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-     f0c:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-     f0f:	89 45 d0             	mov    DWORD PTR [ebp-0x30],eax
-     f12:	89 55 d4             	mov    DWORD PTR [ebp-0x2c],edx
+     edb:	c7 45 e0 00 00 00 00 	mov    DWORD PTR [ebp-0x20],0x0
+     ee2:	c7 45 e4 00 00 00 00 	mov    DWORD PTR [ebp-0x1c],0x0
+     ee9:	8b 45 f8             	mov    eax,DWORD PTR [ebp-0x8]
+     eec:	8b 55 fc             	mov    edx,DWORD PTR [ebp-0x4]
+     eef:	89 45 d8             	mov    DWORD PTR [ebp-0x28],eax
+     ef2:	89 55 dc             	mov    DWORD PTR [ebp-0x24],edx
+     ef5:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+     ef8:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+     efb:	89 45 d0             	mov    DWORD PTR [ebp-0x30],eax
+     efe:	89 55 d4             	mov    DWORD PTR [ebp-0x2c],edx
 		if (y <= r)
-     f15:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-     f18:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
-     f1b:	3b 45 d0             	cmp    eax,DWORD PTR [ebp-0x30]
-     f1e:	89 d0                	mov    eax,edx
-     f20:	1b 45 d4             	sbb    eax,DWORD PTR [ebp-0x2c]
-     f23:	0f 82 4f 01 00 00    	jb     1078 <__udivdi3+0x1c6>
+     f01:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+     f04:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
+     f07:	3b 45 d0             	cmp    eax,DWORD PTR [ebp-0x30]
+     f0a:	89 d0                	mov    eax,edx
+     f0c:	1b 45 d4             	sbb    eax,DWORD PTR [ebp-0x2c]
+     f0f:	0f 82 4f 01 00 00    	jb     1064 <__udivdi3+0x1c6>
 				lz1 = __builtin_clzll (d);
-     f29:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-     f2c:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-     f2f:	85 d2                	test   edx,edx
-     f31:	74 08                	je     f3b <__udivdi3+0x89>
-     f33:	0f bd c2             	bsr    eax,edx
-     f36:	83 f0 1f             	xor    eax,0x1f
-     f39:	eb 09                	jmp    f44 <__udivdi3+0x92>
-     f3b:	0f bd c0             	bsr    eax,eax
-     f3e:	83 f0 1f             	xor    eax,0x1f
-     f41:	83 c0 20             	add    eax,0x20
-     f44:	89 45 cc             	mov    DWORD PTR [ebp-0x34],eax
+     f15:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+     f18:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+     f1b:	85 d2                	test   edx,edx
+     f1d:	74 08                	je     f27 <__udivdi3+0x89>
+     f1f:	0f bd c2             	bsr    eax,edx
+     f22:	83 f0 1f             	xor    eax,0x1f
+     f25:	eb 09                	jmp    f30 <__udivdi3+0x92>
+     f27:	0f bd c0             	bsr    eax,eax
+     f2a:	83 f0 1f             	xor    eax,0x1f
+     f2d:	83 c0 20             	add    eax,0x20
+     f30:	89 45 cc             	mov    DWORD PTR [ebp-0x34],eax
 				lz2 = __builtin_clzll (n);
-     f47:	8b 45 f8             	mov    eax,DWORD PTR [ebp-0x8]
-     f4a:	8b 55 fc             	mov    edx,DWORD PTR [ebp-0x4]
-     f4d:	85 d2                	test   edx,edx
-     f4f:	74 08                	je     f59 <__udivdi3+0xa7>
-     f51:	0f bd c2             	bsr    eax,edx
-     f54:	83 f0 1f             	xor    eax,0x1f
-     f57:	eb 09                	jmp    f62 <__udivdi3+0xb0>
-     f59:	0f bd c0             	bsr    eax,eax
-     f5c:	83 f0 1f             	xor    eax,0x1f
-     f5f:	83 c0 20             	add    eax,0x20
-     f62:	89 45 c8             	mov    DWORD PTR [ebp-0x38],eax
+     f33:	8b 45 f8             	mov    eax,DWORD PTR [ebp-0x8]
+     f36:	8b 55 fc             	mov    edx,DWORD PTR [ebp-0x4]
+     f39:	85 d2                	test   edx,edx
+     f3b:	74 08                	je     f45 <__udivdi3+0xa7>
+     f3d:	0f bd c2             	bsr    eax,edx
+     f40:	83 f0 1f             	xor    eax,0x1f
+     f43:	eb 09                	jmp    f4e <__udivdi3+0xb0>
+     f45:	0f bd c0             	bsr    eax,eax
+     f48:	83 f0 1f             	xor    eax,0x1f
+     f4b:	83 c0 20             	add    eax,0x20
+     f4e:	89 45 c8             	mov    DWORD PTR [ebp-0x38],eax
 				k = lz1 - lz2;
-     f65:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-     f68:	2b 45 c8             	sub    eax,DWORD PTR [ebp-0x38]
-     f6b:	89 45 c4             	mov    DWORD PTR [ebp-0x3c],eax
+     f51:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+     f54:	2b 45 c8             	sub    eax,DWORD PTR [ebp-0x38]
+     f57:	89 45 c4             	mov    DWORD PTR [ebp-0x3c],eax
 				y = (y << k);
-     f6e:	8b 4d c4             	mov    ecx,DWORD PTR [ebp-0x3c]
-     f71:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-     f74:	8b 55 d4             	mov    edx,DWORD PTR [ebp-0x2c]
-     f77:	0f a5 c2             	shld   edx,eax,cl
-     f7a:	d3 e0                	shl    eax,cl
-     f7c:	f6 c1 20             	test   cl,0x20
-     f7f:	74 04                	je     f85 <__udivdi3+0xd3>
-     f81:	89 c2                	mov    edx,eax
-     f83:	31 c0                	xor    eax,eax
-     f85:	89 45 d0             	mov    DWORD PTR [ebp-0x30],eax
-     f88:	89 55 d4             	mov    DWORD PTR [ebp-0x2c],edx
+     f5a:	8b 4d c4             	mov    ecx,DWORD PTR [ebp-0x3c]
+     f5d:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+     f60:	8b 55 d4             	mov    edx,DWORD PTR [ebp-0x2c]
+     f63:	0f a5 c2             	shld   edx,eax,cl
+     f66:	d3 e0                	shl    eax,cl
+     f68:	f6 c1 20             	test   cl,0x20
+     f6b:	74 04                	je     f71 <__udivdi3+0xd3>
+     f6d:	89 c2                	mov    edx,eax
+     f6f:	31 c0                	xor    eax,eax
+     f71:	89 45 d0             	mov    DWORD PTR [ebp-0x30],eax
+     f74:	89 55 d4             	mov    DWORD PTR [ebp-0x2c],edx
 				if (r >= y)
-     f8b:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-     f8e:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
-     f91:	3b 45 d0             	cmp    eax,DWORD PTR [ebp-0x30]
-     f94:	89 d0                	mov    eax,edx
-     f96:	1b 45 d4             	sbb    eax,DWORD PTR [ebp-0x2c]
-     f99:	72 2d                	jb     fc8 <__udivdi3+0x116>
+     f77:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+     f7a:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
+     f7d:	3b 45 d0             	cmp    eax,DWORD PTR [ebp-0x30]
+     f80:	89 d0                	mov    eax,edx
+     f82:	1b 45 d4             	sbb    eax,DWORD PTR [ebp-0x2c]
+     f85:	72 2d                	jb     fb4 <__udivdi3+0x116>
 						r = r - y;
-     f9b:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-     f9e:	8b 55 d4             	mov    edx,DWORD PTR [ebp-0x2c]
-     fa1:	29 45 d8             	sub    DWORD PTR [ebp-0x28],eax
-     fa4:	19 55 dc             	sbb    DWORD PTR [ebp-0x24],edx
+     f87:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+     f8a:	8b 55 d4             	mov    edx,DWORD PTR [ebp-0x2c]
+     f8d:	29 45 d8             	sub    DWORD PTR [ebp-0x28],eax
+     f90:	19 55 dc             	sbb    DWORD PTR [ebp-0x24],edx
 						q =  (1ULL << k);
-     fa7:	8b 4d c4             	mov    ecx,DWORD PTR [ebp-0x3c]
-     faa:	b8 01 00 00 00       	mov    eax,0x1
-     faf:	ba 00 00 00 00       	mov    edx,0x0
-     fb4:	0f a5 c2             	shld   edx,eax,cl
-     fb7:	d3 e0                	shl    eax,cl
-     fb9:	f6 c1 20             	test   cl,0x20
-     fbc:	74 04                	je     fc2 <__udivdi3+0x110>
-     fbe:	89 c2                	mov    edx,eax
-     fc0:	31 c0                	xor    eax,eax
-     fc2:	89 45 e0             	mov    DWORD PTR [ebp-0x20],eax
-     fc5:	89 55 e4             	mov    DWORD PTR [ebp-0x1c],edx
+     f93:	8b 4d c4             	mov    ecx,DWORD PTR [ebp-0x3c]
+     f96:	b8 01 00 00 00       	mov    eax,0x1
+     f9b:	ba 00 00 00 00       	mov    edx,0x0
+     fa0:	0f a5 c2             	shld   edx,eax,cl
+     fa3:	d3 e0                	shl    eax,cl
+     fa5:	f6 c1 20             	test   cl,0x20
+     fa8:	74 04                	je     fae <__udivdi3+0x110>
+     faa:	89 c2                	mov    edx,eax
+     fac:	31 c0                	xor    eax,eax
+     fae:	89 45 e0             	mov    DWORD PTR [ebp-0x20],eax
+     fb1:	89 55 e4             	mov    DWORD PTR [ebp-0x1c],edx
 				if (k > 0)
-     fc8:	83 7d c4 00          	cmp    DWORD PTR [ebp-0x3c],0x0
-     fcc:	0f 84 a6 00 00 00    	je     1078 <__udivdi3+0x1c6>
+     fb4:	83 7d c4 00          	cmp    DWORD PTR [ebp-0x3c],0x0
+     fb8:	0f 84 a6 00 00 00    	je     1064 <__udivdi3+0x1c6>
 						y = y >> 1;
-     fd2:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-     fd5:	8b 55 d4             	mov    edx,DWORD PTR [ebp-0x2c]
-     fd8:	0f ac d0 01          	shrd   eax,edx,0x1
-     fdc:	d1 ea                	shr    edx,1
-     fde:	89 45 d0             	mov    DWORD PTR [ebp-0x30],eax
-     fe1:	89 55 d4             	mov    DWORD PTR [ebp-0x2c],edx
+     fbe:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+     fc1:	8b 55 d4             	mov    edx,DWORD PTR [ebp-0x2c]
+     fc4:	0f ac d0 01          	shrd   eax,edx,0x1
+     fc8:	d1 ea                	shr    edx,1
+     fca:	89 45 d0             	mov    DWORD PTR [ebp-0x30],eax
+     fcd:	89 55 d4             	mov    DWORD PTR [ebp-0x2c],edx
 						i = k;
-     fe4:	8b 45 c4             	mov    eax,DWORD PTR [ebp-0x3c]
-     fe7:	89 45 c0             	mov    DWORD PTR [ebp-0x40],eax
+     fd0:	8b 45 c4             	mov    eax,DWORD PTR [ebp-0x3c]
+     fd3:	89 45 c0             	mov    DWORD PTR [ebp-0x40],eax
 								if (r >= y)
-     fea:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-     fed:	8b 55 d4             	mov    edx,DWORD PTR [ebp-0x2c]
-     ff0:	8b 4d dc             	mov    ecx,DWORD PTR [ebp-0x24]
-     ff3:	39 45 d8             	cmp    DWORD PTR [ebp-0x28],eax
-     ff6:	19 d1                	sbb    ecx,edx
-     ff8:	72 1e                	jb     1018 <__udivdi3+0x166>
+     fd6:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+     fd9:	8b 55 d4             	mov    edx,DWORD PTR [ebp-0x2c]
+     fdc:	8b 4d dc             	mov    ecx,DWORD PTR [ebp-0x24]
+     fdf:	39 45 d8             	cmp    DWORD PTR [ebp-0x28],eax
+     fe2:	19 d1                	sbb    ecx,edx
+     fe4:	72 1e                	jb     1004 <__udivdi3+0x166>
 										r = ((r - y) << 1) + 1;
-     ffa:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-     ffd:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
-    1000:	2b 45 d0             	sub    eax,DWORD PTR [ebp-0x30]
-    1003:	1b 55 d4             	sbb    edx,DWORD PTR [ebp-0x2c]
-    1006:	01 c0                	add    eax,eax
-    1008:	11 d2                	adc    edx,edx
-    100a:	83 c0 01             	add    eax,0x1
-    100d:	83 d2 00             	adc    edx,0x0
-    1010:	89 45 d8             	mov    DWORD PTR [ebp-0x28],eax
-    1013:	89 55 dc             	mov    DWORD PTR [ebp-0x24],edx
-    1016:	eb 10                	jmp    1028 <__udivdi3+0x176>
+     fe6:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+     fe9:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
+     fec:	2b 45 d0             	sub    eax,DWORD PTR [ebp-0x30]
+     fef:	1b 55 d4             	sbb    edx,DWORD PTR [ebp-0x2c]
+     ff2:	01 c0                	add    eax,eax
+     ff4:	11 d2                	adc    edx,edx
+     ff6:	83 c0 01             	add    eax,0x1
+     ff9:	83 d2 00             	adc    edx,0x0
+     ffc:	89 45 d8             	mov    DWORD PTR [ebp-0x28],eax
+     fff:	89 55 dc             	mov    DWORD PTR [ebp-0x24],edx
+    1002:	eb 10                	jmp    1014 <__udivdi3+0x176>
 										r =  (r << 1);
-    1018:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-    101b:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
-    101e:	01 c0                	add    eax,eax
-    1020:	11 d2                	adc    edx,edx
-    1022:	89 45 d8             	mov    DWORD PTR [ebp-0x28],eax
-    1025:	89 55 dc             	mov    DWORD PTR [ebp-0x24],edx
+    1004:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+    1007:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
+    100a:	01 c0                	add    eax,eax
+    100c:	11 d2                	adc    edx,edx
+    100e:	89 45 d8             	mov    DWORD PTR [ebp-0x28],eax
+    1011:	89 55 dc             	mov    DWORD PTR [ebp-0x24],edx
 								i = i - 1;
-    1028:	83 6d c0 01          	sub    DWORD PTR [ebp-0x40],0x1
+    1014:	83 6d c0 01          	sub    DWORD PTR [ebp-0x40],0x1
 						} while (i != 0);
-    102c:	83 7d c0 00          	cmp    DWORD PTR [ebp-0x40],0x0
-    1030:	75 b8                	jne    fea <__udivdi3+0x138>
+    1018:	83 7d c0 00          	cmp    DWORD PTR [ebp-0x40],0x0
+    101c:	75 b8                	jne    fd6 <__udivdi3+0x138>
 						q = q + r;
-    1032:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-    1035:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
-    1038:	01 45 e0             	add    DWORD PTR [ebp-0x20],eax
-    103b:	11 55 e4             	adc    DWORD PTR [ebp-0x1c],edx
+    101e:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+    1021:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
+    1024:	01 45 e0             	add    DWORD PTR [ebp-0x20],eax
+    1027:	11 55 e4             	adc    DWORD PTR [ebp-0x1c],edx
 						r = r >> k;
-    103e:	8b 4d c4             	mov    ecx,DWORD PTR [ebp-0x3c]
-    1041:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-    1044:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
-    1047:	0f ad d0             	shrd   eax,edx,cl
-    104a:	d3 ea                	shr    edx,cl
-    104c:	f6 c1 20             	test   cl,0x20
-    104f:	74 04                	je     1055 <__udivdi3+0x1a3>
-    1051:	89 d0                	mov    eax,edx
-    1053:	31 d2                	xor    edx,edx
-    1055:	89 45 d8             	mov    DWORD PTR [ebp-0x28],eax
-    1058:	89 55 dc             	mov    DWORD PTR [ebp-0x24],edx
+    102a:	8b 4d c4             	mov    ecx,DWORD PTR [ebp-0x3c]
+    102d:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+    1030:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
+    1033:	0f ad d0             	shrd   eax,edx,cl
+    1036:	d3 ea                	shr    edx,cl
+    1038:	f6 c1 20             	test   cl,0x20
+    103b:	74 04                	je     1041 <__udivdi3+0x1a3>
+    103d:	89 d0                	mov    eax,edx
+    103f:	31 d2                	xor    edx,edx
+    1041:	89 45 d8             	mov    DWORD PTR [ebp-0x28],eax
+    1044:	89 55 dc             	mov    DWORD PTR [ebp-0x24],edx
 						q = q - (r << k);
-    105b:	8b 4d c4             	mov    ecx,DWORD PTR [ebp-0x3c]
-    105e:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-    1061:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
-    1064:	0f a5 c2             	shld   edx,eax,cl
-    1067:	d3 e0                	shl    eax,cl
-    1069:	f6 c1 20             	test   cl,0x20
-    106c:	74 04                	je     1072 <__udivdi3+0x1c0>
-    106e:	89 c2                	mov    edx,eax
-    1070:	31 c0                	xor    eax,eax
-    1072:	29 45 e0             	sub    DWORD PTR [ebp-0x20],eax
-    1075:	19 55 e4             	sbb    DWORD PTR [ebp-0x1c],edx
+    1047:	8b 4d c4             	mov    ecx,DWORD PTR [ebp-0x3c]
+    104a:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+    104d:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
+    1050:	0f a5 c2             	shld   edx,eax,cl
+    1053:	d3 e0                	shl    eax,cl
+    1055:	f6 c1 20             	test   cl,0x20
+    1058:	74 04                	je     105e <__udivdi3+0x1c0>
+    105a:	89 c2                	mov    edx,eax
+    105c:	31 c0                	xor    eax,eax
+    105e:	29 45 e0             	sub    DWORD PTR [ebp-0x20],eax
+    1061:	19 55 e4             	sbb    DWORD PTR [ebp-0x1c],edx
 		if (rp)
-    1078:	83 7d ec 00          	cmp    DWORD PTR [ebp-0x14],0x0
-    107c:	74 0e                	je     108c <__udivdi3+0x1da>
+    1064:	83 7d ec 00          	cmp    DWORD PTR [ebp-0x14],0x0
+    1068:	74 0e                	je     1078 <__udivdi3+0x1da>
 				*rp = r;
-    107e:	8b 4d ec             	mov    ecx,DWORD PTR [ebp-0x14]
-    1081:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-    1084:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
-    1087:	89 01                	mov    DWORD PTR [ecx],eax
-    1089:	89 51 04             	mov    DWORD PTR [ecx+0x4],edx
+    106a:	8b 4d ec             	mov    ecx,DWORD PTR [ebp-0x14]
+    106d:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+    1070:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
+    1073:	89 01                	mov    DWORD PTR [ecx],eax
+    1075:	89 51 04             	mov    DWORD PTR [ecx+0x4],edx
 		return q;
-    108c:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
-    108f:	8b 55 e4             	mov    edx,DWORD PTR [ebp-0x1c]
+    1078:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
+    107b:	8b 55 e4             	mov    edx,DWORD PTR [ebp-0x1c]
 		return __udivmoddi4 (n, d, (UDWtype *) 0);
 }
-    1092:	c9                   	leave
-    1093:	c3                   	ret
+    107e:	c9                   	leave
+    107f:	c3                   	ret
 
-00001094 <__moddi3>:
+00001080 <__moddi3>:
 
 DWtype
 __moddi3 (DWtype u, DWtype v)
 {
-    1094:	55                   	push   ebp
-    1095:	89 e5                	mov    ebp,esp
-    1097:	53                   	push   ebx
-    1098:	83 ec 74             	sub    esp,0x74
-    109b:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    109e:	89 45 90             	mov    DWORD PTR [ebp-0x70],eax
-    10a1:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    10a4:	89 45 94             	mov    DWORD PTR [ebp-0x6c],eax
-    10a7:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-    10aa:	89 45 88             	mov    DWORD PTR [ebp-0x78],eax
-    10ad:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
-    10b0:	89 45 8c             	mov    DWORD PTR [ebp-0x74],eax
+    1080:	55                   	push   ebp
+    1081:	89 e5                	mov    ebp,esp
+    1083:	53                   	push   ebx
+    1084:	83 ec 74             	sub    esp,0x74
+    1087:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    108a:	89 45 90             	mov    DWORD PTR [ebp-0x70],eax
+    108d:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    1090:	89 45 94             	mov    DWORD PTR [ebp-0x6c],eax
+    1093:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    1096:	89 45 88             	mov    DWORD PTR [ebp-0x78],eax
+    1099:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
+    109c:	89 45 8c             	mov    DWORD PTR [ebp-0x74],eax
 		Wtype c = 0;
-    10b3:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
+    109f:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
 		DWunion uu = {.ll = u};
-    10ba:	8b 45 90             	mov    eax,DWORD PTR [ebp-0x70]
-    10bd:	8b 55 94             	mov    edx,DWORD PTR [ebp-0x6c]
-    10c0:	89 45 a8             	mov    DWORD PTR [ebp-0x58],eax
-    10c3:	89 55 ac             	mov    DWORD PTR [ebp-0x54],edx
+    10a6:	8b 45 90             	mov    eax,DWORD PTR [ebp-0x70]
+    10a9:	8b 55 94             	mov    edx,DWORD PTR [ebp-0x6c]
+    10ac:	89 45 a8             	mov    DWORD PTR [ebp-0x58],eax
+    10af:	89 55 ac             	mov    DWORD PTR [ebp-0x54],edx
 		DWunion vv = {.ll = v};
-    10c6:	8b 45 88             	mov    eax,DWORD PTR [ebp-0x78]
-    10c9:	8b 55 8c             	mov    edx,DWORD PTR [ebp-0x74]
-    10cc:	89 45 a0             	mov    DWORD PTR [ebp-0x60],eax
-    10cf:	89 55 a4             	mov    DWORD PTR [ebp-0x5c],edx
+    10b2:	8b 45 88             	mov    eax,DWORD PTR [ebp-0x78]
+    10b5:	8b 55 8c             	mov    edx,DWORD PTR [ebp-0x74]
+    10b8:	89 45 a0             	mov    DWORD PTR [ebp-0x60],eax
+    10bb:	89 55 a4             	mov    DWORD PTR [ebp-0x5c],edx
 		DWtype w;
 	
 		if (uu.s.high < 0)
-    10d2:	8b 45 ac             	mov    eax,DWORD PTR [ebp-0x54]
-    10d5:	85 c0                	test   eax,eax
-    10d7:	79 16                	jns    10ef <__moddi3+0x5b>
+    10be:	8b 45 ac             	mov    eax,DWORD PTR [ebp-0x54]
+    10c1:	85 c0                	test   eax,eax
+    10c3:	79 16                	jns    10db <__moddi3+0x5b>
 				c = ~c,
-    10d9:	f7 55 f4             	not    DWORD PTR [ebp-0xc]
+    10c5:	f7 55 f4             	not    DWORD PTR [ebp-0xc]
 					uu.ll = -uu.ll;
-    10dc:	8b 45 a8             	mov    eax,DWORD PTR [ebp-0x58]
-    10df:	8b 55 ac             	mov    edx,DWORD PTR [ebp-0x54]
-    10e2:	f7 d8                	neg    eax
-    10e4:	83 d2 00             	adc    edx,0x0
-    10e7:	f7 da                	neg    edx
-    10e9:	89 45 a8             	mov    DWORD PTR [ebp-0x58],eax
-    10ec:	89 55 ac             	mov    DWORD PTR [ebp-0x54],edx
+    10c8:	8b 45 a8             	mov    eax,DWORD PTR [ebp-0x58]
+    10cb:	8b 55 ac             	mov    edx,DWORD PTR [ebp-0x54]
+    10ce:	f7 d8                	neg    eax
+    10d0:	83 d2 00             	adc    edx,0x0
+    10d3:	f7 da                	neg    edx
+    10d5:	89 45 a8             	mov    DWORD PTR [ebp-0x58],eax
+    10d8:	89 55 ac             	mov    DWORD PTR [ebp-0x54],edx
 		if (vv.s.high < 0)
-    10ef:	8b 45 a4             	mov    eax,DWORD PTR [ebp-0x5c]
-    10f2:	85 c0                	test   eax,eax
-    10f4:	79 13                	jns    1109 <__moddi3+0x75>
+    10db:	8b 45 a4             	mov    eax,DWORD PTR [ebp-0x5c]
+    10de:	85 c0                	test   eax,eax
+    10e0:	79 13                	jns    10f5 <__moddi3+0x75>
 				vv.ll = -vv.ll;
-    10f6:	8b 45 a0             	mov    eax,DWORD PTR [ebp-0x60]
-    10f9:	8b 55 a4             	mov    edx,DWORD PTR [ebp-0x5c]
-    10fc:	f7 d8                	neg    eax
-    10fe:	83 d2 00             	adc    edx,0x0
-    1101:	f7 da                	neg    edx
-    1103:	89 45 a0             	mov    DWORD PTR [ebp-0x60],eax
-    1106:	89 55 a4             	mov    DWORD PTR [ebp-0x5c],edx
+    10e2:	8b 45 a0             	mov    eax,DWORD PTR [ebp-0x60]
+    10e5:	8b 55 a4             	mov    edx,DWORD PTR [ebp-0x5c]
+    10e8:	f7 d8                	neg    eax
+    10ea:	83 d2 00             	adc    edx,0x0
+    10ed:	f7 da                	neg    edx
+    10ef:	89 45 a0             	mov    DWORD PTR [ebp-0x60],eax
+    10f2:	89 55 a4             	mov    DWORD PTR [ebp-0x5c],edx
 	
 		(void) __udivmoddi4 (uu.ll, vv.ll, (UDWtype*)&w);
-    1109:	8b 45 a0             	mov    eax,DWORD PTR [ebp-0x60]
-    110c:	8b 55 a4             	mov    edx,DWORD PTR [ebp-0x5c]
-    110f:	89 c1                	mov    ecx,eax
-    1111:	89 d3                	mov    ebx,edx
-    1113:	8b 45 a8             	mov    eax,DWORD PTR [ebp-0x58]
-    1116:	8b 55 ac             	mov    edx,DWORD PTR [ebp-0x54]
-    1119:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
-    111c:	89 55 ec             	mov    DWORD PTR [ebp-0x14],edx
-    111f:	89 4d e0             	mov    DWORD PTR [ebp-0x20],ecx
-    1122:	89 5d e4             	mov    DWORD PTR [ebp-0x1c],ebx
-    1125:	8d 45 98             	lea    eax,[ebp-0x68]
-    1128:	89 45 dc             	mov    DWORD PTR [ebp-0x24],eax
+    10f5:	8b 45 a0             	mov    eax,DWORD PTR [ebp-0x60]
+    10f8:	8b 55 a4             	mov    edx,DWORD PTR [ebp-0x5c]
+    10fb:	89 c1                	mov    ecx,eax
+    10fd:	89 d3                	mov    ebx,edx
+    10ff:	8b 45 a8             	mov    eax,DWORD PTR [ebp-0x58]
+    1102:	8b 55 ac             	mov    edx,DWORD PTR [ebp-0x54]
+    1105:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
+    1108:	89 55 ec             	mov    DWORD PTR [ebp-0x14],edx
+    110b:	89 4d e0             	mov    DWORD PTR [ebp-0x20],ecx
+    110e:	89 5d e4             	mov    DWORD PTR [ebp-0x1c],ebx
+    1111:	8d 45 98             	lea    eax,[ebp-0x68]
+    1114:	89 45 dc             	mov    DWORD PTR [ebp-0x24],eax
 		UDWtype q = 0, r = n, y = d;
-    112b:	c7 45 d0 00 00 00 00 	mov    DWORD PTR [ebp-0x30],0x0
-    1132:	c7 45 d4 00 00 00 00 	mov    DWORD PTR [ebp-0x2c],0x0
-    1139:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
-    113c:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
-    113f:	89 45 c8             	mov    DWORD PTR [ebp-0x38],eax
-    1142:	89 55 cc             	mov    DWORD PTR [ebp-0x34],edx
-    1145:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
-    1148:	8b 55 e4             	mov    edx,DWORD PTR [ebp-0x1c]
-    114b:	89 45 c0             	mov    DWORD PTR [ebp-0x40],eax
-    114e:	89 55 c4             	mov    DWORD PTR [ebp-0x3c],edx
+    1117:	c7 45 d0 00 00 00 00 	mov    DWORD PTR [ebp-0x30],0x0
+    111e:	c7 45 d4 00 00 00 00 	mov    DWORD PTR [ebp-0x2c],0x0
+    1125:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
+    1128:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
+    112b:	89 45 c8             	mov    DWORD PTR [ebp-0x38],eax
+    112e:	89 55 cc             	mov    DWORD PTR [ebp-0x34],edx
+    1131:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
+    1134:	8b 55 e4             	mov    edx,DWORD PTR [ebp-0x1c]
+    1137:	89 45 c0             	mov    DWORD PTR [ebp-0x40],eax
+    113a:	89 55 c4             	mov    DWORD PTR [ebp-0x3c],edx
 		if (y <= r)
-    1151:	8b 45 c8             	mov    eax,DWORD PTR [ebp-0x38]
-    1154:	8b 55 cc             	mov    edx,DWORD PTR [ebp-0x34]
-    1157:	3b 45 c0             	cmp    eax,DWORD PTR [ebp-0x40]
-    115a:	89 d0                	mov    eax,edx
-    115c:	1b 45 c4             	sbb    eax,DWORD PTR [ebp-0x3c]
-    115f:	0f 82 4f 01 00 00    	jb     12b4 <__moddi3+0x220>
+    113d:	8b 45 c8             	mov    eax,DWORD PTR [ebp-0x38]
+    1140:	8b 55 cc             	mov    edx,DWORD PTR [ebp-0x34]
+    1143:	3b 45 c0             	cmp    eax,DWORD PTR [ebp-0x40]
+    1146:	89 d0                	mov    eax,edx
+    1148:	1b 45 c4             	sbb    eax,DWORD PTR [ebp-0x3c]
+    114b:	0f 82 4f 01 00 00    	jb     12a0 <__moddi3+0x220>
 				lz1 = __builtin_clzll (d);
-    1165:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
-    1168:	8b 55 e4             	mov    edx,DWORD PTR [ebp-0x1c]
-    116b:	85 d2                	test   edx,edx
-    116d:	74 08                	je     1177 <__moddi3+0xe3>
-    116f:	0f bd c2             	bsr    eax,edx
-    1172:	83 f0 1f             	xor    eax,0x1f
-    1175:	eb 09                	jmp    1180 <__moddi3+0xec>
-    1177:	0f bd c0             	bsr    eax,eax
-    117a:	83 f0 1f             	xor    eax,0x1f
-    117d:	83 c0 20             	add    eax,0x20
-    1180:	89 45 bc             	mov    DWORD PTR [ebp-0x44],eax
+    1151:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
+    1154:	8b 55 e4             	mov    edx,DWORD PTR [ebp-0x1c]
+    1157:	85 d2                	test   edx,edx
+    1159:	74 08                	je     1163 <__moddi3+0xe3>
+    115b:	0f bd c2             	bsr    eax,edx
+    115e:	83 f0 1f             	xor    eax,0x1f
+    1161:	eb 09                	jmp    116c <__moddi3+0xec>
+    1163:	0f bd c0             	bsr    eax,eax
+    1166:	83 f0 1f             	xor    eax,0x1f
+    1169:	83 c0 20             	add    eax,0x20
+    116c:	89 45 bc             	mov    DWORD PTR [ebp-0x44],eax
 				lz2 = __builtin_clzll (n);
-    1183:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
-    1186:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
-    1189:	85 d2                	test   edx,edx
-    118b:	74 08                	je     1195 <__moddi3+0x101>
-    118d:	0f bd c2             	bsr    eax,edx
-    1190:	83 f0 1f             	xor    eax,0x1f
-    1193:	eb 09                	jmp    119e <__moddi3+0x10a>
-    1195:	0f bd c0             	bsr    eax,eax
-    1198:	83 f0 1f             	xor    eax,0x1f
-    119b:	83 c0 20             	add    eax,0x20
-    119e:	89 45 b8             	mov    DWORD PTR [ebp-0x48],eax
+    116f:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
+    1172:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
+    1175:	85 d2                	test   edx,edx
+    1177:	74 08                	je     1181 <__moddi3+0x101>
+    1179:	0f bd c2             	bsr    eax,edx
+    117c:	83 f0 1f             	xor    eax,0x1f
+    117f:	eb 09                	jmp    118a <__moddi3+0x10a>
+    1181:	0f bd c0             	bsr    eax,eax
+    1184:	83 f0 1f             	xor    eax,0x1f
+    1187:	83 c0 20             	add    eax,0x20
+    118a:	89 45 b8             	mov    DWORD PTR [ebp-0x48],eax
 				k = lz1 - lz2;
-    11a1:	8b 45 bc             	mov    eax,DWORD PTR [ebp-0x44]
-    11a4:	2b 45 b8             	sub    eax,DWORD PTR [ebp-0x48]
-    11a7:	89 45 b4             	mov    DWORD PTR [ebp-0x4c],eax
+    118d:	8b 45 bc             	mov    eax,DWORD PTR [ebp-0x44]
+    1190:	2b 45 b8             	sub    eax,DWORD PTR [ebp-0x48]
+    1193:	89 45 b4             	mov    DWORD PTR [ebp-0x4c],eax
 				y = (y << k);
-    11aa:	8b 4d b4             	mov    ecx,DWORD PTR [ebp-0x4c]
-    11ad:	8b 45 c0             	mov    eax,DWORD PTR [ebp-0x40]
-    11b0:	8b 55 c4             	mov    edx,DWORD PTR [ebp-0x3c]
-    11b3:	0f a5 c2             	shld   edx,eax,cl
-    11b6:	d3 e0                	shl    eax,cl
-    11b8:	f6 c1 20             	test   cl,0x20
-    11bb:	74 04                	je     11c1 <__moddi3+0x12d>
-    11bd:	89 c2                	mov    edx,eax
-    11bf:	31 c0                	xor    eax,eax
-    11c1:	89 45 c0             	mov    DWORD PTR [ebp-0x40],eax
-    11c4:	89 55 c4             	mov    DWORD PTR [ebp-0x3c],edx
+    1196:	8b 4d b4             	mov    ecx,DWORD PTR [ebp-0x4c]
+    1199:	8b 45 c0             	mov    eax,DWORD PTR [ebp-0x40]
+    119c:	8b 55 c4             	mov    edx,DWORD PTR [ebp-0x3c]
+    119f:	0f a5 c2             	shld   edx,eax,cl
+    11a2:	d3 e0                	shl    eax,cl
+    11a4:	f6 c1 20             	test   cl,0x20
+    11a7:	74 04                	je     11ad <__moddi3+0x12d>
+    11a9:	89 c2                	mov    edx,eax
+    11ab:	31 c0                	xor    eax,eax
+    11ad:	89 45 c0             	mov    DWORD PTR [ebp-0x40],eax
+    11b0:	89 55 c4             	mov    DWORD PTR [ebp-0x3c],edx
 				if (r >= y)
-    11c7:	8b 45 c8             	mov    eax,DWORD PTR [ebp-0x38]
-    11ca:	8b 55 cc             	mov    edx,DWORD PTR [ebp-0x34]
-    11cd:	3b 45 c0             	cmp    eax,DWORD PTR [ebp-0x40]
-    11d0:	89 d0                	mov    eax,edx
-    11d2:	1b 45 c4             	sbb    eax,DWORD PTR [ebp-0x3c]
-    11d5:	72 2d                	jb     1204 <__moddi3+0x170>
+    11b3:	8b 45 c8             	mov    eax,DWORD PTR [ebp-0x38]
+    11b6:	8b 55 cc             	mov    edx,DWORD PTR [ebp-0x34]
+    11b9:	3b 45 c0             	cmp    eax,DWORD PTR [ebp-0x40]
+    11bc:	89 d0                	mov    eax,edx
+    11be:	1b 45 c4             	sbb    eax,DWORD PTR [ebp-0x3c]
+    11c1:	72 2d                	jb     11f0 <__moddi3+0x170>
 						r = r - y;
-    11d7:	8b 45 c0             	mov    eax,DWORD PTR [ebp-0x40]
-    11da:	8b 55 c4             	mov    edx,DWORD PTR [ebp-0x3c]
-    11dd:	29 45 c8             	sub    DWORD PTR [ebp-0x38],eax
-    11e0:	19 55 cc             	sbb    DWORD PTR [ebp-0x34],edx
+    11c3:	8b 45 c0             	mov    eax,DWORD PTR [ebp-0x40]
+    11c6:	8b 55 c4             	mov    edx,DWORD PTR [ebp-0x3c]
+    11c9:	29 45 c8             	sub    DWORD PTR [ebp-0x38],eax
+    11cc:	19 55 cc             	sbb    DWORD PTR [ebp-0x34],edx
 						q =  (1ULL << k);
-    11e3:	8b 4d b4             	mov    ecx,DWORD PTR [ebp-0x4c]
-    11e6:	b8 01 00 00 00       	mov    eax,0x1
-    11eb:	ba 00 00 00 00       	mov    edx,0x0
-    11f0:	0f a5 c2             	shld   edx,eax,cl
-    11f3:	d3 e0                	shl    eax,cl
-    11f5:	f6 c1 20             	test   cl,0x20
-    11f8:	74 04                	je     11fe <__moddi3+0x16a>
-    11fa:	89 c2                	mov    edx,eax
-    11fc:	31 c0                	xor    eax,eax
-    11fe:	89 45 d0             	mov    DWORD PTR [ebp-0x30],eax
-    1201:	89 55 d4             	mov    DWORD PTR [ebp-0x2c],edx
+    11cf:	8b 4d b4             	mov    ecx,DWORD PTR [ebp-0x4c]
+    11d2:	b8 01 00 00 00       	mov    eax,0x1
+    11d7:	ba 00 00 00 00       	mov    edx,0x0
+    11dc:	0f a5 c2             	shld   edx,eax,cl
+    11df:	d3 e0                	shl    eax,cl
+    11e1:	f6 c1 20             	test   cl,0x20
+    11e4:	74 04                	je     11ea <__moddi3+0x16a>
+    11e6:	89 c2                	mov    edx,eax
+    11e8:	31 c0                	xor    eax,eax
+    11ea:	89 45 d0             	mov    DWORD PTR [ebp-0x30],eax
+    11ed:	89 55 d4             	mov    DWORD PTR [ebp-0x2c],edx
 				if (k > 0)
-    1204:	83 7d b4 00          	cmp    DWORD PTR [ebp-0x4c],0x0
-    1208:	0f 84 a6 00 00 00    	je     12b4 <__moddi3+0x220>
+    11f0:	83 7d b4 00          	cmp    DWORD PTR [ebp-0x4c],0x0
+    11f4:	0f 84 a6 00 00 00    	je     12a0 <__moddi3+0x220>
 						y = y >> 1;
-    120e:	8b 45 c0             	mov    eax,DWORD PTR [ebp-0x40]
-    1211:	8b 55 c4             	mov    edx,DWORD PTR [ebp-0x3c]
-    1214:	0f ac d0 01          	shrd   eax,edx,0x1
-    1218:	d1 ea                	shr    edx,1
-    121a:	89 45 c0             	mov    DWORD PTR [ebp-0x40],eax
-    121d:	89 55 c4             	mov    DWORD PTR [ebp-0x3c],edx
+    11fa:	8b 45 c0             	mov    eax,DWORD PTR [ebp-0x40]
+    11fd:	8b 55 c4             	mov    edx,DWORD PTR [ebp-0x3c]
+    1200:	0f ac d0 01          	shrd   eax,edx,0x1
+    1204:	d1 ea                	shr    edx,1
+    1206:	89 45 c0             	mov    DWORD PTR [ebp-0x40],eax
+    1209:	89 55 c4             	mov    DWORD PTR [ebp-0x3c],edx
 						i = k;
-    1220:	8b 45 b4             	mov    eax,DWORD PTR [ebp-0x4c]
-    1223:	89 45 b0             	mov    DWORD PTR [ebp-0x50],eax
+    120c:	8b 45 b4             	mov    eax,DWORD PTR [ebp-0x4c]
+    120f:	89 45 b0             	mov    DWORD PTR [ebp-0x50],eax
 								if (r >= y)
-    1226:	8b 45 c0             	mov    eax,DWORD PTR [ebp-0x40]
-    1229:	8b 55 c4             	mov    edx,DWORD PTR [ebp-0x3c]
-    122c:	8b 4d cc             	mov    ecx,DWORD PTR [ebp-0x34]
-    122f:	39 45 c8             	cmp    DWORD PTR [ebp-0x38],eax
-    1232:	19 d1                	sbb    ecx,edx
-    1234:	72 1e                	jb     1254 <__moddi3+0x1c0>
+    1212:	8b 45 c0             	mov    eax,DWORD PTR [ebp-0x40]
+    1215:	8b 55 c4             	mov    edx,DWORD PTR [ebp-0x3c]
+    1218:	8b 4d cc             	mov    ecx,DWORD PTR [ebp-0x34]
+    121b:	39 45 c8             	cmp    DWORD PTR [ebp-0x38],eax
+    121e:	19 d1                	sbb    ecx,edx
+    1220:	72 1e                	jb     1240 <__moddi3+0x1c0>
 										r = ((r - y) << 1) + 1;
-    1236:	8b 45 c8             	mov    eax,DWORD PTR [ebp-0x38]
-    1239:	8b 55 cc             	mov    edx,DWORD PTR [ebp-0x34]
-    123c:	2b 45 c0             	sub    eax,DWORD PTR [ebp-0x40]
-    123f:	1b 55 c4             	sbb    edx,DWORD PTR [ebp-0x3c]
-    1242:	01 c0                	add    eax,eax
-    1244:	11 d2                	adc    edx,edx
-    1246:	83 c0 01             	add    eax,0x1
-    1249:	83 d2 00             	adc    edx,0x0
-    124c:	89 45 c8             	mov    DWORD PTR [ebp-0x38],eax
-    124f:	89 55 cc             	mov    DWORD PTR [ebp-0x34],edx
-    1252:	eb 10                	jmp    1264 <__moddi3+0x1d0>
+    1222:	8b 45 c8             	mov    eax,DWORD PTR [ebp-0x38]
+    1225:	8b 55 cc             	mov    edx,DWORD PTR [ebp-0x34]
+    1228:	2b 45 c0             	sub    eax,DWORD PTR [ebp-0x40]
+    122b:	1b 55 c4             	sbb    edx,DWORD PTR [ebp-0x3c]
+    122e:	01 c0                	add    eax,eax
+    1230:	11 d2                	adc    edx,edx
+    1232:	83 c0 01             	add    eax,0x1
+    1235:	83 d2 00             	adc    edx,0x0
+    1238:	89 45 c8             	mov    DWORD PTR [ebp-0x38],eax
+    123b:	89 55 cc             	mov    DWORD PTR [ebp-0x34],edx
+    123e:	eb 10                	jmp    1250 <__moddi3+0x1d0>
 										r =  (r << 1);
-    1254:	8b 45 c8             	mov    eax,DWORD PTR [ebp-0x38]
-    1257:	8b 55 cc             	mov    edx,DWORD PTR [ebp-0x34]
-    125a:	01 c0                	add    eax,eax
-    125c:	11 d2                	adc    edx,edx
-    125e:	89 45 c8             	mov    DWORD PTR [ebp-0x38],eax
-    1261:	89 55 cc             	mov    DWORD PTR [ebp-0x34],edx
+    1240:	8b 45 c8             	mov    eax,DWORD PTR [ebp-0x38]
+    1243:	8b 55 cc             	mov    edx,DWORD PTR [ebp-0x34]
+    1246:	01 c0                	add    eax,eax
+    1248:	11 d2                	adc    edx,edx
+    124a:	89 45 c8             	mov    DWORD PTR [ebp-0x38],eax
+    124d:	89 55 cc             	mov    DWORD PTR [ebp-0x34],edx
 								i = i - 1;
-    1264:	83 6d b0 01          	sub    DWORD PTR [ebp-0x50],0x1
+    1250:	83 6d b0 01          	sub    DWORD PTR [ebp-0x50],0x1
 						} while (i != 0);
-    1268:	83 7d b0 00          	cmp    DWORD PTR [ebp-0x50],0x0
-    126c:	75 b8                	jne    1226 <__moddi3+0x192>
+    1254:	83 7d b0 00          	cmp    DWORD PTR [ebp-0x50],0x0
+    1258:	75 b8                	jne    1212 <__moddi3+0x192>
 						q = q + r;
-    126e:	8b 45 c8             	mov    eax,DWORD PTR [ebp-0x38]
-    1271:	8b 55 cc             	mov    edx,DWORD PTR [ebp-0x34]
-    1274:	01 45 d0             	add    DWORD PTR [ebp-0x30],eax
-    1277:	11 55 d4             	adc    DWORD PTR [ebp-0x2c],edx
+    125a:	8b 45 c8             	mov    eax,DWORD PTR [ebp-0x38]
+    125d:	8b 55 cc             	mov    edx,DWORD PTR [ebp-0x34]
+    1260:	01 45 d0             	add    DWORD PTR [ebp-0x30],eax
+    1263:	11 55 d4             	adc    DWORD PTR [ebp-0x2c],edx
 						r = r >> k;
-    127a:	8b 4d b4             	mov    ecx,DWORD PTR [ebp-0x4c]
-    127d:	8b 45 c8             	mov    eax,DWORD PTR [ebp-0x38]
-    1280:	8b 55 cc             	mov    edx,DWORD PTR [ebp-0x34]
-    1283:	0f ad d0             	shrd   eax,edx,cl
-    1286:	d3 ea                	shr    edx,cl
-    1288:	f6 c1 20             	test   cl,0x20
-    128b:	74 04                	je     1291 <__moddi3+0x1fd>
-    128d:	89 d0                	mov    eax,edx
-    128f:	31 d2                	xor    edx,edx
-    1291:	89 45 c8             	mov    DWORD PTR [ebp-0x38],eax
-    1294:	89 55 cc             	mov    DWORD PTR [ebp-0x34],edx
+    1266:	8b 4d b4             	mov    ecx,DWORD PTR [ebp-0x4c]
+    1269:	8b 45 c8             	mov    eax,DWORD PTR [ebp-0x38]
+    126c:	8b 55 cc             	mov    edx,DWORD PTR [ebp-0x34]
+    126f:	0f ad d0             	shrd   eax,edx,cl
+    1272:	d3 ea                	shr    edx,cl
+    1274:	f6 c1 20             	test   cl,0x20
+    1277:	74 04                	je     127d <__moddi3+0x1fd>
+    1279:	89 d0                	mov    eax,edx
+    127b:	31 d2                	xor    edx,edx
+    127d:	89 45 c8             	mov    DWORD PTR [ebp-0x38],eax
+    1280:	89 55 cc             	mov    DWORD PTR [ebp-0x34],edx
 						q = q - (r << k);
-    1297:	8b 4d b4             	mov    ecx,DWORD PTR [ebp-0x4c]
-    129a:	8b 45 c8             	mov    eax,DWORD PTR [ebp-0x38]
-    129d:	8b 55 cc             	mov    edx,DWORD PTR [ebp-0x34]
-    12a0:	0f a5 c2             	shld   edx,eax,cl
-    12a3:	d3 e0                	shl    eax,cl
-    12a5:	f6 c1 20             	test   cl,0x20
-    12a8:	74 04                	je     12ae <__moddi3+0x21a>
-    12aa:	89 c2                	mov    edx,eax
-    12ac:	31 c0                	xor    eax,eax
-    12ae:	29 45 d0             	sub    DWORD PTR [ebp-0x30],eax
-    12b1:	19 55 d4             	sbb    DWORD PTR [ebp-0x2c],edx
+    1283:	8b 4d b4             	mov    ecx,DWORD PTR [ebp-0x4c]
+    1286:	8b 45 c8             	mov    eax,DWORD PTR [ebp-0x38]
+    1289:	8b 55 cc             	mov    edx,DWORD PTR [ebp-0x34]
+    128c:	0f a5 c2             	shld   edx,eax,cl
+    128f:	d3 e0                	shl    eax,cl
+    1291:	f6 c1 20             	test   cl,0x20
+    1294:	74 04                	je     129a <__moddi3+0x21a>
+    1296:	89 c2                	mov    edx,eax
+    1298:	31 c0                	xor    eax,eax
+    129a:	29 45 d0             	sub    DWORD PTR [ebp-0x30],eax
+    129d:	19 55 d4             	sbb    DWORD PTR [ebp-0x2c],edx
 		if (rp)
-    12b4:	83 7d dc 00          	cmp    DWORD PTR [ebp-0x24],0x0
-    12b8:	74 0e                	je     12c8 <__moddi3+0x234>
+    12a0:	83 7d dc 00          	cmp    DWORD PTR [ebp-0x24],0x0
+    12a4:	74 0e                	je     12b4 <__moddi3+0x234>
 				*rp = r;
-    12ba:	8b 4d dc             	mov    ecx,DWORD PTR [ebp-0x24]
-    12bd:	8b 45 c8             	mov    eax,DWORD PTR [ebp-0x38]
-    12c0:	8b 55 cc             	mov    edx,DWORD PTR [ebp-0x34]
-    12c3:	89 01                	mov    DWORD PTR [ecx],eax
-    12c5:	89 51 04             	mov    DWORD PTR [ecx+0x4],edx
+    12a6:	8b 4d dc             	mov    ecx,DWORD PTR [ebp-0x24]
+    12a9:	8b 45 c8             	mov    eax,DWORD PTR [ebp-0x38]
+    12ac:	8b 55 cc             	mov    edx,DWORD PTR [ebp-0x34]
+    12af:	89 01                	mov    DWORD PTR [ecx],eax
+    12b1:	89 51 04             	mov    DWORD PTR [ecx+0x4],edx
 		if (c)
-    12c8:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
-    12cc:	74 13                	je     12e1 <__moddi3+0x24d>
+    12b4:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
+    12b8:	74 13                	je     12cd <__moddi3+0x24d>
 				w = -w;
-    12ce:	8b 45 98             	mov    eax,DWORD PTR [ebp-0x68]
-    12d1:	8b 55 9c             	mov    edx,DWORD PTR [ebp-0x64]
-    12d4:	f7 d8                	neg    eax
-    12d6:	83 d2 00             	adc    edx,0x0
-    12d9:	f7 da                	neg    edx
-    12db:	89 45 98             	mov    DWORD PTR [ebp-0x68],eax
-    12de:	89 55 9c             	mov    DWORD PTR [ebp-0x64],edx
+    12ba:	8b 45 98             	mov    eax,DWORD PTR [ebp-0x68]
+    12bd:	8b 55 9c             	mov    edx,DWORD PTR [ebp-0x64]
+    12c0:	f7 d8                	neg    eax
+    12c2:	83 d2 00             	adc    edx,0x0
+    12c5:	f7 da                	neg    edx
+    12c7:	89 45 98             	mov    DWORD PTR [ebp-0x68],eax
+    12ca:	89 55 9c             	mov    DWORD PTR [ebp-0x64],edx
 	
 		return w;
-    12e1:	8b 45 98             	mov    eax,DWORD PTR [ebp-0x68]
-    12e4:	8b 55 9c             	mov    edx,DWORD PTR [ebp-0x64]
+    12cd:	8b 45 98             	mov    eax,DWORD PTR [ebp-0x68]
+    12d0:	8b 55 9c             	mov    edx,DWORD PTR [ebp-0x64]
 }
-    12e7:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
-    12ea:	c9                   	leave
-    12eb:	c3                   	ret
+    12d3:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
+    12d6:	c9                   	leave
+    12d7:	c3                   	ret
 
-000012ec <__divdi3>:
+000012d8 <__divdi3>:
 
 DWtype
 __divdi3 (DWtype u, DWtype v)
 {
-    12ec:	55                   	push   ebp
-    12ed:	89 e5                	mov    ebp,esp
-    12ef:	53                   	push   ebx
-    12f0:	83 ec 74             	sub    esp,0x74
-    12f3:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    12f6:	89 45 90             	mov    DWORD PTR [ebp-0x70],eax
-    12f9:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    12fc:	89 45 94             	mov    DWORD PTR [ebp-0x6c],eax
-    12ff:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-    1302:	89 45 88             	mov    DWORD PTR [ebp-0x78],eax
-    1305:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
-    1308:	89 45 8c             	mov    DWORD PTR [ebp-0x74],eax
+    12d8:	55                   	push   ebp
+    12d9:	89 e5                	mov    ebp,esp
+    12db:	53                   	push   ebx
+    12dc:	83 ec 74             	sub    esp,0x74
+    12df:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    12e2:	89 45 90             	mov    DWORD PTR [ebp-0x70],eax
+    12e5:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    12e8:	89 45 94             	mov    DWORD PTR [ebp-0x6c],eax
+    12eb:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    12ee:	89 45 88             	mov    DWORD PTR [ebp-0x78],eax
+    12f1:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
+    12f4:	89 45 8c             	mov    DWORD PTR [ebp-0x74],eax
 		Wtype c = 0;
-    130b:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
+    12f7:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
 		DWunion uu = {.ll = u};
-    1312:	8b 45 90             	mov    eax,DWORD PTR [ebp-0x70]
-    1315:	8b 55 94             	mov    edx,DWORD PTR [ebp-0x6c]
-    1318:	89 45 a0             	mov    DWORD PTR [ebp-0x60],eax
-    131b:	89 55 a4             	mov    DWORD PTR [ebp-0x5c],edx
+    12fe:	8b 45 90             	mov    eax,DWORD PTR [ebp-0x70]
+    1301:	8b 55 94             	mov    edx,DWORD PTR [ebp-0x6c]
+    1304:	89 45 a0             	mov    DWORD PTR [ebp-0x60],eax
+    1307:	89 55 a4             	mov    DWORD PTR [ebp-0x5c],edx
 		DWunion vv = {.ll = v};
-    131e:	8b 45 88             	mov    eax,DWORD PTR [ebp-0x78]
-    1321:	8b 55 8c             	mov    edx,DWORD PTR [ebp-0x74]
-    1324:	89 45 98             	mov    DWORD PTR [ebp-0x68],eax
-    1327:	89 55 9c             	mov    DWORD PTR [ebp-0x64],edx
+    130a:	8b 45 88             	mov    eax,DWORD PTR [ebp-0x78]
+    130d:	8b 55 8c             	mov    edx,DWORD PTR [ebp-0x74]
+    1310:	89 45 98             	mov    DWORD PTR [ebp-0x68],eax
+    1313:	89 55 9c             	mov    DWORD PTR [ebp-0x64],edx
 		DWtype w;
 	
 		if (uu.s.high < 0)
-    132a:	8b 45 a4             	mov    eax,DWORD PTR [ebp-0x5c]
-    132d:	85 c0                	test   eax,eax
-    132f:	79 16                	jns    1347 <__divdi3+0x5b>
+    1316:	8b 45 a4             	mov    eax,DWORD PTR [ebp-0x5c]
+    1319:	85 c0                	test   eax,eax
+    131b:	79 16                	jns    1333 <__divdi3+0x5b>
 				c = ~c,
-    1331:	f7 55 f4             	not    DWORD PTR [ebp-0xc]
+    131d:	f7 55 f4             	not    DWORD PTR [ebp-0xc]
 				  uu.ll = -uu.ll;
-    1334:	8b 45 a0             	mov    eax,DWORD PTR [ebp-0x60]
-    1337:	8b 55 a4             	mov    edx,DWORD PTR [ebp-0x5c]
-    133a:	f7 d8                	neg    eax
-    133c:	83 d2 00             	adc    edx,0x0
-    133f:	f7 da                	neg    edx
-    1341:	89 45 a0             	mov    DWORD PTR [ebp-0x60],eax
-    1344:	89 55 a4             	mov    DWORD PTR [ebp-0x5c],edx
+    1320:	8b 45 a0             	mov    eax,DWORD PTR [ebp-0x60]
+    1323:	8b 55 a4             	mov    edx,DWORD PTR [ebp-0x5c]
+    1326:	f7 d8                	neg    eax
+    1328:	83 d2 00             	adc    edx,0x0
+    132b:	f7 da                	neg    edx
+    132d:	89 45 a0             	mov    DWORD PTR [ebp-0x60],eax
+    1330:	89 55 a4             	mov    DWORD PTR [ebp-0x5c],edx
 		if (vv.s.high < 0)
-    1347:	8b 45 9c             	mov    eax,DWORD PTR [ebp-0x64]
-    134a:	85 c0                	test   eax,eax
-    134c:	79 16                	jns    1364 <__divdi3+0x78>
+    1333:	8b 45 9c             	mov    eax,DWORD PTR [ebp-0x64]
+    1336:	85 c0                	test   eax,eax
+    1338:	79 16                	jns    1350 <__divdi3+0x78>
 				c = ~c,
-    134e:	f7 55 f4             	not    DWORD PTR [ebp-0xc]
+    133a:	f7 55 f4             	not    DWORD PTR [ebp-0xc]
 				  vv.ll = -vv.ll;
-    1351:	8b 45 98             	mov    eax,DWORD PTR [ebp-0x68]
-    1354:	8b 55 9c             	mov    edx,DWORD PTR [ebp-0x64]
-    1357:	f7 d8                	neg    eax
-    1359:	83 d2 00             	adc    edx,0x0
-    135c:	f7 da                	neg    edx
-    135e:	89 45 98             	mov    DWORD PTR [ebp-0x68],eax
-    1361:	89 55 9c             	mov    DWORD PTR [ebp-0x64],edx
+    133d:	8b 45 98             	mov    eax,DWORD PTR [ebp-0x68]
+    1340:	8b 55 9c             	mov    edx,DWORD PTR [ebp-0x64]
+    1343:	f7 d8                	neg    eax
+    1345:	83 d2 00             	adc    edx,0x0
+    1348:	f7 da                	neg    edx
+    134a:	89 45 98             	mov    DWORD PTR [ebp-0x68],eax
+    134d:	89 55 9c             	mov    DWORD PTR [ebp-0x64],edx
 	
 		w = __udivmoddi4 (uu.ll, vv.ll, (UDWtype *) 0);
-    1364:	8b 45 98             	mov    eax,DWORD PTR [ebp-0x68]
-    1367:	8b 55 9c             	mov    edx,DWORD PTR [ebp-0x64]
-    136a:	89 c1                	mov    ecx,eax
-    136c:	89 d3                	mov    ebx,edx
-    136e:	8b 45 a0             	mov    eax,DWORD PTR [ebp-0x60]
-    1371:	8b 55 a4             	mov    edx,DWORD PTR [ebp-0x5c]
-    1374:	89 45 e0             	mov    DWORD PTR [ebp-0x20],eax
-    1377:	89 55 e4             	mov    DWORD PTR [ebp-0x1c],edx
-    137a:	89 4d d8             	mov    DWORD PTR [ebp-0x28],ecx
-    137d:	89 5d dc             	mov    DWORD PTR [ebp-0x24],ebx
-    1380:	c7 45 d4 00 00 00 00 	mov    DWORD PTR [ebp-0x2c],0x0
+    1350:	8b 45 98             	mov    eax,DWORD PTR [ebp-0x68]
+    1353:	8b 55 9c             	mov    edx,DWORD PTR [ebp-0x64]
+    1356:	89 c1                	mov    ecx,eax
+    1358:	89 d3                	mov    ebx,edx
+    135a:	8b 45 a0             	mov    eax,DWORD PTR [ebp-0x60]
+    135d:	8b 55 a4             	mov    edx,DWORD PTR [ebp-0x5c]
+    1360:	89 45 e0             	mov    DWORD PTR [ebp-0x20],eax
+    1363:	89 55 e4             	mov    DWORD PTR [ebp-0x1c],edx
+    1366:	89 4d d8             	mov    DWORD PTR [ebp-0x28],ecx
+    1369:	89 5d dc             	mov    DWORD PTR [ebp-0x24],ebx
+    136c:	c7 45 d4 00 00 00 00 	mov    DWORD PTR [ebp-0x2c],0x0
 		UDWtype q = 0, r = n, y = d;
-    1387:	c7 45 c8 00 00 00 00 	mov    DWORD PTR [ebp-0x38],0x0
-    138e:	c7 45 cc 00 00 00 00 	mov    DWORD PTR [ebp-0x34],0x0
-    1395:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
-    1398:	8b 55 e4             	mov    edx,DWORD PTR [ebp-0x1c]
-    139b:	89 45 c0             	mov    DWORD PTR [ebp-0x40],eax
-    139e:	89 55 c4             	mov    DWORD PTR [ebp-0x3c],edx
-    13a1:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-    13a4:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
-    13a7:	89 45 b8             	mov    DWORD PTR [ebp-0x48],eax
-    13aa:	89 55 bc             	mov    DWORD PTR [ebp-0x44],edx
+    1373:	c7 45 c8 00 00 00 00 	mov    DWORD PTR [ebp-0x38],0x0
+    137a:	c7 45 cc 00 00 00 00 	mov    DWORD PTR [ebp-0x34],0x0
+    1381:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
+    1384:	8b 55 e4             	mov    edx,DWORD PTR [ebp-0x1c]
+    1387:	89 45 c0             	mov    DWORD PTR [ebp-0x40],eax
+    138a:	89 55 c4             	mov    DWORD PTR [ebp-0x3c],edx
+    138d:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+    1390:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
+    1393:	89 45 b8             	mov    DWORD PTR [ebp-0x48],eax
+    1396:	89 55 bc             	mov    DWORD PTR [ebp-0x44],edx
 		if (y <= r)
-    13ad:	8b 45 c0             	mov    eax,DWORD PTR [ebp-0x40]
-    13b0:	8b 55 c4             	mov    edx,DWORD PTR [ebp-0x3c]
-    13b3:	3b 45 b8             	cmp    eax,DWORD PTR [ebp-0x48]
-    13b6:	89 d0                	mov    eax,edx
-    13b8:	1b 45 bc             	sbb    eax,DWORD PTR [ebp-0x44]
-    13bb:	0f 82 4f 01 00 00    	jb     1510 <__divdi3+0x224>
+    1399:	8b 45 c0             	mov    eax,DWORD PTR [ebp-0x40]
+    139c:	8b 55 c4             	mov    edx,DWORD PTR [ebp-0x3c]
+    139f:	3b 45 b8             	cmp    eax,DWORD PTR [ebp-0x48]
+    13a2:	89 d0                	mov    eax,edx
+    13a4:	1b 45 bc             	sbb    eax,DWORD PTR [ebp-0x44]
+    13a7:	0f 82 4f 01 00 00    	jb     14fc <__divdi3+0x224>
 				lz1 = __builtin_clzll (d);
-    13c1:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-    13c4:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
-    13c7:	85 d2                	test   edx,edx
-    13c9:	74 08                	je     13d3 <__divdi3+0xe7>
-    13cb:	0f bd c2             	bsr    eax,edx
-    13ce:	83 f0 1f             	xor    eax,0x1f
-    13d1:	eb 09                	jmp    13dc <__divdi3+0xf0>
-    13d3:	0f bd c0             	bsr    eax,eax
-    13d6:	83 f0 1f             	xor    eax,0x1f
-    13d9:	83 c0 20             	add    eax,0x20
-    13dc:	89 45 b4             	mov    DWORD PTR [ebp-0x4c],eax
+    13ad:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+    13b0:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
+    13b3:	85 d2                	test   edx,edx
+    13b5:	74 08                	je     13bf <__divdi3+0xe7>
+    13b7:	0f bd c2             	bsr    eax,edx
+    13ba:	83 f0 1f             	xor    eax,0x1f
+    13bd:	eb 09                	jmp    13c8 <__divdi3+0xf0>
+    13bf:	0f bd c0             	bsr    eax,eax
+    13c2:	83 f0 1f             	xor    eax,0x1f
+    13c5:	83 c0 20             	add    eax,0x20
+    13c8:	89 45 b4             	mov    DWORD PTR [ebp-0x4c],eax
 				lz2 = __builtin_clzll (n);
-    13df:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
-    13e2:	8b 55 e4             	mov    edx,DWORD PTR [ebp-0x1c]
-    13e5:	85 d2                	test   edx,edx
-    13e7:	74 08                	je     13f1 <__divdi3+0x105>
-    13e9:	0f bd c2             	bsr    eax,edx
-    13ec:	83 f0 1f             	xor    eax,0x1f
-    13ef:	eb 09                	jmp    13fa <__divdi3+0x10e>
-    13f1:	0f bd c0             	bsr    eax,eax
-    13f4:	83 f0 1f             	xor    eax,0x1f
-    13f7:	83 c0 20             	add    eax,0x20
-    13fa:	89 45 b0             	mov    DWORD PTR [ebp-0x50],eax
+    13cb:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
+    13ce:	8b 55 e4             	mov    edx,DWORD PTR [ebp-0x1c]
+    13d1:	85 d2                	test   edx,edx
+    13d3:	74 08                	je     13dd <__divdi3+0x105>
+    13d5:	0f bd c2             	bsr    eax,edx
+    13d8:	83 f0 1f             	xor    eax,0x1f
+    13db:	eb 09                	jmp    13e6 <__divdi3+0x10e>
+    13dd:	0f bd c0             	bsr    eax,eax
+    13e0:	83 f0 1f             	xor    eax,0x1f
+    13e3:	83 c0 20             	add    eax,0x20
+    13e6:	89 45 b0             	mov    DWORD PTR [ebp-0x50],eax
 				k = lz1 - lz2;
-    13fd:	8b 45 b4             	mov    eax,DWORD PTR [ebp-0x4c]
-    1400:	2b 45 b0             	sub    eax,DWORD PTR [ebp-0x50]
-    1403:	89 45 ac             	mov    DWORD PTR [ebp-0x54],eax
+    13e9:	8b 45 b4             	mov    eax,DWORD PTR [ebp-0x4c]
+    13ec:	2b 45 b0             	sub    eax,DWORD PTR [ebp-0x50]
+    13ef:	89 45 ac             	mov    DWORD PTR [ebp-0x54],eax
 				y = (y << k);
-    1406:	8b 4d ac             	mov    ecx,DWORD PTR [ebp-0x54]
-    1409:	8b 45 b8             	mov    eax,DWORD PTR [ebp-0x48]
-    140c:	8b 55 bc             	mov    edx,DWORD PTR [ebp-0x44]
-    140f:	0f a5 c2             	shld   edx,eax,cl
-    1412:	d3 e0                	shl    eax,cl
-    1414:	f6 c1 20             	test   cl,0x20
-    1417:	74 04                	je     141d <__divdi3+0x131>
-    1419:	89 c2                	mov    edx,eax
-    141b:	31 c0                	xor    eax,eax
-    141d:	89 45 b8             	mov    DWORD PTR [ebp-0x48],eax
-    1420:	89 55 bc             	mov    DWORD PTR [ebp-0x44],edx
+    13f2:	8b 4d ac             	mov    ecx,DWORD PTR [ebp-0x54]
+    13f5:	8b 45 b8             	mov    eax,DWORD PTR [ebp-0x48]
+    13f8:	8b 55 bc             	mov    edx,DWORD PTR [ebp-0x44]
+    13fb:	0f a5 c2             	shld   edx,eax,cl
+    13fe:	d3 e0                	shl    eax,cl
+    1400:	f6 c1 20             	test   cl,0x20
+    1403:	74 04                	je     1409 <__divdi3+0x131>
+    1405:	89 c2                	mov    edx,eax
+    1407:	31 c0                	xor    eax,eax
+    1409:	89 45 b8             	mov    DWORD PTR [ebp-0x48],eax
+    140c:	89 55 bc             	mov    DWORD PTR [ebp-0x44],edx
 				if (r >= y)
-    1423:	8b 45 c0             	mov    eax,DWORD PTR [ebp-0x40]
-    1426:	8b 55 c4             	mov    edx,DWORD PTR [ebp-0x3c]
-    1429:	3b 45 b8             	cmp    eax,DWORD PTR [ebp-0x48]
-    142c:	89 d0                	mov    eax,edx
-    142e:	1b 45 bc             	sbb    eax,DWORD PTR [ebp-0x44]
-    1431:	72 2d                	jb     1460 <__divdi3+0x174>
+    140f:	8b 45 c0             	mov    eax,DWORD PTR [ebp-0x40]
+    1412:	8b 55 c4             	mov    edx,DWORD PTR [ebp-0x3c]
+    1415:	3b 45 b8             	cmp    eax,DWORD PTR [ebp-0x48]
+    1418:	89 d0                	mov    eax,edx
+    141a:	1b 45 bc             	sbb    eax,DWORD PTR [ebp-0x44]
+    141d:	72 2d                	jb     144c <__divdi3+0x174>
 						r = r - y;
-    1433:	8b 45 b8             	mov    eax,DWORD PTR [ebp-0x48]
-    1436:	8b 55 bc             	mov    edx,DWORD PTR [ebp-0x44]
-    1439:	29 45 c0             	sub    DWORD PTR [ebp-0x40],eax
-    143c:	19 55 c4             	sbb    DWORD PTR [ebp-0x3c],edx
+    141f:	8b 45 b8             	mov    eax,DWORD PTR [ebp-0x48]
+    1422:	8b 55 bc             	mov    edx,DWORD PTR [ebp-0x44]
+    1425:	29 45 c0             	sub    DWORD PTR [ebp-0x40],eax
+    1428:	19 55 c4             	sbb    DWORD PTR [ebp-0x3c],edx
 						q =  (1ULL << k);
-    143f:	8b 4d ac             	mov    ecx,DWORD PTR [ebp-0x54]
-    1442:	b8 01 00 00 00       	mov    eax,0x1
-    1447:	ba 00 00 00 00       	mov    edx,0x0
-    144c:	0f a5 c2             	shld   edx,eax,cl
-    144f:	d3 e0                	shl    eax,cl
-    1451:	f6 c1 20             	test   cl,0x20
-    1454:	74 04                	je     145a <__divdi3+0x16e>
-    1456:	89 c2                	mov    edx,eax
-    1458:	31 c0                	xor    eax,eax
-    145a:	89 45 c8             	mov    DWORD PTR [ebp-0x38],eax
-    145d:	89 55 cc             	mov    DWORD PTR [ebp-0x34],edx
+    142b:	8b 4d ac             	mov    ecx,DWORD PTR [ebp-0x54]
+    142e:	b8 01 00 00 00       	mov    eax,0x1
+    1433:	ba 00 00 00 00       	mov    edx,0x0
+    1438:	0f a5 c2             	shld   edx,eax,cl
+    143b:	d3 e0                	shl    eax,cl
+    143d:	f6 c1 20             	test   cl,0x20
+    1440:	74 04                	je     1446 <__divdi3+0x16e>
+    1442:	89 c2                	mov    edx,eax
+    1444:	31 c0                	xor    eax,eax
+    1446:	89 45 c8             	mov    DWORD PTR [ebp-0x38],eax
+    1449:	89 55 cc             	mov    DWORD PTR [ebp-0x34],edx
 				if (k > 0)
-    1460:	83 7d ac 00          	cmp    DWORD PTR [ebp-0x54],0x0
-    1464:	0f 84 a6 00 00 00    	je     1510 <__divdi3+0x224>
+    144c:	83 7d ac 00          	cmp    DWORD PTR [ebp-0x54],0x0
+    1450:	0f 84 a6 00 00 00    	je     14fc <__divdi3+0x224>
 						y = y >> 1;
-    146a:	8b 45 b8             	mov    eax,DWORD PTR [ebp-0x48]
-    146d:	8b 55 bc             	mov    edx,DWORD PTR [ebp-0x44]
-    1470:	0f ac d0 01          	shrd   eax,edx,0x1
-    1474:	d1 ea                	shr    edx,1
-    1476:	89 45 b8             	mov    DWORD PTR [ebp-0x48],eax
-    1479:	89 55 bc             	mov    DWORD PTR [ebp-0x44],edx
+    1456:	8b 45 b8             	mov    eax,DWORD PTR [ebp-0x48]
+    1459:	8b 55 bc             	mov    edx,DWORD PTR [ebp-0x44]
+    145c:	0f ac d0 01          	shrd   eax,edx,0x1
+    1460:	d1 ea                	shr    edx,1
+    1462:	89 45 b8             	mov    DWORD PTR [ebp-0x48],eax
+    1465:	89 55 bc             	mov    DWORD PTR [ebp-0x44],edx
 						i = k;
-    147c:	8b 45 ac             	mov    eax,DWORD PTR [ebp-0x54]
-    147f:	89 45 a8             	mov    DWORD PTR [ebp-0x58],eax
+    1468:	8b 45 ac             	mov    eax,DWORD PTR [ebp-0x54]
+    146b:	89 45 a8             	mov    DWORD PTR [ebp-0x58],eax
 								if (r >= y)
-    1482:	8b 45 b8             	mov    eax,DWORD PTR [ebp-0x48]
-    1485:	8b 55 bc             	mov    edx,DWORD PTR [ebp-0x44]
-    1488:	8b 4d c4             	mov    ecx,DWORD PTR [ebp-0x3c]
-    148b:	39 45 c0             	cmp    DWORD PTR [ebp-0x40],eax
-    148e:	19 d1                	sbb    ecx,edx
-    1490:	72 1e                	jb     14b0 <__divdi3+0x1c4>
+    146e:	8b 45 b8             	mov    eax,DWORD PTR [ebp-0x48]
+    1471:	8b 55 bc             	mov    edx,DWORD PTR [ebp-0x44]
+    1474:	8b 4d c4             	mov    ecx,DWORD PTR [ebp-0x3c]
+    1477:	39 45 c0             	cmp    DWORD PTR [ebp-0x40],eax
+    147a:	19 d1                	sbb    ecx,edx
+    147c:	72 1e                	jb     149c <__divdi3+0x1c4>
 										r = ((r - y) << 1) + 1;
-    1492:	8b 45 c0             	mov    eax,DWORD PTR [ebp-0x40]
-    1495:	8b 55 c4             	mov    edx,DWORD PTR [ebp-0x3c]
-    1498:	2b 45 b8             	sub    eax,DWORD PTR [ebp-0x48]
-    149b:	1b 55 bc             	sbb    edx,DWORD PTR [ebp-0x44]
-    149e:	01 c0                	add    eax,eax
-    14a0:	11 d2                	adc    edx,edx
-    14a2:	83 c0 01             	add    eax,0x1
-    14a5:	83 d2 00             	adc    edx,0x0
-    14a8:	89 45 c0             	mov    DWORD PTR [ebp-0x40],eax
-    14ab:	89 55 c4             	mov    DWORD PTR [ebp-0x3c],edx
-    14ae:	eb 10                	jmp    14c0 <__divdi3+0x1d4>
+    147e:	8b 45 c0             	mov    eax,DWORD PTR [ebp-0x40]
+    1481:	8b 55 c4             	mov    edx,DWORD PTR [ebp-0x3c]
+    1484:	2b 45 b8             	sub    eax,DWORD PTR [ebp-0x48]
+    1487:	1b 55 bc             	sbb    edx,DWORD PTR [ebp-0x44]
+    148a:	01 c0                	add    eax,eax
+    148c:	11 d2                	adc    edx,edx
+    148e:	83 c0 01             	add    eax,0x1
+    1491:	83 d2 00             	adc    edx,0x0
+    1494:	89 45 c0             	mov    DWORD PTR [ebp-0x40],eax
+    1497:	89 55 c4             	mov    DWORD PTR [ebp-0x3c],edx
+    149a:	eb 10                	jmp    14ac <__divdi3+0x1d4>
 										r =  (r << 1);
-    14b0:	8b 45 c0             	mov    eax,DWORD PTR [ebp-0x40]
-    14b3:	8b 55 c4             	mov    edx,DWORD PTR [ebp-0x3c]
-    14b6:	01 c0                	add    eax,eax
-    14b8:	11 d2                	adc    edx,edx
-    14ba:	89 45 c0             	mov    DWORD PTR [ebp-0x40],eax
-    14bd:	89 55 c4             	mov    DWORD PTR [ebp-0x3c],edx
+    149c:	8b 45 c0             	mov    eax,DWORD PTR [ebp-0x40]
+    149f:	8b 55 c4             	mov    edx,DWORD PTR [ebp-0x3c]
+    14a2:	01 c0                	add    eax,eax
+    14a4:	11 d2                	adc    edx,edx
+    14a6:	89 45 c0             	mov    DWORD PTR [ebp-0x40],eax
+    14a9:	89 55 c4             	mov    DWORD PTR [ebp-0x3c],edx
 								i = i - 1;
-    14c0:	83 6d a8 01          	sub    DWORD PTR [ebp-0x58],0x1
+    14ac:	83 6d a8 01          	sub    DWORD PTR [ebp-0x58],0x1
 						} while (i != 0);
-    14c4:	83 7d a8 00          	cmp    DWORD PTR [ebp-0x58],0x0
-    14c8:	75 b8                	jne    1482 <__divdi3+0x196>
+    14b0:	83 7d a8 00          	cmp    DWORD PTR [ebp-0x58],0x0
+    14b4:	75 b8                	jne    146e <__divdi3+0x196>
 						q = q + r;
-    14ca:	8b 45 c0             	mov    eax,DWORD PTR [ebp-0x40]
-    14cd:	8b 55 c4             	mov    edx,DWORD PTR [ebp-0x3c]
-    14d0:	01 45 c8             	add    DWORD PTR [ebp-0x38],eax
-    14d3:	11 55 cc             	adc    DWORD PTR [ebp-0x34],edx
+    14b6:	8b 45 c0             	mov    eax,DWORD PTR [ebp-0x40]
+    14b9:	8b 55 c4             	mov    edx,DWORD PTR [ebp-0x3c]
+    14bc:	01 45 c8             	add    DWORD PTR [ebp-0x38],eax
+    14bf:	11 55 cc             	adc    DWORD PTR [ebp-0x34],edx
 						r = r >> k;
-    14d6:	8b 4d ac             	mov    ecx,DWORD PTR [ebp-0x54]
-    14d9:	8b 45 c0             	mov    eax,DWORD PTR [ebp-0x40]
-    14dc:	8b 55 c4             	mov    edx,DWORD PTR [ebp-0x3c]
-    14df:	0f ad d0             	shrd   eax,edx,cl
-    14e2:	d3 ea                	shr    edx,cl
-    14e4:	f6 c1 20             	test   cl,0x20
-    14e7:	74 04                	je     14ed <__divdi3+0x201>
-    14e9:	89 d0                	mov    eax,edx
-    14eb:	31 d2                	xor    edx,edx
-    14ed:	89 45 c0             	mov    DWORD PTR [ebp-0x40],eax
-    14f0:	89 55 c4             	mov    DWORD PTR [ebp-0x3c],edx
+    14c2:	8b 4d ac             	mov    ecx,DWORD PTR [ebp-0x54]
+    14c5:	8b 45 c0             	mov    eax,DWORD PTR [ebp-0x40]
+    14c8:	8b 55 c4             	mov    edx,DWORD PTR [ebp-0x3c]
+    14cb:	0f ad d0             	shrd   eax,edx,cl
+    14ce:	d3 ea                	shr    edx,cl
+    14d0:	f6 c1 20             	test   cl,0x20
+    14d3:	74 04                	je     14d9 <__divdi3+0x201>
+    14d5:	89 d0                	mov    eax,edx
+    14d7:	31 d2                	xor    edx,edx
+    14d9:	89 45 c0             	mov    DWORD PTR [ebp-0x40],eax
+    14dc:	89 55 c4             	mov    DWORD PTR [ebp-0x3c],edx
 						q = q - (r << k);
-    14f3:	8b 4d ac             	mov    ecx,DWORD PTR [ebp-0x54]
-    14f6:	8b 45 c0             	mov    eax,DWORD PTR [ebp-0x40]
-    14f9:	8b 55 c4             	mov    edx,DWORD PTR [ebp-0x3c]
-    14fc:	0f a5 c2             	shld   edx,eax,cl
-    14ff:	d3 e0                	shl    eax,cl
-    1501:	f6 c1 20             	test   cl,0x20
-    1504:	74 04                	je     150a <__divdi3+0x21e>
-    1506:	89 c2                	mov    edx,eax
-    1508:	31 c0                	xor    eax,eax
-    150a:	29 45 c8             	sub    DWORD PTR [ebp-0x38],eax
-    150d:	19 55 cc             	sbb    DWORD PTR [ebp-0x34],edx
+    14df:	8b 4d ac             	mov    ecx,DWORD PTR [ebp-0x54]
+    14e2:	8b 45 c0             	mov    eax,DWORD PTR [ebp-0x40]
+    14e5:	8b 55 c4             	mov    edx,DWORD PTR [ebp-0x3c]
+    14e8:	0f a5 c2             	shld   edx,eax,cl
+    14eb:	d3 e0                	shl    eax,cl
+    14ed:	f6 c1 20             	test   cl,0x20
+    14f0:	74 04                	je     14f6 <__divdi3+0x21e>
+    14f2:	89 c2                	mov    edx,eax
+    14f4:	31 c0                	xor    eax,eax
+    14f6:	29 45 c8             	sub    DWORD PTR [ebp-0x38],eax
+    14f9:	19 55 cc             	sbb    DWORD PTR [ebp-0x34],edx
 		if (rp)
-    1510:	83 7d d4 00          	cmp    DWORD PTR [ebp-0x2c],0x0
-    1514:	74 0e                	je     1524 <__divdi3+0x238>
+    14fc:	83 7d d4 00          	cmp    DWORD PTR [ebp-0x2c],0x0
+    1500:	74 0e                	je     1510 <__divdi3+0x238>
 				*rp = r;
-    1516:	8b 4d d4             	mov    ecx,DWORD PTR [ebp-0x2c]
-    1519:	8b 45 c0             	mov    eax,DWORD PTR [ebp-0x40]
-    151c:	8b 55 c4             	mov    edx,DWORD PTR [ebp-0x3c]
-    151f:	89 01                	mov    DWORD PTR [ecx],eax
-    1521:	89 51 04             	mov    DWORD PTR [ecx+0x4],edx
+    1502:	8b 4d d4             	mov    ecx,DWORD PTR [ebp-0x2c]
+    1505:	8b 45 c0             	mov    eax,DWORD PTR [ebp-0x40]
+    1508:	8b 55 c4             	mov    edx,DWORD PTR [ebp-0x3c]
+    150b:	89 01                	mov    DWORD PTR [ecx],eax
+    150d:	89 51 04             	mov    DWORD PTR [ecx+0x4],edx
 		return q;
-    1524:	8b 45 c8             	mov    eax,DWORD PTR [ebp-0x38]
-    1527:	8b 55 cc             	mov    edx,DWORD PTR [ebp-0x34]
+    1510:	8b 45 c8             	mov    eax,DWORD PTR [ebp-0x38]
+    1513:	8b 55 cc             	mov    edx,DWORD PTR [ebp-0x34]
 		w = __udivmoddi4 (uu.ll, vv.ll, (UDWtype *) 0);
-    152a:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
-    152d:	89 55 ec             	mov    DWORD PTR [ebp-0x14],edx
+    1516:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
+    1519:	89 55 ec             	mov    DWORD PTR [ebp-0x14],edx
 		if (c)
-    1530:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
-    1534:	74 0a                	je     1540 <__divdi3+0x254>
+    151c:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
+    1520:	74 0a                	je     152c <__divdi3+0x254>
 				w = -w;
-    1536:	f7 5d e8             	neg    DWORD PTR [ebp-0x18]
-    1539:	83 55 ec 00          	adc    DWORD PTR [ebp-0x14],0x0
-    153d:	f7 5d ec             	neg    DWORD PTR [ebp-0x14]
+    1522:	f7 5d e8             	neg    DWORD PTR [ebp-0x18]
+    1525:	83 55 ec 00          	adc    DWORD PTR [ebp-0x14],0x0
+    1529:	f7 5d ec             	neg    DWORD PTR [ebp-0x14]
 	
 		return w;
-    1540:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
-    1543:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
+    152c:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
+    152f:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
 }
-    1546:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
-    1549:	c9                   	leave
-    154a:	c3                   	ret
+    1532:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
+    1535:	c9                   	leave
+    1536:	c3                   	ret

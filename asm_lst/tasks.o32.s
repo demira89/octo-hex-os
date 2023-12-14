@@ -5,56 +5,56 @@ tasks.o32:     file format elf32-i386
 Disassembly of section .text:
 
 00000000 <per_cpu_ptr>:
-		uint64_t es;
-		uint64_t ds;
-		uint64_t r15;
-		uint64_t r14;
-		uint64_t r13;
 		uint64_t r12;
-       0:	55                   	push   ebp
-       1:	89 e5                	mov    ebp,esp
-       3:	83 ec 10             	sub    esp,0x10
 		uint64_t r11;
 		uint64_t r10;
 		uint64_t r9;
 		uint64_t r8;
 		uint64_t rdi;
-       6:	64 a1 00 00 00 00    	mov    eax,fs:0x0
-       c:	89 45 fc             	mov    DWORD PTR [ebp-0x4],eax
+       0:	55                   	push   ebp
+       1:	89 e5                	mov    ebp,esp
+       3:	83 ec 10             	sub    esp,0x10
 		uint64_t rsi;
 		uint64_t rbp;
-       f:	8b 45 fc             	mov    eax,DWORD PTR [ebp-0x4]
 		uint64_t rsp;
+		uint64_t rbx;
+		uint64_t rdx;
+       6:	64 a1 00 00 00 00    	mov    eax,fs:0x0
+       c:	89 45 fc             	mov    DWORD PTR [ebp-0x4],eax
+		uint64_t rcx;
+		uint64_t rax;
+       f:	8b 45 fc             	mov    eax,DWORD PTR [ebp-0x4]
+		uint64_t rip;
       12:	c9                   	leave
       13:	c3                   	ret
 
 00000014 <if_enabled>:
-		asm("cli");
 		if (diag++)
 				return;
 		framebuffer_redraw(&fb_initial);
 		mdelay(1000);
 		print_tasks();
+		printf("PROC TASK TASK_NAME        EIP      ESP\n");
       14:	55                   	push   ebp
       15:	89 e5                	mov    ebp,esp
       17:	83 ec 10             	sub    esp,0x10
-		printf("PROC TASK TASK_NAME        EIP      ESP\n");
 		for (size_t i = end - 1; i != end; i--) {
+				printf("%4u %4u %16s %p %p\n", (pr_lst[i].proc >> 24),
       1a:	9c                   	pushf
       1b:	58                   	pop    eax
       1c:	89 45 fc             	mov    DWORD PTR [ebp-0x4],eax
-						framebuffer_redraw(&fb_initial);
 				if (!i)
 						i = 128;
 		}
 }
 
+void proc_add_time(uint64_t ns, uint32_t flags)
       1f:	8b 45 fc             	mov    eax,DWORD PTR [ebp-0x4]
       22:	83 e0 20             	and    eax,0x20
       25:	85 c0                	test   eax,eax
       27:	0f 95 c0             	setne  al
       2a:	0f b6 c0             	movzx  eax,al
-void proc_add_time(uint64_t ns, uint32_t flags)
+{
       2d:	c9                   	leave
       2e:	c3                   	ret
 
@@ -62,9 +62,9 @@ void proc_add_time(uint64_t ns, uint32_t flags)
 {
       2f:	55                   	push   ebp
       30:	89 e5                	mov    ebp,esp
-      32:	83 ec 18             	sub    esp,0x18
+      32:	83 ec 28             	sub    esp,0x28
 		while (kernel_stacks.free_stacks) {
-      35:	eb 58                	jmp    8f <alloc_stack+0x60>
+      35:	eb 64                	jmp    9b <alloc_stack+0x6c>
 				rv = kernel_stacks.free_stacks;
       37:	a1 18 00 00 00       	mov    eax,ds:0x18
       3c:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
@@ -77,7 +77,7 @@ void proc_add_time(uint64_t ns, uint32_t flags)
       4c:	f0 0f b1 15 18 00 00 00 	lock cmpxchg DWORD PTR ds:0x18,edx
       54:	0f 94 c0             	sete   al
       57:	84 c0                	test   al,al
-      59:	74 34                	je     8f <alloc_stack+0x60>
+      59:	74 40                	je     9b <alloc_stack+0x6c>
 										rv - 4096 * (kernel_stacks.n_alloc + kernel_stacks.n_res));
       5b:	8b 15 0c 00 00 00    	mov    edx,DWORD PTR ds:0xc
       61:	a1 10 00 00 00       	mov    eax,ds:0x10
@@ -88,3894 +88,3736 @@ void proc_add_time(uint64_t ns, uint32_t flags)
 						cprintf(KFMT_INFO, "stack from %p to %p reused\n", rv,
       6f:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
       72:	01 d0                	add    eax,edx
-      74:	50                   	push   eax
-      75:	ff 75 f4             	push   DWORD PTR [ebp-0xc]
-      78:	68 00 00 00 00       	push   0x0
-      7d:	6a 0b                	push   0xb
-      7f:	e8 fc ff ff ff       	call   80 <alloc_stack+0x51>
-      84:	83 c4 10             	add    esp,0x10
+      74:	89 44 24 0c          	mov    DWORD PTR [esp+0xc],eax
+      78:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+      7b:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+      7f:	c7 44 24 04 00 00 00 00 	mov    DWORD PTR [esp+0x4],0x0
+      87:	c7 04 24 0b 00 00 00 	mov    DWORD PTR [esp],0xb
+      8e:	e8 fc ff ff ff       	call   8f <alloc_stack+0x60>
 						return rv;
-      87:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-      8a:	e9 ce 00 00 00       	jmp    15d <alloc_stack+0x12e>
+      93:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+      96:	e9 e5 00 00 00       	jmp    180 <alloc_stack+0x151>
 		while (kernel_stacks.free_stacks) {
-      8f:	a1 18 00 00 00       	mov    eax,ds:0x18
-      94:	85 c0                	test   eax,eax
-      96:	75 9f                	jne    37 <alloc_stack+0x8>
+      9b:	a1 18 00 00 00       	mov    eax,ds:0x18
+      a0:	85 c0                	test   eax,eax
+      a2:	75 93                	jne    37 <alloc_stack+0x8>
 		rv = kernel_stacks.vm_ptr;
-      98:	a1 04 00 00 00       	mov    eax,ds:0x4
-      9d:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
+      a4:	a1 04 00 00 00       	mov    eax,ds:0x4
+      a9:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
 		rv += 4096 * (kernel_stacks.n_alloc + kernel_stacks.n_guard + kernel_stacks.n_res);
-      a0:	8b 15 0c 00 00 00    	mov    edx,DWORD PTR ds:0xc
-      a6:	a1 14 00 00 00       	mov    eax,ds:0x14
-      ab:	01 c2                	add    edx,eax
-      ad:	a1 10 00 00 00       	mov    eax,ds:0x10
-      b2:	01 d0                	add    eax,edx
-      b4:	c1 e0 0c             	shl    eax,0xc
-      b7:	01 45 f4             	add    DWORD PTR [ebp-0xc],eax
+      ac:	8b 15 0c 00 00 00    	mov    edx,DWORD PTR ds:0xc
+      b2:	a1 14 00 00 00       	mov    eax,ds:0x14
+      b7:	01 c2                	add    edx,eax
+      b9:	a1 10 00 00 00       	mov    eax,ds:0x10
+      be:	01 d0                	add    eax,edx
+      c0:	c1 e0 0c             	shl    eax,0xc
+      c3:	01 45 f4             	add    DWORD PTR [ebp-0xc],eax
 		if (rv > kernel_stacks.vm_top)
-      ba:	a1 08 00 00 00       	mov    eax,ds:0x8
-      bf:	3b 45 f4             	cmp    eax,DWORD PTR [ebp-0xc]
-      c2:	73 0a                	jae    ce <alloc_stack+0x9f>
+      c6:	a1 08 00 00 00       	mov    eax,ds:0x8
+      cb:	3b 45 f4             	cmp    eax,DWORD PTR [ebp-0xc]
+      ce:	73 0a                	jae    da <alloc_stack+0xab>
 				return NULL;
-      c4:	b8 00 00 00 00       	mov    eax,0x0
-      c9:	e9 8f 00 00 00       	jmp    15d <alloc_stack+0x12e>
+      d0:	b8 00 00 00 00       	mov    eax,0x0
+      d5:	e9 a6 00 00 00       	jmp    180 <alloc_stack+0x151>
 						rv - 4096 * (kernel_stacks.n_alloc + kernel_stacks.n_guard),
-      ce:	8b 15 0c 00 00 00    	mov    edx,DWORD PTR ds:0xc
-      d4:	a1 14 00 00 00       	mov    eax,ds:0x14
-      d9:	01 d0                	add    eax,edx
-      db:	c1 e0 0c             	shl    eax,0xc
-      de:	f7 d8                	neg    eax
-      e0:	89 c2                	mov    edx,eax
-      e2:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+      da:	8b 15 0c 00 00 00    	mov    edx,DWORD PTR ds:0xc
+      e0:	a1 14 00 00 00       	mov    eax,ds:0x14
       e5:	01 d0                	add    eax,edx
+      e7:	c1 e0 0c             	shl    eax,0xc
+      ea:	f7 d8                	neg    eax
+      ec:	89 c2                	mov    edx,eax
+      ee:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+      f1:	01 d0                	add    eax,edx
 		rv = mm_alloc_vmem(&mm_kernel, kernel_stacks.n_alloc,
-      e7:	89 c2                	mov    edx,eax
-      e9:	a1 0c 00 00 00       	mov    eax,ds:0xc
-      ee:	6a 0c                	push   0xc
-      f0:	52                   	push   edx
-      f1:	50                   	push   eax
-      f2:	68 00 00 00 00       	push   0x0
-      f7:	e8 fc ff ff ff       	call   f8 <alloc_stack+0xc9>
-      fc:	83 c4 10             	add    esp,0x10
-      ff:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
+      f3:	89 c2                	mov    edx,eax
+      f5:	a1 0c 00 00 00       	mov    eax,ds:0xc
+      fa:	c7 44 24 0c 0c 00 00 00 	mov    DWORD PTR [esp+0xc],0xc
+     102:	89 54 24 08          	mov    DWORD PTR [esp+0x8],edx
+     106:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+     10a:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+     111:	e8 fc ff ff ff       	call   112 <alloc_stack+0xe3>
+     116:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
 		if (rv) {
-     102:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
-     106:	74 50                	je     158 <alloc_stack+0x129>
+     119:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
+     11d:	74 5c                	je     17b <alloc_stack+0x14c>
 				rv += kernel_stacks.n_alloc * 4096;
-     108:	a1 0c 00 00 00       	mov    eax,ds:0xc
-     10d:	c1 e0 0c             	shl    eax,0xc
-     110:	01 45 f4             	add    DWORD PTR [ebp-0xc],eax
+     11f:	a1 0c 00 00 00       	mov    eax,ds:0xc
+     124:	c1 e0 0c             	shl    eax,0xc
+     127:	01 45 f4             	add    DWORD PTR [ebp-0xc],eax
 				kernel_stacks.vm_ptr = rv + 4096 * kernel_stacks.n_guard;
-     113:	a1 14 00 00 00       	mov    eax,ds:0x14
-     118:	c1 e0 0c             	shl    eax,0xc
-     11b:	89 c2                	mov    edx,eax
-     11d:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     120:	01 d0                	add    eax,edx
-     122:	a3 04 00 00 00       	mov    ds:0x4,eax
+     12a:	a1 14 00 00 00       	mov    eax,ds:0x14
+     12f:	c1 e0 0c             	shl    eax,0xc
+     132:	89 c2                	mov    edx,eax
+     134:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     137:	01 d0                	add    eax,edx
+     139:	a3 04 00 00 00       	mov    ds:0x4,eax
 								rv, rv - 4096 * (kernel_stacks.n_alloc + kernel_stacks.n_res));
-     127:	8b 15 0c 00 00 00    	mov    edx,DWORD PTR ds:0xc
-     12d:	a1 10 00 00 00       	mov    eax,ds:0x10
-     132:	01 d0                	add    eax,edx
-     134:	c1 e0 0c             	shl    eax,0xc
-     137:	f7 d8                	neg    eax
-     139:	89 c2                	mov    edx,eax
+     13e:	8b 15 0c 00 00 00    	mov    edx,DWORD PTR ds:0xc
+     144:	a1 10 00 00 00       	mov    eax,ds:0x10
+     149:	01 d0                	add    eax,edx
+     14b:	c1 e0 0c             	shl    eax,0xc
+     14e:	f7 d8                	neg    eax
+     150:	89 c2                	mov    edx,eax
 				cprintf(KFMT_INFO, "alloc_stack(): from %p to %p\n",
-     13b:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     13e:	01 d0                	add    eax,edx
-     140:	50                   	push   eax
-     141:	ff 75 f4             	push   DWORD PTR [ebp-0xc]
-     144:	68 1c 00 00 00       	push   0x1c
-     149:	6a 0b                	push   0xb
-     14b:	e8 fc ff ff ff       	call   14c <alloc_stack+0x11d>
-     150:	83 c4 10             	add    esp,0x10
+     152:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     155:	01 d0                	add    eax,edx
+     157:	89 44 24 0c          	mov    DWORD PTR [esp+0xc],eax
+     15b:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     15e:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+     162:	c7 44 24 04 1c 00 00 00 	mov    DWORD PTR [esp+0x4],0x1c
+     16a:	c7 04 24 0b 00 00 00 	mov    DWORD PTR [esp],0xb
+     171:	e8 fc ff ff ff       	call   172 <alloc_stack+0x143>
 				return rv;
-     153:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     156:	eb 05                	jmp    15d <alloc_stack+0x12e>
+     176:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     179:	eb 05                	jmp    180 <alloc_stack+0x151>
 				return NULL;
-     158:	b8 00 00 00 00       	mov    eax,0x0
+     17b:	b8 00 00 00 00       	mov    eax,0x0
 }
-     15d:	c9                   	leave
-     15e:	c3                   	ret
+     180:	c9                   	leave
+     181:	c3                   	ret
 
-0000015f <free_stack>:
+00000182 <free_stack>:
 {
-     15f:	55                   	push   ebp
-     160:	89 e5                	mov    ebp,esp
-     162:	83 ec 10             	sub    esp,0x10
+     182:	55                   	push   ebp
+     183:	89 e5                	mov    ebp,esp
+     185:	83 ec 10             	sub    esp,0x10
 		void** pptr = (void**)(stack_base - sizeof(void*));
-     165:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     168:	83 e8 04             	sub    eax,0x4
-     16b:	89 45 fc             	mov    DWORD PTR [ebp-0x4],eax
+     188:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     18b:	83 e8 04             	sub    eax,0x4
+     18e:	89 45 fc             	mov    DWORD PTR [ebp-0x4],eax
 				*pptr = kernel_stacks.free_stacks;
-     16e:	8b 15 18 00 00 00    	mov    edx,DWORD PTR ds:0x18
-     174:	8b 45 fc             	mov    eax,DWORD PTR [ebp-0x4]
-     177:	89 10                	mov    DWORD PTR [eax],edx
+     191:	8b 15 18 00 00 00    	mov    edx,DWORD PTR ds:0x18
+     197:	8b 45 fc             	mov    eax,DWORD PTR [ebp-0x4]
+     19a:	89 10                	mov    DWORD PTR [eax],edx
 		} while (!__sync_bool_compare_and_swap(&kernel_stacks.free_stacks, *pptr, stack_base));
-     179:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
-     17c:	8b 45 fc             	mov    eax,DWORD PTR [ebp-0x4]
-     17f:	8b 00                	mov    eax,DWORD PTR [eax]
-     181:	f0 0f b1 15 18 00 00 00 	lock cmpxchg DWORD PTR ds:0x18,edx
-     189:	0f 94 c0             	sete   al
-     18c:	83 f0 01             	xor    eax,0x1
-     18f:	84 c0                	test   al,al
-     191:	75 db                	jne    16e <free_stack+0xf>
+     19c:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
+     19f:	8b 45 fc             	mov    eax,DWORD PTR [ebp-0x4]
+     1a2:	8b 00                	mov    eax,DWORD PTR [eax]
+     1a4:	f0 0f b1 15 18 00 00 00 	lock cmpxchg DWORD PTR ds:0x18,edx
+     1ac:	0f 94 c0             	sete   al
+     1af:	83 f0 01             	xor    eax,0x1
+     1b2:	84 c0                	test   al,al
+     1b4:	75 db                	jne    191 <free_stack+0xf>
 }
-     193:	90                   	nop
-     194:	90                   	nop
-     195:	c9                   	leave
-     196:	c3                   	ret
+     1b6:	90                   	nop
+     1b7:	90                   	nop
+     1b8:	c9                   	leave
+     1b9:	c3                   	ret
 
-00000197 <install_tss>:
+000001ba <install_tss>:
 {
-     197:	55                   	push   ebp
-     198:	89 e5                	mov    ebp,esp
-     19a:	53                   	push   ebx
+     1ba:	55                   	push   ebp
+     1bb:	89 e5                	mov    ebp,esp
+     1bd:	53                   	push   ebx
 		*gdte = ((uint64_t)(tss_addr & 0x00ffffff) << 16) /* base */
-     19b:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     19e:	ba 00 00 00 00       	mov    edx,0x0
-     1a3:	0f a4 c2 10          	shld   edx,eax,0x10
-     1a7:	c1 e0 10             	shl    eax,0x10
-     1aa:	66 b8 00 00          	mov    ax,0x0
-     1ae:	81 e2 ff 00 00 00    	and    edx,0xff
-     1b4:	89 c1                	mov    ecx,eax
-     1b6:	89 d3                	mov    ebx,edx
+     1be:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     1c1:	ba 00 00 00 00       	mov    edx,0x0
+     1c6:	0f a4 c2 10          	shld   edx,eax,0x10
+     1ca:	c1 e0 10             	shl    eax,0x10
+     1cd:	66 b8 00 00          	mov    ax,0x0
+     1d1:	81 e2 ff 00 00 00    	and    edx,0xff
+     1d7:	89 c1                	mov    ecx,eax
+     1d9:	89 d3                	mov    ebx,edx
 				+ ((uint64_t)(tss_addr & 0xff000000) << 32)
-     1b8:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     1bb:	ba 00 00 00 00       	mov    edx,0x0
-     1c0:	89 c2                	mov    edx,eax
-     1c2:	31 c0                	xor    eax,eax
-     1c4:	b8 00 00 00 00       	mov    eax,0x0
-     1c9:	81 e2 00 00 00 ff    	and    edx,0xff000000
-     1cf:	09 c8                	or     eax,ecx
-     1d1:	09 da                	or     edx,ebx
+     1db:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     1de:	ba 00 00 00 00       	mov    edx,0x0
+     1e3:	89 c2                	mov    edx,eax
+     1e5:	31 c0                	xor    eax,eax
+     1e7:	b8 00 00 00 00       	mov    eax,0x0
+     1ec:	81 e2 00 00 00 ff    	and    edx,0xff000000
+     1f2:	09 c8                	or     eax,ecx
+     1f4:	09 da                	or     edx,ebx
 				+ (sizeof(struct tss) - 1);
-     1d3:	83 c0 67             	add    eax,0x67
-     1d6:	81 d2 00 89 40 00    	adc    edx,0x408900
+     1f6:	83 c0 67             	add    eax,0x67
+     1f9:	81 d2 00 89 40 00    	adc    edx,0x408900
 		*gdte = ((uint64_t)(tss_addr & 0x00ffffff) << 16) /* base */
-     1dc:	8b 4d 08             	mov    ecx,DWORD PTR [ebp+0x8]
-     1df:	89 01                	mov    DWORD PTR [ecx],eax
-     1e1:	89 51 04             	mov    DWORD PTR [ecx+0x4],edx
+     1ff:	8b 4d 08             	mov    ecx,DWORD PTR [ebp+0x8]
+     202:	89 01                	mov    DWORD PTR [ecx],eax
+     204:	89 51 04             	mov    DWORD PTR [ecx+0x4],edx
 }
-     1e4:	90                   	nop
-     1e5:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
-     1e8:	c9                   	leave
-     1e9:	c3                   	ret
+     207:	90                   	nop
+     208:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
+     20b:	c9                   	leave
+     20c:	c3                   	ret
 
-000001ea <mmgr_init_tss>:
+0000020d <mmgr_init_tss>:
 {
-     1ea:	55                   	push   ebp
-     1eb:	89 e5                	mov    ebp,esp
-     1ed:	83 ec 18             	sub    esp,0x18
+     20d:	55                   	push   ebp
+     20e:	89 e5                	mov    ebp,esp
+     210:	83 ec 28             	sub    esp,0x28
 		uint64_t* gdt = &kernltss;
-     1f0:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
+     213:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
 		void* stk = alloc_stack();
-     1f7:	e8 fc ff ff ff       	call   1f8 <mmgr_init_tss+0xe>
-     1fc:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
+     21a:	e8 fc ff ff ff       	call   21b <mmgr_init_tss+0xe>
+     21f:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
 		if (stk)
-     1ff:	83 7d f0 00          	cmp    DWORD PTR [ebp-0x10],0x0
-     203:	74 15                	je     21a <mmgr_init_tss+0x30>
+     222:	83 7d f0 00          	cmp    DWORD PTR [ebp-0x10],0x0
+     226:	74 15                	je     23d <mmgr_init_tss+0x30>
 				printf("allocated interrupt stack for first TSS at %p\n", stk);
-     205:	83 ec 08             	sub    esp,0x8
-     208:	ff 75 f0             	push   DWORD PTR [ebp-0x10]
-     20b:	68 3c 00 00 00       	push   0x3c
-     210:	e8 fc ff ff ff       	call   211 <mmgr_init_tss+0x27>
-     215:	83 c4 10             	add    esp,0x10
-     218:	eb 02                	jmp    21c <mmgr_init_tss+0x32>
+     228:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+     22b:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+     22f:	c7 04 24 3c 00 00 00 	mov    DWORD PTR [esp],0x3c
+     236:	e8 fc ff ff ff       	call   237 <mmgr_init_tss+0x2a>
+     23b:	eb 02                	jmp    23f <mmgr_init_tss+0x32>
 		else while (1);
-     21a:	eb fe                	jmp    21a <mmgr_init_tss+0x30>
+     23d:	eb fe                	jmp    23d <mmgr_init_tss+0x30>
 		main_tss.ss0 = SEG_DATA; /* kernel ds */
-     21c:	66 c7 05 08 00 00 00 10 00 	mov    WORD PTR ds:0x8,0x10
+     23f:	66 c7 05 08 00 00 00 10 00 	mov    WORD PTR ds:0x8,0x10
 		main_tss.esp0 = (uint32_t)stk;
-     225:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-     228:	a3 04 00 00 00       	mov    ds:0x4,eax
+     248:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+     24b:	a3 04 00 00 00       	mov    ds:0x4,eax
 		main_tss.iomap = sizeof(struct tss);
-     22d:	66 c7 05 66 00 00 00 68 00 	mov    WORD PTR ds:0x66,0x68
+     250:	66 c7 05 66 00 00 00 68 00 	mov    WORD PTR ds:0x66,0x68
 		install_tss(gdt, (intptr_t)&main_tss);
-     236:	b8 00 00 00 00       	mov    eax,0x0
-     23b:	83 ec 08             	sub    esp,0x8
-     23e:	50                   	push   eax
-     23f:	ff 75 f4             	push   DWORD PTR [ebp-0xc]
-     242:	e8 fc ff ff ff       	call   243 <mmgr_init_tss+0x59>
-     247:	83 c4 10             	add    esp,0x10
+     259:	b8 00 00 00 00       	mov    eax,0x0
+     25e:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+     262:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     265:	89 04 24             	mov    DWORD PTR [esp],eax
+     268:	e8 fc ff ff ff       	call   269 <mmgr_init_tss+0x5c>
 		asm volatile("ltr %%ax": : "a" (SEG_TSS_PL0));
-     24a:	b8 28 00 00 00       	mov    eax,0x28
-     24f:	0f 00 d8             	ltr    eax
+     26d:	b8 28 00 00 00       	mov    eax,0x28
+     272:	0f 00 d8             	ltr    eax
 		gdt = &intrtss;
-     252:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
+     275:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
 		intr_tss.iomap = sizeof(struct tss);
-     259:	66 c7 05 66 00 00 00 68 00 	mov    WORD PTR ds:0x66,0x68
+     27c:	66 c7 05 66 00 00 00 68 00 	mov    WORD PTR ds:0x66,0x68
 		intr_tss.ss0 = SEG_DATA;
-     262:	66 c7 05 08 00 00 00 10 00 	mov    WORD PTR ds:0x8,0x10
+     285:	66 c7 05 08 00 00 00 10 00 	mov    WORD PTR ds:0x8,0x10
 		intr_tss.esp0 = (uint32_t)stk;
-     26b:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-     26e:	a3 04 00 00 00       	mov    ds:0x4,eax
+     28e:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+     291:	a3 04 00 00 00       	mov    ds:0x4,eax
 		intr_tss.cs = SEG_CODE;
-     273:	66 c7 05 4c 00 00 00 08 00 	mov    WORD PTR ds:0x4c,0x8
+     296:	66 c7 05 4c 00 00 00 08 00 	mov    WORD PTR ds:0x4c,0x8
 		intr_tss.ds = intr_tss.es = SEG_DATA;
-     27c:	b8 10 00 00 00       	mov    eax,0x10
-     281:	66 a3 48 00 00 00    	mov    ds:0x48,ax
-     287:	66 a3 54 00 00 00    	mov    ds:0x54,ax
+     29f:	b8 10 00 00 00       	mov    eax,0x10
+     2a4:	66 a3 48 00 00 00    	mov    ds:0x48,ax
+     2aa:	66 a3 54 00 00 00    	mov    ds:0x54,ax
 		intr_tss.ss = SEG_DATA;
-     28d:	66 c7 05 50 00 00 00 10 00 	mov    WORD PTR ds:0x50,0x10
+     2b0:	66 c7 05 50 00 00 00 10 00 	mov    WORD PTR ds:0x50,0x10
 		intr_tss.gs = SEG_DATA;
-     296:	66 c7 05 5c 00 00 00 10 00 	mov    WORD PTR ds:0x5c,0x10
+     2b9:	66 c7 05 5c 00 00 00 10 00 	mov    WORD PTR ds:0x5c,0x10
 		intr_tss.fs = SEG_DATA_PROC;
-     29f:	66 c7 05 58 00 00 00 40 00 	mov    WORD PTR ds:0x58,0x40
+     2c2:	66 c7 05 58 00 00 00 40 00 	mov    WORD PTR ds:0x58,0x40
 		intr_tss.esp = (uint32_t)stk;// - 0x40; /* esp+14*x in handler <- PROLLY MISCONCEPTION */
-     2a8:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-     2ab:	a3 38 00 00 00       	mov    ds:0x38,eax
+     2cb:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+     2ce:	a3 38 00 00 00       	mov    ds:0x38,eax
 		asm ("mov %%cr3, %%eax\n movl %%eax, %0\n" : "=m" (intr_tss.cr3) : : "eax");
-     2b0:	0f 20 d8             	mov    eax,cr3
-     2b3:	a3 1c 00 00 00       	mov    ds:0x1c,eax
+     2d3:	0f 20 d8             	mov    eax,cr3
+     2d6:	a3 1c 00 00 00       	mov    ds:0x1c,eax
 		intr_tss.eip = (uint32_t)&gate_8; /* already uses iret */
-     2b8:	b8 00 00 00 00       	mov    eax,0x0
-     2bd:	a3 20 00 00 00       	mov    ds:0x20,eax
+     2db:	b8 00 00 00 00       	mov    eax,0x0
+     2e0:	a3 20 00 00 00       	mov    ds:0x20,eax
 		install_tss(gdt, (uintptr_t)&intr_tss);
-     2c2:	b8 00 00 00 00       	mov    eax,0x0
-     2c7:	83 ec 08             	sub    esp,0x8
-     2ca:	50                   	push   eax
-     2cb:	ff 75 f4             	push   DWORD PTR [ebp-0xc]
-     2ce:	e8 fc ff ff ff       	call   2cf <mmgr_init_tss+0xe5>
-     2d3:	83 c4 10             	add    esp,0x10
+     2e5:	b8 00 00 00 00       	mov    eax,0x0
+     2ea:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+     2ee:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     2f1:	89 04 24             	mov    DWORD PTR [esp],eax
+     2f4:	e8 fc ff ff ff       	call   2f5 <mmgr_init_tss+0xe8>
 		idt_desc_8 = 0x0000850000480000;
-     2d6:	c7 05 00 00 00 00 00 00 48 00 	mov    DWORD PTR ds:0x0,0x480000
-     2e0:	c7 05 04 00 00 00 00 85 00 00 	mov    DWORD PTR ds:0x4,0x8500
+     2f9:	c7 05 00 00 00 00 00 00 48 00 	mov    DWORD PTR ds:0x0,0x480000
+     303:	c7 05 04 00 00 00 00 85 00 00 	mov    DWORD PTR ds:0x4,0x8500
 }
-     2ea:	90                   	nop
-     2eb:	c9                   	leave
-     2ec:	c3                   	ret
+     30d:	90                   	nop
+     30e:	c9                   	leave
+     30f:	c3                   	ret
 
-000002ed <pq_enqueue>:
+00000310 <pq_enqueue>:
 {
-     2ed:	55                   	push   ebp
-     2ee:	89 e5                	mov    ebp,esp
-     2f0:	53                   	push   ebx
-     2f1:	83 ec 14             	sub    esp,0x14
+     310:	55                   	push   ebp
+     311:	89 e5                	mov    ebp,esp
+     313:	53                   	push   ebx
+     314:	83 ec 24             	sub    esp,0x24
 		struct pqe* e = pq->queues[t->cur_priority];
-     2f4:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     2f7:	8b 50 30             	mov    edx,DWORD PTR [eax+0x30]
-     2fa:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     2fd:	8b 04 90             	mov    eax,DWORD PTR [eax+edx*4]
-     300:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
+     317:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     31a:	8b 50 30             	mov    edx,DWORD PTR [eax+0x30]
+     31d:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     320:	8b 04 90             	mov    eax,DWORD PTR [eax+edx*4]
+     323:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
 		if (!e) {
-     303:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
-     307:	75 58                	jne    361 <pq_enqueue+0x74>
+     326:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
+     32a:	75 54                	jne    380 <pq_enqueue+0x70>
 				e = pq->queues[t->cur_priority] = kzalloc(sizeof(struct pqe));
-     309:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     30c:	8b 58 30             	mov    ebx,DWORD PTR [eax+0x30]
-     30f:	83 ec 0c             	sub    esp,0xc
-     312:	68 8c 00 00 00       	push   0x8c
-     317:	e8 fc ff ff ff       	call   318 <pq_enqueue+0x2b>
-     31c:	83 c4 10             	add    esp,0x10
-     31f:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
-     322:	89 04 9a             	mov    DWORD PTR [edx+ebx*4],eax
-     325:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     328:	8b 04 98             	mov    eax,DWORD PTR [eax+ebx*4]
-     32b:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
+     32c:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     32f:	8b 58 30             	mov    ebx,DWORD PTR [eax+0x30]
+     332:	c7 04 24 8c 00 00 00 	mov    DWORD PTR [esp],0x8c
+     339:	e8 fc ff ff ff       	call   33a <pq_enqueue+0x2a>
+     33e:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
+     341:	89 04 9a             	mov    DWORD PTR [edx+ebx*4],eax
+     344:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     347:	8b 04 98             	mov    eax,DWORD PTR [eax+ebx*4]
+     34a:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
 				e->next = NULL;
-     32e:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     331:	c7 80 88 00 00 00 00 00 00 00 	mov    DWORD PTR [eax+0x88],0x0
-				e->cur = e->end = &e->tks[0];
-     33b:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     33e:	8d 50 08             	lea    edx,[eax+0x8]
-     341:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     344:	89 50 04             	mov    DWORD PTR [eax+0x4],edx
-     347:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     34a:	8b 50 04             	mov    edx,DWORD PTR [eax+0x4]
      34d:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     350:	89 10                	mov    DWORD PTR [eax],edx
+     350:	c7 80 88 00 00 00 00 00 00 00 	mov    DWORD PTR [eax+0x88],0x0
+				e->cur = e->end = &e->tks[0];
+     35a:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     35d:	8d 50 08             	lea    edx,[eax+0x8]
+     360:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     363:	89 50 04             	mov    DWORD PTR [eax+0x4],edx
+     366:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     369:	8b 50 04             	mov    edx,DWORD PTR [eax+0x4]
+     36c:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     36f:	89 10                	mov    DWORD PTR [eax],edx
 				pq->queues[t->cur_priority] = e;
-     352:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     355:	8b 50 30             	mov    edx,DWORD PTR [eax+0x30]
-     358:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     35b:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
-     35e:	89 0c 90             	mov    DWORD PTR [eax+edx*4],ecx
+     371:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     374:	8b 50 30             	mov    edx,DWORD PTR [eax+0x30]
+     377:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     37a:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
+     37d:	89 0c 90             	mov    DWORD PTR [eax+edx*4],ecx
 				if (e->end + 1 != e->cur) {
-     361:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     364:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-     367:	8d 50 04             	lea    edx,[eax+0x4]
-     36a:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     36d:	8b 00                	mov    eax,DWORD PTR [eax]
-     36f:	39 c2                	cmp    edx,eax
-     371:	74 60                	je     3d3 <pq_enqueue+0xe6>
+     380:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     383:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+     386:	8d 50 04             	lea    edx,[eax+0x4]
+     389:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     38c:	8b 00                	mov    eax,DWORD PTR [eax]
+     38e:	39 c2                	cmp    edx,eax
+     390:	74 60                	je     3f2 <pq_enqueue+0xe2>
 						if (!(e->cur == e->tks && (e->end + 1 == e->tks + COUNT_OF(e->tks)))) {
-     373:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     376:	8b 10                	mov    edx,DWORD PTR [eax]
-     378:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     37b:	83 c0 08             	add    eax,0x8
-     37e:	39 c2                	cmp    edx,eax
-     380:	75 16                	jne    398 <pq_enqueue+0xab>
-     382:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     385:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-     388:	8d 50 04             	lea    edx,[eax+0x4]
-     38b:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     38e:	83 c0 08             	add    eax,0x8
-     391:	83 e8 80             	sub    eax,0xffffff80
-     394:	39 c2                	cmp    edx,eax
-     396:	74 3b                	je     3d3 <pq_enqueue+0xe6>
+     392:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     395:	8b 10                	mov    edx,DWORD PTR [eax]
+     397:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     39a:	83 c0 08             	add    eax,0x8
+     39d:	39 c2                	cmp    edx,eax
+     39f:	75 16                	jne    3b7 <pq_enqueue+0xa7>
+     3a1:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     3a4:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+     3a7:	8d 50 04             	lea    edx,[eax+0x4]
+     3aa:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     3ad:	83 c0 08             	add    eax,0x8
+     3b0:	83 e8 80             	sub    eax,0xffffff80
+     3b3:	39 c2                	cmp    edx,eax
+     3b5:	74 3b                	je     3f2 <pq_enqueue+0xe2>
 								*e->end = t;
-     398:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     39b:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-     39e:	8b 55 0c             	mov    edx,DWORD PTR [ebp+0xc]
-     3a1:	89 10                	mov    DWORD PTR [eax],edx
+     3b7:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     3ba:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+     3bd:	8b 55 0c             	mov    edx,DWORD PTR [ebp+0xc]
+     3c0:	89 10                	mov    DWORD PTR [eax],edx
 								if (++e->end == e->tks + COUNT_OF(e->tks))
-     3a3:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     3a6:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-     3a9:	8d 50 04             	lea    edx,[eax+0x4]
-     3ac:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     3af:	89 50 04             	mov    DWORD PTR [eax+0x4],edx
-     3b2:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     3b5:	8b 50 04             	mov    edx,DWORD PTR [eax+0x4]
-     3b8:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     3bb:	83 c0 08             	add    eax,0x8
-     3be:	83 e8 80             	sub    eax,0xffffff80
-     3c1:	39 c2                	cmp    edx,eax
-     3c3:	75 7e                	jne    443 <pq_enqueue+0x156>
-										e->end = &e->tks[0];
-     3c5:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     3c8:	8d 50 08             	lea    edx,[eax+0x8]
+     3c2:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     3c5:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+     3c8:	8d 50 04             	lea    edx,[eax+0x4]
      3cb:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
      3ce:	89 50 04             	mov    DWORD PTR [eax+0x4],edx
+     3d1:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     3d4:	8b 50 04             	mov    edx,DWORD PTR [eax+0x4]
+     3d7:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     3da:	83 c0 08             	add    eax,0x8
+     3dd:	83 e8 80             	sub    eax,0xffffff80
+     3e0:	39 c2                	cmp    edx,eax
+     3e2:	75 7a                	jne    45e <pq_enqueue+0x14e>
+										e->end = &e->tks[0];
+     3e4:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     3e7:	8d 50 08             	lea    edx,[eax+0x8]
+     3ea:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     3ed:	89 50 04             	mov    DWORD PTR [eax+0x4],edx
 								return;
-     3d1:	eb 70                	jmp    443 <pq_enqueue+0x156>
+     3f0:	eb 6c                	jmp    45e <pq_enqueue+0x14e>
 				if (!e->next) {
-     3d3:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     3d6:	8b 80 88 00 00 00    	mov    eax,DWORD PTR [eax+0x88]
-     3dc:	85 c0                	test   eax,eax
-     3de:	75 52                	jne    432 <pq_enqueue+0x145>
+     3f2:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     3f5:	8b 80 88 00 00 00    	mov    eax,DWORD PTR [eax+0x88]
+     3fb:	85 c0                	test   eax,eax
+     3fd:	75 4e                	jne    44d <pq_enqueue+0x13d>
 						e->next = kzalloc(sizeof(struct pqe));
-     3e0:	83 ec 0c             	sub    esp,0xc
-     3e3:	68 8c 00 00 00       	push   0x8c
-     3e8:	e8 fc ff ff ff       	call   3e9 <pq_enqueue+0xfc>
-     3ed:	83 c4 10             	add    esp,0x10
-     3f0:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-     3f3:	89 82 88 00 00 00    	mov    DWORD PTR [edx+0x88],eax
+     3ff:	c7 04 24 8c 00 00 00 	mov    DWORD PTR [esp],0x8c
+     406:	e8 fc ff ff ff       	call   407 <pq_enqueue+0xf7>
+     40b:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+     40e:	89 82 88 00 00 00    	mov    DWORD PTR [edx+0x88],eax
 						e->next->next = NULL;
-     3f9:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     3fc:	8b 80 88 00 00 00    	mov    eax,DWORD PTR [eax+0x88]
-     402:	c7 80 88 00 00 00 00 00 00 00 	mov    DWORD PTR [eax+0x88],0x0
+     414:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     417:	8b 80 88 00 00 00    	mov    eax,DWORD PTR [eax+0x88]
+     41d:	c7 80 88 00 00 00 00 00 00 00 	mov    DWORD PTR [eax+0x88],0x0
 						e->next->cur = e->next->end = &e->next->tks[0];
-     40c:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     40f:	8b 90 88 00 00 00    	mov    edx,DWORD PTR [eax+0x88]
-     415:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     418:	8b 80 88 00 00 00    	mov    eax,DWORD PTR [eax+0x88]
-     41e:	83 c2 08             	add    edx,0x8
-     421:	89 50 04             	mov    DWORD PTR [eax+0x4],edx
-     424:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-     427:	8b 92 88 00 00 00    	mov    edx,DWORD PTR [edx+0x88]
-     42d:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-     430:	89 02                	mov    DWORD PTR [edx],eax
+     427:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     42a:	8b 90 88 00 00 00    	mov    edx,DWORD PTR [eax+0x88]
+     430:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     433:	8b 80 88 00 00 00    	mov    eax,DWORD PTR [eax+0x88]
+     439:	83 c2 08             	add    edx,0x8
+     43c:	89 50 04             	mov    DWORD PTR [eax+0x4],edx
+     43f:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+     442:	8b 92 88 00 00 00    	mov    edx,DWORD PTR [edx+0x88]
+     448:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+     44b:	89 02                	mov    DWORD PTR [edx],eax
 				e = e->next;
-     432:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     435:	8b 80 88 00 00 00    	mov    eax,DWORD PTR [eax+0x88]
-     43b:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
+     44d:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     450:	8b 80 88 00 00 00    	mov    eax,DWORD PTR [eax+0x88]
+     456:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
 				if (e->end + 1 != e->cur) {
-     43e:	e9 1e ff ff ff       	jmp    361 <pq_enqueue+0x74>
+     459:	e9 22 ff ff ff       	jmp    380 <pq_enqueue+0x70>
 								return;
-     443:	90                   	nop
+     45e:	90                   	nop
 }
-     444:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
-     447:	c9                   	leave
-     448:	c3                   	ret
+     45f:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
+     462:	c9                   	leave
+     463:	c3                   	ret
 
-00000449 <pq_dequeue>:
+00000464 <pq_dequeue>:
 {
-     449:	55                   	push   ebp
-     44a:	89 e5                	mov    ebp,esp
-     44c:	83 ec 10             	sub    esp,0x10
+     464:	55                   	push   ebp
+     465:	89 e5                	mov    ebp,esp
+     467:	83 ec 10             	sub    esp,0x10
 		for (uint32_t p = PRIORITY_MAX; p <= PRIORITY_MIN; p++) {
-     44f:	c7 45 fc 00 00 00 00 	mov    DWORD PTR [ebp-0x4],0x0
-     456:	eb 67                	jmp    4bf <pq_dequeue+0x76>
+     46a:	c7 45 fc 00 00 00 00 	mov    DWORD PTR [ebp-0x4],0x0
+     471:	eb 67                	jmp    4da <pq_dequeue+0x76>
 				struct pqe* e = pq->queues[p];
-     458:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     45b:	8b 55 fc             	mov    edx,DWORD PTR [ebp-0x4]
-     45e:	8b 04 90             	mov    eax,DWORD PTR [eax+edx*4]
-     461:	89 45 f8             	mov    DWORD PTR [ebp-0x8],eax
+     473:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     476:	8b 55 fc             	mov    edx,DWORD PTR [ebp-0x4]
+     479:	8b 04 90             	mov    eax,DWORD PTR [eax+edx*4]
+     47c:	89 45 f8             	mov    DWORD PTR [ebp-0x8],eax
 				while (e) {
-     464:	eb 4f                	jmp    4b5 <pq_dequeue+0x6c>
+     47f:	eb 4f                	jmp    4d0 <pq_dequeue+0x6c>
 						if (e->cur != e->end) {
-     466:	8b 45 f8             	mov    eax,DWORD PTR [ebp-0x8]
-     469:	8b 10                	mov    edx,DWORD PTR [eax]
-     46b:	8b 45 f8             	mov    eax,DWORD PTR [ebp-0x8]
-     46e:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-     471:	39 c2                	cmp    edx,eax
-     473:	74 34                	je     4a9 <pq_dequeue+0x60>
+     481:	8b 45 f8             	mov    eax,DWORD PTR [ebp-0x8]
+     484:	8b 10                	mov    edx,DWORD PTR [eax]
+     486:	8b 45 f8             	mov    eax,DWORD PTR [ebp-0x8]
+     489:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+     48c:	39 c2                	cmp    edx,eax
+     48e:	74 34                	je     4c4 <pq_dequeue+0x60>
 								rv = *e->cur++;
-     475:	8b 45 f8             	mov    eax,DWORD PTR [ebp-0x8]
-     478:	8b 00                	mov    eax,DWORD PTR [eax]
-     47a:	8d 48 04             	lea    ecx,[eax+0x4]
-     47d:	8b 55 f8             	mov    edx,DWORD PTR [ebp-0x8]
-     480:	89 0a                	mov    DWORD PTR [edx],ecx
-     482:	8b 00                	mov    eax,DWORD PTR [eax]
-     484:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
+     490:	8b 45 f8             	mov    eax,DWORD PTR [ebp-0x8]
+     493:	8b 00                	mov    eax,DWORD PTR [eax]
+     495:	8d 48 04             	lea    ecx,[eax+0x4]
+     498:	8b 55 f8             	mov    edx,DWORD PTR [ebp-0x8]
+     49b:	89 0a                	mov    DWORD PTR [edx],ecx
+     49d:	8b 00                	mov    eax,DWORD PTR [eax]
+     49f:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
 								if (e->cur == (e->tks + COUNT_OF(e->tks)))
-     487:	8b 45 f8             	mov    eax,DWORD PTR [ebp-0x8]
-     48a:	8b 10                	mov    edx,DWORD PTR [eax]
-     48c:	8b 45 f8             	mov    eax,DWORD PTR [ebp-0x8]
-     48f:	83 c0 08             	add    eax,0x8
-     492:	83 e8 80             	sub    eax,0xffffff80
-     495:	39 c2                	cmp    edx,eax
-     497:	75 0b                	jne    4a4 <pq_dequeue+0x5b>
+     4a2:	8b 45 f8             	mov    eax,DWORD PTR [ebp-0x8]
+     4a5:	8b 10                	mov    edx,DWORD PTR [eax]
+     4a7:	8b 45 f8             	mov    eax,DWORD PTR [ebp-0x8]
+     4aa:	83 c0 08             	add    eax,0x8
+     4ad:	83 e8 80             	sub    eax,0xffffff80
+     4b0:	39 c2                	cmp    edx,eax
+     4b2:	75 0b                	jne    4bf <pq_dequeue+0x5b>
 										e->cur = e->tks;
-     499:	8b 45 f8             	mov    eax,DWORD PTR [ebp-0x8]
-     49c:	8d 50 08             	lea    edx,[eax+0x8]
-     49f:	8b 45 f8             	mov    eax,DWORD PTR [ebp-0x8]
-     4a2:	89 10                	mov    DWORD PTR [eax],edx
+     4b4:	8b 45 f8             	mov    eax,DWORD PTR [ebp-0x8]
+     4b7:	8d 50 08             	lea    edx,[eax+0x8]
+     4ba:	8b 45 f8             	mov    eax,DWORD PTR [ebp-0x8]
+     4bd:	89 10                	mov    DWORD PTR [eax],edx
 								return rv;
-     4a4:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     4a7:	eb 21                	jmp    4ca <pq_dequeue+0x81>
+     4bf:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     4c2:	eb 21                	jmp    4e5 <pq_dequeue+0x81>
 						e = e->next;
-     4a9:	8b 45 f8             	mov    eax,DWORD PTR [ebp-0x8]
-     4ac:	8b 80 88 00 00 00    	mov    eax,DWORD PTR [eax+0x88]
-     4b2:	89 45 f8             	mov    DWORD PTR [ebp-0x8],eax
+     4c4:	8b 45 f8             	mov    eax,DWORD PTR [ebp-0x8]
+     4c7:	8b 80 88 00 00 00    	mov    eax,DWORD PTR [eax+0x88]
+     4cd:	89 45 f8             	mov    DWORD PTR [ebp-0x8],eax
 				while (e) {
-     4b5:	83 7d f8 00          	cmp    DWORD PTR [ebp-0x8],0x0
-     4b9:	75 ab                	jne    466 <pq_dequeue+0x1d>
+     4d0:	83 7d f8 00          	cmp    DWORD PTR [ebp-0x8],0x0
+     4d4:	75 ab                	jne    481 <pq_dequeue+0x1d>
 		for (uint32_t p = PRIORITY_MAX; p <= PRIORITY_MIN; p++) {
-     4bb:	83 45 fc 01          	add    DWORD PTR [ebp-0x4],0x1
-     4bf:	83 7d fc 03          	cmp    DWORD PTR [ebp-0x4],0x3
-     4c3:	76 93                	jbe    458 <pq_dequeue+0xf>
+     4d6:	83 45 fc 01          	add    DWORD PTR [ebp-0x4],0x1
+     4da:	83 7d fc 03          	cmp    DWORD PTR [ebp-0x4],0x3
+     4de:	76 93                	jbe    473 <pq_dequeue+0xf>
 		return NULL; /* major rotation */
-     4c5:	b8 00 00 00 00       	mov    eax,0x0
+     4e0:	b8 00 00 00 00       	mov    eax,0x0
 }
-     4ca:	c9                   	leave
-     4cb:	c3                   	ret
+     4e5:	c9                   	leave
+     4e6:	c3                   	ret
 
-000004cc <get_stack>:
+000004e7 <get_stack>:
 {
-     4cc:	55                   	push   ebp
-     4cd:	89 e5                	mov    ebp,esp
-     4cf:	83 ec 10             	sub    esp,0x10
+     4e7:	55                   	push   ebp
+     4e8:	89 e5                	mov    ebp,esp
+     4ea:	83 ec 10             	sub    esp,0x10
 		if ((ptr < kernel_stacks.vm_base) || (ptr > kernel_stacks.vm_ptr)) {
-     4d2:	a1 00 00 00 00       	mov    eax,ds:0x0
-     4d7:	39 45 08             	cmp    DWORD PTR [ebp+0x8],eax
-     4da:	72 0a                	jb     4e6 <get_stack+0x1a>
-     4dc:	a1 04 00 00 00       	mov    eax,ds:0x4
-     4e1:	3b 45 08             	cmp    eax,DWORD PTR [ebp+0x8]
-     4e4:	73 07                	jae    4ed <get_stack+0x21>
+     4ed:	a1 00 00 00 00       	mov    eax,ds:0x0
+     4f2:	39 45 08             	cmp    DWORD PTR [ebp+0x8],eax
+     4f5:	72 0a                	jb     501 <get_stack+0x1a>
+     4f7:	a1 04 00 00 00       	mov    eax,ds:0x4
+     4fc:	3b 45 08             	cmp    eax,DWORD PTR [ebp+0x8]
+     4ff:	73 07                	jae    508 <get_stack+0x21>
 				return -1;
-     4e6:	b8 ff ff ff ff       	mov    eax,0xffffffff
-     4eb:	eb 73                	jmp    560 <get_stack+0x94>
+     501:	b8 ff ff ff ff       	mov    eax,0xffffffff
+     506:	eb 73                	jmp    57b <get_stack+0x94>
 		ptr = (void*)((size_t)ptr - (size_t)kernel_stacks.vm_base);
-     4ed:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     4f0:	8b 15 00 00 00 00    	mov    edx,DWORD PTR ds:0x0
-     4f6:	29 d0                	sub    eax,edx
-     4f8:	89 45 08             	mov    DWORD PTR [ebp+0x8],eax
+     508:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     50b:	8b 15 00 00 00 00    	mov    edx,DWORD PTR ds:0x0
+     511:	29 d0                	sub    eax,edx
+     513:	89 45 08             	mov    DWORD PTR [ebp+0x8],eax
 		rv = (size_t)ptr / 4096;
-     4fb:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     4fe:	c1 e8 0c             	shr    eax,0xc
-     501:	89 45 fc             	mov    DWORD PTR [ebp-0x4],eax
+     516:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     519:	c1 e8 0c             	shr    eax,0xc
+     51c:	89 45 fc             	mov    DWORD PTR [ebp-0x4],eax
 		np = kernel_stacks.n_alloc + kernel_stacks.n_guard + kernel_stacks.n_res;
-     504:	8b 15 0c 00 00 00    	mov    edx,DWORD PTR ds:0xc
-     50a:	a1 14 00 00 00       	mov    eax,ds:0x14
-     50f:	01 c2                	add    edx,eax
-     511:	a1 10 00 00 00       	mov    eax,ds:0x10
-     516:	01 d0                	add    eax,edx
-     518:	89 45 f8             	mov    DWORD PTR [ebp-0x8],eax
+     51f:	8b 15 0c 00 00 00    	mov    edx,DWORD PTR ds:0xc
+     525:	a1 14 00 00 00       	mov    eax,ds:0x14
+     52a:	01 c2                	add    edx,eax
+     52c:	a1 10 00 00 00       	mov    eax,ds:0x10
+     531:	01 d0                	add    eax,edx
+     533:	89 45 f8             	mov    DWORD PTR [ebp-0x8],eax
 		rv /= np;
-     51b:	8b 45 fc             	mov    eax,DWORD PTR [ebp-0x4]
-     51e:	ba 00 00 00 00       	mov    edx,0x0
-     523:	f7 75 f8             	div    DWORD PTR [ebp-0x8]
-     526:	89 45 fc             	mov    DWORD PTR [ebp-0x4],eax
+     536:	8b 45 fc             	mov    eax,DWORD PTR [ebp-0x4]
+     539:	ba 00 00 00 00       	mov    edx,0x0
+     53e:	f7 75 f8             	div    DWORD PTR [ebp-0x8]
+     541:	89 45 fc             	mov    DWORD PTR [ebp-0x4],eax
 		sl->limit = kernel_stacks.vm_base + rv * np * 4096;
-     529:	8b 15 00 00 00 00    	mov    edx,DWORD PTR ds:0x0
-     52f:	8b 45 fc             	mov    eax,DWORD PTR [ebp-0x4]
-     532:	0f af 45 f8          	imul   eax,DWORD PTR [ebp-0x8]
-     536:	c1 e0 0c             	shl    eax,0xc
-     539:	01 c2                	add    edx,eax
-     53b:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     53e:	89 50 04             	mov    DWORD PTR [eax+0x4],edx
+     544:	8b 15 00 00 00 00    	mov    edx,DWORD PTR ds:0x0
+     54a:	8b 45 fc             	mov    eax,DWORD PTR [ebp-0x4]
+     54d:	0f af 45 f8          	imul   eax,DWORD PTR [ebp-0x8]
+     551:	c1 e0 0c             	shl    eax,0xc
+     554:	01 c2                	add    edx,eax
+     556:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     559:	89 50 04             	mov    DWORD PTR [eax+0x4],edx
 		sl->base = sl->limit + 4096 * (np - kernel_stacks.n_guard);
-     541:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     544:	8b 50 04             	mov    edx,DWORD PTR [eax+0x4]
-     547:	a1 14 00 00 00       	mov    eax,ds:0x14
-     54c:	8b 4d f8             	mov    ecx,DWORD PTR [ebp-0x8]
-     54f:	29 c1                	sub    ecx,eax
-     551:	89 c8                	mov    eax,ecx
-     553:	c1 e0 0c             	shl    eax,0xc
-     556:	01 c2                	add    edx,eax
-     558:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     55b:	89 10                	mov    DWORD PTR [eax],edx
+     55c:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     55f:	8b 50 04             	mov    edx,DWORD PTR [eax+0x4]
+     562:	a1 14 00 00 00       	mov    eax,ds:0x14
+     567:	8b 4d f8             	mov    ecx,DWORD PTR [ebp-0x8]
+     56a:	29 c1                	sub    ecx,eax
+     56c:	89 c8                	mov    eax,ecx
+     56e:	c1 e0 0c             	shl    eax,0xc
+     571:	01 c2                	add    edx,eax
+     573:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     576:	89 10                	mov    DWORD PTR [eax],edx
 		return rv;
-     55d:	8b 45 fc             	mov    eax,DWORD PTR [ebp-0x4]
+     578:	8b 45 fc             	mov    eax,DWORD PTR [ebp-0x4]
 }
-     560:	c9                   	leave
-     561:	c3                   	ret
+     57b:	c9                   	leave
+     57c:	c3                   	ret
 
-00000562 <task_gettime>:
+0000057d <task_gettime>:
 {
-     562:	55                   	push   ebp
-     563:	89 e5                	mov    ebp,esp
-     565:	57                   	push   edi
-     566:	56                   	push   esi
-     567:	53                   	push   ebx
-     568:	83 ec 14             	sub    esp,0x14
+     57d:	55                   	push   ebp
+     57e:	89 e5                	mov    ebp,esp
+     580:	57                   	push   edi
+     581:	56                   	push   esi
+     582:	53                   	push   ebx
+     583:	83 ec 14             	sub    esp,0x14
 		if (cpu.invariant_tsc) {
-     56b:	a1 6c 00 00 00       	mov    eax,ds:0x6c
-     570:	85 c0                	test   eax,eax
-     572:	74 0d                	je     581 <task_gettime+0x1f>
+     586:	a1 6c 00 00 00       	mov    eax,ds:0x6c
+     58b:	85 c0                	test   eax,eax
+     58d:	74 0d                	je     59c <task_gettime+0x1f>
 				asm volatile ("rdtsc" : "=A" (rv));
-     574:	0f 31                	rdtsc
-     576:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
-     579:	89 55 ec             	mov    DWORD PTR [ebp-0x14],edx
-     57c:	e9 98 00 00 00       	jmp    619 <task_gettime+0xb7>
+     58f:	0f 31                	rdtsc
+     591:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
+     594:	89 55 ec             	mov    DWORD PTR [ebp-0x14],edx
+     597:	e9 98 00 00 00       	jmp    634 <task_gettime+0xb7>
 		} else if (cpu.has_apic) {
-     581:	0f b6 05 59 00 00 00 	movzx  eax,BYTE PTR ds:0x59
-     588:	83 e0 02             	and    eax,0x2
-     58b:	84 c0                	test   al,al
-     58d:	74 7a                	je     609 <task_gettime+0xa7>
+     59c:	0f b6 05 59 00 00 00 	movzx  eax,BYTE PTR ds:0x59
+     5a3:	83 e0 02             	and    eax,0x2
+     5a6:	84 c0                	test   al,al
+     5a8:	74 7a                	je     624 <task_gettime+0xa7>
 				if (!apic_initialized)
-     58f:	a1 00 00 00 00       	mov    eax,ds:0x0
-     594:	85 c0                	test   eax,eax
-     596:	75 0c                	jne    5a4 <task_gettime+0x42>
+     5aa:	a1 00 00 00 00       	mov    eax,ds:0x0
+     5af:	85 c0                	test   eax,eax
+     5b1:	75 0c                	jne    5bf <task_gettime+0x42>
 						return 0;
-     598:	b8 00 00 00 00       	mov    eax,0x0
-     59d:	ba 00 00 00 00       	mov    edx,0x0
-     5a2:	eb 7b                	jmp    61f <task_gettime+0xbd>
+     5b3:	b8 00 00 00 00       	mov    eax,0x0
+     5b8:	ba 00 00 00 00       	mov    edx,0x0
+     5bd:	eb 7b                	jmp    63a <task_gettime+0xbd>
 				if (nproc > 1)
-     5a4:	a1 00 00 00 00       	mov    eax,ds:0x0
-     5a9:	83 f8 01             	cmp    eax,0x1
-     5ac:	76 35                	jbe    5e3 <task_gettime+0x81>
+     5bf:	a1 00 00 00 00       	mov    eax,ds:0x0
+     5c4:	83 f8 01             	cmp    eax,0x1
+     5c7:	76 35                	jbe    5fe <task_gettime+0x81>
 						rv = (per_cpu_ptr()->ticks->tick << 32) | apic_reg(APIC_REG_TMRCURRCNT);
-     5ae:	e8 4d fa ff ff       	call   0 <per_cpu_ptr>
-     5b3:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
-     5b6:	8b 50 04             	mov    edx,DWORD PTR [eax+0x4]
-     5b9:	8b 00                	mov    eax,DWORD PTR [eax]
-     5bb:	89 c2                	mov    edx,eax
-     5bd:	31 c0                	xor    eax,eax
-     5bf:	89 c6                	mov    esi,eax
-     5c1:	89 d7                	mov    edi,edx
-     5c3:	e8 38 fa ff ff       	call   0 <per_cpu_ptr>
-     5c8:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
-     5cb:	05 90 03 00 00       	add    eax,0x390
-     5d0:	8b 00                	mov    eax,DWORD PTR [eax]
-     5d2:	ba 00 00 00 00       	mov    edx,0x0
-     5d7:	09 f0                	or     eax,esi
-     5d9:	09 fa                	or     edx,edi
-     5db:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
-     5de:	89 55 ec             	mov    DWORD PTR [ebp-0x14],edx
-     5e1:	eb 36                	jmp    619 <task_gettime+0xb7>
-						rv = (jiffies << 32) | apic_bp_reg(APIC_REG_TMRCURRCNT);
-     5e3:	a1 00 00 00 00       	mov    eax,ds:0x0
-     5e8:	8b 50 04             	mov    edx,DWORD PTR [eax+0x4]
+     5c9:	e8 32 fa ff ff       	call   0 <per_cpu_ptr>
+     5ce:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
+     5d1:	8b 50 04             	mov    edx,DWORD PTR [eax+0x4]
+     5d4:	8b 00                	mov    eax,DWORD PTR [eax]
+     5d6:	89 c2                	mov    edx,eax
+     5d8:	31 c0                	xor    eax,eax
+     5da:	89 c6                	mov    esi,eax
+     5dc:	89 d7                	mov    edi,edx
+     5de:	e8 1d fa ff ff       	call   0 <per_cpu_ptr>
+     5e3:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
+     5e6:	05 90 03 00 00       	add    eax,0x390
      5eb:	8b 00                	mov    eax,DWORD PTR [eax]
-     5ed:	89 c2                	mov    edx,eax
-     5ef:	31 c0                	xor    eax,eax
-     5f1:	b9 90 03 ff ef       	mov    ecx,0xefff0390
-     5f6:	8b 09                	mov    ecx,DWORD PTR [ecx]
-     5f8:	bb 00 00 00 00       	mov    ebx,0x0
-     5fd:	09 c8                	or     eax,ecx
-     5ff:	09 da                	or     edx,ebx
-     601:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
-     604:	89 55 ec             	mov    DWORD PTR [ebp-0x14],edx
-     607:	eb 10                	jmp    619 <task_gettime+0xb7>
+     5ed:	ba 00 00 00 00       	mov    edx,0x0
+     5f2:	09 f0                	or     eax,esi
+     5f4:	09 fa                	or     edx,edi
+     5f6:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
+     5f9:	89 55 ec             	mov    DWORD PTR [ebp-0x14],edx
+     5fc:	eb 36                	jmp    634 <task_gettime+0xb7>
+						rv = (jiffies << 32) | apic_bp_reg(APIC_REG_TMRCURRCNT);
+     5fe:	a1 00 00 00 00       	mov    eax,ds:0x0
+     603:	8b 50 04             	mov    edx,DWORD PTR [eax+0x4]
+     606:	8b 00                	mov    eax,DWORD PTR [eax]
+     608:	89 c2                	mov    edx,eax
+     60a:	31 c0                	xor    eax,eax
+     60c:	b9 90 03 ff ef       	mov    ecx,0xefff0390
+     611:	8b 09                	mov    ecx,DWORD PTR [ecx]
+     613:	bb 00 00 00 00       	mov    ebx,0x0
+     618:	09 c8                	or     eax,ecx
+     61a:	09 da                	or     edx,ebx
+     61c:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
+     61f:	89 55 ec             	mov    DWORD PTR [ebp-0x14],edx
+     622:	eb 10                	jmp    634 <task_gettime+0xb7>
 			rv = jiffies;
-     609:	a1 00 00 00 00       	mov    eax,ds:0x0
-     60e:	8b 50 04             	mov    edx,DWORD PTR [eax+0x4]
-     611:	8b 00                	mov    eax,DWORD PTR [eax]
-     613:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
-     616:	89 55 ec             	mov    DWORD PTR [ebp-0x14],edx
+     624:	a1 00 00 00 00       	mov    eax,ds:0x0
+     629:	8b 50 04             	mov    edx,DWORD PTR [eax+0x4]
+     62c:	8b 00                	mov    eax,DWORD PTR [eax]
+     62e:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
+     631:	89 55 ec             	mov    DWORD PTR [ebp-0x14],edx
 		return rv;
-     619:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
-     61c:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
+     634:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
+     637:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
 }
-     61f:	83 c4 14             	add    esp,0x14
-     622:	5b                   	pop    ebx
-     623:	5e                   	pop    esi
-     624:	5f                   	pop    edi
-     625:	5d                   	pop    ebp
-     626:	c3                   	ret
+     63a:	83 c4 14             	add    esp,0x14
+     63d:	5b                   	pop    ebx
+     63e:	5e                   	pop    esi
+     63f:	5f                   	pop    edi
+     640:	5d                   	pop    ebp
+     641:	c3                   	ret
 
-00000627 <get_task_esp>:
+00000642 <get_task_esp>:
 {
-     627:	55                   	push   ebp
-     628:	89 e5                	mov    ebp,esp
-     62a:	83 ec 18             	sub    esp,0x18
+     642:	55                   	push   ebp
+     643:	89 e5                	mov    ebp,esp
+     645:	83 ec 28             	sub    esp,0x28
 		stk = get_stack(esp, &sl);
-     62d:	8d 45 e8             	lea    eax,[ebp-0x18]
-     630:	50                   	push   eax
-     631:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-     634:	e8 fc ff ff ff       	call   635 <get_task_esp+0xe>
-     639:	83 c4 08             	add    esp,0x8
-     63c:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
+     648:	8d 45 e8             	lea    eax,[ebp-0x18]
+     64b:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+     64f:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     652:	89 04 24             	mov    DWORD PTR [esp],eax
+     655:	e8 fc ff ff ff       	call   656 <get_task_esp+0x14>
+     65a:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
 		if (stk == -1) {
-     63f:	83 7d f4 ff          	cmp    DWORD PTR [ebp-0xc],0xffffffff
-     643:	75 5b                	jne    6a0 <get_task_esp+0x79>
+     65d:	83 7d f4 ff          	cmp    DWORD PTR [ebp-0xc],0xffffffff
+     661:	75 5f                	jne    6c2 <get_task_esp+0x80>
 				if (preempt_needs_init)
-     645:	a1 00 00 00 00       	mov    eax,ds:0x0
-     64a:	85 c0                	test   eax,eax
-     64c:	74 07                	je     655 <get_task_esp+0x2e>
+     663:	a1 00 00 00 00       	mov    eax,ds:0x0
+     668:	85 c0                	test   eax,eax
+     66a:	74 07                	je     673 <get_task_esp+0x31>
 						return &dummy;
-     64e:	b8 60 00 00 00       	mov    eax,0x60
-     653:	eb 58                	jmp    6ad <get_task_esp+0x86>
+     66c:	b8 60 00 00 00       	mov    eax,0x60
+     671:	eb 5c                	jmp    6cf <get_task_esp+0x8d>
 				printf("kernel_stacks: %p to %p\n", kernel_stacks.vm_base, kernel_stacks.vm_ptr);
-     655:	8b 15 04 00 00 00    	mov    edx,DWORD PTR ds:0x4
-     65b:	a1 00 00 00 00       	mov    eax,ds:0x0
-     660:	83 ec 04             	sub    esp,0x4
-     663:	52                   	push   edx
-     664:	50                   	push   eax
-     665:	68 6b 00 00 00       	push   0x6b
-     66a:	e8 fc ff ff ff       	call   66b <get_task_esp+0x44>
-     66f:	83 c4 10             	add    esp,0x10
+     673:	8b 15 04 00 00 00    	mov    edx,DWORD PTR ds:0x4
+     679:	a1 00 00 00 00       	mov    eax,ds:0x0
+     67e:	89 54 24 08          	mov    DWORD PTR [esp+0x8],edx
+     682:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+     686:	c7 04 24 6b 00 00 00 	mov    DWORD PTR [esp],0x6b
+     68d:	e8 fc ff ff ff       	call   68e <get_task_esp+0x4c>
 				die("unkown stack at %p\n", esp);
-     672:	83 ec 04             	sub    esp,0x4
-     675:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-     678:	68 84 00 00 00       	push   0x84
-     67d:	6a 0c                	push   0xc
-     67f:	e8 fc ff ff ff       	call   680 <get_task_esp+0x59>
-     684:	83 c4 10             	add    esp,0x10
-     687:	e8 fc ff ff ff       	call   688 <get_task_esp+0x61>
-     68c:	83 ec 0c             	sub    esp,0xc
-     68f:	68 00 00 00 00       	push   0x0
-     694:	e8 fc ff ff ff       	call   695 <get_task_esp+0x6e>
-     699:	83 c4 10             	add    esp,0x10
-     69c:	fa                   	cli
-     69d:	f4                   	hlt
-     69e:	eb fd                	jmp    69d <get_task_esp+0x76>
+     692:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     695:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+     699:	c7 44 24 04 84 00 00 00 	mov    DWORD PTR [esp+0x4],0x84
+     6a1:	c7 04 24 0c 00 00 00 	mov    DWORD PTR [esp],0xc
+     6a8:	e8 fc ff ff ff       	call   6a9 <get_task_esp+0x67>
+     6ad:	e8 fc ff ff ff       	call   6ae <get_task_esp+0x6c>
+     6b2:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+     6b9:	e8 fc ff ff ff       	call   6ba <get_task_esp+0x78>
+     6be:	fa                   	cli
+     6bf:	f4                   	hlt
+     6c0:	eb fd                	jmp    6bf <get_task_esp+0x7d>
 		rv = sl.base;
-     6a0:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
-     6a3:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
+     6c2:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
+     6c5:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
 		rv--;
-     6a6:	83 6d f0 6c          	sub    DWORD PTR [ebp-0x10],0x6c
+     6c8:	83 6d f0 6c          	sub    DWORD PTR [ebp-0x10],0x6c
 		return rv;
-     6aa:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+     6cc:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
 }
-     6ad:	c9                   	leave
-     6ae:	c3                   	ret
+     6cf:	c9                   	leave
+     6d0:	c3                   	ret
 
-000006af <get_task>:
+000006d1 <get_task>:
 {
-     6af:	55                   	push   ebp
-     6b0:	89 e5                	mov    ebp,esp
-     6b2:	83 ec 18             	sub    esp,0x18
+     6d1:	55                   	push   ebp
+     6d2:	89 e5                	mov    ebp,esp
+     6d4:	83 ec 28             	sub    esp,0x28
 		return get_task_esp(&dm);
-     6b5:	83 ec 0c             	sub    esp,0xc
-     6b8:	8d 45 f4             	lea    eax,[ebp-0xc]
-     6bb:	50                   	push   eax
-     6bc:	e8 fc ff ff ff       	call   6bd <get_task+0xe>
-     6c1:	83 c4 10             	add    esp,0x10
+     6d7:	8d 45 f4             	lea    eax,[ebp-0xc]
+     6da:	89 04 24             	mov    DWORD PTR [esp],eax
+     6dd:	e8 fc ff ff ff       	call   6de <get_task+0xd>
 }
-     6c4:	c9                   	leave
-     6c5:	c3                   	ret
+     6e2:	c9                   	leave
+     6e3:	c3                   	ret
 
-000006c6 <task_save_state>:
+000006e4 <task_save_state>:
 {
-     6c6:	55                   	push   ebp
-     6c7:	89 e5                	mov    ebp,esp
-     6c9:	83 ec 18             	sub    esp,0x18
+     6e4:	55                   	push   ebp
+     6e5:	89 e5                	mov    ebp,esp
+     6e7:	83 ec 28             	sub    esp,0x28
 		if (esp->cs & 3) { /* RPL>0, i.e. call from usermode */
-     6cc:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     6cf:	8b 40 34             	mov    eax,DWORD PTR [eax+0x34]
-     6d2:	83 e0 03             	and    eax,0x3
-     6d5:	85 c0                	test   eax,eax
-     6d7:	74 56                	je     72f <task_save_state+0x69>
+     6ea:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     6ed:	8b 40 34             	mov    eax,DWORD PTR [eax+0x34]
+     6f0:	83 e0 03             	and    eax,0x3
+     6f3:	85 c0                	test   eax,eax
+     6f5:	74 57                	je     74e <task_save_state+0x6a>
 				st = get_stack(esp, &sl);
-     6d9:	8d 45 e8             	lea    eax,[ebp-0x18]
-     6dc:	50                   	push   eax
-     6dd:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-     6e0:	e8 fc ff ff ff       	call   6e1 <task_save_state+0x1b>
-     6e5:	83 c4 08             	add    esp,0x8
-     6e8:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
+     6f7:	8d 45 e8             	lea    eax,[ebp-0x18]
+     6fa:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+     6fe:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     701:	89 04 24             	mov    DWORD PTR [esp],eax
+     704:	e8 fc ff ff ff       	call   705 <task_save_state+0x21>
+     709:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
 								(void*)esp->esp_rpl
-     6eb:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     6ee:	8b 40 3c             	mov    eax,DWORD PTR [eax+0x3c]
+     70c:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     70f:	8b 40 3c             	mov    eax,DWORD PTR [eax+0x3c]
 				printf("irq0 from usermode with stack at %p\n",
-     6f1:	83 ec 08             	sub    esp,0x8
-     6f4:	50                   	push   eax
-     6f5:	68 98 00 00 00       	push   0x98
-     6fa:	e8 fc ff ff ff       	call   6fb <task_save_state+0x35>
-     6ff:	83 c4 10             	add    esp,0x10
+     712:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+     716:	c7 04 24 98 00 00 00 	mov    DWORD PTR [esp],0x98
+     71d:	e8 fc ff ff ff       	call   71e <task_save_state+0x3a>
 				printf("current esp: %p\n", esp);
-     702:	83 ec 08             	sub    esp,0x8
-     705:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-     708:	68 bd 00 00 00       	push   0xbd
-     70d:	e8 fc ff ff ff       	call   70e <task_save_state+0x48>
-     712:	83 c4 10             	add    esp,0x10
+     722:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     725:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+     729:	c7 04 24 bd 00 00 00 	mov    DWORD PTR [esp],0xbd
+     730:	e8 fc ff ff ff       	call   731 <task_save_state+0x4d>
 				printf("cs: %x\n", esp->cs);
-     715:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     718:	8b 40 34             	mov    eax,DWORD PTR [eax+0x34]
-     71b:	83 ec 08             	sub    esp,0x8
-     71e:	50                   	push   eax
-     71f:	68 ce 00 00 00       	push   0xce
-     724:	e8 fc ff ff ff       	call   725 <task_save_state+0x5f>
-     729:	83 c4 10             	add    esp,0x10
+     735:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     738:	8b 40 34             	mov    eax,DWORD PTR [eax+0x34]
+     73b:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+     73f:	c7 04 24 ce 00 00 00 	mov    DWORD PTR [esp],0xce
+     746:	e8 fc ff ff ff       	call   747 <task_save_state+0x63>
 				while (1);
-     72c:	90                   	nop
-     72d:	eb fd                	jmp    72c <task_save_state+0x66>
+     74b:	90                   	nop
+     74c:	eb fd                	jmp    74b <task_save_state+0x67>
 		} else if ((size_t)esp <= 0x80000 && (size_t)esp > 0x60000) {
-     72f:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     732:	3d 00 00 08 00       	cmp    eax,0x80000
-     737:	77 0a                	ja     743 <task_save_state+0x7d>
-     739:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     73c:	3d 00 00 06 00       	cmp    eax,0x60000
-     741:	77 4e                	ja     791 <task_save_state+0xcb>
+     74e:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     751:	3d 00 00 08 00       	cmp    eax,0x80000
+     756:	77 0a                	ja     762 <task_save_state+0x7e>
+     758:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     75b:	3d 00 00 06 00       	cmp    eax,0x60000
+     760:	77 4a                	ja     7ac <task_save_state+0xc8>
 				st = get_stack(esp, &sl);
-     743:	83 ec 08             	sub    esp,0x8
-     746:	8d 45 e8             	lea    eax,[ebp-0x18]
-     749:	50                   	push   eax
-     74a:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-     74d:	e8 fc ff ff ff       	call   74e <task_save_state+0x88>
-     752:	83 c4 10             	add    esp,0x10
-     755:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
+     762:	8d 45 e8             	lea    eax,[ebp-0x18]
+     765:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+     769:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     76c:	89 04 24             	mov    DWORD PTR [esp],eax
+     76f:	e8 fc ff ff ff       	call   770 <task_save_state+0x8c>
+     774:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
 				if (st == -1) {
-     758:	83 7d f4 ff          	cmp    DWORD PTR [ebp-0xc],0xffffffff
-     75c:	75 12                	jne    770 <task_save_state+0xaa>
+     777:	83 7d f4 ff          	cmp    DWORD PTR [ebp-0xc],0xffffffff
+     77b:	75 0e                	jne    78b <task_save_state+0xa7>
 						printf("unrecognized ring0 task!\n");
-     75e:	83 ec 0c             	sub    esp,0xc
-     761:	68 d6 00 00 00       	push   0xd6
-     766:	e8 fc ff ff ff       	call   767 <task_save_state+0xa1>
-     76b:	83 c4 10             	add    esp,0x10
-     76e:	eb 21                	jmp    791 <task_save_state+0xcb>
+     77d:	c7 04 24 d6 00 00 00 	mov    DWORD PTR [esp],0xd6
+     784:	e8 fc ff ff ff       	call   785 <task_save_state+0xa1>
+     789:	eb 21                	jmp    7ac <task_save_state+0xc8>
 				t = sl.base;
-     770:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
-     773:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
+     78b:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
+     78e:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
 				t--;
-     776:	83 6d f0 6c          	sub    DWORD PTR [ebp-0x10],0x6c
+     791:	83 6d f0 6c          	sub    DWORD PTR [ebp-0x10],0x6c
 				t->ts = esp;
-     77a:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-     77d:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
-     780:	89 50 04             	mov    DWORD PTR [eax+0x4],edx
+     795:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+     798:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
+     79b:	89 50 04             	mov    DWORD PTR [eax+0x4],edx
 				t->stop_time = task_gettime();
-     783:	e8 fc ff ff ff       	call   784 <task_save_state+0xbe>
-     788:	8b 4d f0             	mov    ecx,DWORD PTR [ebp-0x10]
-     78b:	89 41 3c             	mov    DWORD PTR [ecx+0x3c],eax
-     78e:	89 51 40             	mov    DWORD PTR [ecx+0x40],edx
+     79e:	e8 fc ff ff ff       	call   79f <task_save_state+0xbb>
+     7a3:	8b 4d f0             	mov    ecx,DWORD PTR [ebp-0x10]
+     7a6:	89 41 3c             	mov    DWORD PTR [ecx+0x3c],eax
+     7a9:	89 51 40             	mov    DWORD PTR [ecx+0x40],edx
 }
-     791:	c9                   	leave
-     792:	c3                   	ret
+     7ac:	c9                   	leave
+     7ad:	c3                   	ret
 
-00000793 <print_task>:
+000007ae <print_task>:
 {
-     793:	55                   	push   ebp
-     794:	89 e5                	mov    ebp,esp
-     796:	57                   	push   edi
-     797:	56                   	push   esi
-     798:	53                   	push   ebx
-     799:	83 ec 4c             	sub    esp,0x4c
+     7ae:	55                   	push   ebp
+     7af:	89 e5                	mov    ebp,esp
+     7b1:	57                   	push   edi
+     7b2:	56                   	push   esi
+     7b3:	53                   	push   ebx
+     7b4:	81 ec 9c 00 00 00    	sub    esp,0x9c
 		char proc_str[5] = "N/A";
-     79c:	c7 45 e3 4e 2f 41 00 	mov    DWORD PTR [ebp-0x1d],0x412f4e
-     7a3:	c6 45 e7 00          	mov    BYTE PTR [ebp-0x19],0x0
+     7ba:	c7 45 e3 4e 2f 41 00 	mov    DWORD PTR [ebp-0x1d],0x412f4e
+     7c1:	c6 45 e7 00          	mov    BYTE PTR [ebp-0x19],0x0
 		if (ts->task_proc != 0xffffffff)
-     7a7:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     7aa:	8b 40 44             	mov    eax,DWORD PTR [eax+0x44]
-     7ad:	83 f8 ff             	cmp    eax,0xffffffff
-     7b0:	74 1a                	je     7cc <print_task+0x39>
+     7c5:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     7c8:	8b 40 44             	mov    eax,DWORD PTR [eax+0x44]
+     7cb:	83 f8 ff             	cmp    eax,0xffffffff
+     7ce:	74 25                	je     7f5 <print_task+0x47>
 				snprintf(proc_str, 5, "%4u", ts->task_proc);
-     7b2:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     7b5:	8b 40 44             	mov    eax,DWORD PTR [eax+0x44]
-     7b8:	50                   	push   eax
-     7b9:	68 f0 00 00 00       	push   0xf0
-     7be:	6a 05                	push   0x5
-     7c0:	8d 45 e3             	lea    eax,[ebp-0x1d]
-     7c3:	50                   	push   eax
-     7c4:	e8 fc ff ff ff       	call   7c5 <print_task+0x32>
-     7c9:	83 c4 10             	add    esp,0x10
+     7d0:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     7d3:	8b 40 44             	mov    eax,DWORD PTR [eax+0x44]
+     7d6:	89 44 24 0c          	mov    DWORD PTR [esp+0xc],eax
+     7da:	c7 44 24 08 f0 00 00 00 	mov    DWORD PTR [esp+0x8],0xf0
+     7e2:	c7 44 24 04 05 00 00 00 	mov    DWORD PTR [esp+0x4],0x5
+     7ea:	8d 45 e3             	lea    eax,[ebp-0x1d]
+     7ed:	89 04 24             	mov    DWORD PTR [esp],eax
+     7f0:	e8 fc ff ff ff       	call   7f1 <print_task+0x43>
 		printf("%2u %c%c%c %4.4s %p %4u %3u %7u %4u %7u %4u %3d %-12s" STAT_COUNTER("%4u %3u") "\n", ts->task_id,
-     7cc:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     7cf:	8b 40 68             	mov    eax,DWORD PTR [eax+0x68]
-     7d2:	89 45 d0             	mov    DWORD PTR [ebp-0x30],eax
-     7d5:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     7d8:	8b 40 64             	mov    eax,DWORD PTR [eax+0x64]
-     7db:	89 45 cc             	mov    DWORD PTR [ebp-0x34],eax
-     7de:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     7e1:	8b 40 10             	mov    eax,DWORD PTR [eax+0x10]
-     7e4:	89 45 c8             	mov    DWORD PTR [ebp-0x38],eax
-     7e7:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     7ea:	8b 40 2c             	mov    eax,DWORD PTR [eax+0x2c]
-     7ed:	89 45 c4             	mov    DWORD PTR [ebp-0x3c],eax
-     7f0:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     7f3:	8b 40 20             	mov    eax,DWORD PTR [eax+0x20]
-     7f6:	89 45 c0             	mov    DWORD PTR [ebp-0x40],eax
-     7f9:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     7fc:	8b 40 24             	mov    eax,DWORD PTR [eax+0x24]
-     7ff:	89 45 bc             	mov    DWORD PTR [ebp-0x44],eax
+     7f5:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     7f8:	8b 40 68             	mov    eax,DWORD PTR [eax+0x68]
+     7fb:	89 45 d0             	mov    DWORD PTR [ebp-0x30],eax
+     7fe:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     801:	8b 40 64             	mov    eax,DWORD PTR [eax+0x64]
+     804:	89 45 cc             	mov    DWORD PTR [ebp-0x34],eax
+     807:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     80a:	8b 40 10             	mov    eax,DWORD PTR [eax+0x10]
+     80d:	89 45 c8             	mov    DWORD PTR [ebp-0x38],eax
+     810:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     813:	8b 40 2c             	mov    eax,DWORD PTR [eax+0x2c]
+     816:	89 45 c4             	mov    DWORD PTR [ebp-0x3c],eax
+     819:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     81c:	8b 40 20             	mov    eax,DWORD PTR [eax+0x20]
+     81f:	89 45 c0             	mov    DWORD PTR [ebp-0x40],eax
+     822:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     825:	8b 40 24             	mov    eax,DWORD PTR [eax+0x24]
+     828:	89 45 bc             	mov    DWORD PTR [ebp-0x44],eax
 				(uint32_t)(ts->ns_acc / 1000000000), ts->ns_per_sec / 1000000,
-     802:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     805:	8b 40 60             	mov    eax,DWORD PTR [eax+0x60]
+     82b:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     82e:	8b 40 60             	mov    eax,DWORD PTR [eax+0x60]
 		printf("%2u %c%c%c %4.4s %p %4u %3u %7u %4u %7u %4u %3d %-12s" STAT_COUNTER("%4u %3u") "\n", ts->task_id,
-     808:	ba 83 de 1b 43       	mov    edx,0x431bde83
-     80d:	f7 e2                	mul    edx
-     80f:	c1 ea 12             	shr    edx,0x12
-     812:	89 55 b8             	mov    DWORD PTR [ebp-0x48],edx
+     831:	ba 83 de 1b 43       	mov    edx,0x431bde83
+     836:	f7 e2                	mul    edx
+     838:	c1 ea 12             	shr    edx,0x12
+     83b:	89 55 b8             	mov    DWORD PTR [ebp-0x48],edx
 				(uint32_t)(ts->ns_acc / 1000000000), ts->ns_per_sec / 1000000,
-     815:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     818:	8b 50 54             	mov    edx,DWORD PTR [eax+0x54]
-     81b:	8b 40 50             	mov    eax,DWORD PTR [eax+0x50]
-     81e:	6a 00                	push   0x0
-     820:	68 00 ca 9a 3b       	push   0x3b9aca00
-     825:	52                   	push   edx
-     826:	50                   	push   eax
-     827:	e8 fc ff ff ff       	call   828 <print_task+0x95>
-     82c:	83 c4 10             	add    esp,0x10
+     83e:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     841:	8b 50 54             	mov    edx,DWORD PTR [eax+0x54]
+     844:	8b 40 50             	mov    eax,DWORD PTR [eax+0x50]
+     847:	c7 44 24 08 00 ca 9a 3b 	mov    DWORD PTR [esp+0x8],0x3b9aca00
+     84f:	c7 44 24 0c 00 00 00 00 	mov    DWORD PTR [esp+0xc],0x0
+     857:	89 04 24             	mov    DWORD PTR [esp],eax
+     85a:	89 54 24 04          	mov    DWORD PTR [esp+0x4],edx
+     85e:	e8 fc ff ff ff       	call   85f <print_task+0xb1>
 		printf("%2u %c%c%c %4.4s %p %4u %3u %7u %4u %7u %4u %3d %-12s" STAT_COUNTER("%4u %3u") "\n", ts->task_id,
-     82f:	89 45 b4             	mov    DWORD PTR [ebp-0x4c],eax
-     832:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     835:	8b 40 30             	mov    eax,DWORD PTR [eax+0x30]
-     838:	89 45 b0             	mov    DWORD PTR [ebp-0x50],eax
-     83b:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     83e:	8b 78 28             	mov    edi,DWORD PTR [eax+0x28]
-     841:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     844:	8b 70 08             	mov    esi,DWORD PTR [eax+0x8]
-				(ts->flags & TIF_YIELDED) ? 'Y' : ' ', proc_str,
-     847:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     84a:	8b 00                	mov    eax,DWORD PTR [eax]
-     84c:	83 e0 02             	and    eax,0x2
-		printf("%2u %c%c%c %4.4s %p %4u %3u %7u %4u %7u %4u %3d %-12s" STAT_COUNTER("%4u %3u") "\n", ts->task_id,
-     84f:	85 c0                	test   eax,eax
-     851:	74 09                	je     85c <print_task+0xc9>
-     853:	c7 45 d4 59 00 00 00 	mov    DWORD PTR [ebp-0x2c],0x59
-     85a:	eb 07                	jmp    863 <print_task+0xd0>
-     85c:	c7 45 d4 20 00 00 00 	mov    DWORD PTR [ebp-0x2c],0x20
-				(ts->flags & TIF_KERNEL_STACK) ? ((ts->flags & TIF_IDLE) ? 'I' : 'K') : 'U',
-     863:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     866:	8b 00                	mov    eax,DWORD PTR [eax]
-     868:	83 e0 08             	and    eax,0x8
-		printf("%2u %c%c%c %4.4s %p %4u %3u %7u %4u %7u %4u %3d %-12s" STAT_COUNTER("%4u %3u") "\n", ts->task_id,
-     86b:	85 c0                	test   eax,eax
-     86d:	74 1a                	je     889 <print_task+0xf6>
-				(ts->flags & TIF_KERNEL_STACK) ? ((ts->flags & TIF_IDLE) ? 'I' : 'K') : 'U',
+     863:	89 45 b4             	mov    DWORD PTR [ebp-0x4c],eax
+     866:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     869:	8b 40 30             	mov    eax,DWORD PTR [eax+0x30]
+     86c:	89 45 b0             	mov    DWORD PTR [ebp-0x50],eax
      86f:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     872:	8b 00                	mov    eax,DWORD PTR [eax]
-     874:	83 e0 40             	and    eax,0x40
-     877:	85 c0                	test   eax,eax
-     879:	74 07                	je     882 <print_task+0xef>
-     87b:	bb 49 00 00 00       	mov    ebx,0x49
-     880:	eb 0c                	jmp    88e <print_task+0xfb>
-     882:	bb 4b 00 00 00       	mov    ebx,0x4b
-     887:	eb 05                	jmp    88e <print_task+0xfb>
+     872:	8b 78 28             	mov    edi,DWORD PTR [eax+0x28]
+     875:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     878:	8b 70 08             	mov    esi,DWORD PTR [eax+0x8]
+				(ts->flags & TIF_YIELDED) ? 'Y' : ' ', proc_str,
+     87b:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     87e:	8b 00                	mov    eax,DWORD PTR [eax]
+     880:	83 e0 02             	and    eax,0x2
 		printf("%2u %c%c%c %4.4s %p %4u %3u %7u %4u %7u %4u %3d %-12s" STAT_COUNTER("%4u %3u") "\n", ts->task_id,
-     889:	bb 55 00 00 00       	mov    ebx,0x55
+     883:	85 c0                	test   eax,eax
+     885:	74 09                	je     890 <print_task+0xe2>
+     887:	c7 45 d4 59 00 00 00 	mov    DWORD PTR [ebp-0x2c],0x59
+     88e:	eb 07                	jmp    897 <print_task+0xe9>
+     890:	c7 45 d4 20 00 00 00 	mov    DWORD PTR [ebp-0x2c],0x20
+				(ts->flags & TIF_KERNEL_STACK) ? ((ts->flags & TIF_IDLE) ? 'I' : 'K') : 'U',
+     897:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     89a:	8b 00                	mov    eax,DWORD PTR [eax]
+     89c:	83 e0 08             	and    eax,0x8
+		printf("%2u %c%c%c %4.4s %p %4u %3u %7u %4u %7u %4u %3d %-12s" STAT_COUNTER("%4u %3u") "\n", ts->task_id,
+     89f:	85 c0                	test   eax,eax
+     8a1:	74 1a                	je     8bd <print_task+0x10f>
+				(ts->flags & TIF_KERNEL_STACK) ? ((ts->flags & TIF_IDLE) ? 'I' : 'K') : 'U',
+     8a3:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     8a6:	8b 00                	mov    eax,DWORD PTR [eax]
+     8a8:	83 e0 40             	and    eax,0x40
+     8ab:	85 c0                	test   eax,eax
+     8ad:	74 07                	je     8b6 <print_task+0x108>
+     8af:	bb 49 00 00 00       	mov    ebx,0x49
+     8b4:	eb 0c                	jmp    8c2 <print_task+0x114>
+     8b6:	bb 4b 00 00 00       	mov    ebx,0x4b
+     8bb:	eb 05                	jmp    8c2 <print_task+0x114>
+		printf("%2u %c%c%c %4.4s %p %4u %3u %7u %4u %7u %4u %3d %-12s" STAT_COUNTER("%4u %3u") "\n", ts->task_id,
+     8bd:	bb 55 00 00 00       	mov    ebx,0x55
 				(ts->flags & TIF_RUNNING) ? 'R' : (ts->flags & TIF_EXPIRED) ? 'X' : (ts->flags & TIF_SLEEPING) ? 'S': ' ',
-     88e:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     891:	8b 00                	mov    eax,DWORD PTR [eax]
-     893:	83 e0 10             	and    eax,0x10
+     8c2:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     8c5:	8b 00                	mov    eax,DWORD PTR [eax]
+     8c7:	83 e0 10             	and    eax,0x10
 		printf("%2u %c%c%c %4.4s %p %4u %3u %7u %4u %7u %4u %3d %-12s" STAT_COUNTER("%4u %3u") "\n", ts->task_id,
-     896:	85 c0                	test   eax,eax
-     898:	75 2f                	jne    8c9 <print_task+0x136>
+     8ca:	85 c0                	test   eax,eax
+     8cc:	75 2f                	jne    8fd <print_task+0x14f>
 				(ts->flags & TIF_RUNNING) ? 'R' : (ts->flags & TIF_EXPIRED) ? 'X' : (ts->flags & TIF_SLEEPING) ? 'S': ' ',
-     89a:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     89d:	8b 00                	mov    eax,DWORD PTR [eax]
-     89f:	83 e0 20             	and    eax,0x20
-     8a2:	85 c0                	test   eax,eax
-     8a4:	75 1c                	jne    8c2 <print_task+0x12f>
-     8a6:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     8a9:	8b 00                	mov    eax,DWORD PTR [eax]
-     8ab:	25 80 00 00 00       	and    eax,0x80
-     8b0:	85 c0                	test   eax,eax
-     8b2:	74 07                	je     8bb <print_task+0x128>
-     8b4:	b9 53 00 00 00       	mov    ecx,0x53
-     8b9:	eb 13                	jmp    8ce <print_task+0x13b>
-     8bb:	b9 20 00 00 00       	mov    ecx,0x20
-     8c0:	eb 0c                	jmp    8ce <print_task+0x13b>
-     8c2:	b9 58 00 00 00       	mov    ecx,0x58
-     8c7:	eb 05                	jmp    8ce <print_task+0x13b>
-		printf("%2u %c%c%c %4.4s %p %4u %3u %7u %4u %7u %4u %3d %-12s" STAT_COUNTER("%4u %3u") "\n", ts->task_id,
-     8c9:	b9 52 00 00 00       	mov    ecx,0x52
      8ce:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     8d1:	8b 50 14             	mov    edx,DWORD PTR [eax+0x14]
-     8d4:	83 ec 0c             	sub    esp,0xc
-     8d7:	ff 75 d0             	push   DWORD PTR [ebp-0x30]
-     8da:	ff 75 cc             	push   DWORD PTR [ebp-0x34]
-     8dd:	ff 75 c8             	push   DWORD PTR [ebp-0x38]
-     8e0:	ff 75 c4             	push   DWORD PTR [ebp-0x3c]
-     8e3:	ff 75 c0             	push   DWORD PTR [ebp-0x40]
-     8e6:	ff 75 bc             	push   DWORD PTR [ebp-0x44]
-     8e9:	ff 75 b8             	push   DWORD PTR [ebp-0x48]
-     8ec:	ff 75 b4             	push   DWORD PTR [ebp-0x4c]
-     8ef:	ff 75 b0             	push   DWORD PTR [ebp-0x50]
-     8f2:	57                   	push   edi
-     8f3:	56                   	push   esi
-     8f4:	8d 45 e3             	lea    eax,[ebp-0x1d]
-     8f7:	50                   	push   eax
-     8f8:	ff 75 d4             	push   DWORD PTR [ebp-0x2c]
-     8fb:	53                   	push   ebx
-     8fc:	51                   	push   ecx
-     8fd:	52                   	push   edx
-     8fe:	68 f4 00 00 00       	push   0xf4
-     903:	e8 fc ff ff ff       	call   904 <print_task+0x171>
-     908:	83 c4 50             	add    esp,0x50
+     8d1:	8b 00                	mov    eax,DWORD PTR [eax]
+     8d3:	83 e0 20             	and    eax,0x20
+     8d6:	85 c0                	test   eax,eax
+     8d8:	75 1c                	jne    8f6 <print_task+0x148>
+     8da:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     8dd:	8b 00                	mov    eax,DWORD PTR [eax]
+     8df:	25 80 00 00 00       	and    eax,0x80
+     8e4:	85 c0                	test   eax,eax
+     8e6:	74 07                	je     8ef <print_task+0x141>
+     8e8:	b9 53 00 00 00       	mov    ecx,0x53
+     8ed:	eb 13                	jmp    902 <print_task+0x154>
+     8ef:	b9 20 00 00 00       	mov    ecx,0x20
+     8f4:	eb 0c                	jmp    902 <print_task+0x154>
+     8f6:	b9 58 00 00 00       	mov    ecx,0x58
+     8fb:	eb 05                	jmp    902 <print_task+0x154>
+		printf("%2u %c%c%c %4.4s %p %4u %3u %7u %4u %7u %4u %3d %-12s" STAT_COUNTER("%4u %3u") "\n", ts->task_id,
+     8fd:	b9 52 00 00 00       	mov    ecx,0x52
+     902:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     905:	8b 50 14             	mov    edx,DWORD PTR [eax+0x14]
+     908:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+     90b:	89 44 24 40          	mov    DWORD PTR [esp+0x40],eax
+     90f:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+     912:	89 44 24 3c          	mov    DWORD PTR [esp+0x3c],eax
+     916:	8b 45 c8             	mov    eax,DWORD PTR [ebp-0x38]
+     919:	89 44 24 38          	mov    DWORD PTR [esp+0x38],eax
+     91d:	8b 45 c4             	mov    eax,DWORD PTR [ebp-0x3c]
+     920:	89 44 24 34          	mov    DWORD PTR [esp+0x34],eax
+     924:	8b 45 c0             	mov    eax,DWORD PTR [ebp-0x40]
+     927:	89 44 24 30          	mov    DWORD PTR [esp+0x30],eax
+     92b:	8b 45 bc             	mov    eax,DWORD PTR [ebp-0x44]
+     92e:	89 44 24 2c          	mov    DWORD PTR [esp+0x2c],eax
+     932:	8b 45 b8             	mov    eax,DWORD PTR [ebp-0x48]
+     935:	89 44 24 28          	mov    DWORD PTR [esp+0x28],eax
+     939:	8b 45 b4             	mov    eax,DWORD PTR [ebp-0x4c]
+     93c:	89 44 24 24          	mov    DWORD PTR [esp+0x24],eax
+     940:	8b 45 b0             	mov    eax,DWORD PTR [ebp-0x50]
+     943:	89 44 24 20          	mov    DWORD PTR [esp+0x20],eax
+     947:	89 7c 24 1c          	mov    DWORD PTR [esp+0x1c],edi
+     94b:	89 74 24 18          	mov    DWORD PTR [esp+0x18],esi
+     94f:	8d 45 e3             	lea    eax,[ebp-0x1d]
+     952:	89 44 24 14          	mov    DWORD PTR [esp+0x14],eax
+     956:	8b 45 d4             	mov    eax,DWORD PTR [ebp-0x2c]
+     959:	89 44 24 10          	mov    DWORD PTR [esp+0x10],eax
+     95d:	89 5c 24 0c          	mov    DWORD PTR [esp+0xc],ebx
+     961:	89 4c 24 08          	mov    DWORD PTR [esp+0x8],ecx
+     965:	89 54 24 04          	mov    DWORD PTR [esp+0x4],edx
+     969:	c7 04 24 f4 00 00 00 	mov    DWORD PTR [esp],0xf4
+     970:	e8 fc ff ff ff       	call   971 <print_task+0x1c3>
 }
-     90b:	90                   	nop
-     90c:	8d 65 f4             	lea    esp,[ebp-0xc]
-     90f:	5b                   	pop    ebx
-     910:	5e                   	pop    esi
-     911:	5f                   	pop    edi
-     912:	5d                   	pop    ebp
-     913:	c3                   	ret
+     975:	90                   	nop
+     976:	81 c4 9c 00 00 00    	add    esp,0x9c
+     97c:	5b                   	pop    ebx
+     97d:	5e                   	pop    esi
+     97e:	5f                   	pop    edi
+     97f:	5d                   	pop    ebp
+     980:	c3                   	ret
 
-00000914 <cpu_stat_counter>:
+00000981 <cpu_stat_counter>:
 {
-     914:	55                   	push   ebp
-     915:	89 e5                	mov    ebp,esp
-     917:	83 ec 18             	sub    esp,0x18
+     981:	55                   	push   ebp
+     982:	89 e5                	mov    ebp,esp
+     984:	83 ec 28             	sub    esp,0x28
 		if (nproc > 1) {
-     91a:	a1 00 00 00 00       	mov    eax,ds:0x0
-     91f:	83 f8 01             	cmp    eax,0x1
-     922:	76 26                	jbe    94a <cpu_stat_counter+0x36>
+     987:	a1 00 00 00 00       	mov    eax,ds:0x0
+     98c:	83 f8 01             	cmp    eax,0x1
+     98f:	76 23                	jbe    9b4 <cpu_stat_counter+0x33>
 				struct processor_data* pd = get_cpu_data(id);
-     924:	83 ec 0c             	sub    esp,0xc
-     927:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-     92a:	e8 fc ff ff ff       	call   92b <cpu_stat_counter+0x17>
-     92f:	83 c4 10             	add    esp,0x10
-     932:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
+     991:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     994:	89 04 24             	mov    DWORD PTR [esp],eax
+     997:	e8 fc ff ff ff       	call   998 <cpu_stat_counter+0x17>
+     99c:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
 				if (!pd)
-     935:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
-     939:	75 07                	jne    942 <cpu_stat_counter+0x2e>
+     99f:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
+     9a3:	75 07                	jne    9ac <cpu_stat_counter+0x2b>
 						return NULL;
-     93b:	b8 00 00 00 00       	mov    eax,0x0
-     940:	eb 0d                	jmp    94f <cpu_stat_counter+0x3b>
+     9a5:	b8 00 00 00 00       	mov    eax,0x0
+     9aa:	eb 0d                	jmp    9b9 <cpu_stat_counter+0x38>
 				return pd->ticks;
-     942:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     945:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
-     948:	eb 05                	jmp    94f <cpu_stat_counter+0x3b>
+     9ac:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     9af:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
+     9b2:	eb 05                	jmp    9b9 <cpu_stat_counter+0x38>
 				return bp_tick;
-     94a:	a1 00 00 00 00       	mov    eax,ds:0x0
+     9b4:	a1 00 00 00 00       	mov    eax,ds:0x0
 }
-     94f:	c9                   	leave
-     950:	c3                   	ret
+     9b9:	c9                   	leave
+     9ba:	c3                   	ret
 
-00000951 <cpu_calc_percentages>:
+000009bb <cpu_calc_percentages>:
 {
-     951:	55                   	push   ebp
-     952:	89 e5                	mov    ebp,esp
-     954:	56                   	push   esi
-     955:	53                   	push   ebx
-     956:	83 ec 10             	sub    esp,0x10
+     9bb:	55                   	push   ebp
+     9bc:	89 e5                	mov    ebp,esp
+     9be:	56                   	push   esi
+     9bf:	53                   	push   ebx
+     9c0:	83 ec 20             	sub    esp,0x20
 		struct perf_ctrs* pc = cpu_stat_counter(i);
-     959:	83 ec 0c             	sub    esp,0xc
-     95c:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-     95f:	e8 fc ff ff ff       	call   960 <cpu_calc_percentages+0xf>
-     964:	83 c4 10             	add    esp,0x10
-     967:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
+     9c3:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     9c6:	89 04 24             	mov    DWORD PTR [esp],eax
+     9c9:	e8 fc ff ff ff       	call   9ca <cpu_calc_percentages+0xf>
+     9ce:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
 		if (!pc) {
-     96a:	83 7d f0 00          	cmp    DWORD PTR [ebp-0x10],0x0
-     96e:	75 3e                	jne    9ae <cpu_calc_percentages+0x5d>
+     9d1:	83 7d f0 00          	cmp    DWORD PTR [ebp-0x10],0x0
+     9d5:	75 40                	jne    a17 <cpu_calc_percentages+0x5c>
 				bzero(&cpu_pcs[i + 1], sizeof(cpu_pcs[i + 1]));
-     970:	a1 00 00 00 00       	mov    eax,ds:0x0
-     975:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
-     978:	83 c2 01             	add    edx,0x1
-     97b:	c1 e2 05             	shl    edx,0x5
-     97e:	01 d0                	add    eax,edx
-     980:	83 ec 08             	sub    esp,0x8
-     983:	6a 20                	push   0x20
-     985:	50                   	push   eax
-     986:	e8 fc ff ff ff       	call   987 <cpu_calc_percentages+0x36>
-     98b:	83 c4 10             	add    esp,0x10
+     9d7:	a1 00 00 00 00       	mov    eax,ds:0x0
+     9dc:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
+     9df:	83 c2 01             	add    edx,0x1
+     9e2:	c1 e2 05             	shl    edx,0x5
+     9e5:	01 d0                	add    eax,edx
+     9e7:	c7 44 24 04 20 00 00 00 	mov    DWORD PTR [esp+0x4],0x20
+     9ef:	89 04 24             	mov    DWORD PTR [esp],eax
+     9f2:	e8 fc ff ff ff       	call   9f3 <cpu_calc_percentages+0x38>
 				cpu_pcs[i + 1].vals[0] = 0xffffffff;
-     98e:	a1 00 00 00 00       	mov    eax,ds:0x0
-     993:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
-     996:	83 c2 01             	add    edx,0x1
-     999:	c1 e2 05             	shl    edx,0x5
-     99c:	01 d0                	add    eax,edx
-     99e:	c7 00 ff ff ff ff    	mov    DWORD PTR [eax],0xffffffff
+     9f7:	a1 00 00 00 00       	mov    eax,ds:0x0
+     9fc:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
+     9ff:	83 c2 01             	add    edx,0x1
+     a02:	c1 e2 05             	shl    edx,0x5
+     a05:	01 d0                	add    eax,edx
+     a07:	c7 00 ff ff ff ff    	mov    DWORD PTR [eax],0xffffffff
 				return -1;
-     9a4:	b8 ff ff ff ff       	mov    eax,0xffffffff
-     9a9:	e9 8c 01 00 00       	jmp    b3a <cpu_calc_percentages+0x1e9>
+     a0d:	b8 ff ff ff ff       	mov    eax,0xffffffff
+     a12:	e9 8c 01 00 00       	jmp    ba3 <cpu_calc_percentages+0x1e8>
 		cpu_pcs[0].vals[0] += pc->ns_idle_per_sec;
-     9ae:	a1 00 00 00 00       	mov    eax,ds:0x0
-     9b3:	8b 08                	mov    ecx,DWORD PTR [eax]
-     9b5:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-     9b8:	8b 50 38             	mov    edx,DWORD PTR [eax+0x38]
-     9bb:	a1 00 00 00 00       	mov    eax,ds:0x0
-     9c0:	01 ca                	add    edx,ecx
-     9c2:	89 10                	mov    DWORD PTR [eax],edx
+     a17:	a1 00 00 00 00       	mov    eax,ds:0x0
+     a1c:	8b 08                	mov    ecx,DWORD PTR [eax]
+     a1e:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+     a21:	8b 50 38             	mov    edx,DWORD PTR [eax+0x38]
+     a24:	a1 00 00 00 00       	mov    eax,ds:0x0
+     a29:	01 ca                	add    edx,ecx
+     a2b:	89 10                	mov    DWORD PTR [eax],edx
 		cpu_pcs[0].vals[1] += pc->ns_kernel_per_sec;
-     9c4:	a1 00 00 00 00       	mov    eax,ds:0x0
-     9c9:	8b 48 04             	mov    ecx,DWORD PTR [eax+0x4]
-     9cc:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-     9cf:	8b 50 3c             	mov    edx,DWORD PTR [eax+0x3c]
-     9d2:	a1 00 00 00 00       	mov    eax,ds:0x0
-     9d7:	01 ca                	add    edx,ecx
-     9d9:	89 50 04             	mov    DWORD PTR [eax+0x4],edx
+     a2d:	a1 00 00 00 00       	mov    eax,ds:0x0
+     a32:	8b 48 04             	mov    ecx,DWORD PTR [eax+0x4]
+     a35:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+     a38:	8b 50 3c             	mov    edx,DWORD PTR [eax+0x3c]
+     a3b:	a1 00 00 00 00       	mov    eax,ds:0x0
+     a40:	01 ca                	add    edx,ecx
+     a42:	89 50 04             	mov    DWORD PTR [eax+0x4],edx
 		cpu_pcs[0].vals[2] += pc->ns_user_per_sec;
-     9dc:	a1 00 00 00 00       	mov    eax,ds:0x0
-     9e1:	8b 48 08             	mov    ecx,DWORD PTR [eax+0x8]
-     9e4:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-     9e7:	8b 50 40             	mov    edx,DWORD PTR [eax+0x40]
-     9ea:	a1 00 00 00 00       	mov    eax,ds:0x0
-     9ef:	01 ca                	add    edx,ecx
-     9f1:	89 50 08             	mov    DWORD PTR [eax+0x8],edx
-		cpu_pcs[0].vals[3] += 1000000000 - pc->ns_idle_per_sec
-     9f4:	a1 00 00 00 00       	mov    eax,ds:0x0
-     9f9:	8b 50 0c             	mov    edx,DWORD PTR [eax+0xc]
-     9fc:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-     9ff:	8b 48 38             	mov    ecx,DWORD PTR [eax+0x38]
-				- pc->ns_kernel_per_sec - pc->ns_user_per_sec;
-     a02:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-     a05:	8b 40 3c             	mov    eax,DWORD PTR [eax+0x3c]
-     a08:	01 c1                	add    ecx,eax
-     a0a:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-     a0d:	8b 40 40             	mov    eax,DWORD PTR [eax+0x40]
-     a10:	01 c8                	add    eax,ecx
-		cpu_pcs[0].vals[3] += 1000000000 - pc->ns_idle_per_sec
-     a12:	29 c2                	sub    edx,eax
-     a14:	a1 00 00 00 00       	mov    eax,ds:0x0
-     a19:	81 c2 00 ca 9a 3b    	add    edx,0x3b9aca00
-     a1f:	89 50 0c             	mov    DWORD PTR [eax+0xc],edx
-		cpu_pcs[i + 1].vals[0] = pc->ns_idle_per_sec;
-     a22:	a1 00 00 00 00       	mov    eax,ds:0x0
-     a27:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
-     a2a:	83 c2 01             	add    edx,0x1
-     a2d:	c1 e2 05             	shl    edx,0x5
-     a30:	01 c2                	add    edx,eax
-     a32:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-     a35:	8b 40 38             	mov    eax,DWORD PTR [eax+0x38]
-     a38:	89 02                	mov    DWORD PTR [edx],eax
-		cpu_pcs[i + 1].vals[1] = pc->ns_kernel_per_sec;
-     a3a:	a1 00 00 00 00       	mov    eax,ds:0x0
-     a3f:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
-     a42:	83 c2 01             	add    edx,0x1
-     a45:	c1 e2 05             	shl    edx,0x5
-     a48:	01 c2                	add    edx,eax
-     a4a:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-     a4d:	8b 40 3c             	mov    eax,DWORD PTR [eax+0x3c]
-     a50:	89 42 04             	mov    DWORD PTR [edx+0x4],eax
-		cpu_pcs[i + 1].vals[2] = pc->ns_user_per_sec;
+     a45:	a1 00 00 00 00       	mov    eax,ds:0x0
+     a4a:	8b 48 08             	mov    ecx,DWORD PTR [eax+0x8]
+     a4d:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+     a50:	8b 50 40             	mov    edx,DWORD PTR [eax+0x40]
      a53:	a1 00 00 00 00       	mov    eax,ds:0x0
-     a58:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
-     a5b:	83 c2 01             	add    edx,0x1
-     a5e:	c1 e2 05             	shl    edx,0x5
-     a61:	01 c2                	add    edx,eax
-     a63:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-     a66:	8b 40 40             	mov    eax,DWORD PTR [eax+0x40]
-     a69:	89 42 08             	mov    DWORD PTR [edx+0x8],eax
-		cpu_pcs[i + 1].vals[3] = 1000000000 - pc->ns_idle_per_sec
-     a6c:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-     a6f:	8b 50 38             	mov    edx,DWORD PTR [eax+0x38]
+     a58:	01 ca                	add    edx,ecx
+     a5a:	89 50 08             	mov    DWORD PTR [eax+0x8],edx
+		cpu_pcs[0].vals[3] += 1000000000 - pc->ns_idle_per_sec
+     a5d:	a1 00 00 00 00       	mov    eax,ds:0x0
+     a62:	8b 50 0c             	mov    edx,DWORD PTR [eax+0xc]
+     a65:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+     a68:	8b 48 38             	mov    ecx,DWORD PTR [eax+0x38]
 				- pc->ns_kernel_per_sec - pc->ns_user_per_sec;
-     a72:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-     a75:	8b 40 3c             	mov    eax,DWORD PTR [eax+0x3c]
-     a78:	01 c2                	add    edx,eax
-     a7a:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-     a7d:	8b 40 40             	mov    eax,DWORD PTR [eax+0x40]
-     a80:	8d 0c 02             	lea    ecx,[edx+eax*1]
+     a6b:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+     a6e:	8b 40 3c             	mov    eax,DWORD PTR [eax+0x3c]
+     a71:	01 c1                	add    ecx,eax
+     a73:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+     a76:	8b 40 40             	mov    eax,DWORD PTR [eax+0x40]
+     a79:	01 c8                	add    eax,ecx
+		cpu_pcs[0].vals[3] += 1000000000 - pc->ns_idle_per_sec
+     a7b:	29 c2                	sub    edx,eax
+     a7d:	a1 00 00 00 00       	mov    eax,ds:0x0
+     a82:	81 c2 00 ca 9a 3b    	add    edx,0x3b9aca00
+     a88:	89 50 0c             	mov    DWORD PTR [eax+0xc],edx
+		cpu_pcs[i + 1].vals[0] = pc->ns_idle_per_sec;
+     a8b:	a1 00 00 00 00       	mov    eax,ds:0x0
+     a90:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
+     a93:	83 c2 01             	add    edx,0x1
+     a96:	c1 e2 05             	shl    edx,0x5
+     a99:	01 c2                	add    edx,eax
+     a9b:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+     a9e:	8b 40 38             	mov    eax,DWORD PTR [eax+0x38]
+     aa1:	89 02                	mov    DWORD PTR [edx],eax
+		cpu_pcs[i + 1].vals[1] = pc->ns_kernel_per_sec;
+     aa3:	a1 00 00 00 00       	mov    eax,ds:0x0
+     aa8:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
+     aab:	83 c2 01             	add    edx,0x1
+     aae:	c1 e2 05             	shl    edx,0x5
+     ab1:	01 c2                	add    edx,eax
+     ab3:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+     ab6:	8b 40 3c             	mov    eax,DWORD PTR [eax+0x3c]
+     ab9:	89 42 04             	mov    DWORD PTR [edx+0x4],eax
+		cpu_pcs[i + 1].vals[2] = pc->ns_user_per_sec;
+     abc:	a1 00 00 00 00       	mov    eax,ds:0x0
+     ac1:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
+     ac4:	83 c2 01             	add    edx,0x1
+     ac7:	c1 e2 05             	shl    edx,0x5
+     aca:	01 c2                	add    edx,eax
+     acc:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+     acf:	8b 40 40             	mov    eax,DWORD PTR [eax+0x40]
+     ad2:	89 42 08             	mov    DWORD PTR [edx+0x8],eax
 		cpu_pcs[i + 1].vals[3] = 1000000000 - pc->ns_idle_per_sec
-     a83:	a1 00 00 00 00       	mov    eax,ds:0x0
-     a88:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
-     a8b:	83 c2 01             	add    edx,0x1
-     a8e:	c1 e2 05             	shl    edx,0x5
-     a91:	01 d0                	add    eax,edx
+     ad5:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+     ad8:	8b 50 38             	mov    edx,DWORD PTR [eax+0x38]
 				- pc->ns_kernel_per_sec - pc->ns_user_per_sec;
-     a93:	ba 00 ca 9a 3b       	mov    edx,0x3b9aca00
-     a98:	29 ca                	sub    edx,ecx
+     adb:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+     ade:	8b 40 3c             	mov    eax,DWORD PTR [eax+0x3c]
+     ae1:	01 c2                	add    edx,eax
+     ae3:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+     ae6:	8b 40 40             	mov    eax,DWORD PTR [eax+0x40]
+     ae9:	8d 0c 02             	lea    ecx,[edx+eax*1]
 		cpu_pcs[i + 1].vals[3] = 1000000000 - pc->ns_idle_per_sec
-     a9a:	89 50 0c             	mov    DWORD PTR [eax+0xc],edx
+     aec:	a1 00 00 00 00       	mov    eax,ds:0x0
+     af1:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
+     af4:	83 c2 01             	add    edx,0x1
+     af7:	c1 e2 05             	shl    edx,0x5
+     afa:	01 d0                	add    eax,edx
+				- pc->ns_kernel_per_sec - pc->ns_user_per_sec;
+     afc:	ba 00 ca 9a 3b       	mov    edx,0x3b9aca00
+     b01:	29 ca                	sub    edx,ecx
+		cpu_pcs[i + 1].vals[3] = 1000000000 - pc->ns_idle_per_sec
+     b03:	89 50 0c             	mov    DWORD PTR [eax+0xc],edx
 		for (size_t j = 0; j < 4; j++) {
-     a9d:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
-     aa4:	e9 82 00 00 00       	jmp    b2b <cpu_calc_percentages+0x1da>
+     b06:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
+     b0d:	e9 82 00 00 00       	jmp    b94 <cpu_calc_percentages+0x1d9>
 				const uint32_t ntot = 10000000;
-     aa9:	c7 45 ec 80 96 98 00 	mov    DWORD PTR [ebp-0x14],0x989680
+     b12:	c7 45 ec 80 96 98 00 	mov    DWORD PTR [ebp-0x14],0x989680
 				uint32_t val = cpu_pcs[i + 1].vals[j];
-     ab0:	a1 00 00 00 00       	mov    eax,ds:0x0
-     ab5:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
-     ab8:	83 c2 01             	add    edx,0x1
-     abb:	c1 e2 05             	shl    edx,0x5
-     abe:	01 c2                	add    edx,eax
-     ac0:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     ac3:	8b 04 82             	mov    eax,DWORD PTR [edx+eax*4]
-     ac6:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
+     b19:	a1 00 00 00 00       	mov    eax,ds:0x0
+     b1e:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
+     b21:	83 c2 01             	add    edx,0x1
+     b24:	c1 e2 05             	shl    edx,0x5
+     b27:	01 c2                	add    edx,eax
+     b29:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     b2c:	8b 04 82             	mov    eax,DWORD PTR [edx+eax*4]
+     b2f:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
 				cpu_pcs[i + 1].vals[j] = val / ntot;
-     ac9:	a1 00 00 00 00       	mov    eax,ds:0x0
-     ace:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
-     ad1:	83 c2 01             	add    edx,0x1
-     ad4:	c1 e2 05             	shl    edx,0x5
-     ad7:	8d 0c 10             	lea    ecx,[eax+edx*1]
-     ada:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
-     add:	ba 00 00 00 00       	mov    edx,0x0
-     ae2:	f7 75 ec             	div    DWORD PTR [ebp-0x14]
-     ae5:	89 c2                	mov    edx,eax
-     ae7:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     aea:	89 14 81             	mov    DWORD PTR [ecx+eax*4],edx
+     b32:	a1 00 00 00 00       	mov    eax,ds:0x0
+     b37:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
+     b3a:	83 c2 01             	add    edx,0x1
+     b3d:	c1 e2 05             	shl    edx,0x5
+     b40:	8d 0c 10             	lea    ecx,[eax+edx*1]
+     b43:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
+     b46:	ba 00 00 00 00       	mov    edx,0x0
+     b4b:	f7 75 ec             	div    DWORD PTR [ebp-0x14]
+     b4e:	89 c2                	mov    edx,eax
+     b50:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     b53:	89 14 81             	mov    DWORD PTR [ecx+eax*4],edx
 				cpu_pcs[i + 1].vals[4 + j] = 10 * (val % ntot) / ntot;
-     aed:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
-     af0:	ba 00 00 00 00       	mov    edx,0x0
-     af5:	f7 75 ec             	div    DWORD PTR [ebp-0x14]
-     af8:	89 d0                	mov    eax,edx
-     afa:	c1 e0 02             	shl    eax,0x2
-     afd:	01 d0                	add    eax,edx
-     aff:	01 c0                	add    eax,eax
-     b01:	89 c6                	mov    esi,eax
-     b03:	a1 00 00 00 00       	mov    eax,ds:0x0
-     b08:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
-     b0b:	83 c2 01             	add    edx,0x1
-     b0e:	c1 e2 05             	shl    edx,0x5
-     b11:	8d 0c 10             	lea    ecx,[eax+edx*1]
-     b14:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     b17:	8d 58 04             	lea    ebx,[eax+0x4]
-     b1a:	89 f0                	mov    eax,esi
-     b1c:	ba 00 00 00 00       	mov    edx,0x0
-     b21:	f7 75 ec             	div    DWORD PTR [ebp-0x14]
-     b24:	89 04 99             	mov    DWORD PTR [ecx+ebx*4],eax
+     b56:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
+     b59:	ba 00 00 00 00       	mov    edx,0x0
+     b5e:	f7 75 ec             	div    DWORD PTR [ebp-0x14]
+     b61:	89 d0                	mov    eax,edx
+     b63:	c1 e0 02             	shl    eax,0x2
+     b66:	01 d0                	add    eax,edx
+     b68:	01 c0                	add    eax,eax
+     b6a:	89 c6                	mov    esi,eax
+     b6c:	a1 00 00 00 00       	mov    eax,ds:0x0
+     b71:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
+     b74:	83 c2 01             	add    edx,0x1
+     b77:	c1 e2 05             	shl    edx,0x5
+     b7a:	8d 0c 10             	lea    ecx,[eax+edx*1]
+     b7d:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     b80:	8d 58 04             	lea    ebx,[eax+0x4]
+     b83:	89 f0                	mov    eax,esi
+     b85:	ba 00 00 00 00       	mov    edx,0x0
+     b8a:	f7 75 ec             	div    DWORD PTR [ebp-0x14]
+     b8d:	89 04 99             	mov    DWORD PTR [ecx+ebx*4],eax
 		for (size_t j = 0; j < 4; j++) {
-     b27:	83 45 f4 01          	add    DWORD PTR [ebp-0xc],0x1
-     b2b:	83 7d f4 03          	cmp    DWORD PTR [ebp-0xc],0x3
-     b2f:	0f 86 74 ff ff ff    	jbe    aa9 <cpu_calc_percentages+0x158>
+     b90:	83 45 f4 01          	add    DWORD PTR [ebp-0xc],0x1
+     b94:	83 7d f4 03          	cmp    DWORD PTR [ebp-0xc],0x3
+     b98:	0f 86 74 ff ff ff    	jbe    b12 <cpu_calc_percentages+0x157>
 		return 0;
-     b35:	b8 00 00 00 00       	mov    eax,0x0
+     b9e:	b8 00 00 00 00       	mov    eax,0x0
 }
-     b3a:	8d 65 f8             	lea    esp,[ebp-0x8]
-     b3d:	5b                   	pop    ebx
-     b3e:	5e                   	pop    esi
-     b3f:	5d                   	pop    ebp
-     b40:	c3                   	ret
+     ba3:	83 c4 20             	add    esp,0x20
+     ba6:	5b                   	pop    ebx
+     ba7:	5e                   	pop    esi
+     ba8:	5d                   	pop    ebp
+     ba9:	c3                   	ret
 
-00000b41 <cpu_do_stats>:
+00000baa <cpu_do_stats>:
 {
-     b41:	55                   	push   ebp
-     b42:	89 e5                	mov    ebp,esp
-     b44:	53                   	push   ebx
-     b45:	83 ec 24             	sub    esp,0x24
+     baa:	55                   	push   ebp
+     bab:	89 e5                	mov    ebp,esp
+     bad:	53                   	push   ebx
+     bae:	83 ec 34             	sub    esp,0x34
 		if (!cpu_pcs || (nproc != nproc_alloc)) {
-     b48:	a1 00 00 00 00       	mov    eax,ds:0x0
-     b4d:	85 c0                	test   eax,eax
-     b4f:	74 0f                	je     b60 <cpu_do_stats+0x1f>
-     b51:	8b 15 00 00 00 00    	mov    edx,DWORD PTR ds:0x0
-     b57:	a1 00 00 00 00       	mov    eax,ds:0x0
-     b5c:	39 c2                	cmp    edx,eax
-     b5e:	74 36                	je     b96 <cpu_do_stats+0x55>
+     bb1:	a1 00 00 00 00       	mov    eax,ds:0x0
+     bb6:	85 c0                	test   eax,eax
+     bb8:	74 0f                	je     bc9 <cpu_do_stats+0x1f>
+     bba:	8b 15 00 00 00 00    	mov    edx,DWORD PTR ds:0x0
+     bc0:	a1 00 00 00 00       	mov    eax,ds:0x0
+     bc5:	39 c2                	cmp    edx,eax
+     bc7:	74 38                	je     c01 <cpu_do_stats+0x57>
 				if (cpu_pcs)
-     b60:	a1 00 00 00 00       	mov    eax,ds:0x0
-     b65:	85 c0                	test   eax,eax
-     b67:	74 11                	je     b7a <cpu_do_stats+0x39>
+     bc9:	a1 00 00 00 00       	mov    eax,ds:0x0
+     bce:	85 c0                	test   eax,eax
+     bd0:	74 0d                	je     bdf <cpu_do_stats+0x35>
 						kfree(cpu_pcs);
-     b69:	a1 00 00 00 00       	mov    eax,ds:0x0
-     b6e:	83 ec 0c             	sub    esp,0xc
-     b71:	50                   	push   eax
-     b72:	e8 fc ff ff ff       	call   b73 <cpu_do_stats+0x32>
-     b77:	83 c4 10             	add    esp,0x10
+     bd2:	a1 00 00 00 00       	mov    eax,ds:0x0
+     bd7:	89 04 24             	mov    DWORD PTR [esp],eax
+     bda:	e8 fc ff ff ff       	call   bdb <cpu_do_stats+0x31>
 				cpu_pcs = kmalloc((nproc + 1) * sizeof(*cpu_pcs));
-     b7a:	a1 00 00 00 00       	mov    eax,ds:0x0
-     b7f:	83 c0 01             	add    eax,0x1
-     b82:	c1 e0 05             	shl    eax,0x5
-     b85:	83 ec 0c             	sub    esp,0xc
-     b88:	50                   	push   eax
-     b89:	e8 fc ff ff ff       	call   b8a <cpu_do_stats+0x49>
-     b8e:	83 c4 10             	add    esp,0x10
-     b91:	a3 00 00 00 00       	mov    ds:0x0,eax
+     bdf:	a1 00 00 00 00       	mov    eax,ds:0x0
+     be4:	83 c0 01             	add    eax,0x1
+     be7:	c1 e0 05             	shl    eax,0x5
+     bea:	89 04 24             	mov    DWORD PTR [esp],eax
+     bed:	e8 fc ff ff ff       	call   bee <cpu_do_stats+0x44>
+     bf2:	a3 00 00 00 00       	mov    ds:0x0,eax
+				nproc_alloc = nproc;
+     bf7:	a1 00 00 00 00       	mov    eax,ds:0x0
+     bfc:	a3 00 00 00 00       	mov    ds:0x0,eax
 		bzero(&cpu_pcs[0], sizeof(cpu_pcs[0]));
-     b96:	a1 00 00 00 00       	mov    eax,ds:0x0
-     b9b:	83 ec 08             	sub    esp,0x8
-     b9e:	6a 20                	push   0x20
-     ba0:	50                   	push   eax
-     ba1:	e8 fc ff ff ff       	call   ba2 <cpu_do_stats+0x61>
-     ba6:	83 c4 10             	add    esp,0x10
+     c01:	a1 00 00 00 00       	mov    eax,ds:0x0
+     c06:	c7 44 24 04 20 00 00 00 	mov    DWORD PTR [esp+0x4],0x20
+     c0e:	89 04 24             	mov    DWORD PTR [esp],eax
+     c11:	e8 fc ff ff ff       	call   c12 <cpu_do_stats+0x68>
 		size_t nval = 0; uint32_t ntot;
-     ba9:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
+     c16:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
 		for (size_t i = 0; i < nproc; i++) {
-     bb0:	c7 45 f0 00 00 00 00 	mov    DWORD PTR [ebp-0x10],0x0
-     bb7:	eb 1e                	jmp    bd7 <cpu_do_stats+0x96>
+     c1d:	c7 45 f0 00 00 00 00 	mov    DWORD PTR [ebp-0x10],0x0
+     c24:	eb 1b                	jmp    c41 <cpu_do_stats+0x97>
 				if (-1 == cpu_calc_percentages(i))
-     bb9:	83 ec 0c             	sub    esp,0xc
-     bbc:	ff 75 f0             	push   DWORD PTR [ebp-0x10]
-     bbf:	e8 fc ff ff ff       	call   bc0 <cpu_do_stats+0x7f>
-     bc4:	83 c4 10             	add    esp,0x10
-     bc7:	83 f8 ff             	cmp    eax,0xffffffff
-     bca:	74 06                	je     bd2 <cpu_do_stats+0x91>
+     c26:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+     c29:	89 04 24             	mov    DWORD PTR [esp],eax
+     c2c:	e8 fc ff ff ff       	call   c2d <cpu_do_stats+0x83>
+     c31:	83 f8 ff             	cmp    eax,0xffffffff
+     c34:	74 06                	je     c3c <cpu_do_stats+0x92>
 				nval++;
-     bcc:	83 45 f4 01          	add    DWORD PTR [ebp-0xc],0x1
-     bd0:	eb 01                	jmp    bd3 <cpu_do_stats+0x92>
+     c36:	83 45 f4 01          	add    DWORD PTR [ebp-0xc],0x1
+     c3a:	eb 01                	jmp    c3d <cpu_do_stats+0x93>
 						continue;
-     bd2:	90                   	nop
+     c3c:	90                   	nop
 		for (size_t i = 0; i < nproc; i++) {
-     bd3:	83 45 f0 01          	add    DWORD PTR [ebp-0x10],0x1
-     bd7:	a1 00 00 00 00       	mov    eax,ds:0x0
-     bdc:	39 45 f0             	cmp    DWORD PTR [ebp-0x10],eax
-     bdf:	72 d8                	jb     bb9 <cpu_do_stats+0x78>
+     c3d:	83 45 f0 01          	add    DWORD PTR [ebp-0x10],0x1
+     c41:	a1 00 00 00 00       	mov    eax,ds:0x0
+     c46:	39 45 f0             	cmp    DWORD PTR [ebp-0x10],eax
+     c49:	72 db                	jb     c26 <cpu_do_stats+0x7c>
 		nproc_rep = nval;
-     be1:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     be4:	a3 00 00 00 00       	mov    ds:0x0,eax
+     c4b:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     c4e:	a3 00 00 00 00       	mov    ds:0x0,eax
 		ntot = 10000000 * nval; /* div 100 */
-     be9:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     bec:	69 c0 80 96 98 00    	imul   eax,eax,0x989680
-     bf2:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
+     c53:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     c56:	69 c0 80 96 98 00    	imul   eax,eax,0x989680
+     c5c:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
+		if (!ntot)
+     c5f:	83 7d e8 00          	cmp    DWORD PTR [ebp-0x18],0x0
+     c63:	74 6b                	je     cd0 <cpu_do_stats+0x126>
 		for (size_t i = 0; i < 4; i++) {
-     bf5:	c7 45 ec 00 00 00 00 	mov    DWORD PTR [ebp-0x14],0x0
-     bfc:	eb 5a                	jmp    c58 <cpu_do_stats+0x117>
+     c65:	c7 45 ec 00 00 00 00 	mov    DWORD PTR [ebp-0x14],0x0
+     c6c:	eb 5a                	jmp    cc8 <cpu_do_stats+0x11e>
 				uint32_t val = cpu_pcs[0].vals[i];
-     bfe:	a1 00 00 00 00       	mov    eax,ds:0x0
-     c03:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
-     c06:	8b 04 90             	mov    eax,DWORD PTR [eax+edx*4]
-     c09:	89 45 e4             	mov    DWORD PTR [ebp-0x1c],eax
+     c6e:	a1 00 00 00 00       	mov    eax,ds:0x0
+     c73:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
+     c76:	8b 04 90             	mov    eax,DWORD PTR [eax+edx*4]
+     c79:	89 45 e4             	mov    DWORD PTR [ebp-0x1c],eax
 				cpu_pcs[0].vals[i] = val / ntot;
-     c0c:	8b 0d 00 00 00 00    	mov    ecx,DWORD PTR ds:0x0
-     c12:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
-     c15:	ba 00 00 00 00       	mov    edx,0x0
-     c1a:	f7 75 e8             	div    DWORD PTR [ebp-0x18]
-     c1d:	89 c2                	mov    edx,eax
-     c1f:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-     c22:	89 14 81             	mov    DWORD PTR [ecx+eax*4],edx
+     c7c:	8b 0d 00 00 00 00    	mov    ecx,DWORD PTR ds:0x0
+     c82:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
+     c85:	ba 00 00 00 00       	mov    edx,0x0
+     c8a:	f7 75 e8             	div    DWORD PTR [ebp-0x18]
+     c8d:	89 c2                	mov    edx,eax
+     c8f:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+     c92:	89 14 81             	mov    DWORD PTR [ecx+eax*4],edx
 				cpu_pcs[0].vals[4 + i] = 10 * (val % ntot) / ntot;
-     c25:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
-     c28:	ba 00 00 00 00       	mov    edx,0x0
-     c2d:	f7 75 e8             	div    DWORD PTR [ebp-0x18]
-     c30:	89 d0                	mov    eax,edx
-     c32:	c1 e0 02             	shl    eax,0x2
-     c35:	01 d0                	add    eax,edx
-     c37:	01 c0                	add    eax,eax
-     c39:	89 c2                	mov    edx,eax
-     c3b:	8b 0d 00 00 00 00    	mov    ecx,DWORD PTR ds:0x0
-     c41:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-     c44:	8d 58 04             	lea    ebx,[eax+0x4]
-     c47:	89 d0                	mov    eax,edx
-     c49:	ba 00 00 00 00       	mov    edx,0x0
-     c4e:	f7 75 e8             	div    DWORD PTR [ebp-0x18]
-     c51:	89 04 99             	mov    DWORD PTR [ecx+ebx*4],eax
+     c95:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
+     c98:	ba 00 00 00 00       	mov    edx,0x0
+     c9d:	f7 75 e8             	div    DWORD PTR [ebp-0x18]
+     ca0:	89 d0                	mov    eax,edx
+     ca2:	c1 e0 02             	shl    eax,0x2
+     ca5:	01 d0                	add    eax,edx
+     ca7:	01 c0                	add    eax,eax
+     ca9:	89 c2                	mov    edx,eax
+     cab:	8b 0d 00 00 00 00    	mov    ecx,DWORD PTR ds:0x0
+     cb1:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+     cb4:	8d 58 04             	lea    ebx,[eax+0x4]
+     cb7:	89 d0                	mov    eax,edx
+     cb9:	ba 00 00 00 00       	mov    edx,0x0
+     cbe:	f7 75 e8             	div    DWORD PTR [ebp-0x18]
+     cc1:	89 04 99             	mov    DWORD PTR [ecx+ebx*4],eax
 		for (size_t i = 0; i < 4; i++) {
-     c54:	83 45 ec 01          	add    DWORD PTR [ebp-0x14],0x1
-     c58:	83 7d ec 03          	cmp    DWORD PTR [ebp-0x14],0x3
-     c5c:	76 a0                	jbe    bfe <cpu_do_stats+0xbd>
+     cc4:	83 45 ec 01          	add    DWORD PTR [ebp-0x14],0x1
+     cc8:	83 7d ec 03          	cmp    DWORD PTR [ebp-0x14],0x3
+     ccc:	76 a0                	jbe    c6e <cpu_do_stats+0xc4>
+     cce:	eb 01                	jmp    cd1 <cpu_do_stats+0x127>
+			return; /* div0 otherwise */
+     cd0:	90                   	nop
 }
-     c5e:	90                   	nop
-     c5f:	90                   	nop
-     c60:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
-     c63:	c9                   	leave
-     c64:	c3                   	ret
+     cd1:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
+     cd4:	c9                   	leave
+     cd5:	c3                   	ret
 
-00000c65 <print_cpus>:
+00000cd6 <print_cpus>:
 {
-     c65:	55                   	push   ebp
-     c66:	89 e5                	mov    ebp,esp
-     c68:	57                   	push   edi
-     c69:	56                   	push   esi
-     c6a:	53                   	push   ebx
-     c6b:	83 ec 3c             	sub    esp,0x3c
+     cd6:	55                   	push   ebp
+     cd7:	89 e5                	mov    ebp,esp
+     cd9:	57                   	push   edi
+     cda:	56                   	push   esi
+     cdb:	53                   	push   ebx
+     cdc:	83 ec 6c             	sub    esp,0x6c
 		printf("listing cpus: %u total, %u provided data\n", nproc, nproc_rep);
-     c6e:	8b 15 00 00 00 00    	mov    edx,DWORD PTR ds:0x0
-     c74:	a1 00 00 00 00       	mov    eax,ds:0x0
-     c79:	83 ec 04             	sub    esp,0x4
-     c7c:	52                   	push   edx
-     c7d:	50                   	push   eax
-     c7e:	68 34 01 00 00       	push   0x134
-     c83:	e8 fc ff ff ff       	call   c84 <print_cpus+0x1f>
-     c88:	83 c4 10             	add    esp,0x10
+     cdf:	8b 15 00 00 00 00    	mov    edx,DWORD PTR ds:0x0
+     ce5:	a1 00 00 00 00       	mov    eax,ds:0x0
+     cea:	89 54 24 08          	mov    DWORD PTR [esp+0x8],edx
+     cee:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+     cf2:	c7 04 24 34 01 00 00 	mov    DWORD PTR [esp],0x134
+     cf9:	e8 fc ff ff ff       	call   cfa <print_cpus+0x24>
 				cpu_pcs[0].vals[0], cpu_pcs[0].vals[4]); /* i pi */
-     c8b:	a1 00 00 00 00       	mov    eax,ds:0x0
+     cfe:	a1 00 00 00 00       	mov    eax,ds:0x0
 		printf("%%Cpu(s):%3u.%01u us,%3u.%01u sy,%3u.%01u na,%3u.%01u id\n",
-     c90:	8b 48 10             	mov    ecx,DWORD PTR [eax+0x10]
+     d03:	8b 48 10             	mov    ecx,DWORD PTR [eax+0x10]
 				cpu_pcs[0].vals[0], cpu_pcs[0].vals[4]); /* i pi */
-     c93:	a1 00 00 00 00       	mov    eax,ds:0x0
+     d06:	a1 00 00 00 00       	mov    eax,ds:0x0
 		printf("%%Cpu(s):%3u.%01u us,%3u.%01u sy,%3u.%01u na,%3u.%01u id\n",
-     c98:	8b 00                	mov    eax,DWORD PTR [eax]
-     c9a:	89 45 d4             	mov    DWORD PTR [ebp-0x2c],eax
+     d0b:	8b 00                	mov    eax,DWORD PTR [eax]
+     d0d:	89 45 d4             	mov    DWORD PTR [ebp-0x2c],eax
 				cpu_pcs[0].vals[3], cpu_pcs[0].vals[7], /* ni pni */
-     c9d:	a1 00 00 00 00       	mov    eax,ds:0x0
+     d10:	a1 00 00 00 00       	mov    eax,ds:0x0
 		printf("%%Cpu(s):%3u.%01u us,%3u.%01u sy,%3u.%01u na,%3u.%01u id\n",
-     ca2:	8b 58 1c             	mov    ebx,DWORD PTR [eax+0x1c]
-     ca5:	89 5d d0             	mov    DWORD PTR [ebp-0x30],ebx
+     d15:	8b 58 1c             	mov    ebx,DWORD PTR [eax+0x1c]
+     d18:	89 5d d0             	mov    DWORD PTR [ebp-0x30],ebx
 				cpu_pcs[0].vals[3], cpu_pcs[0].vals[7], /* ni pni */
-     ca8:	a1 00 00 00 00       	mov    eax,ds:0x0
+     d1b:	a1 00 00 00 00       	mov    eax,ds:0x0
 		printf("%%Cpu(s):%3u.%01u us,%3u.%01u sy,%3u.%01u na,%3u.%01u id\n",
-     cad:	8b 78 0c             	mov    edi,DWORD PTR [eax+0xc]
+     d20:	8b 78 0c             	mov    edi,DWORD PTR [eax+0xc]
 				cpu_pcs[0].vals[1], cpu_pcs[0].vals[5], /* k pk */
-     cb0:	a1 00 00 00 00       	mov    eax,ds:0x0
+     d23:	a1 00 00 00 00       	mov    eax,ds:0x0
 		printf("%%Cpu(s):%3u.%01u us,%3u.%01u sy,%3u.%01u na,%3u.%01u id\n",
-     cb5:	8b 70 14             	mov    esi,DWORD PTR [eax+0x14]
+     d28:	8b 70 14             	mov    esi,DWORD PTR [eax+0x14]
 				cpu_pcs[0].vals[1], cpu_pcs[0].vals[5], /* k pk */
-     cb8:	a1 00 00 00 00       	mov    eax,ds:0x0
+     d2b:	a1 00 00 00 00       	mov    eax,ds:0x0
 		printf("%%Cpu(s):%3u.%01u us,%3u.%01u sy,%3u.%01u na,%3u.%01u id\n",
-     cbd:	8b 58 04             	mov    ebx,DWORD PTR [eax+0x4]
+     d30:	8b 58 04             	mov    ebx,DWORD PTR [eax+0x4]
 				cpu_pcs[0].vals[2], cpu_pcs[0].vals[6], /* u pu */
-     cc0:	a1 00 00 00 00       	mov    eax,ds:0x0
+     d33:	a1 00 00 00 00       	mov    eax,ds:0x0
 		printf("%%Cpu(s):%3u.%01u us,%3u.%01u sy,%3u.%01u na,%3u.%01u id\n",
-     cc5:	8b 50 18             	mov    edx,DWORD PTR [eax+0x18]
+     d38:	8b 50 18             	mov    edx,DWORD PTR [eax+0x18]
 				cpu_pcs[0].vals[2], cpu_pcs[0].vals[6], /* u pu */
-     cc8:	a1 00 00 00 00       	mov    eax,ds:0x0
+     d3b:	a1 00 00 00 00       	mov    eax,ds:0x0
 		printf("%%Cpu(s):%3u.%01u us,%3u.%01u sy,%3u.%01u na,%3u.%01u id\n",
-     ccd:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
-     cd0:	83 ec 0c             	sub    esp,0xc
-     cd3:	51                   	push   ecx
-     cd4:	ff 75 d4             	push   DWORD PTR [ebp-0x2c]
-     cd7:	ff 75 d0             	push   DWORD PTR [ebp-0x30]
-     cda:	57                   	push   edi
-     cdb:	56                   	push   esi
-     cdc:	53                   	push   ebx
-     cdd:	52                   	push   edx
-     cde:	50                   	push   eax
-     cdf:	68 60 01 00 00       	push   0x160
-     ce4:	e8 fc ff ff ff       	call   ce5 <print_cpus+0x80>
-     ce9:	83 c4 30             	add    esp,0x30
+     d40:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
+     d43:	89 4c 24 20          	mov    DWORD PTR [esp+0x20],ecx
+     d47:	8b 4d d4             	mov    ecx,DWORD PTR [ebp-0x2c]
+     d4a:	89 4c 24 1c          	mov    DWORD PTR [esp+0x1c],ecx
+     d4e:	8b 4d d0             	mov    ecx,DWORD PTR [ebp-0x30]
+     d51:	89 4c 24 18          	mov    DWORD PTR [esp+0x18],ecx
+     d55:	89 7c 24 14          	mov    DWORD PTR [esp+0x14],edi
+     d59:	89 74 24 10          	mov    DWORD PTR [esp+0x10],esi
+     d5d:	89 5c 24 0c          	mov    DWORD PTR [esp+0xc],ebx
+     d61:	89 54 24 08          	mov    DWORD PTR [esp+0x8],edx
+     d65:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+     d69:	c7 04 24 60 01 00 00 	mov    DWORD PTR [esp],0x160
+     d70:	e8 fc ff ff ff       	call   d71 <print_cpus+0x9b>
 		for (size_t i = 0; i < nproc; i++) {
-     cec:	c7 45 e4 00 00 00 00 	mov    DWORD PTR [ebp-0x1c],0x0
-     cf3:	e9 1f 01 00 00       	jmp    e17 <print_cpus+0x1b2>
+     d75:	c7 45 e4 00 00 00 00 	mov    DWORD PTR [ebp-0x1c],0x0
+     d7c:	e9 3e 01 00 00       	jmp    ebf <print_cpus+0x1e9>
 				if (cpu_pcs[i + 1].vals[0] == 0xffffffff) {
-     cf8:	a1 00 00 00 00       	mov    eax,ds:0x0
-     cfd:	8b 55 e4             	mov    edx,DWORD PTR [ebp-0x1c]
-     d00:	83 c2 01             	add    edx,0x1
-     d03:	c1 e2 05             	shl    edx,0x5
-     d06:	01 d0                	add    eax,edx
-     d08:	8b 00                	mov    eax,DWORD PTR [eax]
-     d0a:	83 f8 ff             	cmp    eax,0xffffffff
-     d0d:	75 15                	jne    d24 <print_cpus+0xbf>
+     d81:	a1 00 00 00 00       	mov    eax,ds:0x0
+     d86:	8b 55 e4             	mov    edx,DWORD PTR [ebp-0x1c]
+     d89:	83 c2 01             	add    edx,0x1
+     d8c:	c1 e2 05             	shl    edx,0x5
+     d8f:	01 d0                	add    eax,edx
+     d91:	8b 00                	mov    eax,DWORD PTR [eax]
+     d93:	83 f8 ff             	cmp    eax,0xffffffff
+     d96:	75 11                	jne    da9 <print_cpus+0xd3>
 						printf("%%Cpu%-3u: N/A\n");
-     d0f:	83 ec 0c             	sub    esp,0xc
-     d12:	68 9a 01 00 00       	push   0x19a
-     d17:	e8 fc ff ff ff       	call   d18 <print_cpus+0xb3>
-     d1c:	83 c4 10             	add    esp,0x10
+     d98:	c7 04 24 9a 01 00 00 	mov    DWORD PTR [esp],0x19a
+     d9f:	e8 fc ff ff ff       	call   da0 <print_cpus+0xca>
 						continue;
-     d1f:	e9 ef 00 00 00       	jmp    e13 <print_cpus+0x1ae>
+     da4:	e9 12 01 00 00       	jmp    ebb <print_cpus+0x1e5>
 				struct perf_ctrs* pc = get_cpu_data(i)->ticks;
-     d24:	83 ec 0c             	sub    esp,0xc
-     d27:	ff 75 e4             	push   DWORD PTR [ebp-0x1c]
-     d2a:	e8 fc ff ff ff       	call   d2b <print_cpus+0xc6>
-     d2f:	83 c4 10             	add    esp,0x10
-     d32:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
-     d35:	89 45 e0             	mov    DWORD PTR [ebp-0x20],eax
+     da9:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
+     dac:	89 04 24             	mov    DWORD PTR [esp],eax
+     daf:	e8 fc ff ff ff       	call   db0 <print_cpus+0xda>
+     db4:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
+     db7:	89 45 e0             	mov    DWORD PTR [ebp-0x20],eax
 				printf("%%Cpu%-3u:%3u.%01u us,%3u.%01u sy,%3u.%01u na,%3u.%01u id, %u sched/s, %u sched\n", i,
-     d38:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
-     d3b:	8b 40 44             	mov    eax,DWORD PTR [eax+0x44]
-     d3e:	89 45 d4             	mov    DWORD PTR [ebp-0x2c],eax
-     d41:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
-     d44:	8b 48 48             	mov    ecx,DWORD PTR [eax+0x48]
-     d47:	89 4d d0             	mov    DWORD PTR [ebp-0x30],ecx
+     dba:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
+     dbd:	8b 40 44             	mov    eax,DWORD PTR [eax+0x44]
+     dc0:	89 45 d4             	mov    DWORD PTR [ebp-0x2c],eax
+     dc3:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
+     dc6:	8b 70 48             	mov    esi,DWORD PTR [eax+0x48]
+     dc9:	89 75 d0             	mov    DWORD PTR [ebp-0x30],esi
 						cpu_pcs[i + 1].vals[0], cpu_pcs[i + 1].vals[4], /* i pi */
-     d4a:	a1 00 00 00 00       	mov    eax,ds:0x0
-     d4f:	8b 55 e4             	mov    edx,DWORD PTR [ebp-0x1c]
-     d52:	83 c2 01             	add    edx,0x1
-     d55:	c1 e2 05             	shl    edx,0x5
-     d58:	01 d0                	add    eax,edx
+     dcc:	a1 00 00 00 00       	mov    eax,ds:0x0
+     dd1:	8b 55 e4             	mov    edx,DWORD PTR [ebp-0x1c]
+     dd4:	83 c2 01             	add    edx,0x1
+     dd7:	c1 e2 05             	shl    edx,0x5
+     dda:	01 d0                	add    eax,edx
 				printf("%%Cpu%-3u:%3u.%01u us,%3u.%01u sy,%3u.%01u na,%3u.%01u id, %u sched/s, %u sched\n", i,
-     d5a:	8b 70 10             	mov    esi,DWORD PTR [eax+0x10]
-     d5d:	89 75 cc             	mov    DWORD PTR [ebp-0x34],esi
+     ddc:	8b 78 10             	mov    edi,DWORD PTR [eax+0x10]
+     ddf:	89 7d cc             	mov    DWORD PTR [ebp-0x34],edi
 						cpu_pcs[i + 1].vals[0], cpu_pcs[i + 1].vals[4], /* i pi */
-     d60:	a1 00 00 00 00       	mov    eax,ds:0x0
-     d65:	8b 55 e4             	mov    edx,DWORD PTR [ebp-0x1c]
-     d68:	83 c2 01             	add    edx,0x1
-     d6b:	c1 e2 05             	shl    edx,0x5
-     d6e:	01 d0                	add    eax,edx
+     de2:	a1 00 00 00 00       	mov    eax,ds:0x0
+     de7:	8b 55 e4             	mov    edx,DWORD PTR [ebp-0x1c]
+     dea:	83 c2 01             	add    edx,0x1
+     ded:	c1 e2 05             	shl    edx,0x5
+     df0:	01 d0                	add    eax,edx
 				printf("%%Cpu%-3u:%3u.%01u us,%3u.%01u sy,%3u.%01u na,%3u.%01u id, %u sched/s, %u sched\n", i,
-     d70:	8b 38                	mov    edi,DWORD PTR [eax]
-     d72:	89 7d c8             	mov    DWORD PTR [ebp-0x38],edi
+     df2:	8b 18                	mov    ebx,DWORD PTR [eax]
+     df4:	89 5d c8             	mov    DWORD PTR [ebp-0x38],ebx
 						cpu_pcs[i + 1].vals[3], cpu_pcs[i + 1].vals[7], /* ni pni */
-     d75:	a1 00 00 00 00       	mov    eax,ds:0x0
-     d7a:	8b 55 e4             	mov    edx,DWORD PTR [ebp-0x1c]
-     d7d:	83 c2 01             	add    edx,0x1
-     d80:	c1 e2 05             	shl    edx,0x5
-     d83:	01 d0                	add    eax,edx
+     df7:	a1 00 00 00 00       	mov    eax,ds:0x0
+     dfc:	8b 55 e4             	mov    edx,DWORD PTR [ebp-0x1c]
+     dff:	83 c2 01             	add    edx,0x1
+     e02:	c1 e2 05             	shl    edx,0x5
+     e05:	01 d0                	add    eax,edx
 				printf("%%Cpu%-3u:%3u.%01u us,%3u.%01u sy,%3u.%01u na,%3u.%01u id, %u sched/s, %u sched\n", i,
-     d85:	8b 58 1c             	mov    ebx,DWORD PTR [eax+0x1c]
-     d88:	89 5d c4             	mov    DWORD PTR [ebp-0x3c],ebx
+     e07:	8b 48 1c             	mov    ecx,DWORD PTR [eax+0x1c]
+     e0a:	89 4d c4             	mov    DWORD PTR [ebp-0x3c],ecx
 						cpu_pcs[i + 1].vals[3], cpu_pcs[i + 1].vals[7], /* ni pni */
-     d8b:	8b 15 00 00 00 00    	mov    edx,DWORD PTR ds:0x0
-     d91:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
-     d94:	83 c0 01             	add    eax,0x1
-     d97:	c1 e0 05             	shl    eax,0x5
-     d9a:	01 d0                	add    eax,edx
+     e0d:	8b 15 00 00 00 00    	mov    edx,DWORD PTR ds:0x0
+     e13:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
+     e16:	83 c0 01             	add    eax,0x1
+     e19:	c1 e0 05             	shl    eax,0x5
+     e1c:	01 d0                	add    eax,edx
 				printf("%%Cpu%-3u:%3u.%01u us,%3u.%01u sy,%3u.%01u na,%3u.%01u id, %u sched/s, %u sched\n", i,
-     d9c:	8b 78 0c             	mov    edi,DWORD PTR [eax+0xc]
+     e1e:	8b 78 0c             	mov    edi,DWORD PTR [eax+0xc]
 						cpu_pcs[i + 1].vals[1], cpu_pcs[i + 1].vals[5], /* k pk */
-     d9f:	8b 15 00 00 00 00    	mov    edx,DWORD PTR ds:0x0
-     da5:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
-     da8:	83 c0 01             	add    eax,0x1
-     dab:	c1 e0 05             	shl    eax,0x5
-     dae:	01 d0                	add    eax,edx
+     e21:	8b 15 00 00 00 00    	mov    edx,DWORD PTR ds:0x0
+     e27:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
+     e2a:	83 c0 01             	add    eax,0x1
+     e2d:	c1 e0 05             	shl    eax,0x5
+     e30:	01 d0                	add    eax,edx
 				printf("%%Cpu%-3u:%3u.%01u us,%3u.%01u sy,%3u.%01u na,%3u.%01u id, %u sched/s, %u sched\n", i,
-     db0:	8b 70 14             	mov    esi,DWORD PTR [eax+0x14]
+     e32:	8b 70 14             	mov    esi,DWORD PTR [eax+0x14]
 						cpu_pcs[i + 1].vals[1], cpu_pcs[i + 1].vals[5], /* k pk */
-     db3:	8b 15 00 00 00 00    	mov    edx,DWORD PTR ds:0x0
-     db9:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
-     dbc:	83 c0 01             	add    eax,0x1
-     dbf:	c1 e0 05             	shl    eax,0x5
-     dc2:	01 d0                	add    eax,edx
+     e35:	8b 15 00 00 00 00    	mov    edx,DWORD PTR ds:0x0
+     e3b:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
+     e3e:	83 c0 01             	add    eax,0x1
+     e41:	c1 e0 05             	shl    eax,0x5
+     e44:	01 d0                	add    eax,edx
 				printf("%%Cpu%-3u:%3u.%01u us,%3u.%01u sy,%3u.%01u na,%3u.%01u id, %u sched/s, %u sched\n", i,
-     dc4:	8b 58 04             	mov    ebx,DWORD PTR [eax+0x4]
+     e46:	8b 58 04             	mov    ebx,DWORD PTR [eax+0x4]
 						cpu_pcs[i + 1].vals[2], cpu_pcs[i + 1].vals[6], /* u pu */
-     dc7:	8b 15 00 00 00 00    	mov    edx,DWORD PTR ds:0x0
-     dcd:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
-     dd0:	83 c0 01             	add    eax,0x1
-     dd3:	c1 e0 05             	shl    eax,0x5
-     dd6:	01 d0                	add    eax,edx
+     e49:	8b 15 00 00 00 00    	mov    edx,DWORD PTR ds:0x0
+     e4f:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
+     e52:	83 c0 01             	add    eax,0x1
+     e55:	c1 e0 05             	shl    eax,0x5
+     e58:	01 d0                	add    eax,edx
 				printf("%%Cpu%-3u:%3u.%01u us,%3u.%01u sy,%3u.%01u na,%3u.%01u id, %u sched/s, %u sched\n", i,
-     dd8:	8b 48 18             	mov    ecx,DWORD PTR [eax+0x18]
+     e5a:	8b 48 18             	mov    ecx,DWORD PTR [eax+0x18]
 						cpu_pcs[i + 1].vals[2], cpu_pcs[i + 1].vals[6], /* u pu */
-     ddb:	8b 15 00 00 00 00    	mov    edx,DWORD PTR ds:0x0
-     de1:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
-     de4:	83 c0 01             	add    eax,0x1
-     de7:	c1 e0 05             	shl    eax,0x5
-     dea:	01 d0                	add    eax,edx
+     e5d:	8b 15 00 00 00 00    	mov    edx,DWORD PTR ds:0x0
+     e63:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
+     e66:	83 c0 01             	add    eax,0x1
+     e69:	c1 e0 05             	shl    eax,0x5
+     e6c:	01 d0                	add    eax,edx
 				printf("%%Cpu%-3u:%3u.%01u us,%3u.%01u sy,%3u.%01u na,%3u.%01u id, %u sched/s, %u sched\n", i,
-     dec:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
-     def:	ff 75 d4             	push   DWORD PTR [ebp-0x2c]
-     df2:	ff 75 d0             	push   DWORD PTR [ebp-0x30]
-     df5:	ff 75 cc             	push   DWORD PTR [ebp-0x34]
-     df8:	ff 75 c8             	push   DWORD PTR [ebp-0x38]
-     dfb:	ff 75 c4             	push   DWORD PTR [ebp-0x3c]
-     dfe:	57                   	push   edi
-     dff:	56                   	push   esi
-     e00:	53                   	push   ebx
-     e01:	51                   	push   ecx
-     e02:	50                   	push   eax
-     e03:	ff 75 e4             	push   DWORD PTR [ebp-0x1c]
-     e06:	68 ac 01 00 00       	push   0x1ac
-     e0b:	e8 fc ff ff ff       	call   e0c <print_cpus+0x1a7>
-     e10:	83 c4 30             	add    esp,0x30
+     e6e:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
+     e71:	8b 55 d4             	mov    edx,DWORD PTR [ebp-0x2c]
+     e74:	89 54 24 2c          	mov    DWORD PTR [esp+0x2c],edx
+     e78:	8b 55 d0             	mov    edx,DWORD PTR [ebp-0x30]
+     e7b:	89 54 24 28          	mov    DWORD PTR [esp+0x28],edx
+     e7f:	8b 55 cc             	mov    edx,DWORD PTR [ebp-0x34]
+     e82:	89 54 24 24          	mov    DWORD PTR [esp+0x24],edx
+     e86:	8b 55 c8             	mov    edx,DWORD PTR [ebp-0x38]
+     e89:	89 54 24 20          	mov    DWORD PTR [esp+0x20],edx
+     e8d:	8b 55 c4             	mov    edx,DWORD PTR [ebp-0x3c]
+     e90:	89 54 24 1c          	mov    DWORD PTR [esp+0x1c],edx
+     e94:	89 7c 24 18          	mov    DWORD PTR [esp+0x18],edi
+     e98:	89 74 24 14          	mov    DWORD PTR [esp+0x14],esi
+     e9c:	89 5c 24 10          	mov    DWORD PTR [esp+0x10],ebx
+     ea0:	89 4c 24 0c          	mov    DWORD PTR [esp+0xc],ecx
+     ea4:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+     ea8:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
+     eab:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+     eaf:	c7 04 24 ac 01 00 00 	mov    DWORD PTR [esp],0x1ac
+     eb6:	e8 fc ff ff ff       	call   eb7 <print_cpus+0x1e1>
 		for (size_t i = 0; i < nproc; i++) {
-     e13:	83 45 e4 01          	add    DWORD PTR [ebp-0x1c],0x1
-     e17:	a1 00 00 00 00       	mov    eax,ds:0x0
-     e1c:	39 45 e4             	cmp    DWORD PTR [ebp-0x1c],eax
-     e1f:	0f 82 d3 fe ff ff    	jb     cf8 <print_cpus+0x93>
+     ebb:	83 45 e4 01          	add    DWORD PTR [ebp-0x1c],0x1
+     ebf:	a1 00 00 00 00       	mov    eax,ds:0x0
+     ec4:	39 45 e4             	cmp    DWORD PTR [ebp-0x1c],eax
+     ec7:	0f 82 b4 fe ff ff    	jb     d81 <print_cpus+0xab>
 }
-     e25:	90                   	nop
-     e26:	90                   	nop
-     e27:	8d 65 f4             	lea    esp,[ebp-0xc]
-     e2a:	5b                   	pop    ebx
-     e2b:	5e                   	pop    esi
-     e2c:	5f                   	pop    edi
-     e2d:	5d                   	pop    ebp
-     e2e:	c3                   	ret
+     ecd:	90                   	nop
+     ece:	90                   	nop
+     ecf:	83 c4 6c             	add    esp,0x6c
+     ed2:	5b                   	pop    ebx
+     ed3:	5e                   	pop    esi
+     ed4:	5f                   	pop    edi
+     ed5:	5d                   	pop    ebp
+     ed6:	c3                   	ret
 
-00000e2f <print_tasks>:
+00000ed7 <print_tasks>:
 {
-     e2f:	55                   	push   ebp
-     e30:	89 e5                	mov    ebp,esp
-     e32:	53                   	push   ebx
-     e33:	83 ec 14             	sub    esp,0x14
+     ed7:	55                   	push   ebp
+     ed8:	89 e5                	mov    ebp,esp
+     eda:	53                   	push   ebx
+     edb:	83 ec 34             	sub    esp,0x34
 		const char* md = "";
-     e36:	c7 45 f4 fd 01 00 00 	mov    DWORD PTR [ebp-0xc],0x1fd
+     ede:	c7 45 f4 fd 01 00 00 	mov    DWORD PTR [ebp-0xc],0x1fd
 		if (cpu.invariant_tsc)
-     e3d:	a1 6c 00 00 00       	mov    eax,ds:0x6c
-     e42:	85 c0                	test   eax,eax
-     e44:	74 09                	je     e4f <print_tasks+0x20>
+     ee5:	a1 6c 00 00 00       	mov    eax,ds:0x6c
+     eea:	85 c0                	test   eax,eax
+     eec:	74 09                	je     ef7 <print_tasks+0x20>
 				md = "inv_tsc";
-     e46:	c7 45 f4 fe 01 00 00 	mov    DWORD PTR [ebp-0xc],0x1fe
-     e4d:	eb 1e                	jmp    e6d <print_tasks+0x3e>
+     eee:	c7 45 f4 fe 01 00 00 	mov    DWORD PTR [ebp-0xc],0x1fe
+     ef5:	eb 1e                	jmp    f15 <print_tasks+0x3e>
 		else if (cpu.has_apic)
-     e4f:	0f b6 05 59 00 00 00 	movzx  eax,BYTE PTR ds:0x59
-     e56:	83 e0 02             	and    eax,0x2
-     e59:	84 c0                	test   al,al
-     e5b:	74 09                	je     e66 <print_tasks+0x37>
+     ef7:	0f b6 05 59 00 00 00 	movzx  eax,BYTE PTR ds:0x59
+     efe:	83 e0 02             	and    eax,0x2
+     f01:	84 c0                	test   al,al
+     f03:	74 09                	je     f0e <print_tasks+0x37>
 				md = "apic timer";
-     e5d:	c7 45 f4 06 02 00 00 	mov    DWORD PTR [ebp-0xc],0x206
-     e64:	eb 07                	jmp    e6d <print_tasks+0x3e>
+     f05:	c7 45 f4 06 02 00 00 	mov    DWORD PTR [ebp-0xc],0x206
+     f0c:	eb 07                	jmp    f15 <print_tasks+0x3e>
 				md = "PIT ticks";
-     e66:	c7 45 f4 11 02 00 00 	mov    DWORD PTR [ebp-0xc],0x211
+     f0e:	c7 45 f4 11 02 00 00 	mov    DWORD PTR [ebp-0xc],0x211
 		printf("Tasks:%4u total,%4u running,%4u pending,%4u sleeping\n",
-     e6d:	8b 1d 04 00 00 00    	mov    ebx,DWORD PTR ds:0x4
-     e73:	8b 0d 08 00 00 00    	mov    ecx,DWORD PTR ds:0x8
-     e79:	8b 15 00 00 00 00    	mov    edx,DWORD PTR ds:0x0
-     e7f:	a1 00 00 00 00       	mov    eax,ds:0x0
-     e84:	83 ec 0c             	sub    esp,0xc
-     e87:	53                   	push   ebx
-     e88:	51                   	push   ecx
-     e89:	52                   	push   edx
-     e8a:	50                   	push   eax
-     e8b:	68 1c 02 00 00       	push   0x21c
-     e90:	e8 fc ff ff ff       	call   e91 <print_tasks+0x62>
-     e95:	83 c4 20             	add    esp,0x20
+     f15:	8b 1d 04 00 00 00    	mov    ebx,DWORD PTR ds:0x4
+     f1b:	8b 0d 08 00 00 00    	mov    ecx,DWORD PTR ds:0x8
+     f21:	8b 15 00 00 00 00    	mov    edx,DWORD PTR ds:0x0
+     f27:	a1 00 00 00 00       	mov    eax,ds:0x0
+     f2c:	89 5c 24 10          	mov    DWORD PTR [esp+0x10],ebx
+     f30:	89 4c 24 0c          	mov    DWORD PTR [esp+0xc],ecx
+     f34:	89 54 24 08          	mov    DWORD PTR [esp+0x8],edx
+     f38:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+     f3c:	c7 04 24 1c 02 00 00 	mov    DWORD PTR [esp],0x21c
+     f43:	e8 fc ff ff ff       	call   f44 <print_tasks+0x6d>
 		printf("Task time:%6u secs total, %4u ms last sec, mode: %s\n",
-     e98:	8b 15 10 00 00 00    	mov    edx,DWORD PTR ds:0x10
-     e9e:	a1 0c 00 00 00       	mov    eax,ds:0xc
-     ea3:	ff 75 f4             	push   DWORD PTR [ebp-0xc]
-     ea6:	52                   	push   edx
-     ea7:	50                   	push   eax
-     ea8:	68 54 02 00 00       	push   0x254
-     ead:	e8 fc ff ff ff       	call   eae <print_tasks+0x7f>
-     eb2:	83 c4 10             	add    esp,0x10
+     f48:	8b 15 10 00 00 00    	mov    edx,DWORD PTR ds:0x10
+     f4e:	a1 0c 00 00 00       	mov    eax,ds:0xc
+     f53:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
+     f56:	89 4c 24 0c          	mov    DWORD PTR [esp+0xc],ecx
+     f5a:	89 54 24 08          	mov    DWORD PTR [esp+0x8],edx
+     f5e:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+     f62:	c7 04 24 54 02 00 00 	mov    DWORD PTR [esp],0x254
+     f69:	e8 fc ff ff ff       	call   f6a <print_tasks+0x93>
 		print_cpus();
-     eb5:	e8 fc ff ff ff       	call   eb6 <print_tasks+0x87>
+     f6e:	e8 fc ff ff ff       	call   f6f <print_tasks+0x98>
 		printf("listing tasks: %u total" STAT_COUNTER("  major rotations: %u")  "\n", n_tks STAT_ARG(sched_mr_count));
-     eba:	8b 15 00 00 00 00    	mov    edx,DWORD PTR ds:0x0
-     ec0:	a1 00 00 00 00       	mov    eax,ds:0x0
-     ec5:	83 ec 04             	sub    esp,0x4
-     ec8:	52                   	push   edx
-     ec9:	50                   	push   eax
-     eca:	68 8c 02 00 00       	push   0x28c
-     ecf:	e8 fc ff ff ff       	call   ed0 <print_tasks+0xa1>
-     ed4:	83 c4 10             	add    esp,0x10
+     f73:	8b 15 00 00 00 00    	mov    edx,DWORD PTR ds:0x0
+     f79:	a1 00 00 00 00       	mov    eax,ds:0x0
+     f7e:	89 54 24 08          	mov    DWORD PTR [esp+0x8],edx
+     f82:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+     f86:	c7 04 24 8c 02 00 00 	mov    DWORD PTR [esp],0x28c
+     f8d:	e8 fc ff ff ff       	call   f8e <print_tasks+0xb7>
 		printf("ID FLG PROC STACK    PRIORITY  RUNTIME[ms] RUNTIME      QTA NAME        " STAT_COUNTER("SCHED  ") "\n"
-     ed7:	83 ec 0c             	sub    esp,0xc
-     eda:	68 bc 02 00 00       	push   0x2bc
-     edf:	e8 fc ff ff ff       	call   ee0 <print_tasks+0xb1>
-     ee4:	83 c4 10             	add    esp,0x10
+     f92:	c7 04 24 bc 02 00 00 	mov    DWORD PTR [esp],0x2bc
+     f99:	e8 fc ff ff ff       	call   f9a <print_tasks+0xc3>
 		for (size_t i = 0; i < n_tks; i++)
-     ee7:	c7 45 f0 00 00 00 00 	mov    DWORD PTR [ebp-0x10],0x0
-     eee:	eb 1a                	jmp    f0a <print_tasks+0xdb>
+     f9e:	c7 45 f0 00 00 00 00 	mov    DWORD PTR [ebp-0x10],0x0
+     fa5:	eb 16                	jmp    fbd <print_tasks+0xe6>
 				print_task(tks[i]);
-     ef0:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-     ef3:	8b 04 85 00 00 00 00 	mov    eax,DWORD PTR [eax*4+0x0]
-     efa:	83 ec 0c             	sub    esp,0xc
-     efd:	50                   	push   eax
-     efe:	e8 fc ff ff ff       	call   eff <print_tasks+0xd0>
-     f03:	83 c4 10             	add    esp,0x10
+     fa7:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+     faa:	8b 04 85 00 00 00 00 	mov    eax,DWORD PTR [eax*4+0x0]
+     fb1:	89 04 24             	mov    DWORD PTR [esp],eax
+     fb4:	e8 fc ff ff ff       	call   fb5 <print_tasks+0xde>
 		for (size_t i = 0; i < n_tks; i++)
-     f06:	83 45 f0 01          	add    DWORD PTR [ebp-0x10],0x1
-     f0a:	a1 00 00 00 00       	mov    eax,ds:0x0
-     f0f:	39 45 f0             	cmp    DWORD PTR [ebp-0x10],eax
-     f12:	72 dc                	jb     ef0 <print_tasks+0xc1>
+     fb9:	83 45 f0 01          	add    DWORD PTR [ebp-0x10],0x1
+     fbd:	a1 00 00 00 00       	mov    eax,ds:0x0
+     fc2:	39 45 f0             	cmp    DWORD PTR [ebp-0x10],eax
+     fc5:	72 e0                	jb     fa7 <print_tasks+0xd0>
 }
-     f14:	90                   	nop
-     f15:	90                   	nop
-     f16:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
-     f19:	c9                   	leave
-     f1a:	c3                   	ret
+     fc7:	90                   	nop
+     fc8:	90                   	nop
+     fc9:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
+     fcc:	c9                   	leave
+     fcd:	c3                   	ret
 
-00000f1b <task_do_stats>:
+00000fce <task_do_stats>:
 {
-     f1b:	55                   	push   ebp
-     f1c:	89 e5                	mov    ebp,esp
-     f1e:	53                   	push   ebx
-     f1f:	83 ec 14             	sub    esp,0x14
+     fce:	55                   	push   ebp
+     fcf:	89 e5                	mov    ebp,esp
+     fd1:	53                   	push   ebx
+     fd2:	83 ec 24             	sub    esp,0x24
 		bzero(&task_stats, sizeof(task_stats));
-     f22:	83 ec 08             	sub    esp,0x8
-     f25:	6a 14                	push   0x14
-     f27:	68 00 00 00 00       	push   0x0
-     f2c:	e8 fc ff ff ff       	call   f2d <task_do_stats+0x12>
-     f31:	83 c4 10             	add    esp,0x10
+     fd5:	c7 44 24 04 14 00 00 00 	mov    DWORD PTR [esp+0x4],0x14
+     fdd:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+     fe4:	e8 fc ff ff ff       	call   fe5 <task_do_stats+0x17>
 		for (size_t i = 0; i < n_tks; i++) {
-     f34:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
-     f3b:	e9 f9 00 00 00       	jmp    1039 <task_do_stats+0x11e>
+     fe9:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
+     ff0:	e9 04 01 00 00       	jmp    10f9 <task_do_stats+0x12b>
 				struct tsi* t = tks[i];
-     f40:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     f43:	8b 04 85 00 00 00 00 	mov    eax,DWORD PTR [eax*4+0x0]
-     f4a:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
+     ff5:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     ff8:	8b 04 85 00 00 00 00 	mov    eax,DWORD PTR [eax*4+0x0]
+     fff:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
 				if (!t)
-     f4d:	83 7d e8 00          	cmp    DWORD PTR [ebp-0x18],0x0
-     f51:	0f 84 dd 00 00 00    	je     1034 <task_do_stats+0x119>
+    1002:	83 7d e8 00          	cmp    DWORD PTR [ebp-0x18],0x0
+    1006:	0f 84 e8 00 00 00    	je     10f4 <task_do_stats+0x126>
 				t->run_time_sec = t->run_time - t->sec_run_time;
-     f57:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
-     f5a:	8b 50 24             	mov    edx,DWORD PTR [eax+0x24]
-     f5d:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
-     f60:	8b 40 1c             	mov    eax,DWORD PTR [eax+0x1c]
-     f63:	29 c2                	sub    edx,eax
-     f65:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
-     f68:	89 50 20             	mov    DWORD PTR [eax+0x20],edx
+    100c:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
+    100f:	8b 50 24             	mov    edx,DWORD PTR [eax+0x24]
+    1012:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
+    1015:	8b 40 1c             	mov    eax,DWORD PTR [eax+0x1c]
+    1018:	29 c2                	sub    edx,eax
+    101a:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
+    101d:	89 50 20             	mov    DWORD PTR [eax+0x20],edx
 				t->sec_run_time = t->run_time;
-     f6b:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
-     f6e:	8b 50 24             	mov    edx,DWORD PTR [eax+0x24]
-     f71:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
-     f74:	89 50 1c             	mov    DWORD PTR [eax+0x1c],edx
+    1020:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
+    1023:	8b 50 24             	mov    edx,DWORD PTR [eax+0x24]
+    1026:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
+    1029:	89 50 1c             	mov    DWORD PTR [eax+0x1c],edx
 				t->ns_per_sec = t->ns_acc - t->sec_ns_acc;
-     f77:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
-     f7a:	8b 50 54             	mov    edx,DWORD PTR [eax+0x54]
-     f7d:	8b 40 50             	mov    eax,DWORD PTR [eax+0x50]
-     f80:	89 c1                	mov    ecx,eax
-     f82:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
-     f85:	8b 50 5c             	mov    edx,DWORD PTR [eax+0x5c]
-     f88:	8b 40 58             	mov    eax,DWORD PTR [eax+0x58]
-     f8b:	29 c1                	sub    ecx,eax
-     f8d:	89 ca                	mov    edx,ecx
-     f8f:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
-     f92:	89 50 60             	mov    DWORD PTR [eax+0x60],edx
+    102c:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
+    102f:	8b 50 54             	mov    edx,DWORD PTR [eax+0x54]
+    1032:	8b 40 50             	mov    eax,DWORD PTR [eax+0x50]
+    1035:	89 c1                	mov    ecx,eax
+    1037:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
+    103a:	8b 50 5c             	mov    edx,DWORD PTR [eax+0x5c]
+    103d:	8b 40 58             	mov    eax,DWORD PTR [eax+0x58]
+    1040:	29 c1                	sub    ecx,eax
+    1042:	89 ca                	mov    edx,ecx
+    1044:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
+    1047:	89 50 60             	mov    DWORD PTR [eax+0x60],edx
 				t->sec_ns_acc = t->ns_acc;
-     f95:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
-     f98:	8b 50 54             	mov    edx,DWORD PTR [eax+0x54]
-     f9b:	8b 40 50             	mov    eax,DWORD PTR [eax+0x50]
-     f9e:	8b 4d e8             	mov    ecx,DWORD PTR [ebp-0x18]
-     fa1:	89 41 58             	mov    DWORD PTR [ecx+0x58],eax
-     fa4:	89 51 5c             	mov    DWORD PTR [ecx+0x5c],edx
+    104a:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
+    104d:	8b 50 54             	mov    edx,DWORD PTR [eax+0x54]
+    1050:	8b 40 50             	mov    eax,DWORD PTR [eax+0x50]
+    1053:	8b 4d e8             	mov    ecx,DWORD PTR [ebp-0x18]
+    1056:	89 41 58             	mov    DWORD PTR [ecx+0x58],eax
+    1059:	89 51 5c             	mov    DWORD PTR [ecx+0x5c],edx
 				if (t->flags & TIF_RUNNING)
-     fa7:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
-     faa:	8b 00                	mov    eax,DWORD PTR [eax]
-     fac:	83 e0 10             	and    eax,0x10
-     faf:	85 c0                	test   eax,eax
-     fb1:	74 0f                	je     fc2 <task_do_stats+0xa7>
+    105c:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
+    105f:	8b 00                	mov    eax,DWORD PTR [eax]
+    1061:	83 e0 10             	and    eax,0x10
+    1064:	85 c0                	test   eax,eax
+    1066:	74 0f                	je     1077 <task_do_stats+0xa9>
 						task_stats.n_running++;
-     fb3:	a1 00 00 00 00       	mov    eax,ds:0x0
-     fb8:	83 c0 01             	add    eax,0x1
-     fbb:	a3 00 00 00 00       	mov    ds:0x0,eax
-     fc0:	eb 2a                	jmp    fec <task_do_stats+0xd1>
+    1068:	a1 00 00 00 00       	mov    eax,ds:0x0
+    106d:	83 c0 01             	add    eax,0x1
+    1070:	a3 00 00 00 00       	mov    ds:0x0,eax
+    1075:	eb 2a                	jmp    10a1 <task_do_stats+0xd3>
 				else if (t->flags & TIF_SLEEPING)
-     fc2:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
-     fc5:	8b 00                	mov    eax,DWORD PTR [eax]
-     fc7:	25 80 00 00 00       	and    eax,0x80
-     fcc:	85 c0                	test   eax,eax
-     fce:	74 0f                	je     fdf <task_do_stats+0xc4>
+    1077:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
+    107a:	8b 00                	mov    eax,DWORD PTR [eax]
+    107c:	25 80 00 00 00       	and    eax,0x80
+    1081:	85 c0                	test   eax,eax
+    1083:	74 0f                	je     1094 <task_do_stats+0xc6>
 						task_stats.n_sleeping++;
-     fd0:	a1 04 00 00 00       	mov    eax,ds:0x4
-     fd5:	83 c0 01             	add    eax,0x1
-     fd8:	a3 04 00 00 00       	mov    ds:0x4,eax
-     fdd:	eb 0d                	jmp    fec <task_do_stats+0xd1>
+    1085:	a1 04 00 00 00       	mov    eax,ds:0x4
+    108a:	83 c0 01             	add    eax,0x1
+    108d:	a3 04 00 00 00       	mov    ds:0x4,eax
+    1092:	eb 0d                	jmp    10a1 <task_do_stats+0xd3>
 						task_stats.n_pending++;
-     fdf:	a1 08 00 00 00       	mov    eax,ds:0x8
-     fe4:	83 c0 01             	add    eax,0x1
-     fe7:	a3 08 00 00 00       	mov    ds:0x8,eax
+    1094:	a1 08 00 00 00       	mov    eax,ds:0x8
+    1099:	83 c0 01             	add    eax,0x1
+    109c:	a3 08 00 00 00       	mov    ds:0x8,eax
 				task_stats.tot_runtime += (uint32_t)(t->ns_acc / 1000000000llu);
-     fec:	8b 1d 0c 00 00 00    	mov    ebx,DWORD PTR ds:0xc
-     ff2:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
-     ff5:	8b 50 54             	mov    edx,DWORD PTR [eax+0x54]
-     ff8:	8b 40 50             	mov    eax,DWORD PTR [eax+0x50]
-     ffb:	6a 00                	push   0x0
-     ffd:	68 00 ca 9a 3b       	push   0x3b9aca00
-    1002:	52                   	push   edx
-    1003:	50                   	push   eax
-    1004:	e8 fc ff ff ff       	call   1005 <task_do_stats+0xea>
-    1009:	83 c4 10             	add    esp,0x10
-    100c:	01 d8                	add    eax,ebx
-    100e:	a3 0c 00 00 00       	mov    ds:0xc,eax
+    10a1:	8b 1d 0c 00 00 00    	mov    ebx,DWORD PTR ds:0xc
+    10a7:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
+    10aa:	8b 50 54             	mov    edx,DWORD PTR [eax+0x54]
+    10ad:	8b 40 50             	mov    eax,DWORD PTR [eax+0x50]
+    10b0:	c7 44 24 08 00 ca 9a 3b 	mov    DWORD PTR [esp+0x8],0x3b9aca00
+    10b8:	c7 44 24 0c 00 00 00 00 	mov    DWORD PTR [esp+0xc],0x0
+    10c0:	89 04 24             	mov    DWORD PTR [esp],eax
+    10c3:	89 54 24 04          	mov    DWORD PTR [esp+0x4],edx
+    10c7:	e8 fc ff ff ff       	call   10c8 <task_do_stats+0xfa>
+    10cc:	01 d8                	add    eax,ebx
+    10ce:	a3 0c 00 00 00       	mov    ds:0xc,eax
 				task_stats.sec_runtime += t->ns_per_sec / 1000000;
-    1013:	8b 0d 10 00 00 00    	mov    ecx,DWORD PTR ds:0x10
-    1019:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
-    101c:	8b 40 60             	mov    eax,DWORD PTR [eax+0x60]
-    101f:	ba 83 de 1b 43       	mov    edx,0x431bde83
-    1024:	f7 e2                	mul    edx
-    1026:	89 d0                	mov    eax,edx
-    1028:	c1 e8 12             	shr    eax,0x12
-    102b:	01 c8                	add    eax,ecx
-    102d:	a3 10 00 00 00       	mov    ds:0x10,eax
-    1032:	eb 01                	jmp    1035 <task_do_stats+0x11a>
+    10d3:	8b 0d 10 00 00 00    	mov    ecx,DWORD PTR ds:0x10
+    10d9:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
+    10dc:	8b 40 60             	mov    eax,DWORD PTR [eax+0x60]
+    10df:	ba 83 de 1b 43       	mov    edx,0x431bde83
+    10e4:	f7 e2                	mul    edx
+    10e6:	89 d0                	mov    eax,edx
+    10e8:	c1 e8 12             	shr    eax,0x12
+    10eb:	01 c8                	add    eax,ecx
+    10ed:	a3 10 00 00 00       	mov    ds:0x10,eax
+    10f2:	eb 01                	jmp    10f5 <task_do_stats+0x127>
 						continue;
-    1034:	90                   	nop
+    10f4:	90                   	nop
 		for (size_t i = 0; i < n_tks; i++) {
-    1035:	83 45 f4 01          	add    DWORD PTR [ebp-0xc],0x1
-    1039:	a1 00 00 00 00       	mov    eax,ds:0x0
-    103e:	39 45 f4             	cmp    DWORD PTR [ebp-0xc],eax
-    1041:	0f 82 f9 fe ff ff    	jb     f40 <task_do_stats+0x25>
+    10f5:	83 45 f4 01          	add    DWORD PTR [ebp-0xc],0x1
+    10f9:	a1 00 00 00 00       	mov    eax,ds:0x0
+    10fe:	39 45 f4             	cmp    DWORD PTR [ebp-0xc],eax
+    1101:	0f 82 ee fe ff ff    	jb     ff5 <task_do_stats+0x27>
 		for (size_t i = 0; i < nproc; i++) {
-    1047:	c7 45 f0 00 00 00 00 	mov    DWORD PTR [ebp-0x10],0x0
-    104e:	e9 d2 00 00 00       	jmp    1125 <task_do_stats+0x20a>
+    1107:	c7 45 f0 00 00 00 00 	mov    DWORD PTR [ebp-0x10],0x0
+    110e:	e9 cf 00 00 00       	jmp    11e2 <task_do_stats+0x214>
 				struct perf_ctrs* pc = cpu_stat_counter(i);
-    1053:	83 ec 0c             	sub    esp,0xc
-    1056:	ff 75 f0             	push   DWORD PTR [ebp-0x10]
-    1059:	e8 fc ff ff ff       	call   105a <task_do_stats+0x13f>
-    105e:	83 c4 10             	add    esp,0x10
-    1061:	89 45 ec             	mov    DWORD PTR [ebp-0x14],eax
+    1113:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+    1116:	89 04 24             	mov    DWORD PTR [esp],eax
+    1119:	e8 fc ff ff ff       	call   111a <task_do_stats+0x14c>
+    111e:	89 45 ec             	mov    DWORD PTR [ebp-0x14],eax
 				if (!pc)
-    1064:	83 7d ec 00          	cmp    DWORD PTR [ebp-0x14],0x0
-    1068:	0f 84 b2 00 00 00    	je     1120 <task_do_stats+0x205>
+    1121:	83 7d ec 00          	cmp    DWORD PTR [ebp-0x14],0x0
+    1125:	0f 84 b2 00 00 00    	je     11dd <task_do_stats+0x20f>
 				pc->ns_idle_per_sec = pc->ns_idle - pc->sec_ns_idle;
-    106e:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    1071:	8b 50 0c             	mov    edx,DWORD PTR [eax+0xc]
-    1074:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
-    1077:	89 c1                	mov    ecx,eax
-    1079:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    107c:	8b 50 24             	mov    edx,DWORD PTR [eax+0x24]
-    107f:	8b 40 20             	mov    eax,DWORD PTR [eax+0x20]
-    1082:	29 c1                	sub    ecx,eax
-    1084:	89 ca                	mov    edx,ecx
-    1086:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    1089:	89 50 38             	mov    DWORD PTR [eax+0x38],edx
+    112b:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    112e:	8b 50 0c             	mov    edx,DWORD PTR [eax+0xc]
+    1131:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
+    1134:	89 c1                	mov    ecx,eax
+    1136:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    1139:	8b 50 24             	mov    edx,DWORD PTR [eax+0x24]
+    113c:	8b 40 20             	mov    eax,DWORD PTR [eax+0x20]
+    113f:	29 c1                	sub    ecx,eax
+    1141:	89 ca                	mov    edx,ecx
+    1143:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    1146:	89 50 38             	mov    DWORD PTR [eax+0x38],edx
 				pc->sec_ns_idle = pc->ns_idle;
-    108c:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    108f:	8b 50 0c             	mov    edx,DWORD PTR [eax+0xc]
-    1092:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
-    1095:	8b 4d ec             	mov    ecx,DWORD PTR [ebp-0x14]
-    1098:	89 41 20             	mov    DWORD PTR [ecx+0x20],eax
-    109b:	89 51 24             	mov    DWORD PTR [ecx+0x24],edx
+    1149:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    114c:	8b 50 0c             	mov    edx,DWORD PTR [eax+0xc]
+    114f:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
+    1152:	8b 4d ec             	mov    ecx,DWORD PTR [ebp-0x14]
+    1155:	89 41 20             	mov    DWORD PTR [ecx+0x20],eax
+    1158:	89 51 24             	mov    DWORD PTR [ecx+0x24],edx
 				pc->ns_user_per_sec = pc->ns_user - pc->sec_ns_user;
-    109e:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    10a1:	8b 50 1c             	mov    edx,DWORD PTR [eax+0x1c]
-    10a4:	8b 40 18             	mov    eax,DWORD PTR [eax+0x18]
-    10a7:	89 c1                	mov    ecx,eax
-    10a9:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    10ac:	8b 50 34             	mov    edx,DWORD PTR [eax+0x34]
-    10af:	8b 40 30             	mov    eax,DWORD PTR [eax+0x30]
-    10b2:	89 ca                	mov    edx,ecx
-    10b4:	29 c2                	sub    edx,eax
-    10b6:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    10b9:	89 50 40             	mov    DWORD PTR [eax+0x40],edx
+    115b:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    115e:	8b 50 1c             	mov    edx,DWORD PTR [eax+0x1c]
+    1161:	8b 40 18             	mov    eax,DWORD PTR [eax+0x18]
+    1164:	89 c1                	mov    ecx,eax
+    1166:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    1169:	8b 50 34             	mov    edx,DWORD PTR [eax+0x34]
+    116c:	8b 40 30             	mov    eax,DWORD PTR [eax+0x30]
+    116f:	89 ca                	mov    edx,ecx
+    1171:	29 c2                	sub    edx,eax
+    1173:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    1176:	89 50 40             	mov    DWORD PTR [eax+0x40],edx
 				pc->sec_ns_user = pc->ns_user;
-    10bc:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    10bf:	8b 50 1c             	mov    edx,DWORD PTR [eax+0x1c]
-    10c2:	8b 40 18             	mov    eax,DWORD PTR [eax+0x18]
-    10c5:	8b 4d ec             	mov    ecx,DWORD PTR [ebp-0x14]
-    10c8:	89 41 30             	mov    DWORD PTR [ecx+0x30],eax
-    10cb:	89 51 34             	mov    DWORD PTR [ecx+0x34],edx
+    1179:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    117c:	8b 50 1c             	mov    edx,DWORD PTR [eax+0x1c]
+    117f:	8b 40 18             	mov    eax,DWORD PTR [eax+0x18]
+    1182:	8b 4d ec             	mov    ecx,DWORD PTR [ebp-0x14]
+    1185:	89 41 30             	mov    DWORD PTR [ecx+0x30],eax
+    1188:	89 51 34             	mov    DWORD PTR [ecx+0x34],edx
 				pc->ns_kernel_per_sec = pc->ns_kernel - pc->sec_ns_kernel;
-    10ce:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    10d1:	8b 50 14             	mov    edx,DWORD PTR [eax+0x14]
-    10d4:	8b 40 10             	mov    eax,DWORD PTR [eax+0x10]
-    10d7:	89 c1                	mov    ecx,eax
-    10d9:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    10dc:	8b 50 2c             	mov    edx,DWORD PTR [eax+0x2c]
-    10df:	8b 40 28             	mov    eax,DWORD PTR [eax+0x28]
-    10e2:	29 c1                	sub    ecx,eax
-    10e4:	89 ca                	mov    edx,ecx
-    10e6:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    10e9:	89 50 3c             	mov    DWORD PTR [eax+0x3c],edx
+    118b:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    118e:	8b 50 14             	mov    edx,DWORD PTR [eax+0x14]
+    1191:	8b 40 10             	mov    eax,DWORD PTR [eax+0x10]
+    1194:	89 c1                	mov    ecx,eax
+    1196:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    1199:	8b 50 2c             	mov    edx,DWORD PTR [eax+0x2c]
+    119c:	8b 40 28             	mov    eax,DWORD PTR [eax+0x28]
+    119f:	29 c1                	sub    ecx,eax
+    11a1:	89 ca                	mov    edx,ecx
+    11a3:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    11a6:	89 50 3c             	mov    DWORD PTR [eax+0x3c],edx
 				pc->sec_ns_kernel = pc->ns_kernel;
-    10ec:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    10ef:	8b 50 14             	mov    edx,DWORD PTR [eax+0x14]
-    10f2:	8b 40 10             	mov    eax,DWORD PTR [eax+0x10]
-    10f5:	8b 4d ec             	mov    ecx,DWORD PTR [ebp-0x14]
-    10f8:	89 41 28             	mov    DWORD PTR [ecx+0x28],eax
-    10fb:	89 51 2c             	mov    DWORD PTR [ecx+0x2c],edx
+    11a9:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    11ac:	8b 50 14             	mov    edx,DWORD PTR [eax+0x14]
+    11af:	8b 40 10             	mov    eax,DWORD PTR [eax+0x10]
+    11b2:	8b 4d ec             	mov    ecx,DWORD PTR [ebp-0x14]
+    11b5:	89 41 28             	mov    DWORD PTR [ecx+0x28],eax
+    11b8:	89 51 2c             	mov    DWORD PTR [ecx+0x2c],edx
 				pc->n_times_per_sec = pc->n_times - pc->sec_n_times;
-    10fe:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    1101:	8b 50 44             	mov    edx,DWORD PTR [eax+0x44]
-    1104:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    1107:	8b 40 4c             	mov    eax,DWORD PTR [eax+0x4c]
-    110a:	29 c2                	sub    edx,eax
-    110c:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    110f:	89 50 48             	mov    DWORD PTR [eax+0x48],edx
+    11bb:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    11be:	8b 50 44             	mov    edx,DWORD PTR [eax+0x44]
+    11c1:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    11c4:	8b 40 4c             	mov    eax,DWORD PTR [eax+0x4c]
+    11c7:	29 c2                	sub    edx,eax
+    11c9:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    11cc:	89 50 48             	mov    DWORD PTR [eax+0x48],edx
 				pc->sec_n_times = pc->n_times;
-    1112:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    1115:	8b 50 44             	mov    edx,DWORD PTR [eax+0x44]
-    1118:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    111b:	89 50 4c             	mov    DWORD PTR [eax+0x4c],edx
-    111e:	eb 01                	jmp    1121 <task_do_stats+0x206>
+    11cf:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    11d2:	8b 50 44             	mov    edx,DWORD PTR [eax+0x44]
+    11d5:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    11d8:	89 50 4c             	mov    DWORD PTR [eax+0x4c],edx
+    11db:	eb 01                	jmp    11de <task_do_stats+0x210>
 						continue;
-    1120:	90                   	nop
+    11dd:	90                   	nop
 		for (size_t i = 0; i < nproc; i++) {
-    1121:	83 45 f0 01          	add    DWORD PTR [ebp-0x10],0x1
-    1125:	a1 00 00 00 00       	mov    eax,ds:0x0
-    112a:	39 45 f0             	cmp    DWORD PTR [ebp-0x10],eax
-    112d:	0f 82 20 ff ff ff    	jb     1053 <task_do_stats+0x138>
+    11de:	83 45 f0 01          	add    DWORD PTR [ebp-0x10],0x1
+    11e2:	a1 00 00 00 00       	mov    eax,ds:0x0
+    11e7:	39 45 f0             	cmp    DWORD PTR [ebp-0x10],eax
+    11ea:	0f 82 23 ff ff ff    	jb     1113 <task_do_stats+0x145>
 		cpu_do_stats();
-    1133:	e8 fc ff ff ff       	call   1134 <task_do_stats+0x219>
+    11f0:	e8 fc ff ff ff       	call   11f1 <task_do_stats+0x223>
 }
-    1138:	90                   	nop
-    1139:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
-    113c:	c9                   	leave
-    113d:	c3                   	ret
+    11f5:	90                   	nop
+    11f6:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
+    11f9:	c9                   	leave
+    11fa:	c3                   	ret
 
-0000113e <task_initfunc>:
+000011fb <task_initfunc>:
 {
-    113e:	55                   	push   ebp
-    113f:	89 e5                	mov    ebp,esp
-    1141:	83 ec 18             	sub    esp,0x18
+    11fb:	55                   	push   ebp
+    11fc:	89 e5                	mov    ebp,esp
+    11fe:	83 ec 28             	sub    esp,0x28
 		asm volatile("mov %%eax, %0" : "=rm" (fun) );
-    1144:	89 c0                	mov    eax,eax
-    1146:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
+    1201:	89 c0                	mov    eax,eax
+    1203:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
 		asm volatile("mov %%ecx, %0" : "=rm" (arg) );
-    1149:	89 c8                	mov    eax,ecx
-    114b:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
+    1206:	89 c8                	mov    eax,ecx
+    1208:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
 		asm ("sti");
-    114e:	fb                   	sti
+    120b:	fb                   	sti
 		fun(arg);
-    114f:	83 ec 0c             	sub    esp,0xc
-    1152:	ff 75 f0             	push   DWORD PTR [ebp-0x10]
-    1155:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    1158:	ff d0                	call   eax
-    115a:	83 c4 10             	add    esp,0x10
+    120c:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+    120f:	89 04 24             	mov    DWORD PTR [esp],eax
+    1212:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    1215:	ff d0                	call   eax
 		get_task()->flags |= TIF_DEALLOCATE;
-    115d:	e8 fc ff ff ff       	call   115e <task_initfunc+0x20>
-    1162:	8b 10                	mov    edx,DWORD PTR [eax]
-    1164:	83 ca 04             	or     edx,0x4
-    1167:	89 10                	mov    DWORD PTR [eax],edx
+    1217:	e8 fc ff ff ff       	call   1218 <task_initfunc+0x1d>
+    121c:	8b 10                	mov    edx,DWORD PTR [eax]
+    121e:	83 ca 04             	or     edx,0x4
+    1221:	89 10                	mov    DWORD PTR [eax],edx
 		task_yield();
-    1169:	e8 fc ff ff ff       	call   116a <task_initfunc+0x2c>
+    1223:	e8 fc ff ff ff       	call   1224 <task_initfunc+0x29>
 				cprintf(KFMT_WARN, "Deallocated task is rescheduled. This should never happen!\n");
-    116e:	83 ec 08             	sub    esp,0x8
-    1171:	68 60 03 00 00       	push   0x360
-    1176:	6a 0e                	push   0xe
-    1178:	e8 fc ff ff ff       	call   1179 <task_initfunc+0x3b>
-    117d:	83 c4 10             	add    esp,0x10
+    1228:	c7 44 24 04 60 03 00 00 	mov    DWORD PTR [esp+0x4],0x360
+    1230:	c7 04 24 0e 00 00 00 	mov    DWORD PTR [esp],0xe
+    1237:	e8 fc ff ff ff       	call   1238 <task_initfunc+0x3d>
 				task_yield();
-    1180:	e8 fc ff ff ff       	call   1181 <task_initfunc+0x43>
+    123c:	e8 fc ff ff ff       	call   123d <task_initfunc+0x42>
 				cprintf(KFMT_WARN, "Deallocated task is rescheduled. This should never happen!\n");
-    1185:	90                   	nop
-    1186:	eb e6                	jmp    116e <task_initfunc+0x30>
+    1241:	90                   	nop
+    1242:	eb e4                	jmp    1228 <task_initfunc+0x2d>
 
-00001188 <task_spawn_named>:
+00001244 <task_spawn_named>:
 {
-    1188:	55                   	push   ebp
-    1189:	89 e5                	mov    ebp,esp
-    118b:	57                   	push   edi
-    118c:	56                   	push   esi
-    118d:	53                   	push   ebx
-    118e:	81 ec 9c 00 00 00    	sub    esp,0x9c
+    1244:	55                   	push   ebp
+    1245:	89 e5                	mov    ebp,esp
+    1247:	57                   	push   edi
+    1248:	56                   	push   esi
+    1249:	53                   	push   ebx
+    124a:	81 ec ac 00 00 00    	sub    esp,0xac
 		if (n_tks < 128) {
-    1194:	a1 00 00 00 00       	mov    eax,ds:0x0
-    1199:	83 f8 7f             	cmp    eax,0x7f
-    119c:	0f 87 f4 01 00 00    	ja     1396 <task_spawn_named+0x20e>
+    1250:	a1 00 00 00 00       	mov    eax,ds:0x0
+    1255:	83 f8 7f             	cmp    eax,0x7f
+    1258:	0f 87 ed 01 00 00    	ja     144b <task_spawn_named+0x207>
 				struct tsi ts = {0}; int flg;
-    11a2:	8d 95 60 ff ff ff    	lea    edx,[ebp-0xa0]
-    11a8:	b8 00 00 00 00       	mov    eax,0x0
-    11ad:	b9 1b 00 00 00       	mov    ecx,0x1b
-    11b2:	89 d7                	mov    edi,edx
-    11b4:	f3 ab                	rep stos DWORD PTR es:[edi],eax
+    125e:	8d 95 60 ff ff ff    	lea    edx,[ebp-0xa0]
+    1264:	b8 00 00 00 00       	mov    eax,0x0
+    1269:	b9 1b 00 00 00       	mov    ecx,0x1b
+    126e:	89 d7                	mov    edi,edx
+    1270:	f3 ab                	rep stos DWORD PTR es:[edi],eax
 				void* stk = alloc_stack();
-    11b6:	e8 fc ff ff ff       	call   11b7 <task_spawn_named+0x2f>
-    11bb:	89 45 e4             	mov    DWORD PTR [ebp-0x1c],eax
+    1272:	e8 fc ff ff ff       	call   1273 <task_spawn_named+0x2f>
+    1277:	89 45 e4             	mov    DWORD PTR [ebp-0x1c],eax
 				if (!stk) {
-    11be:	83 7d e4 00          	cmp    DWORD PTR [ebp-0x1c],0x0
-    11c2:	75 2b                	jne    11ef <task_spawn_named+0x67>
+    127a:	83 7d e4 00          	cmp    DWORD PTR [ebp-0x1c],0x0
+    127e:	75 29                	jne    12a9 <task_spawn_named+0x65>
 						die("Failed to alloc stack!\n");
-    11c4:	83 ec 08             	sub    esp,0x8
-    11c7:	68 9c 03 00 00       	push   0x39c
-    11cc:	6a 0c                	push   0xc
-    11ce:	e8 fc ff ff ff       	call   11cf <task_spawn_named+0x47>
-    11d3:	83 c4 10             	add    esp,0x10
-    11d6:	e8 fc ff ff ff       	call   11d7 <task_spawn_named+0x4f>
-    11db:	83 ec 0c             	sub    esp,0xc
-    11de:	68 00 00 00 00       	push   0x0
-    11e3:	e8 fc ff ff ff       	call   11e4 <task_spawn_named+0x5c>
-    11e8:	83 c4 10             	add    esp,0x10
-    11eb:	fa                   	cli
-    11ec:	f4                   	hlt
-    11ed:	eb fd                	jmp    11ec <task_spawn_named+0x64>
+    1280:	c7 44 24 04 9c 03 00 00 	mov    DWORD PTR [esp+0x4],0x39c
+    1288:	c7 04 24 0c 00 00 00 	mov    DWORD PTR [esp],0xc
+    128f:	e8 fc ff ff ff       	call   1290 <task_spawn_named+0x4c>
+    1294:	e8 fc ff ff ff       	call   1295 <task_spawn_named+0x51>
+    1299:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+    12a0:	e8 fc ff ff ff       	call   12a1 <task_spawn_named+0x5d>
+    12a5:	fa                   	cli
+    12a6:	f4                   	hlt
+    12a7:	eb fd                	jmp    12a6 <task_spawn_named+0x62>
 				if ((flg = if_enabled()))
-    11ef:	e8 20 ee ff ff       	call   14 <if_enabled>
-    11f4:	89 45 e0             	mov    DWORD PTR [ebp-0x20],eax
-    11f7:	83 7d e0 00          	cmp    DWORD PTR [ebp-0x20],0x0
-    11fb:	74 0e                	je     120b <task_spawn_named+0x83>
+    12a9:	e8 66 ed ff ff       	call   14 <if_enabled>
+    12ae:	89 45 e0             	mov    DWORD PTR [ebp-0x20],eax
+    12b1:	83 7d e0 00          	cmp    DWORD PTR [ebp-0x20],0x0
+    12b5:	74 0e                	je     12c5 <task_spawn_named+0x81>
 						preempt_disable();
-    11fd:	e8 fc ff ff ff       	call   11fe <task_spawn_named+0x76>
-    1202:	8b 50 18             	mov    edx,DWORD PTR [eax+0x18]
-    1205:	83 c2 01             	add    edx,0x1
-    1208:	89 50 18             	mov    DWORD PTR [eax+0x18],edx
+    12b7:	e8 fc ff ff ff       	call   12b8 <task_spawn_named+0x74>
+    12bc:	8b 50 18             	mov    edx,DWORD PTR [eax+0x18]
+    12bf:	83 c2 01             	add    edx,0x1
+    12c2:	89 50 18             	mov    DWORD PTR [eax+0x18],edx
 				spin_lock(&pq_lock);
-    120b:	83 ec 0c             	sub    esp,0xc
-    120e:	68 00 00 00 00       	push   0x0
-    1213:	e8 fc ff ff ff       	call   1214 <task_spawn_named+0x8c>
-    1218:	83 c4 10             	add    esp,0x10
+    12c5:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+    12cc:	e8 fc ff ff ff       	call   12cd <task_spawn_named+0x89>
 				struct tsi* pts = stk;
-    121b:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
-    121e:	89 45 dc             	mov    DWORD PTR [ebp-0x24],eax
+    12d1:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
+    12d4:	89 45 dc             	mov    DWORD PTR [ebp-0x24],eax
 				pts--;
-    1221:	83 6d dc 6c          	sub    DWORD PTR [ebp-0x24],0x6c
+    12d7:	83 6d dc 6c          	sub    DWORD PTR [ebp-0x24],0x6c
 				struct task_state* ti = (void*)pts;
-    1225:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    1228:	89 45 d8             	mov    DWORD PTR [ebp-0x28],eax
+    12db:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    12de:	89 45 d8             	mov    DWORD PTR [ebp-0x28],eax
 				ti--; /* store info at stack bottom */
-    122b:	83 6d d8 44          	sub    DWORD PTR [ebp-0x28],0x44
+    12e1:	83 6d d8 44          	sub    DWORD PTR [ebp-0x28],0x44
 				id = get_stack(stk, &sl);
-    122f:	83 ec 08             	sub    esp,0x8
-    1232:	8d 45 cc             	lea    eax,[ebp-0x34]
-    1235:	50                   	push   eax
-    1236:	ff 75 e4             	push   DWORD PTR [ebp-0x1c]
-    1239:	e8 fc ff ff ff       	call   123a <task_spawn_named+0xb2>
-    123e:	83 c4 10             	add    esp,0x10
-    1241:	89 45 d4             	mov    DWORD PTR [ebp-0x2c],eax
+    12e5:	8d 45 cc             	lea    eax,[ebp-0x34]
+    12e8:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    12ec:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
+    12ef:	89 04 24             	mov    DWORD PTR [esp],eax
+    12f2:	e8 fc ff ff ff       	call   12f3 <task_spawn_named+0xaf>
+    12f7:	89 45 d4             	mov    DWORD PTR [ebp-0x2c],eax
 				ts.flags = TIF_KERNEL_STACK;
-    1244:	c7 85 60 ff ff ff 08 00 00 00 	mov    DWORD PTR [ebp-0xa0],0x8
+    12fa:	c7 85 60 ff ff ff 08 00 00 00 	mov    DWORD PTR [ebp-0xa0],0x8
 				ts.task_id = id;
-    124e:	8b 45 d4             	mov    eax,DWORD PTR [ebp-0x2c]
-    1251:	89 85 74 ff ff ff    	mov    DWORD PTR [ebp-0x8c],eax
+    1304:	8b 45 d4             	mov    eax,DWORD PTR [ebp-0x2c]
+    1307:	89 85 74 ff ff ff    	mov    DWORD PTR [ebp-0x8c],eax
 				ts.stack_base = sl.base;
-    1257:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-    125a:	89 85 68 ff ff ff    	mov    DWORD PTR [ebp-0x98],eax
+    130d:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    1310:	89 85 68 ff ff ff    	mov    DWORD PTR [ebp-0x98],eax
 				ts.stack_limit = sl.limit;
-    1260:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-    1263:	89 85 6c ff ff ff    	mov    DWORD PTR [ebp-0x94],eax
+    1316:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+    1319:	89 85 6c ff ff ff    	mov    DWORD PTR [ebp-0x94],eax
 				ts.priority = ts.cur_priority = priority;
-    1269:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-    126c:	89 45 90             	mov    DWORD PTR [ebp-0x70],eax
-    126f:	8b 45 90             	mov    eax,DWORD PTR [ebp-0x70]
-    1272:	89 45 88             	mov    DWORD PTR [ebp-0x78],eax
+    131f:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    1322:	89 45 90             	mov    DWORD PTR [ebp-0x70],eax
+    1325:	8b 45 90             	mov    eax,DWORD PTR [ebp-0x70]
+    1328:	89 45 88             	mov    DWORD PTR [ebp-0x78],eax
 				ts.name = name;
-    1275:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
-    1278:	89 85 70 ff ff ff    	mov    DWORD PTR [ebp-0x90],eax
+    132b:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
+    132e:	89 85 70 ff ff ff    	mov    DWORD PTR [ebp-0x90],eax
 				ts.quota = 10; ts.run_time = 0;
-    127e:	c7 45 8c 0a 00 00 00 	mov    DWORD PTR [ebp-0x74],0xa
-    1285:	c7 45 84 00 00 00 00 	mov    DWORD PTR [ebp-0x7c],0x0
+    1334:	c7 45 8c 0a 00 00 00 	mov    DWORD PTR [ebp-0x74],0xa
+    133b:	c7 45 84 00 00 00 00 	mov    DWORD PTR [ebp-0x7c],0x0
 				ts.ts = ti;
-    128c:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-    128f:	89 85 64 ff ff ff    	mov    DWORD PTR [ebp-0x9c],eax
+    1342:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+    1345:	89 85 64 ff ff ff    	mov    DWORD PTR [ebp-0x9c],eax
 				ts.task_proc = 0xffffffff;
-    1295:	c7 45 a4 ff ff ff ff 	mov    DWORD PTR [ebp-0x5c],0xffffffff
+    134b:	c7 45 a4 ff ff ff ff 	mov    DWORD PTR [ebp-0x5c],0xffffffff
 				bzero(ti, sizeof(*ti));
-    129c:	83 ec 08             	sub    esp,0x8
-    129f:	6a 44                	push   0x44
-    12a1:	ff 75 d8             	push   DWORD PTR [ebp-0x28]
-    12a4:	e8 fc ff ff ff       	call   12a5 <task_spawn_named+0x11d>
-    12a9:	83 c4 10             	add    esp,0x10
+    1352:	c7 44 24 04 44 00 00 00 	mov    DWORD PTR [esp+0x4],0x44
+    135a:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+    135d:	89 04 24             	mov    DWORD PTR [esp],eax
+    1360:	e8 fc ff ff ff       	call   1361 <task_spawn_named+0x11d>
 				ti->cs = SEG_CODE;
-    12ac:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-    12af:	c7 40 34 08 00 00 00 	mov    DWORD PTR [eax+0x34],0x8
+    1365:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+    1368:	c7 40 34 08 00 00 00 	mov    DWORD PTR [eax+0x34],0x8
 				ti->ds = ti->es = SEG_DATA;
-    12b6:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-    12b9:	c7 40 08 10 00 00 00 	mov    DWORD PTR [eax+0x8],0x10
-    12c0:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-    12c3:	8b 50 08             	mov    edx,DWORD PTR [eax+0x8]
-    12c6:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-    12c9:	89 50 0c             	mov    DWORD PTR [eax+0xc],edx
+    136f:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+    1372:	c7 40 08 10 00 00 00 	mov    DWORD PTR [eax+0x8],0x10
+    1379:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+    137c:	8b 50 08             	mov    edx,DWORD PTR [eax+0x8]
+    137f:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+    1382:	89 50 0c             	mov    DWORD PTR [eax+0xc],edx
 				ti->gs = SEG_DATA;
-    12cc:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-    12cf:	c7 00 10 00 00 00    	mov    DWORD PTR [eax],0x10
+    1385:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+    1388:	c7 00 10 00 00 00    	mov    DWORD PTR [eax],0x10
 				ti->fs = SEG_DATA_PROC; // x86, x86_64 other way
-    12d5:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-    12d8:	c7 40 04 40 00 00 00 	mov    DWORD PTR [eax+0x4],0x40
+    138e:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+    1391:	c7 40 04 40 00 00 00 	mov    DWORD PTR [eax+0x4],0x40
 				ti->esp = (uint32_t)ti;
-    12df:	8b 55 d8             	mov    edx,DWORD PTR [ebp-0x28]
-    12e2:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-    12e5:	89 50 1c             	mov    DWORD PTR [eax+0x1c],edx
+    1398:	8b 55 d8             	mov    edx,DWORD PTR [ebp-0x28]
+    139b:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+    139e:	89 50 1c             	mov    DWORD PTR [eax+0x1c],edx
 				ti->ebp = ti->esp;
-    12e8:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-    12eb:	8b 50 1c             	mov    edx,DWORD PTR [eax+0x1c]
-    12ee:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-    12f1:	89 50 18             	mov    DWORD PTR [eax+0x18],edx
+    13a1:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+    13a4:	8b 50 1c             	mov    edx,DWORD PTR [eax+0x1c]
+    13a7:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+    13aa:	89 50 18             	mov    DWORD PTR [eax+0x18],edx
 				ti->eflags = (1 << 9)/* | (1 << 8)*/; /* IF TF (interrupt enable, single-step) */
-    12f4:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-    12f7:	c7 40 38 00 02 00 00 	mov    DWORD PTR [eax+0x38],0x200
+    13ad:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+    13b0:	c7 40 38 00 02 00 00 	mov    DWORD PTR [eax+0x38],0x200
 				ti->eax = (uint32_t)fn;
-    12fe:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
-    1301:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-    1304:	89 50 2c             	mov    DWORD PTR [eax+0x2c],edx
+    13b7:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
+    13ba:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+    13bd:	89 50 2c             	mov    DWORD PTR [eax+0x2c],edx
 				ti->ecx = (uint32_t)dat;
-    1307:	8b 55 0c             	mov    edx,DWORD PTR [ebp+0xc]
-    130a:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-    130d:	89 50 28             	mov    DWORD PTR [eax+0x28],edx
+    13c0:	8b 55 0c             	mov    edx,DWORD PTR [ebp+0xc]
+    13c3:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+    13c6:	89 50 28             	mov    DWORD PTR [eax+0x28],edx
 				ti->eip = (uint32_t)task_initfunc;
-    1310:	ba 00 00 00 00       	mov    edx,0x0
-    1315:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-    1318:	89 50 30             	mov    DWORD PTR [eax+0x30],edx
+    13c9:	ba 00 00 00 00       	mov    edx,0x0
+    13ce:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+    13d1:	89 50 30             	mov    DWORD PTR [eax+0x30],edx
 				*pts = ts;
-    131b:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    131e:	89 c3                	mov    ebx,eax
-    1320:	8d 85 60 ff ff ff    	lea    eax,[ebp-0xa0]
-    1326:	ba 1b 00 00 00       	mov    edx,0x1b
-    132b:	89 df                	mov    edi,ebx
-    132d:	89 c6                	mov    esi,eax
-    132f:	89 d1                	mov    ecx,edx
-    1331:	f3 a5                	rep movs DWORD PTR es:[edi],DWORD PTR ds:[esi]
+    13d4:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    13d7:	89 c3                	mov    ebx,eax
+    13d9:	8d 85 60 ff ff ff    	lea    eax,[ebp-0xa0]
+    13df:	ba 1b 00 00 00       	mov    edx,0x1b
+    13e4:	89 df                	mov    edi,ebx
+    13e6:	89 c6                	mov    esi,eax
+    13e8:	89 d1                	mov    ecx,edx
+    13ea:	f3 a5                	rep movs DWORD PTR es:[edi],DWORD PTR ds:[esi]
 				tks[n_tks++] = pts;
-    1333:	a1 00 00 00 00       	mov    eax,ds:0x0
-    1338:	8d 50 01             	lea    edx,[eax+0x1]
-    133b:	89 15 00 00 00 00    	mov    DWORD PTR ds:0x0,edx
-    1341:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
-    1344:	89 14 85 00 00 00 00 	mov    DWORD PTR [eax*4+0x0],edx
+    13ec:	a1 00 00 00 00       	mov    eax,ds:0x0
+    13f1:	8d 50 01             	lea    edx,[eax+0x1]
+    13f4:	89 15 00 00 00 00    	mov    DWORD PTR ds:0x0,edx
+    13fa:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
+    13fd:	89 14 85 00 00 00 00 	mov    DWORD PTR [eax*4+0x0],edx
 				pq_enqueue(run_queue, pts);
-    134b:	a1 00 00 00 00       	mov    eax,ds:0x0
-    1350:	83 ec 08             	sub    esp,0x8
-    1353:	ff 75 dc             	push   DWORD PTR [ebp-0x24]
-    1356:	50                   	push   eax
-    1357:	e8 fc ff ff ff       	call   1358 <task_spawn_named+0x1d0>
-    135c:	83 c4 10             	add    esp,0x10
+    1404:	a1 00 00 00 00       	mov    eax,ds:0x0
+    1409:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
+    140c:	89 54 24 04          	mov    DWORD PTR [esp+0x4],edx
+    1410:	89 04 24             	mov    DWORD PTR [esp],eax
+    1413:	e8 fc ff ff ff       	call   1414 <task_spawn_named+0x1d0>
 				spin_unlock(&pq_lock);
-    135f:	83 ec 0c             	sub    esp,0xc
-    1362:	68 00 00 00 00       	push   0x0
-    1367:	e8 fc ff ff ff       	call   1368 <task_spawn_named+0x1e0>
-    136c:	83 c4 10             	add    esp,0x10
+    1418:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+    141f:	e8 fc ff ff ff       	call   1420 <task_spawn_named+0x1dc>
 				if (flg)
-    136f:	83 7d e0 00          	cmp    DWORD PTR [ebp-0x20],0x0
-    1373:	74 21                	je     1396 <task_spawn_named+0x20e>
+    1424:	83 7d e0 00          	cmp    DWORD PTR [ebp-0x20],0x0
+    1428:	74 21                	je     144b <task_spawn_named+0x207>
 						preempt_enable();
-    1375:	e8 fc ff ff ff       	call   1376 <task_spawn_named+0x1ee>
-    137a:	8b 50 18             	mov    edx,DWORD PTR [eax+0x18]
-    137d:	83 ea 01             	sub    edx,0x1
-    1380:	89 50 18             	mov    DWORD PTR [eax+0x18],edx
-    1383:	e8 fc ff ff ff       	call   1384 <task_spawn_named+0x1fc>
-    1388:	8b 00                	mov    eax,DWORD PTR [eax]
-    138a:	83 e0 01             	and    eax,0x1
-    138d:	85 c0                	test   eax,eax
-    138f:	74 05                	je     1396 <task_spawn_named+0x20e>
-    1391:	e8 fc ff ff ff       	call   1392 <task_spawn_named+0x20a>
+    142a:	e8 fc ff ff ff       	call   142b <task_spawn_named+0x1e7>
+    142f:	8b 50 18             	mov    edx,DWORD PTR [eax+0x18]
+    1432:	83 ea 01             	sub    edx,0x1
+    1435:	89 50 18             	mov    DWORD PTR [eax+0x18],edx
+    1438:	e8 fc ff ff ff       	call   1439 <task_spawn_named+0x1f5>
+    143d:	8b 00                	mov    eax,DWORD PTR [eax]
+    143f:	83 e0 01             	and    eax,0x1
+    1442:	85 c0                	test   eax,eax
+    1444:	74 05                	je     144b <task_spawn_named+0x207>
+    1446:	e8 fc ff ff ff       	call   1447 <task_spawn_named+0x203>
 }
-    1396:	8d 65 f4             	lea    esp,[ebp-0xc]
-    1399:	5b                   	pop    ebx
-    139a:	5e                   	pop    esi
-    139b:	5f                   	pop    edi
-    139c:	5d                   	pop    ebp
-    139d:	c3                   	ret
+    144b:	81 c4 ac 00 00 00    	add    esp,0xac
+    1451:	5b                   	pop    ebx
+    1452:	5e                   	pop    esi
+    1453:	5f                   	pop    edi
+    1454:	5d                   	pop    ebp
+    1455:	c3                   	ret
 
-0000139e <task_deallocate>:
+00001456 <task_deallocate>:
 {
-    139e:	55                   	push   ebp
-    139f:	89 e5                	mov    ebp,esp
-    13a1:	83 ec 10             	sub    esp,0x10
+    1456:	55                   	push   ebp
+    1457:	89 e5                	mov    ebp,esp
+    1459:	83 ec 14             	sub    esp,0x14
 		for (size_t i = 0; i < n_tks; i++)
-    13a4:	c7 45 fc 00 00 00 00 	mov    DWORD PTR [ebp-0x4],0x0
-    13ab:	eb 46                	jmp    13f3 <task_deallocate+0x55>
+    145c:	c7 45 fc 00 00 00 00 	mov    DWORD PTR [ebp-0x4],0x0
+    1463:	eb 46                	jmp    14ab <task_deallocate+0x55>
 				if (tks[i] == t) {
-    13ad:	8b 45 fc             	mov    eax,DWORD PTR [ebp-0x4]
-    13b0:	8b 04 85 00 00 00 00 	mov    eax,DWORD PTR [eax*4+0x0]
-    13b7:	39 45 08             	cmp    DWORD PTR [ebp+0x8],eax
-    13ba:	75 33                	jne    13ef <task_deallocate+0x51>
+    1465:	8b 45 fc             	mov    eax,DWORD PTR [ebp-0x4]
+    1468:	8b 04 85 00 00 00 00 	mov    eax,DWORD PTR [eax*4+0x0]
+    146f:	39 45 08             	cmp    DWORD PTR [ebp+0x8],eax
+    1472:	75 33                	jne    14a7 <task_deallocate+0x51>
 						tks[i] = NULL;
-    13bc:	8b 45 fc             	mov    eax,DWORD PTR [ebp-0x4]
-    13bf:	c7 04 85 00 00 00 00 00 00 00 00 	mov    DWORD PTR [eax*4+0x0],0x0
+    1474:	8b 45 fc             	mov    eax,DWORD PTR [ebp-0x4]
+    1477:	c7 04 85 00 00 00 00 00 00 00 00 	mov    DWORD PTR [eax*4+0x0],0x0
 						tks[i] = tks[--n_tks];
-    13ca:	a1 00 00 00 00       	mov    eax,ds:0x0
-    13cf:	83 e8 01             	sub    eax,0x1
-    13d2:	a3 00 00 00 00       	mov    ds:0x0,eax
-    13d7:	a1 00 00 00 00       	mov    eax,ds:0x0
-    13dc:	8b 14 85 00 00 00 00 	mov    edx,DWORD PTR [eax*4+0x0]
-    13e3:	8b 45 fc             	mov    eax,DWORD PTR [ebp-0x4]
-    13e6:	89 14 85 00 00 00 00 	mov    DWORD PTR [eax*4+0x0],edx
+    1482:	a1 00 00 00 00       	mov    eax,ds:0x0
+    1487:	83 e8 01             	sub    eax,0x1
+    148a:	a3 00 00 00 00       	mov    ds:0x0,eax
+    148f:	a1 00 00 00 00       	mov    eax,ds:0x0
+    1494:	8b 14 85 00 00 00 00 	mov    edx,DWORD PTR [eax*4+0x0]
+    149b:	8b 45 fc             	mov    eax,DWORD PTR [ebp-0x4]
+    149e:	89 14 85 00 00 00 00 	mov    DWORD PTR [eax*4+0x0],edx
 						break;
-    13ed:	eb 0e                	jmp    13fd <task_deallocate+0x5f>
+    14a5:	eb 0e                	jmp    14b5 <task_deallocate+0x5f>
 		for (size_t i = 0; i < n_tks; i++)
-    13ef:	83 45 fc 01          	add    DWORD PTR [ebp-0x4],0x1
-    13f3:	a1 00 00 00 00       	mov    eax,ds:0x0
-    13f8:	39 45 fc             	cmp    DWORD PTR [ebp-0x4],eax
-    13fb:	72 b0                	jb     13ad <task_deallocate+0xf>
+    14a7:	83 45 fc 01          	add    DWORD PTR [ebp-0x4],0x1
+    14ab:	a1 00 00 00 00       	mov    eax,ds:0x0
+    14b0:	39 45 fc             	cmp    DWORD PTR [ebp-0x4],eax
+    14b3:	72 b0                	jb     1465 <task_deallocate+0xf>
 		free_stack(t->stack_base);
-    13fd:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1400:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
-    1403:	50                   	push   eax
-    1404:	e8 fc ff ff ff       	call   1405 <task_deallocate+0x67>
-    1409:	83 c4 04             	add    esp,0x4
+    14b5:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    14b8:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
+    14bb:	89 04 24             	mov    DWORD PTR [esp],eax
+    14be:	e8 fc ff ff ff       	call   14bf <task_deallocate+0x69>
 }
-    140c:	90                   	nop
-    140d:	c9                   	leave
-    140e:	c3                   	ret
+    14c3:	90                   	nop
+    14c4:	c9                   	leave
+    14c5:	c3                   	ret
 
-0000140f <task_diag>:
+000014c6 <task_diag>:
 {
-    140f:	55                   	push   ebp
-    1410:	89 e5                	mov    ebp,esp
-    1412:	57                   	push   edi
-    1413:	56                   	push   esi
-    1414:	53                   	push   ebx
-    1415:	83 ec 2c             	sub    esp,0x2c
+    14c6:	55                   	push   ebp
+    14c7:	89 e5                	mov    ebp,esp
+    14c9:	57                   	push   edi
+    14ca:	56                   	push   esi
+    14cb:	53                   	push   ebx
+    14cc:	83 ec 4c             	sub    esp,0x4c
 		size_t end = pr_idx;
-    1418:	a1 00 00 00 00       	mov    eax,ds:0x0
-    141d:	89 45 e0             	mov    DWORD PTR [ebp-0x20],eax
+    14cf:	a1 00 00 00 00       	mov    eax,ds:0x0
+    14d4:	89 45 e0             	mov    DWORD PTR [ebp-0x20],eax
 		asm("cli");
-    1420:	fa                   	cli
+    14d7:	fa                   	cli
 		if (diag++)
-    1421:	a1 04 05 00 00       	mov    eax,ds:0x504
-    1426:	8d 50 01             	lea    edx,[eax+0x1]
-    1429:	89 15 04 05 00 00    	mov    DWORD PTR ds:0x504,edx
-    142f:	85 c0                	test   eax,eax
-    1431:	0f 85 27 01 00 00    	jne    155e <task_diag+0x14f>
+    14d8:	a1 04 04 00 00       	mov    eax,ds:0x404
+    14dd:	8d 50 01             	lea    edx,[eax+0x1]
+    14e0:	89 15 04 04 00 00    	mov    DWORD PTR ds:0x404,edx
+    14e6:	85 c0                	test   eax,eax
+    14e8:	0f 85 22 01 00 00    	jne    1610 <task_diag+0x14a>
 		framebuffer_redraw(&fb_initial);
-    1437:	83 ec 0c             	sub    esp,0xc
-    143a:	68 00 00 00 00       	push   0x0
-    143f:	e8 fc ff ff ff       	call   1440 <task_diag+0x31>
-    1444:	83 c4 10             	add    esp,0x10
+    14ee:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+    14f5:	e8 fc ff ff ff       	call   14f6 <task_diag+0x30>
 		mdelay(1000);
-    1447:	83 ec 0c             	sub    esp,0xc
-    144a:	68 e8 03 00 00       	push   0x3e8
-    144f:	e8 fc ff ff ff       	call   1450 <task_diag+0x41>
-    1454:	83 c4 10             	add    esp,0x10
+    14fa:	c7 04 24 e8 03 00 00 	mov    DWORD PTR [esp],0x3e8
+    1501:	e8 fc ff ff ff       	call   1502 <task_diag+0x3c>
 		print_tasks();
-    1457:	e8 fc ff ff ff       	call   1458 <task_diag+0x49>
+    1506:	e8 fc ff ff ff       	call   1507 <task_diag+0x41>
 		printf("PROC TASK TASK_NAME        EIP      ESP\n");
-    145c:	83 ec 0c             	sub    esp,0xc
-    145f:	68 b4 03 00 00       	push   0x3b4
-    1464:	e8 fc ff ff ff       	call   1465 <task_diag+0x56>
-    1469:	83 c4 10             	add    esp,0x10
+    150b:	c7 04 24 b4 03 00 00 	mov    DWORD PTR [esp],0x3b4
+    1512:	e8 fc ff ff ff       	call   1513 <task_diag+0x4d>
 		for (size_t i = end - 1; i != end; i--) {
-    146c:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
-    146f:	83 e8 01             	sub    eax,0x1
-    1472:	89 45 e4             	mov    DWORD PTR [ebp-0x1c],eax
-    1475:	e9 d6 00 00 00       	jmp    1550 <task_diag+0x141>
+    1517:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
+    151a:	83 e8 01             	sub    eax,0x1
+    151d:	89 45 e4             	mov    DWORD PTR [ebp-0x1c],eax
+    1520:	e9 dd 00 00 00       	jmp    1602 <task_diag+0x13c>
 						pr_lst[i].eip, pr_lst[i].esp);
-    147a:	8b 0d 00 00 00 00    	mov    ecx,DWORD PTR ds:0x0
-    1480:	8b 55 e4             	mov    edx,DWORD PTR [ebp-0x1c]
-    1483:	89 d0                	mov    eax,edx
-    1485:	c1 e0 02             	shl    eax,0x2
-    1488:	01 d0                	add    eax,edx
-    148a:	c1 e0 02             	shl    eax,0x2
-    148d:	01 c8                	add    eax,ecx
+    1525:	8b 0d 00 00 00 00    	mov    ecx,DWORD PTR ds:0x0
+    152b:	8b 55 e4             	mov    edx,DWORD PTR [ebp-0x1c]
+    152e:	89 d0                	mov    eax,edx
+    1530:	c1 e0 02             	shl    eax,0x2
+    1533:	01 d0                	add    eax,edx
+    1535:	c1 e0 02             	shl    eax,0x2
+    1538:	01 c8                	add    eax,ecx
 				printf("%4u %4u %16s %p %p\n", (pr_lst[i].proc >> 24),
-    148f:	8b 78 10             	mov    edi,DWORD PTR [eax+0x10]
+    153a:	8b 78 10             	mov    edi,DWORD PTR [eax+0x10]
 						pr_lst[i].eip, pr_lst[i].esp);
-    1492:	8b 0d 00 00 00 00    	mov    ecx,DWORD PTR ds:0x0
-    1498:	8b 55 e4             	mov    edx,DWORD PTR [ebp-0x1c]
-    149b:	89 d0                	mov    eax,edx
-    149d:	c1 e0 02             	shl    eax,0x2
-    14a0:	01 d0                	add    eax,edx
-    14a2:	c1 e0 02             	shl    eax,0x2
-    14a5:	01 c8                	add    eax,ecx
+    153d:	8b 0d 00 00 00 00    	mov    ecx,DWORD PTR ds:0x0
+    1543:	8b 55 e4             	mov    edx,DWORD PTR [ebp-0x1c]
+    1546:	89 d0                	mov    eax,edx
+    1548:	c1 e0 02             	shl    eax,0x2
+    154b:	01 d0                	add    eax,edx
+    154d:	c1 e0 02             	shl    eax,0x2
+    1550:	01 c8                	add    eax,ecx
 				printf("%4u %4u %16s %p %p\n", (pr_lst[i].proc >> 24),
-    14a7:	8b 70 0c             	mov    esi,DWORD PTR [eax+0xc]
+    1552:	8b 70 0c             	mov    esi,DWORD PTR [eax+0xc]
 						pr_lst[i].task_id, pr_lst[i].task_name,
-    14aa:	8b 0d 00 00 00 00    	mov    ecx,DWORD PTR ds:0x0
-    14b0:	8b 55 e4             	mov    edx,DWORD PTR [ebp-0x1c]
-    14b3:	89 d0                	mov    eax,edx
-    14b5:	c1 e0 02             	shl    eax,0x2
-    14b8:	01 d0                	add    eax,edx
-    14ba:	c1 e0 02             	shl    eax,0x2
-    14bd:	01 c8                	add    eax,ecx
+    1555:	8b 0d 00 00 00 00    	mov    ecx,DWORD PTR ds:0x0
+    155b:	8b 55 e4             	mov    edx,DWORD PTR [ebp-0x1c]
+    155e:	89 d0                	mov    eax,edx
+    1560:	c1 e0 02             	shl    eax,0x2
+    1563:	01 d0                	add    eax,edx
+    1565:	c1 e0 02             	shl    eax,0x2
+    1568:	01 c8                	add    eax,ecx
 				printf("%4u %4u %16s %p %p\n", (pr_lst[i].proc >> 24),
-    14bf:	8b 58 08             	mov    ebx,DWORD PTR [eax+0x8]
+    156a:	8b 58 08             	mov    ebx,DWORD PTR [eax+0x8]
 						pr_lst[i].task_id, pr_lst[i].task_name,
-    14c2:	8b 0d 00 00 00 00    	mov    ecx,DWORD PTR ds:0x0
-    14c8:	8b 55 e4             	mov    edx,DWORD PTR [ebp-0x1c]
-    14cb:	89 d0                	mov    eax,edx
-    14cd:	c1 e0 02             	shl    eax,0x2
-    14d0:	01 d0                	add    eax,edx
-    14d2:	c1 e0 02             	shl    eax,0x2
-    14d5:	01 c8                	add    eax,ecx
+    156d:	8b 0d 00 00 00 00    	mov    ecx,DWORD PTR ds:0x0
+    1573:	8b 55 e4             	mov    edx,DWORD PTR [ebp-0x1c]
+    1576:	89 d0                	mov    eax,edx
+    1578:	c1 e0 02             	shl    eax,0x2
+    157b:	01 d0                	add    eax,edx
+    157d:	c1 e0 02             	shl    eax,0x2
+    1580:	01 c8                	add    eax,ecx
 				printf("%4u %4u %16s %p %p\n", (pr_lst[i].proc >> 24),
-    14d7:	8b 48 04             	mov    ecx,DWORD PTR [eax+0x4]
-    14da:	a1 00 00 00 00       	mov    eax,ds:0x0
-    14df:	89 45 d4             	mov    DWORD PTR [ebp-0x2c],eax
-    14e2:	8b 55 e4             	mov    edx,DWORD PTR [ebp-0x1c]
-    14e5:	89 d0                	mov    eax,edx
-    14e7:	c1 e0 02             	shl    eax,0x2
-    14ea:	01 d0                	add    eax,edx
-    14ec:	c1 e0 02             	shl    eax,0x2
-    14ef:	8b 55 d4             	mov    edx,DWORD PTR [ebp-0x2c]
-    14f2:	01 d0                	add    eax,edx
-    14f4:	8b 00                	mov    eax,DWORD PTR [eax]
-    14f6:	c1 e8 18             	shr    eax,0x18
-    14f9:	83 ec 08             	sub    esp,0x8
-    14fc:	57                   	push   edi
-    14fd:	56                   	push   esi
-    14fe:	53                   	push   ebx
-    14ff:	51                   	push   ecx
-    1500:	50                   	push   eax
-    1501:	68 dd 03 00 00       	push   0x3dd
-    1506:	e8 fc ff ff ff       	call   1507 <task_diag+0xf8>
-    150b:	83 c4 20             	add    esp,0x20
+    1582:	8b 48 04             	mov    ecx,DWORD PTR [eax+0x4]
+    1585:	a1 00 00 00 00       	mov    eax,ds:0x0
+    158a:	89 45 d4             	mov    DWORD PTR [ebp-0x2c],eax
+    158d:	8b 55 e4             	mov    edx,DWORD PTR [ebp-0x1c]
+    1590:	89 d0                	mov    eax,edx
+    1592:	c1 e0 02             	shl    eax,0x2
+    1595:	01 d0                	add    eax,edx
+    1597:	c1 e0 02             	shl    eax,0x2
+    159a:	8b 55 d4             	mov    edx,DWORD PTR [ebp-0x2c]
+    159d:	01 d0                	add    eax,edx
+    159f:	8b 00                	mov    eax,DWORD PTR [eax]
+    15a1:	c1 e8 18             	shr    eax,0x18
+    15a4:	89 7c 24 14          	mov    DWORD PTR [esp+0x14],edi
+    15a8:	89 74 24 10          	mov    DWORD PTR [esp+0x10],esi
+    15ac:	89 5c 24 0c          	mov    DWORD PTR [esp+0xc],ebx
+    15b0:	89 4c 24 08          	mov    DWORD PTR [esp+0x8],ecx
+    15b4:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    15b8:	c7 04 24 dd 03 00 00 	mov    DWORD PTR [esp],0x3dd
+    15bf:	e8 fc ff ff ff       	call   15c0 <task_diag+0xfa>
 				if (i % 20)
-    150e:	8b 4d e4             	mov    ecx,DWORD PTR [ebp-0x1c]
-    1511:	ba cd cc cc cc       	mov    edx,0xcccccccd
-    1516:	89 c8                	mov    eax,ecx
-    1518:	f7 e2                	mul    edx
-    151a:	c1 ea 04             	shr    edx,0x4
-    151d:	89 d0                	mov    eax,edx
-    151f:	c1 e0 02             	shl    eax,0x2
-    1522:	01 d0                	add    eax,edx
-    1524:	c1 e0 02             	shl    eax,0x2
-    1527:	29 c1                	sub    ecx,eax
-    1529:	89 ca                	mov    edx,ecx
-    152b:	85 d2                	test   edx,edx
-    152d:	74 10                	je     153f <task_diag+0x130>
+    15c4:	8b 4d e4             	mov    ecx,DWORD PTR [ebp-0x1c]
+    15c7:	ba cd cc cc cc       	mov    edx,0xcccccccd
+    15cc:	89 c8                	mov    eax,ecx
+    15ce:	f7 e2                	mul    edx
+    15d0:	c1 ea 04             	shr    edx,0x4
+    15d3:	89 d0                	mov    eax,edx
+    15d5:	c1 e0 02             	shl    eax,0x2
+    15d8:	01 d0                	add    eax,edx
+    15da:	c1 e0 02             	shl    eax,0x2
+    15dd:	29 c1                	sub    ecx,eax
+    15df:	89 ca                	mov    edx,ecx
+    15e1:	85 d2                	test   edx,edx
+    15e3:	74 0c                	je     15f1 <task_diag+0x12b>
 						framebuffer_redraw(&fb_initial);
-    152f:	83 ec 0c             	sub    esp,0xc
-    1532:	68 00 00 00 00       	push   0x0
-    1537:	e8 fc ff ff ff       	call   1538 <task_diag+0x129>
-    153c:	83 c4 10             	add    esp,0x10
+    15e5:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+    15ec:	e8 fc ff ff ff       	call   15ed <task_diag+0x127>
 				if (!i)
-    153f:	83 7d e4 00          	cmp    DWORD PTR [ebp-0x1c],0x0
-    1543:	75 07                	jne    154c <task_diag+0x13d>
+    15f1:	83 7d e4 00          	cmp    DWORD PTR [ebp-0x1c],0x0
+    15f5:	75 07                	jne    15fe <task_diag+0x138>
 						i = 128;
-    1545:	c7 45 e4 80 00 00 00 	mov    DWORD PTR [ebp-0x1c],0x80
+    15f7:	c7 45 e4 80 00 00 00 	mov    DWORD PTR [ebp-0x1c],0x80
 		for (size_t i = end - 1; i != end; i--) {
-    154c:	83 6d e4 01          	sub    DWORD PTR [ebp-0x1c],0x1
-    1550:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
-    1553:	3b 45 e0             	cmp    eax,DWORD PTR [ebp-0x20]
-    1556:	0f 85 1e ff ff ff    	jne    147a <task_diag+0x6b>
-    155c:	eb 01                	jmp    155f <task_diag+0x150>
+    15fe:	83 6d e4 01          	sub    DWORD PTR [ebp-0x1c],0x1
+    1602:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
+    1605:	3b 45 e0             	cmp    eax,DWORD PTR [ebp-0x20]
+    1608:	0f 85 17 ff ff ff    	jne    1525 <task_diag+0x5f>
+    160e:	eb 01                	jmp    1611 <task_diag+0x14b>
 				return;
-    155e:	90                   	nop
+    1610:	90                   	nop
 }
-    155f:	8d 65 f4             	lea    esp,[ebp-0xc]
-    1562:	5b                   	pop    ebx
-    1563:	5e                   	pop    esi
-    1564:	5f                   	pop    edi
-    1565:	5d                   	pop    ebp
-    1566:	c3                   	ret
+    1611:	83 c4 4c             	add    esp,0x4c
+    1614:	5b                   	pop    ebx
+    1615:	5e                   	pop    esi
+    1616:	5f                   	pop    edi
+    1617:	5d                   	pop    ebp
+    1618:	c3                   	ret
 
-00001567 <proc_add_time>:
+00001619 <proc_add_time>:
 {
-    1567:	55                   	push   ebp
-    1568:	89 e5                	mov    ebp,esp
-    156a:	53                   	push   ebx
-    156b:	83 ec 1c             	sub    esp,0x1c
-    156e:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1571:	89 45 e0             	mov    DWORD PTR [ebp-0x20],eax
-    1574:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    1577:	89 45 e4             	mov    DWORD PTR [ebp-0x1c],eax
+    1619:	55                   	push   ebp
+    161a:	89 e5                	mov    ebp,esp
+    161c:	53                   	push   ebx
+    161d:	83 ec 1c             	sub    esp,0x1c
+    1620:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1623:	89 45 e0             	mov    DWORD PTR [ebp-0x20],eax
+    1626:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    1629:	89 45 e4             	mov    DWORD PTR [ebp-0x1c],eax
 		struct perf_ctrs* pc = (nproc > 1) ? per_cpu_ptr()->ticks : bp_tick;
-    157a:	a1 00 00 00 00       	mov    eax,ds:0x0
-    157f:	83 f8 01             	cmp    eax,0x1
-    1582:	76 0a                	jbe    158e <proc_add_time+0x27>
-    1584:	e8 77 ea ff ff       	call   0 <per_cpu_ptr>
-    1589:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
-    158c:	eb 05                	jmp    1593 <proc_add_time+0x2c>
-    158e:	a1 00 00 00 00       	mov    eax,ds:0x0
-    1593:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
+    162c:	a1 00 00 00 00       	mov    eax,ds:0x0
+    1631:	83 f8 01             	cmp    eax,0x1
+    1634:	76 0a                	jbe    1640 <proc_add_time+0x27>
+    1636:	e8 c5 e9 ff ff       	call   0 <per_cpu_ptr>
+    163b:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
+    163e:	eb 05                	jmp    1645 <proc_add_time+0x2c>
+    1640:	a1 00 00 00 00       	mov    eax,ds:0x0
+    1645:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
 		/* we're inside the pq lock -> no sync */
 		if (flags & TIF_IDLE)
-    1596:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-    1599:	83 e0 40             	and    eax,0x40
-    159c:	85 c0                	test   eax,eax
-    159e:	74 1e                	je     15be <proc_add_time+0x57>
+    1648:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    164b:	83 e0 40             	and    eax,0x40
+    164e:	85 c0                	test   eax,eax
+    1650:	74 1e                	je     1670 <proc_add_time+0x57>
 				pc->ns_idle += ns;
-    15a0:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    15a3:	8b 48 08             	mov    ecx,DWORD PTR [eax+0x8]
-    15a6:	8b 58 0c             	mov    ebx,DWORD PTR [eax+0xc]
-    15a9:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
-    15ac:	8b 55 e4             	mov    edx,DWORD PTR [ebp-0x1c]
-    15af:	01 c8                	add    eax,ecx
-    15b1:	11 da                	adc    edx,ebx
-    15b3:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
-    15b6:	89 41 08             	mov    DWORD PTR [ecx+0x8],eax
-    15b9:	89 51 0c             	mov    DWORD PTR [ecx+0xc],edx
-    15bc:	eb 44                	jmp    1602 <proc_add_time+0x9b>
+    1652:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    1655:	8b 48 08             	mov    ecx,DWORD PTR [eax+0x8]
+    1658:	8b 58 0c             	mov    ebx,DWORD PTR [eax+0xc]
+    165b:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
+    165e:	8b 55 e4             	mov    edx,DWORD PTR [ebp-0x1c]
+    1661:	01 c8                	add    eax,ecx
+    1663:	11 da                	adc    edx,ebx
+    1665:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
+    1668:	89 41 08             	mov    DWORD PTR [ecx+0x8],eax
+    166b:	89 51 0c             	mov    DWORD PTR [ecx+0xc],edx
+    166e:	eb 44                	jmp    16b4 <proc_add_time+0x9b>
 		else if (flags & TIF_KERNEL_STACK)
-    15be:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-    15c1:	83 e0 08             	and    eax,0x8
-    15c4:	85 c0                	test   eax,eax
-    15c6:	74 1e                	je     15e6 <proc_add_time+0x7f>
+    1670:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    1673:	83 e0 08             	and    eax,0x8
+    1676:	85 c0                	test   eax,eax
+    1678:	74 1e                	je     1698 <proc_add_time+0x7f>
 				pc->ns_kernel += ns;
-    15c8:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    15cb:	8b 48 10             	mov    ecx,DWORD PTR [eax+0x10]
-    15ce:	8b 58 14             	mov    ebx,DWORD PTR [eax+0x14]
-    15d1:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
-    15d4:	8b 55 e4             	mov    edx,DWORD PTR [ebp-0x1c]
-    15d7:	01 c8                	add    eax,ecx
-    15d9:	11 da                	adc    edx,ebx
-    15db:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
-    15de:	89 41 10             	mov    DWORD PTR [ecx+0x10],eax
-    15e1:	89 51 14             	mov    DWORD PTR [ecx+0x14],edx
-    15e4:	eb 1c                	jmp    1602 <proc_add_time+0x9b>
+    167a:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    167d:	8b 48 10             	mov    ecx,DWORD PTR [eax+0x10]
+    1680:	8b 58 14             	mov    ebx,DWORD PTR [eax+0x14]
+    1683:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
+    1686:	8b 55 e4             	mov    edx,DWORD PTR [ebp-0x1c]
+    1689:	01 c8                	add    eax,ecx
+    168b:	11 da                	adc    edx,ebx
+    168d:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
+    1690:	89 41 10             	mov    DWORD PTR [ecx+0x10],eax
+    1693:	89 51 14             	mov    DWORD PTR [ecx+0x14],edx
+    1696:	eb 1c                	jmp    16b4 <proc_add_time+0x9b>
 		else
 				pc->ns_user += ns;
-    15e6:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    15e9:	8b 48 18             	mov    ecx,DWORD PTR [eax+0x18]
-    15ec:	8b 58 1c             	mov    ebx,DWORD PTR [eax+0x1c]
-    15ef:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
-    15f2:	8b 55 e4             	mov    edx,DWORD PTR [ebp-0x1c]
-    15f5:	01 c8                	add    eax,ecx
-    15f7:	11 da                	adc    edx,ebx
-    15f9:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
-    15fc:	89 41 18             	mov    DWORD PTR [ecx+0x18],eax
-    15ff:	89 51 1c             	mov    DWORD PTR [ecx+0x1c],edx
+    1698:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    169b:	8b 48 18             	mov    ecx,DWORD PTR [eax+0x18]
+    169e:	8b 58 1c             	mov    ebx,DWORD PTR [eax+0x1c]
+    16a1:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
+    16a4:	8b 55 e4             	mov    edx,DWORD PTR [ebp-0x1c]
+    16a7:	01 c8                	add    eax,ecx
+    16a9:	11 da                	adc    edx,ebx
+    16ab:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
+    16ae:	89 41 18             	mov    DWORD PTR [ecx+0x18],eax
+    16b1:	89 51 1c             	mov    DWORD PTR [ecx+0x1c],edx
 		pc->n_times++;
-    1602:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    1605:	8b 40 44             	mov    eax,DWORD PTR [eax+0x44]
-    1608:	8d 50 01             	lea    edx,[eax+0x1]
-    160b:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    160e:	89 50 44             	mov    DWORD PTR [eax+0x44],edx
+    16b4:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    16b7:	8b 40 44             	mov    eax,DWORD PTR [eax+0x44]
+    16ba:	8d 50 01             	lea    edx,[eax+0x1]
+    16bd:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    16c0:	89 50 44             	mov    DWORD PTR [eax+0x44],edx
 }
-    1611:	90                   	nop
-    1612:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
-    1615:	c9                   	leave
-    1616:	c3                   	ret
+    16c3:	90                   	nop
+    16c4:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
+    16c7:	c9                   	leave
+    16c8:	c3                   	ret
 
-00001617 <get_runtime>:
+000016c9 <get_runtime>:
 
 /* returns runtime in ns */
 uint64_t get_runtime(struct tsi* t)
 {
-    1617:	55                   	push   ebp
-    1618:	89 e5                	mov    ebp,esp
-    161a:	53                   	push   ebx
-    161b:	83 ec 34             	sub    esp,0x34
+    16c9:	55                   	push   ebp
+    16ca:	89 e5                	mov    ebp,esp
+    16cc:	53                   	push   ebx
+    16cd:	83 ec 44             	sub    esp,0x44
 		uint64_t rv;
 		union {	uint64_t val; struct { uint32_t lo, hi; }; } b, e, d;
 		b.val = t->start_time;
-    161e:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1621:	8b 50 38             	mov    edx,DWORD PTR [eax+0x38]
-    1624:	8b 40 34             	mov    eax,DWORD PTR [eax+0x34]
-    1627:	89 45 e0             	mov    DWORD PTR [ebp-0x20],eax
-    162a:	89 55 e4             	mov    DWORD PTR [ebp-0x1c],edx
+    16d0:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    16d3:	8b 50 38             	mov    edx,DWORD PTR [eax+0x38]
+    16d6:	8b 40 34             	mov    eax,DWORD PTR [eax+0x34]
+    16d9:	89 45 e0             	mov    DWORD PTR [ebp-0x20],eax
+    16dc:	89 55 e4             	mov    DWORD PTR [ebp-0x1c],edx
 		e.val = t->stop_time;
-    162d:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1630:	8b 50 40             	mov    edx,DWORD PTR [eax+0x40]
-    1633:	8b 40 3c             	mov    eax,DWORD PTR [eax+0x3c]
-    1636:	89 45 d8             	mov    DWORD PTR [ebp-0x28],eax
-    1639:	89 55 dc             	mov    DWORD PTR [ebp-0x24],edx
+    16df:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    16e2:	8b 50 40             	mov    edx,DWORD PTR [eax+0x40]
+    16e5:	8b 40 3c             	mov    eax,DWORD PTR [eax+0x3c]
+    16e8:	89 45 d8             	mov    DWORD PTR [ebp-0x28],eax
+    16eb:	89 55 dc             	mov    DWORD PTR [ebp-0x24],edx
 		d.val = e.val - b.val;
-    163c:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-    163f:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
-    1642:	8b 4d e0             	mov    ecx,DWORD PTR [ebp-0x20]
-    1645:	8b 5d e4             	mov    ebx,DWORD PTR [ebp-0x1c]
-    1648:	29 c8                	sub    eax,ecx
-    164a:	19 da                	sbb    edx,ebx
-    164c:	89 45 d0             	mov    DWORD PTR [ebp-0x30],eax
-    164f:	89 55 d4             	mov    DWORD PTR [ebp-0x2c],edx
+    16ee:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+    16f1:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
+    16f4:	8b 4d e0             	mov    ecx,DWORD PTR [ebp-0x20]
+    16f7:	8b 5d e4             	mov    ebx,DWORD PTR [ebp-0x1c]
+    16fa:	29 c8                	sub    eax,ecx
+    16fc:	19 da                	sbb    edx,ebx
+    16fe:	89 45 d0             	mov    DWORD PTR [ebp-0x30],eax
+    1701:	89 55 d4             	mov    DWORD PTR [ebp-0x2c],edx
 		if (cpu.invariant_tsc) {
-    1652:	a1 6c 00 00 00       	mov    eax,ds:0x6c
-    1657:	85 c0                	test   eax,eax
-    1659:	74 3f                	je     169a <get_runtime+0x83>
+    1704:	a1 6c 00 00 00       	mov    eax,ds:0x6c
+    1709:	85 c0                	test   eax,eax
+    170b:	74 47                	je     1754 <get_runtime+0x8b>
 				rv = 1000000 * d.val / tsc_per_ms;
-    165b:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-    165e:	8b 55 d4             	mov    edx,DWORD PTR [ebp-0x2c]
-    1661:	69 da 40 42 0f 00    	imul   ebx,edx,0xf4240
-    1667:	6b c8 00             	imul   ecx,eax,0x0
-    166a:	01 d9                	add    ecx,ebx
-    166c:	bb 40 42 0f 00       	mov    ebx,0xf4240
-    1671:	f7 e3                	mul    ebx
-    1673:	01 d1                	add    ecx,edx
-    1675:	89 ca                	mov    edx,ecx
-    1677:	8b 0d 00 00 00 00    	mov    ecx,DWORD PTR ds:0x0
-    167d:	8b 1d 04 00 00 00    	mov    ebx,DWORD PTR ds:0x4
-    1683:	53                   	push   ebx
-    1684:	51                   	push   ecx
-    1685:	52                   	push   edx
-    1686:	50                   	push   eax
-    1687:	e8 fc ff ff ff       	call   1688 <get_runtime+0x71>
-    168c:	83 c4 10             	add    esp,0x10
-    168f:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
-    1692:	89 55 f4             	mov    DWORD PTR [ebp-0xc],edx
-    1695:	e9 ef 00 00 00       	jmp    1789 <get_runtime+0x172>
+    170d:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+    1710:	8b 55 d4             	mov    edx,DWORD PTR [ebp-0x2c]
+    1713:	69 da 40 42 0f 00    	imul   ebx,edx,0xf4240
+    1719:	6b c8 00             	imul   ecx,eax,0x0
+    171c:	01 d9                	add    ecx,ebx
+    171e:	bb 40 42 0f 00       	mov    ebx,0xf4240
+    1723:	f7 e3                	mul    ebx
+    1725:	01 d1                	add    ecx,edx
+    1727:	89 ca                	mov    edx,ecx
+    1729:	8b 0d 00 00 00 00    	mov    ecx,DWORD PTR ds:0x0
+    172f:	8b 1d 04 00 00 00    	mov    ebx,DWORD PTR ds:0x4
+    1735:	89 4c 24 08          	mov    DWORD PTR [esp+0x8],ecx
+    1739:	89 5c 24 0c          	mov    DWORD PTR [esp+0xc],ebx
+    173d:	89 04 24             	mov    DWORD PTR [esp],eax
+    1740:	89 54 24 04          	mov    DWORD PTR [esp+0x4],edx
+    1744:	e8 fc ff ff ff       	call   1745 <get_runtime+0x7c>
+    1749:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
+    174c:	89 55 f4             	mov    DWORD PTR [ebp-0xc],edx
+    174f:	e9 13 01 00 00       	jmp    1867 <get_runtime+0x19e>
 		} else if (cpu.has_acpi) {
-    169a:	0f b6 05 5a 00 00 00 	movzx  eax,BYTE PTR ds:0x5a
-    16a1:	83 e0 40             	and    eax,0x40
-    16a4:	84 c0                	test   al,al
-    16a6:	0f 84 ad 00 00 00    	je     1759 <get_runtime+0x142>
+    1754:	0f b6 05 5a 00 00 00 	movzx  eax,BYTE PTR ds:0x5a
+    175b:	83 e0 40             	and    eax,0x40
+    175e:	84 c0                	test   al,al
+    1760:	0f 84 c3 00 00 00    	je     1829 <get_runtime+0x160>
 				int64_t bias = 0;
-    16ac:	c7 45 e8 00 00 00 00 	mov    DWORD PTR [ebp-0x18],0x0
-    16b3:	c7 45 ec 00 00 00 00 	mov    DWORD PTR [ebp-0x14],0x0
+    1766:	c7 45 e8 00 00 00 00 	mov    DWORD PTR [ebp-0x18],0x0
+    176d:	c7 45 ec 00 00 00 00 	mov    DWORD PTR [ebp-0x14],0x0
 				/* complicated double values */
 				d.hi = e.hi - b.hi; /* jiffie/HZ difference */
-    16ba:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
-    16bd:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
-    16c0:	29 c2                	sub    edx,eax
-    16c2:	89 55 d4             	mov    DWORD PTR [ebp-0x2c],edx
+    1774:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
+    1777:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
+    177a:	29 c2                	sub    edx,eax
+    177c:	89 55 d4             	mov    DWORD PTR [ebp-0x2c],edx
 				/* countdown timer values */
 				bias = e.lo - b.lo;
-    16c5:	8b 55 d8             	mov    edx,DWORD PTR [ebp-0x28]
-    16c8:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
-    16cb:	29 c2                	sub    edx,eax
-    16cd:	89 55 e8             	mov    DWORD PTR [ebp-0x18],edx
-    16d0:	c7 45 ec 00 00 00 00 	mov    DWORD PTR [ebp-0x14],0x0
+    177f:	8b 55 d8             	mov    edx,DWORD PTR [ebp-0x28]
+    1782:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
+    1785:	29 c2                	sub    edx,eax
+    1787:	89 55 e8             	mov    DWORD PTR [ebp-0x18],edx
+    178a:	c7 45 ec 00 00 00 00 	mov    DWORD PTR [ebp-0x14],0x0
 				bias = bias * 1000000000ll / (HZ * apic_reload_value);
-    16d7:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    16da:	69 d0 00 ca 9a 3b    	imul   edx,eax,0x3b9aca00
-    16e0:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
-    16e3:	6b c0 00             	imul   eax,eax,0x0
-    16e6:	8d 0c 02             	lea    ecx,[edx+eax*1]
-    16e9:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
-    16ec:	ba 00 ca 9a 3b       	mov    edx,0x3b9aca00
-    16f1:	f7 e2                	mul    edx
-    16f3:	01 d1                	add    ecx,edx
-    16f5:	89 ca                	mov    edx,ecx
-    16f7:	8b 0d 00 00 00 00    	mov    ecx,DWORD PTR ds:0x0
-    16fd:	6b c9 79             	imul   ecx,ecx,0x79
-    1700:	bb 00 00 00 00       	mov    ebx,0x0
-    1705:	53                   	push   ebx
-    1706:	51                   	push   ecx
-    1707:	52                   	push   edx
-    1708:	50                   	push   eax
-    1709:	e8 fc ff ff ff       	call   170a <get_runtime+0xf3>
-    170e:	83 c4 10             	add    esp,0x10
-    1711:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
-    1714:	89 55 ec             	mov    DWORD PTR [ebp-0x14],edx
+    1791:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    1794:	69 d0 00 ca 9a 3b    	imul   edx,eax,0x3b9aca00
+    179a:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
+    179d:	6b c0 00             	imul   eax,eax,0x0
+    17a0:	8d 0c 02             	lea    ecx,[edx+eax*1]
+    17a3:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
+    17a6:	ba 00 ca 9a 3b       	mov    edx,0x3b9aca00
+    17ab:	f7 e2                	mul    edx
+    17ad:	01 d1                	add    ecx,edx
+    17af:	89 ca                	mov    edx,ecx
+    17b1:	8b 0d 00 00 00 00    	mov    ecx,DWORD PTR ds:0x0
+    17b7:	6b c9 79             	imul   ecx,ecx,0x79
+    17ba:	bb 00 00 00 00       	mov    ebx,0x0
+    17bf:	89 4c 24 08          	mov    DWORD PTR [esp+0x8],ecx
+    17c3:	89 5c 24 0c          	mov    DWORD PTR [esp+0xc],ebx
+    17c7:	89 04 24             	mov    DWORD PTR [esp],eax
+    17ca:	89 54 24 04          	mov    DWORD PTR [esp+0x4],edx
+    17ce:	e8 fc ff ff ff       	call   17cf <get_runtime+0x106>
+    17d3:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
+    17d6:	89 55 ec             	mov    DWORD PTR [ebp-0x14],edx
 				rv = (uint64_t)(1000000000ull * d.hi / HZ + bias);
-    1717:	8b 45 d4             	mov    eax,DWORD PTR [ebp-0x2c]
-    171a:	ba 00 00 00 00       	mov    edx,0x0
-    171f:	69 da 00 ca 9a 3b    	imul   ebx,edx,0x3b9aca00
-    1725:	6b c8 00             	imul   ecx,eax,0x0
-    1728:	01 d9                	add    ecx,ebx
-    172a:	bb 00 ca 9a 3b       	mov    ebx,0x3b9aca00
-    172f:	f7 e3                	mul    ebx
-    1731:	01 d1                	add    ecx,edx
-    1733:	89 ca                	mov    edx,ecx
-    1735:	6a 00                	push   0x0
-    1737:	6a 79                	push   0x79
-    1739:	52                   	push   edx
-    173a:	50                   	push   eax
-    173b:	e8 fc ff ff ff       	call   173c <get_runtime+0x125>
-    1740:	83 c4 10             	add    esp,0x10
-    1743:	89 c1                	mov    ecx,eax
-    1745:	89 d3                	mov    ebx,edx
-    1747:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
-    174a:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
-    174d:	01 c8                	add    eax,ecx
-    174f:	11 da                	adc    edx,ebx
-    1751:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
-    1754:	89 55 f4             	mov    DWORD PTR [ebp-0xc],edx
-    1757:	eb 30                	jmp    1789 <get_runtime+0x172>
+    17d9:	8b 45 d4             	mov    eax,DWORD PTR [ebp-0x2c]
+    17dc:	ba 00 00 00 00       	mov    edx,0x0
+    17e1:	69 da 00 ca 9a 3b    	imul   ebx,edx,0x3b9aca00
+    17e7:	6b c8 00             	imul   ecx,eax,0x0
+    17ea:	01 d9                	add    ecx,ebx
+    17ec:	bb 00 ca 9a 3b       	mov    ebx,0x3b9aca00
+    17f1:	f7 e3                	mul    ebx
+    17f3:	01 d1                	add    ecx,edx
+    17f5:	89 ca                	mov    edx,ecx
+    17f7:	c7 44 24 08 79 00 00 00 	mov    DWORD PTR [esp+0x8],0x79
+    17ff:	c7 44 24 0c 00 00 00 00 	mov    DWORD PTR [esp+0xc],0x0
+    1807:	89 04 24             	mov    DWORD PTR [esp],eax
+    180a:	89 54 24 04          	mov    DWORD PTR [esp+0x4],edx
+    180e:	e8 fc ff ff ff       	call   180f <get_runtime+0x146>
+    1813:	89 c1                	mov    ecx,eax
+    1815:	89 d3                	mov    ebx,edx
+    1817:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
+    181a:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
+    181d:	01 c8                	add    eax,ecx
+    181f:	11 da                	adc    edx,ebx
+    1821:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
+    1824:	89 55 f4             	mov    DWORD PTR [ebp-0xc],edx
+    1827:	eb 3e                	jmp    1867 <get_runtime+0x19e>
 		} else { /* jiffies */
 				rv = 1000000000ull * d.val / HZ;
-    1759:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-    175c:	8b 55 d4             	mov    edx,DWORD PTR [ebp-0x2c]
-    175f:	69 da 00 ca 9a 3b    	imul   ebx,edx,0x3b9aca00
-    1765:	6b c8 00             	imul   ecx,eax,0x0
-    1768:	01 d9                	add    ecx,ebx
-    176a:	bb 00 ca 9a 3b       	mov    ebx,0x3b9aca00
-    176f:	f7 e3                	mul    ebx
-    1771:	01 d1                	add    ecx,edx
-    1773:	89 ca                	mov    edx,ecx
-    1775:	6a 00                	push   0x0
-    1777:	6a 79                	push   0x79
-    1779:	52                   	push   edx
-    177a:	50                   	push   eax
-    177b:	e8 fc ff ff ff       	call   177c <get_runtime+0x165>
-    1780:	83 c4 10             	add    esp,0x10
-    1783:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
-    1786:	89 55 f4             	mov    DWORD PTR [ebp-0xc],edx
+    1829:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+    182c:	8b 55 d4             	mov    edx,DWORD PTR [ebp-0x2c]
+    182f:	69 da 00 ca 9a 3b    	imul   ebx,edx,0x3b9aca00
+    1835:	6b c8 00             	imul   ecx,eax,0x0
+    1838:	01 d9                	add    ecx,ebx
+    183a:	bb 00 ca 9a 3b       	mov    ebx,0x3b9aca00
+    183f:	f7 e3                	mul    ebx
+    1841:	01 d1                	add    ecx,edx
+    1843:	89 ca                	mov    edx,ecx
+    1845:	c7 44 24 08 79 00 00 00 	mov    DWORD PTR [esp+0x8],0x79
+    184d:	c7 44 24 0c 00 00 00 00 	mov    DWORD PTR [esp+0xc],0x0
+    1855:	89 04 24             	mov    DWORD PTR [esp],eax
+    1858:	89 54 24 04          	mov    DWORD PTR [esp+0x4],edx
+    185c:	e8 fc ff ff ff       	call   185d <get_runtime+0x194>
+    1861:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
+    1864:	89 55 f4             	mov    DWORD PTR [ebp-0xc],edx
 		}
 		return rv;
-    1789:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-    178c:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+    1867:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+    186a:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
 }
-    178f:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
-    1792:	c9                   	leave
-    1793:	c3                   	ret
+    186d:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
+    1870:	c9                   	leave
+    1871:	c3                   	ret
 
-00001794 <sleep>:
+00001872 <sleep>:
 struct wait_queue_head wq_idle = WAIT_QUEUE_HEAD(wq_idle);
 struct wait_queue_head wq_timer = WAIT_QUEUE_HEAD(wq_timer);
 
 int sleep(unsigned int seconds)
 {
-    1794:	55                   	push   ebp
-    1795:	89 e5                	mov    ebp,esp
-    1797:	83 ec 08             	sub    esp,0x8
+    1872:	55                   	push   ebp
+    1873:	89 e5                	mov    ebp,esp
+    1875:	83 ec 18             	sub    esp,0x18
 		wait_timeout(&wq_timer, HZ * seconds);
-    179a:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    179d:	6b c0 79             	imul   eax,eax,0x79
-    17a0:	83 ec 08             	sub    esp,0x8
-    17a3:	50                   	push   eax
-    17a4:	68 00 00 00 00       	push   0x0
-    17a9:	e8 fc ff ff ff       	call   17aa <sleep+0x16>
-    17ae:	83 c4 10             	add    esp,0x10
+    1878:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    187b:	6b c0 79             	imul   eax,eax,0x79
+    187e:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    1882:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+    1889:	e8 fc ff ff ff       	call   188a <sleep+0x18>
 		return 0;
-    17b1:	b8 00 00 00 00       	mov    eax,0x0
+    188e:	b8 00 00 00 00       	mov    eax,0x0
 }
-    17b6:	c9                   	leave
-    17b7:	c3                   	ret
+    1893:	c9                   	leave
+    1894:	c3                   	ret
 
-000017b8 <wq_add>:
+00001895 <wq_add>:
 
 static inline void wq_add(struct wait_queue_head* wq_head, struct wait_queue* wq_tail)
 {
-    17b8:	55                   	push   ebp
-    17b9:	89 e5                	mov    ebp,esp
-    17bb:	83 ec 08             	sub    esp,0x8
+    1895:	55                   	push   ebp
+    1896:	89 e5                	mov    ebp,esp
+    1898:	83 ec 18             	sub    esp,0x18
 		spin_lock(&wq_head->lock);
-    17be:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    17c1:	83 c0 08             	add    eax,0x8
-    17c4:	83 ec 0c             	sub    esp,0xc
-    17c7:	50                   	push   eax
-    17c8:	e8 fc ff ff ff       	call   17c9 <wq_add+0x11>
-    17cd:	83 c4 10             	add    esp,0x10
+    189b:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    189e:	83 c0 08             	add    eax,0x8
+    18a1:	89 04 24             	mov    DWORD PTR [esp],eax
+    18a4:	e8 fc ff ff ff       	call   18a5 <wq_add+0x10>
 		wq_head->prev->next = wq_tail;
-    17d0:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    17d3:	8b 00                	mov    eax,DWORD PTR [eax]
-    17d5:	8b 55 0c             	mov    edx,DWORD PTR [ebp+0xc]
-    17d8:	89 50 04             	mov    DWORD PTR [eax+0x4],edx
+    18a9:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    18ac:	8b 00                	mov    eax,DWORD PTR [eax]
+    18ae:	8b 55 0c             	mov    edx,DWORD PTR [ebp+0xc]
+    18b1:	89 50 04             	mov    DWORD PTR [eax+0x4],edx
 		wq_tail->prev = wq_head->prev;
-    17db:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    17de:	8b 10                	mov    edx,DWORD PTR [eax]
-    17e0:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    17e3:	89 10                	mov    DWORD PTR [eax],edx
+    18b4:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    18b7:	8b 10                	mov    edx,DWORD PTR [eax]
+    18b9:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    18bc:	89 10                	mov    DWORD PTR [eax],edx
 		wq_head->prev = wq_tail;
-    17e5:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    17e8:	8b 55 0c             	mov    edx,DWORD PTR [ebp+0xc]
-    17eb:	89 10                	mov    DWORD PTR [eax],edx
+    18be:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    18c1:	8b 55 0c             	mov    edx,DWORD PTR [ebp+0xc]
+    18c4:	89 10                	mov    DWORD PTR [eax],edx
 		wq_tail->next = wq_head;
-    17ed:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    17f0:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
-    17f3:	89 50 04             	mov    DWORD PTR [eax+0x4],edx
+    18c6:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    18c9:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
+    18cc:	89 50 04             	mov    DWORD PTR [eax+0x4],edx
 		spin_unlock(&wq_head->lock);
-    17f6:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    17f9:	83 c0 08             	add    eax,0x8
-    17fc:	83 ec 0c             	sub    esp,0xc
-    17ff:	50                   	push   eax
-    1800:	e8 fc ff ff ff       	call   1801 <wq_add+0x49>
-    1805:	83 c4 10             	add    esp,0x10
+    18cf:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    18d2:	83 c0 08             	add    eax,0x8
+    18d5:	89 04 24             	mov    DWORD PTR [esp],eax
+    18d8:	e8 fc ff ff ff       	call   18d9 <wq_add+0x44>
 }
-    1808:	90                   	nop
-    1809:	c9                   	leave
-    180a:	c3                   	ret
+    18dd:	90                   	nop
+    18de:	c9                   	leave
+    18df:	c3                   	ret
 
-0000180b <wq_purge>:
+000018e0 <wq_purge>:
 
 static inline void wq_purge(struct wait_queue_head* wq, struct wait_queue* wq_e)
 {
-    180b:	55                   	push   ebp
-    180c:	89 e5                	mov    ebp,esp
-    180e:	83 ec 18             	sub    esp,0x18
+    18e0:	55                   	push   ebp
+    18e1:	89 e5                	mov    ebp,esp
+    18e3:	83 ec 28             	sub    esp,0x28
 		int flg;
 		spin_lock_irqsave(&wq->lock, &flg);
-    1811:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1814:	8d 50 08             	lea    edx,[eax+0x8]
-    1817:	83 ec 08             	sub    esp,0x8
-    181a:	8d 45 f0             	lea    eax,[ebp-0x10]
-    181d:	50                   	push   eax
-    181e:	52                   	push   edx
-    181f:	e8 fc ff ff ff       	call   1820 <wq_purge+0x15>
-    1824:	83 c4 10             	add    esp,0x10
+    18e6:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    18e9:	8d 50 08             	lea    edx,[eax+0x8]
+    18ec:	8d 45 f0             	lea    eax,[ebp-0x10]
+    18ef:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    18f3:	89 14 24             	mov    DWORD PTR [esp],edx
+    18f6:	e8 fc ff ff ff       	call   18f7 <wq_purge+0x17>
 		if (wq->next != (struct wait_queue*)wq) {
-    1827:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    182a:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    182d:	39 45 08             	cmp    DWORD PTR [ebp+0x8],eax
-    1830:	74 3f                	je     1871 <wq_purge+0x66>
+    18fb:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    18fe:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    1901:	39 45 08             	cmp    DWORD PTR [ebp+0x8],eax
+    1904:	74 3f                	je     1945 <wq_purge+0x65>
 				struct wait_queue* wq_n = wq->next;
-    1832:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1835:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    1838:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
+    1906:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1909:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    190c:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
 				do {
 						if (wq_n == wq_e) {
-    183b:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    183e:	3b 45 0c             	cmp    eax,DWORD PTR [ebp+0xc]
-    1841:	75 1d                	jne    1860 <wq_purge+0x55>
+    190f:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    1912:	3b 45 0c             	cmp    eax,DWORD PTR [ebp+0xc]
+    1915:	75 1d                	jne    1934 <wq_purge+0x54>
 								wq_n->prev->next = wq_n->next;
-    1843:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    1846:	8b 00                	mov    eax,DWORD PTR [eax]
-    1848:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-    184b:	8b 52 04             	mov    edx,DWORD PTR [edx+0x4]
-    184e:	89 50 04             	mov    DWORD PTR [eax+0x4],edx
+    1917:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    191a:	8b 00                	mov    eax,DWORD PTR [eax]
+    191c:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+    191f:	8b 52 04             	mov    edx,DWORD PTR [edx+0x4]
+    1922:	89 50 04             	mov    DWORD PTR [eax+0x4],edx
 								wq_n->next->prev = wq_n->prev;
-    1851:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    1854:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    1857:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-    185a:	8b 12                	mov    edx,DWORD PTR [edx]
-    185c:	89 10                	mov    DWORD PTR [eax],edx
+    1925:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    1928:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    192b:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+    192e:	8b 12                	mov    edx,DWORD PTR [edx]
+    1930:	89 10                	mov    DWORD PTR [eax],edx
 								break;
-    185e:	eb 11                	jmp    1871 <wq_purge+0x66>
+    1932:	eb 11                	jmp    1945 <wq_purge+0x65>
 						}
 				} while ((wq_n = wq_n->next) != (struct wait_queue*)wq);
-    1860:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    1863:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    1866:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
-    1869:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    186c:	3b 45 08             	cmp    eax,DWORD PTR [ebp+0x8]
-    186f:	75 ca                	jne    183b <wq_purge+0x30>
+    1934:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    1937:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    193a:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
+    193d:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    1940:	3b 45 08             	cmp    eax,DWORD PTR [ebp+0x8]
+    1943:	75 ca                	jne    190f <wq_purge+0x2f>
 		}
 		spin_unlock_irqrestore(&wq->lock, flg);
-    1871:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-    1874:	89 c2                	mov    edx,eax
-    1876:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1879:	83 c0 08             	add    eax,0x8
-    187c:	83 ec 08             	sub    esp,0x8
-    187f:	52                   	push   edx
-    1880:	50                   	push   eax
-    1881:	e8 fc ff ff ff       	call   1882 <wq_purge+0x77>
-    1886:	83 c4 10             	add    esp,0x10
+    1945:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+    1948:	89 c2                	mov    edx,eax
+    194a:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    194d:	83 c0 08             	add    eax,0x8
+    1950:	89 54 24 04          	mov    DWORD PTR [esp+0x4],edx
+    1954:	89 04 24             	mov    DWORD PTR [esp],eax
+    1957:	e8 fc ff ff ff       	call   1958 <wq_purge+0x78>
 }
-    1889:	90                   	nop
-    188a:	c9                   	leave
-    188b:	c3                   	ret
+    195c:	90                   	nop
+    195d:	c9                   	leave
+    195e:	c3                   	ret
 
-0000188c <wait_on_event>:
+0000195f <wait_on_event>:
 
 void wait_on_event(struct wait_queue_head* wq)
 {
-    188c:	55                   	push   ebp
-    188d:	89 e5                	mov    ebp,esp
-    188f:	83 ec 28             	sub    esp,0x28
+    195f:	55                   	push   ebp
+    1960:	89 e5                	mov    ebp,esp
+    1962:	83 ec 38             	sub    esp,0x38
 		struct wait_queue my_q;
 		if (__sync_bool_compare_and_swap(&wq->signaled, 1, 0))
-    1892:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1895:	8d 50 0c             	lea    edx,[eax+0xc]
-    1898:	b8 01 00 00 00       	mov    eax,0x1
-    189d:	b9 00 00 00 00       	mov    ecx,0x0
-    18a2:	f0 0f b1 0a          	lock cmpxchg DWORD PTR [edx],ecx
-    18a6:	0f 94 c0             	sete   al
-    18a9:	84 c0                	test   al,al
-    18ab:	0f 85 81 00 00 00    	jne    1932 <wait_on_event+0xa6>
+    1965:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1968:	8d 50 0c             	lea    edx,[eax+0xc]
+    196b:	b8 01 00 00 00       	mov    eax,0x1
+    1970:	b9 00 00 00 00       	mov    ecx,0x0
+    1975:	f0 0f b1 0a          	lock cmpxchg DWORD PTR [edx],ecx
+    1979:	0f 94 c0             	sete   al
+    197c:	84 c0                	test   al,al
+    197e:	0f 85 81 00 00 00    	jne    1a05 <wait_on_event+0xa6>
 				return; /* handle signalling */
 		if (preempt_needs_init)
-    18b1:	a1 00 00 00 00       	mov    eax,ds:0x0
-    18b6:	85 c0                	test   eax,eax
-    18b8:	75 7b                	jne    1935 <wait_on_event+0xa9>
+    1984:	a1 00 00 00 00       	mov    eax,ds:0x0
+    1989:	85 c0                	test   eax,eax
+    198b:	75 7b                	jne    1a08 <wait_on_event+0xa9>
 				return;
 		else if (preempt_count())
-    18ba:	e8 fc ff ff ff       	call   18bb <wait_on_event+0x2f>
-    18bf:	8b 40 18             	mov    eax,DWORD PTR [eax+0x18]
-    18c2:	85 c0                	test   eax,eax
-    18c4:	75 72                	jne    1938 <wait_on_event+0xac>
+    198d:	e8 fc ff ff ff       	call   198e <wait_on_event+0x2f>
+    1992:	8b 40 18             	mov    eax,DWORD PTR [eax+0x18]
+    1995:	85 c0                	test   eax,eax
+    1997:	75 72                	jne    1a0b <wait_on_event+0xac>
 				return;
 		my_q.task = get_task();
-    18c6:	e8 fc ff ff ff       	call   18c7 <wait_on_event+0x3b>
-    18cb:	89 45 ec             	mov    DWORD PTR [ebp-0x14],eax
+    1999:	e8 fc ff ff ff       	call   199a <wait_on_event+0x3b>
+    199e:	89 45 ec             	mov    DWORD PTR [ebp-0x14],eax
 		my_q.timeout = 0;
-    18ce:	c7 45 f0 00 00 00 00 	mov    DWORD PTR [ebp-0x10],0x0
-    18d5:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
+    19a1:	c7 45 f0 00 00 00 00 	mov    DWORD PTR [ebp-0x10],0x0
+    19a8:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
 		wq_add(wq, &my_q);
-    18dc:	83 ec 08             	sub    esp,0x8
-    18df:	8d 45 e4             	lea    eax,[ebp-0x1c]
-    18e2:	50                   	push   eax
-    18e3:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-    18e6:	e8 cd fe ff ff       	call   17b8 <wq_add>
-    18eb:	83 c4 10             	add    esp,0x10
+    19af:	8d 45 e4             	lea    eax,[ebp-0x1c]
+    19b2:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    19b6:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    19b9:	89 04 24             	mov    DWORD PTR [esp],eax
+    19bc:	e8 d4 fe ff ff       	call   1895 <wq_add>
 		if (!__sync_bool_compare_and_swap(&wq->signaled, 1, 0)) { /* again */
-    18ee:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    18f1:	8d 50 0c             	lea    edx,[eax+0xc]
-    18f4:	b8 01 00 00 00       	mov    eax,0x1
-    18f9:	b9 00 00 00 00       	mov    ecx,0x0
-    18fe:	f0 0f b1 0a          	lock cmpxchg DWORD PTR [edx],ecx
-    1902:	0f 94 c0             	sete   al
-    1905:	83 f0 01             	xor    eax,0x1
-    1908:	84 c0                	test   al,al
-    190a:	74 12                	je     191e <wait_on_event+0x92>
+    19c1:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    19c4:	8d 50 0c             	lea    edx,[eax+0xc]
+    19c7:	b8 01 00 00 00       	mov    eax,0x1
+    19cc:	b9 00 00 00 00       	mov    ecx,0x0
+    19d1:	f0 0f b1 0a          	lock cmpxchg DWORD PTR [edx],ecx
+    19d5:	0f 94 c0             	sete   al
+    19d8:	83 f0 01             	xor    eax,0x1
+    19db:	84 c0                	test   al,al
+    19dd:	74 12                	je     19f1 <wait_on_event+0x92>
 				my_q.task->flags |= TIF_SLEEPING;
-    190c:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    190f:	8b 10                	mov    edx,DWORD PTR [eax]
-    1911:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    1914:	80 ca 80             	or     dl,0x80
-    1917:	89 10                	mov    DWORD PTR [eax],edx
+    19df:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    19e2:	8b 10                	mov    edx,DWORD PTR [eax]
+    19e4:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    19e7:	80 ca 80             	or     dl,0x80
+    19ea:	89 10                	mov    DWORD PTR [eax],edx
 				task_yield();
-    1919:	e8 fc ff ff ff       	call   191a <wait_on_event+0x8e>
+    19ec:	e8 fc ff ff ff       	call   19ed <wait_on_event+0x8e>
 		}
 		/* purge my_q as long as it's valid */
 		wq_purge(wq, &my_q);
-    191e:	83 ec 08             	sub    esp,0x8
-    1921:	8d 45 e4             	lea    eax,[ebp-0x1c]
-    1924:	50                   	push   eax
-    1925:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-    1928:	e8 de fe ff ff       	call   180b <wq_purge>
-    192d:	83 c4 10             	add    esp,0x10
-    1930:	eb 07                	jmp    1939 <wait_on_event+0xad>
+    19f1:	8d 45 e4             	lea    eax,[ebp-0x1c]
+    19f4:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    19f8:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    19fb:	89 04 24             	mov    DWORD PTR [esp],eax
+    19fe:	e8 dd fe ff ff       	call   18e0 <wq_purge>
+    1a03:	eb 07                	jmp    1a0c <wait_on_event+0xad>
 				return; /* handle signalling */
-    1932:	90                   	nop
-    1933:	eb 04                	jmp    1939 <wait_on_event+0xad>
+    1a05:	90                   	nop
+    1a06:	eb 04                	jmp    1a0c <wait_on_event+0xad>
 				return;
-    1935:	90                   	nop
-    1936:	eb 01                	jmp    1939 <wait_on_event+0xad>
+    1a08:	90                   	nop
+    1a09:	eb 01                	jmp    1a0c <wait_on_event+0xad>
 				return;
-    1938:	90                   	nop
+    1a0b:	90                   	nop
 }
-    1939:	c9                   	leave
-    193a:	c3                   	ret
+    1a0c:	c9                   	leave
+    1a0d:	c3                   	ret
 
-0000193b <wait_timeout>:
+00001a0e <wait_timeout>:
 
 void wait_timeout(struct wait_queue_head* wq, uint32_t delta)
 {
-    193b:	55                   	push   ebp
-    193c:	89 e5                	mov    ebp,esp
-    193e:	53                   	push   ebx
-    193f:	83 ec 24             	sub    esp,0x24
+    1a0e:	55                   	push   ebp
+    1a0f:	89 e5                	mov    ebp,esp
+    1a11:	53                   	push   ebx
+    1a12:	83 ec 34             	sub    esp,0x34
 		struct wait_queue my_q;
 		my_q.task = get_task();
-    1942:	e8 fc ff ff ff       	call   1943 <wait_timeout+0x8>
-    1947:	89 45 ec             	mov    DWORD PTR [ebp-0x14],eax
+    1a15:	e8 fc ff ff ff       	call   1a16 <wait_timeout+0x8>
+    1a1a:	89 45 ec             	mov    DWORD PTR [ebp-0x14],eax
 		my_q.timeout = jiffies + delta;
-    194a:	a1 00 00 00 00       	mov    eax,ds:0x0
-    194f:	8b 50 04             	mov    edx,DWORD PTR [eax+0x4]
-    1952:	8b 00                	mov    eax,DWORD PTR [eax]
-    1954:	8b 4d 0c             	mov    ecx,DWORD PTR [ebp+0xc]
-    1957:	bb 00 00 00 00       	mov    ebx,0x0
-    195c:	01 c8                	add    eax,ecx
-    195e:	11 da                	adc    edx,ebx
-    1960:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
-    1963:	89 55 f4             	mov    DWORD PTR [ebp-0xc],edx
+    1a1d:	a1 00 00 00 00       	mov    eax,ds:0x0
+    1a22:	8b 50 04             	mov    edx,DWORD PTR [eax+0x4]
+    1a25:	8b 00                	mov    eax,DWORD PTR [eax]
+    1a27:	8b 4d 0c             	mov    ecx,DWORD PTR [ebp+0xc]
+    1a2a:	bb 00 00 00 00       	mov    ebx,0x0
+    1a2f:	01 c8                	add    eax,ecx
+    1a31:	11 da                	adc    edx,ebx
+    1a33:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
+    1a36:	89 55 f4             	mov    DWORD PTR [ebp-0xc],edx
 		wq_add(wq, &my_q);
-    1966:	83 ec 08             	sub    esp,0x8
-    1969:	8d 45 e4             	lea    eax,[ebp-0x1c]
-    196c:	50                   	push   eax
-    196d:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-    1970:	e8 43 fe ff ff       	call   17b8 <wq_add>
-    1975:	83 c4 10             	add    esp,0x10
+    1a39:	8d 45 e4             	lea    eax,[ebp-0x1c]
+    1a3c:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    1a40:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1a43:	89 04 24             	mov    DWORD PTR [esp],eax
+    1a46:	e8 4a fe ff ff       	call   1895 <wq_add>
 		my_q.task->flags |= TIF_SLEEPING;
-    1978:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    197b:	8b 10                	mov    edx,DWORD PTR [eax]
-    197d:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    1980:	80 ca 80             	or     dl,0x80
-    1983:	89 10                	mov    DWORD PTR [eax],edx
+    1a4b:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    1a4e:	8b 10                	mov    edx,DWORD PTR [eax]
+    1a50:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    1a53:	80 ca 80             	or     dl,0x80
+    1a56:	89 10                	mov    DWORD PTR [eax],edx
 		task_yield();
-    1985:	e8 fc ff ff ff       	call   1986 <wait_timeout+0x4b>
+    1a58:	e8 fc ff ff ff       	call   1a59 <wait_timeout+0x4b>
 		/* purge my_q as long as it's valid */
 		wq_purge(wq, &my_q);
-    198a:	83 ec 08             	sub    esp,0x8
-    198d:	8d 45 e4             	lea    eax,[ebp-0x1c]
-    1990:	50                   	push   eax
-    1991:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-    1994:	e8 72 fe ff ff       	call   180b <wq_purge>
-    1999:	83 c4 10             	add    esp,0x10
+    1a5d:	8d 45 e4             	lea    eax,[ebp-0x1c]
+    1a60:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    1a64:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1a67:	89 04 24             	mov    DWORD PTR [esp],eax
+    1a6a:	e8 71 fe ff ff       	call   18e0 <wq_purge>
 }
-    199c:	90                   	nop
-    199d:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
-    19a0:	c9                   	leave
-    19a1:	c3                   	ret
+    1a6f:	90                   	nop
+    1a70:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
+    1a73:	c9                   	leave
+    1a74:	c3                   	ret
 
-000019a2 <wake_task>:
+00001a75 <wake_task>:
 
 int wake_task(struct tsi* t)
 {
-    19a2:	55                   	push   ebp
-    19a3:	89 e5                	mov    ebp,esp
-    19a5:	83 ec 18             	sub    esp,0x18
+    1a75:	55                   	push   ebp
+    1a76:	89 e5                	mov    ebp,esp
+    1a78:	83 ec 28             	sub    esp,0x28
 		int rv = 0;
-    19a8:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
+    1a7b:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
 		if (!t)
-    19af:	83 7d 08 00          	cmp    DWORD PTR [ebp+0x8],0x0
-    19b3:	75 14                	jne    19c9 <wake_task+0x27>
+    1a82:	83 7d 08 00          	cmp    DWORD PTR [ebp+0x8],0x0
+    1a86:	75 16                	jne    1a9e <wake_task+0x29>
 				cprintf(KFMT_WARN, "Empty queue entry in wait queue\n");
-    19b5:	83 ec 08             	sub    esp,0x8
-    19b8:	68 f4 03 00 00       	push   0x3f4
-    19bd:	6a 0e                	push   0xe
-    19bf:	e8 fc ff ff ff       	call   19c0 <wake_task+0x1e>
-    19c4:	83 c4 10             	add    esp,0x10
-    19c7:	eb 3c                	jmp    1a05 <wake_task+0x63>
+    1a88:	c7 44 24 04 f4 03 00 00 	mov    DWORD PTR [esp+0x4],0x3f4
+    1a90:	c7 04 24 0e 00 00 00 	mov    DWORD PTR [esp],0xe
+    1a97:	e8 fc ff ff ff       	call   1a98 <wake_task+0x23>
+    1a9c:	eb 3c                	jmp    1ada <wake_task+0x65>
 		else { /* TODO: maybe check if really sleeping */
 				t->flags &= ~TIF_SLEEPING;
-    19c9:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    19cc:	8b 00                	mov    eax,DWORD PTR [eax]
-    19ce:	24 7f                	and    al,0x7f
-    19d0:	89 c2                	mov    edx,eax
-    19d2:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    19d5:	89 10                	mov    DWORD PTR [eax],edx
+    1a9e:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1aa1:	8b 00                	mov    eax,DWORD PTR [eax]
+    1aa3:	24 7f                	and    al,0x7f
+    1aa5:	89 c2                	mov    edx,eax
+    1aa7:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1aaa:	89 10                	mov    DWORD PTR [eax],edx
 				pq_enqueue((t->flags & TIF_EXPIRED) ?
-    19d7:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    19da:	8b 00                	mov    eax,DWORD PTR [eax]
-    19dc:	83 e0 20             	and    eax,0x20
-    19df:	85 c0                	test   eax,eax
-    19e1:	74 07                	je     19ea <wake_task+0x48>
-    19e3:	a1 00 00 00 00       	mov    eax,ds:0x0
-    19e8:	eb 05                	jmp    19ef <wake_task+0x4d>
-    19ea:	a1 00 00 00 00       	mov    eax,ds:0x0
-    19ef:	83 ec 08             	sub    esp,0x8
-    19f2:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-    19f5:	50                   	push   eax
-    19f6:	e8 fc ff ff ff       	call   19f7 <wake_task+0x55>
-    19fb:	83 c4 10             	add    esp,0x10
+    1aac:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1aaf:	8b 00                	mov    eax,DWORD PTR [eax]
+    1ab1:	83 e0 20             	and    eax,0x20
+    1ab4:	85 c0                	test   eax,eax
+    1ab6:	74 07                	je     1abf <wake_task+0x4a>
+    1ab8:	a1 00 00 00 00       	mov    eax,ds:0x0
+    1abd:	eb 05                	jmp    1ac4 <wake_task+0x4f>
+    1abf:	a1 00 00 00 00       	mov    eax,ds:0x0
+    1ac4:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
+    1ac7:	89 54 24 04          	mov    DWORD PTR [esp+0x4],edx
+    1acb:	89 04 24             	mov    DWORD PTR [esp],eax
+    1ace:	e8 fc ff ff ff       	call   1acf <wake_task+0x5a>
 						expired_queue : run_queue, t);
 				rv = 1;
-    19fe:	c7 45 f4 01 00 00 00 	mov    DWORD PTR [ebp-0xc],0x1
+    1ad3:	c7 45 f4 01 00 00 00 	mov    DWORD PTR [ebp-0xc],0x1
 		}
 		return rv;
-    1a05:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    1ada:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
 }
-    1a08:	c9                   	leave
-    1a09:	c3                   	ret
+    1add:	c9                   	leave
+    1ade:	c3                   	ret
 
-00001a0a <wake_up>:
+00001adf <wake_up>:
 
 /* called by the scheduler holding pq_lock */
 int wake_up(struct wait_queue_head* wq)
 {
-    1a0a:	55                   	push   ebp
-    1a0b:	89 e5                	mov    ebp,esp
-    1a0d:	83 ec 18             	sub    esp,0x18
+    1adf:	55                   	push   ebp
+    1ae0:	89 e5                	mov    ebp,esp
+    1ae2:	83 ec 28             	sub    esp,0x28
 		int rv = 0;
-    1a10:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
+    1ae5:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
 		spin_lock(&wq->lock);
-    1a17:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1a1a:	83 c0 08             	add    eax,0x8
-    1a1d:	83 ec 0c             	sub    esp,0xc
-    1a20:	50                   	push   eax
-    1a21:	e8 fc ff ff ff       	call   1a22 <wake_up+0x18>
-    1a26:	83 c4 10             	add    esp,0x10
+    1aec:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1aef:	83 c0 08             	add    eax,0x8
+    1af2:	89 04 24             	mov    DWORD PTR [esp],eax
+    1af5:	e8 fc ff ff ff       	call   1af6 <wake_up+0x17>
 		if (wq->next != (struct wait_queue*)wq) {
-    1a29:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1a2c:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    1a2f:	39 45 08             	cmp    DWORD PTR [ebp+0x8],eax
-    1a32:	74 39                	je     1a6d <wake_up+0x63>
+    1afa:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1afd:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    1b00:	39 45 08             	cmp    DWORD PTR [ebp+0x8],eax
+    1b03:	74 35                	je     1b3a <wake_up+0x5b>
 				struct wait_queue* wq_n = wq->next;
-    1a34:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1a37:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    1a3a:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
+    1b05:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1b08:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    1b0b:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
 				/* non empty but never remove the acutal head */
 				wq_n->prev->next = wq_n->next;
-    1a3d:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-    1a40:	8b 00                	mov    eax,DWORD PTR [eax]
-    1a42:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
-    1a45:	8b 52 04             	mov    edx,DWORD PTR [edx+0x4]
-    1a48:	89 50 04             	mov    DWORD PTR [eax+0x4],edx
+    1b0e:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+    1b11:	8b 00                	mov    eax,DWORD PTR [eax]
+    1b13:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
+    1b16:	8b 52 04             	mov    edx,DWORD PTR [edx+0x4]
+    1b19:	89 50 04             	mov    DWORD PTR [eax+0x4],edx
 				wq_n->next->prev = wq_n->prev;
-    1a4b:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-    1a4e:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    1a51:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
-    1a54:	8b 12                	mov    edx,DWORD PTR [edx]
-    1a56:	89 10                	mov    DWORD PTR [eax],edx
+    1b1c:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+    1b1f:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    1b22:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
+    1b25:	8b 12                	mov    edx,DWORD PTR [edx]
+    1b27:	89 10                	mov    DWORD PTR [eax],edx
 				rv = wake_task(wq_n->task);
-    1a58:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-    1a5b:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
-    1a5e:	83 ec 0c             	sub    esp,0xc
-    1a61:	50                   	push   eax
-    1a62:	e8 fc ff ff ff       	call   1a63 <wake_up+0x59>
-    1a67:	83 c4 10             	add    esp,0x10
-    1a6a:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
+    1b29:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+    1b2c:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
+    1b2f:	89 04 24             	mov    DWORD PTR [esp],eax
+    1b32:	e8 fc ff ff ff       	call   1b33 <wake_up+0x54>
+    1b37:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
 		}
 		spin_unlock(&wq->lock);
-    1a6d:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1a70:	83 c0 08             	add    eax,0x8
-    1a73:	83 ec 0c             	sub    esp,0xc
-    1a76:	50                   	push   eax
-    1a77:	e8 fc ff ff ff       	call   1a78 <wake_up+0x6e>
-    1a7c:	83 c4 10             	add    esp,0x10
+    1b3a:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1b3d:	83 c0 08             	add    eax,0x8
+    1b40:	89 04 24             	mov    DWORD PTR [esp],eax
+    1b43:	e8 fc ff ff ff       	call   1b44 <wake_up+0x65>
 		return rv;
-    1a7f:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    1b48:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
 }
-    1a82:	c9                   	leave
-    1a83:	c3                   	ret
+    1b4b:	c9                   	leave
+    1b4c:	c3                   	ret
 
-00001a84 <wake_up_all>:
+00001b4d <wake_up_all>:
 
 int wake_up_all(struct wait_queue* wq)
 {
-    1a84:	55                   	push   ebp
-    1a85:	89 e5                	mov    ebp,esp
-    1a87:	83 ec 18             	sub    esp,0x18
+    1b4d:	55                   	push   ebp
+    1b4e:	89 e5                	mov    ebp,esp
+    1b50:	83 ec 28             	sub    esp,0x28
 		int rv = 0;
-    1a8a:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
+    1b53:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
 		while (wake_up(wq))
-    1a91:	eb 04                	jmp    1a97 <wake_up_all+0x13>
+    1b5a:	eb 04                	jmp    1b60 <wake_up_all+0x13>
 				rv++;
-    1a93:	83 45 f4 01          	add    DWORD PTR [ebp-0xc],0x1
+    1b5c:	83 45 f4 01          	add    DWORD PTR [ebp-0xc],0x1
 		while (wake_up(wq))
-    1a97:	83 ec 0c             	sub    esp,0xc
-    1a9a:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-    1a9d:	e8 fc ff ff ff       	call   1a9e <wake_up_all+0x1a>
-    1aa2:	83 c4 10             	add    esp,0x10
-    1aa5:	85 c0                	test   eax,eax
-    1aa7:	75 ea                	jne    1a93 <wake_up_all+0xf>
+    1b60:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1b63:	89 04 24             	mov    DWORD PTR [esp],eax
+    1b66:	e8 fc ff ff ff       	call   1b67 <wake_up_all+0x1a>
+    1b6b:	85 c0                	test   eax,eax
+    1b6d:	75 ed                	jne    1b5c <wake_up_all+0xf>
 		return rv;
-    1aa9:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    1b6f:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
 }
-    1aac:	c9                   	leave
-    1aad:	c3                   	ret
+    1b72:	c9                   	leave
+    1b73:	c3                   	ret
 
-00001aae <wake_up_external_event>:
+00001b74 <wake_up_external_event>:
 
 int wake_up_external_event(struct wait_queue_head* wq)
 {
-    1aae:	55                   	push   ebp
-    1aaf:	89 e5                	mov    ebp,esp
-    1ab1:	83 ec 18             	sub    esp,0x18
+    1b74:	55                   	push   ebp
+    1b75:	89 e5                	mov    ebp,esp
+    1b77:	83 ec 28             	sub    esp,0x28
 		int rv = 0;
-    1ab4:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
+    1b7a:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
 		spin_lock(&wq->lock);
-    1abb:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1abe:	83 c0 08             	add    eax,0x8
-    1ac1:	83 ec 0c             	sub    esp,0xc
-    1ac4:	50                   	push   eax
-    1ac5:	e8 fc ff ff ff       	call   1ac6 <wake_up_external_event+0x18>
-    1aca:	83 c4 10             	add    esp,0x10
+    1b81:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1b84:	83 c0 08             	add    eax,0x8
+    1b87:	89 04 24             	mov    DWORD PTR [esp],eax
+    1b8a:	e8 fc ff ff ff       	call   1b8b <wake_up_external_event+0x17>
 		if (wq->next != (struct wait_queue*)wq) {
-    1acd:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1ad0:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    1ad3:	39 45 08             	cmp    DWORD PTR [ebp+0x8],eax
-    1ad6:	74 5d                	je     1b35 <wake_up_external_event+0x87>
+    1b8f:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1b92:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    1b95:	39 45 08             	cmp    DWORD PTR [ebp+0x8],eax
+    1b98:	74 5d                	je     1bf7 <wake_up_external_event+0x83>
 				struct wait_queue* wq_n = wq->next;
-    1ad8:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1adb:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    1ade:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
+    1b9a:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1b9d:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    1ba0:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
 				/* non empty but never remove the acutal head */
 				wq_n->prev->next = wq_n->next;
-    1ae1:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-    1ae4:	8b 00                	mov    eax,DWORD PTR [eax]
-    1ae6:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
-    1ae9:	8b 52 04             	mov    edx,DWORD PTR [edx+0x4]
-    1aec:	89 50 04             	mov    DWORD PTR [eax+0x4],edx
+    1ba3:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+    1ba6:	8b 00                	mov    eax,DWORD PTR [eax]
+    1ba8:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
+    1bab:	8b 52 04             	mov    edx,DWORD PTR [edx+0x4]
+    1bae:	89 50 04             	mov    DWORD PTR [eax+0x4],edx
 				wq_n->next->prev = wq_n->prev;
-    1aef:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-    1af2:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    1af5:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
-    1af8:	8b 12                	mov    edx,DWORD PTR [edx]
-    1afa:	89 10                	mov    DWORD PTR [eax],edx
+    1bb1:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+    1bb4:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    1bb7:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
+    1bba:	8b 12                	mov    edx,DWORD PTR [edx]
+    1bbc:	89 10                	mov    DWORD PTR [eax],edx
 				wq_n->timeout = jiffies;
-    1afc:	a1 00 00 00 00       	mov    eax,ds:0x0
-    1b01:	8b 50 04             	mov    edx,DWORD PTR [eax+0x4]
-    1b04:	8b 00                	mov    eax,DWORD PTR [eax]
-    1b06:	8b 4d f0             	mov    ecx,DWORD PTR [ebp-0x10]
-    1b09:	89 41 0c             	mov    DWORD PTR [ecx+0xc],eax
-    1b0c:	89 51 10             	mov    DWORD PTR [ecx+0x10],edx
+    1bbe:	a1 00 00 00 00       	mov    eax,ds:0x0
+    1bc3:	8b 50 04             	mov    edx,DWORD PTR [eax+0x4]
+    1bc6:	8b 00                	mov    eax,DWORD PTR [eax]
+    1bc8:	8b 4d f0             	mov    ecx,DWORD PTR [ebp-0x10]
+    1bcb:	89 41 0c             	mov    DWORD PTR [ecx+0xc],eax
+    1bce:	89 51 10             	mov    DWORD PTR [ecx+0x10],edx
 				/* abuse the timer queue */
 				wq_add(&wq_timer, wq_n);
-    1b0f:	83 ec 08             	sub    esp,0x8
-    1b12:	ff 75 f0             	push   DWORD PTR [ebp-0x10]
-    1b15:	68 00 00 00 00       	push   0x0
-    1b1a:	e8 99 fc ff ff       	call   17b8 <wq_add>
-    1b1f:	83 c4 10             	add    esp,0x10
+    1bd1:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+    1bd4:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    1bd8:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+    1bdf:	e8 b1 fc ff ff       	call   1895 <wq_add>
 				rv = 1;
-    1b22:	c7 45 f4 01 00 00 00 	mov    DWORD PTR [ebp-0xc],0x1
+    1be4:	c7 45 f4 01 00 00 00 	mov    DWORD PTR [ebp-0xc],0x1
 				wq->signaled = 0;
-    1b29:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1b2c:	c7 40 0c 00 00 00 00 	mov    DWORD PTR [eax+0xc],0x0
-    1b33:	eb 0a                	jmp    1b3f <wake_up_external_event+0x91>
+    1beb:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1bee:	c7 40 0c 00 00 00 00 	mov    DWORD PTR [eax+0xc],0x0
+    1bf5:	eb 0a                	jmp    1c01 <wake_up_external_event+0x8d>
 		} else { /* empty -> prevent waiting forever */
 				wq->signaled = 1;
-    1b35:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1b38:	c7 40 0c 01 00 00 00 	mov    DWORD PTR [eax+0xc],0x1
+    1bf7:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1bfa:	c7 40 0c 01 00 00 00 	mov    DWORD PTR [eax+0xc],0x1
 		}
 		spin_unlock(&wq->lock);
-    1b3f:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1b42:	83 c0 08             	add    eax,0x8
-    1b45:	83 ec 0c             	sub    esp,0xc
-    1b48:	50                   	push   eax
-    1b49:	e8 fc ff ff ff       	call   1b4a <wake_up_external_event+0x9c>
-    1b4e:	83 c4 10             	add    esp,0x10
+    1c01:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1c04:	83 c0 08             	add    eax,0x8
+    1c07:	89 04 24             	mov    DWORD PTR [esp],eax
+    1c0a:	e8 fc ff ff ff       	call   1c0b <wake_up_external_event+0x97>
 		return rv;
-    1b51:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    1c0f:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
 }
-    1b54:	c9                   	leave
-    1b55:	c3                   	ret
+    1c12:	c9                   	leave
+    1c13:	c3                   	ret
 
-00001b56 <wake_up_all_external_event>:
+00001c14 <wake_up_all_external_event>:
 
 int wake_up_all_external_event(struct wait_queue_head* wq)
 {
-    1b56:	55                   	push   ebp
-    1b57:	89 e5                	mov    ebp,esp
-    1b59:	83 ec 18             	sub    esp,0x18
+    1c14:	55                   	push   ebp
+    1c15:	89 e5                	mov    ebp,esp
+    1c17:	83 ec 28             	sub    esp,0x28
 		int rv = 0;
-    1b5c:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
+    1c1a:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
 		while (wake_up_external_event(wq))
-    1b63:	eb 04                	jmp    1b69 <wake_up_all_external_event+0x13>
+    1c21:	eb 04                	jmp    1c27 <wake_up_all_external_event+0x13>
 				rv++;
-    1b65:	83 45 f4 01          	add    DWORD PTR [ebp-0xc],0x1
+    1c23:	83 45 f4 01          	add    DWORD PTR [ebp-0xc],0x1
 		while (wake_up_external_event(wq))
-    1b69:	83 ec 0c             	sub    esp,0xc
-    1b6c:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-    1b6f:	e8 fc ff ff ff       	call   1b70 <wake_up_all_external_event+0x1a>
-    1b74:	83 c4 10             	add    esp,0x10
-    1b77:	85 c0                	test   eax,eax
-    1b79:	75 ea                	jne    1b65 <wake_up_all_external_event+0xf>
+    1c27:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1c2a:	89 04 24             	mov    DWORD PTR [esp],eax
+    1c2d:	e8 fc ff ff ff       	call   1c2e <wake_up_all_external_event+0x1a>
+    1c32:	85 c0                	test   eax,eax
+    1c34:	75 ed                	jne    1c23 <wake_up_all_external_event+0xf>
 		if (rv) /* a bit iffy */
-    1b7b:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
-    1b7f:	74 0a                	je     1b8b <wake_up_all_external_event+0x35>
+    1c36:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
+    1c3a:	74 0a                	je     1c46 <wake_up_all_external_event+0x32>
 				wq->signaled = 0;
-    1b81:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1b84:	c7 40 0c 00 00 00 00 	mov    DWORD PTR [eax+0xc],0x0
+    1c3c:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1c3f:	c7 40 0c 00 00 00 00 	mov    DWORD PTR [eax+0xc],0x0
 		return rv;
-    1b8b:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    1c46:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
 }
-    1b8e:	c9                   	leave
-    1b8f:	c3                   	ret
+    1c49:	c9                   	leave
+    1c4a:	c3                   	ret
 
-00001b90 <wake_up_timer>:
+00001c4b <wake_up_timer>:
 
 int wake_up_timer(struct wait_queue_head* wq)
 {
-    1b90:	55                   	push   ebp
-    1b91:	89 e5                	mov    ebp,esp
-    1b93:	53                   	push   ebx
-    1b94:	83 ec 14             	sub    esp,0x14
+    1c4b:	55                   	push   ebp
+    1c4c:	89 e5                	mov    ebp,esp
+    1c4e:	53                   	push   ebx
+    1c4f:	83 ec 24             	sub    esp,0x24
 		int rv = 0;
-    1b97:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
+    1c52:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
 		spin_lock(&wq->lock);
-    1b9e:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1ba1:	83 c0 08             	add    eax,0x8
-    1ba4:	83 ec 0c             	sub    esp,0xc
-    1ba7:	50                   	push   eax
-    1ba8:	e8 fc ff ff ff       	call   1ba9 <wake_up_timer+0x19>
-    1bad:	83 c4 10             	add    esp,0x10
+    1c59:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1c5c:	83 c0 08             	add    eax,0x8
+    1c5f:	89 04 24             	mov    DWORD PTR [esp],eax
+    1c62:	e8 fc ff ff ff       	call   1c63 <wake_up_timer+0x18>
 		if (wq->next != (struct wait_queue*)wq) {
-    1bb0:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1bb3:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    1bb6:	39 45 08             	cmp    DWORD PTR [ebp+0x8],eax
-    1bb9:	74 6d                	je     1c28 <wake_up_timer+0x98>
+    1c67:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1c6a:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    1c6d:	39 45 08             	cmp    DWORD PTR [ebp+0x8],eax
+    1c70:	74 69                	je     1cdb <wake_up_timer+0x90>
 				struct wait_queue* wq_n = wq->next;
-    1bbb:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1bbe:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    1bc1:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
+    1c72:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1c75:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    1c78:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
 				do {
 						if (wq_n->timeout <= jiffies) {
-    1bc4:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-    1bc7:	8b 50 10             	mov    edx,DWORD PTR [eax+0x10]
-    1bca:	8b 40 0c             	mov    eax,DWORD PTR [eax+0xc]
-    1bcd:	8b 0d 00 00 00 00    	mov    ecx,DWORD PTR ds:0x0
-    1bd3:	8b 59 04             	mov    ebx,DWORD PTR [ecx+0x4]
-    1bd6:	8b 09                	mov    ecx,DWORD PTR [ecx]
-    1bd8:	39 c1                	cmp    ecx,eax
-    1bda:	19 d3                	sbb    ebx,edx
-    1bdc:	72 36                	jb     1c14 <wake_up_timer+0x84>
+    1c7b:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+    1c7e:	8b 50 10             	mov    edx,DWORD PTR [eax+0x10]
+    1c81:	8b 40 0c             	mov    eax,DWORD PTR [eax+0xc]
+    1c84:	8b 0d 00 00 00 00    	mov    ecx,DWORD PTR ds:0x0
+    1c8a:	8b 59 04             	mov    ebx,DWORD PTR [ecx+0x4]
+    1c8d:	8b 09                	mov    ecx,DWORD PTR [ecx]
+    1c8f:	39 c1                	cmp    ecx,eax
+    1c91:	19 d3                	sbb    ebx,edx
+    1c93:	72 32                	jb     1cc7 <wake_up_timer+0x7c>
 								wq_n->prev->next = wq_n->next;
-    1bde:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-    1be1:	8b 00                	mov    eax,DWORD PTR [eax]
-    1be3:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
-    1be6:	8b 52 04             	mov    edx,DWORD PTR [edx+0x4]
-    1be9:	89 50 04             	mov    DWORD PTR [eax+0x4],edx
+    1c95:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+    1c98:	8b 00                	mov    eax,DWORD PTR [eax]
+    1c9a:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
+    1c9d:	8b 52 04             	mov    edx,DWORD PTR [edx+0x4]
+    1ca0:	89 50 04             	mov    DWORD PTR [eax+0x4],edx
 								wq_n->next->prev = wq_n->prev;
-    1bec:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-    1bef:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    1bf2:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
-    1bf5:	8b 12                	mov    edx,DWORD PTR [edx]
-    1bf7:	89 10                	mov    DWORD PTR [eax],edx
+    1ca3:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+    1ca6:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    1ca9:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
+    1cac:	8b 12                	mov    edx,DWORD PTR [edx]
+    1cae:	89 10                	mov    DWORD PTR [eax],edx
 								rv = wake_task(wq_n->task);
-    1bf9:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-    1bfc:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
-    1bff:	83 ec 0c             	sub    esp,0xc
-    1c02:	50                   	push   eax
-    1c03:	e8 fc ff ff ff       	call   1c04 <wake_up_timer+0x74>
-    1c08:	83 c4 10             	add    esp,0x10
-    1c0b:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
+    1cb0:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+    1cb3:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
+    1cb6:	89 04 24             	mov    DWORD PTR [esp],eax
+    1cb9:	e8 fc ff ff ff       	call   1cba <wake_up_timer+0x6f>
+    1cbe:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
 								if (rv)
-    1c0e:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
-    1c12:	75 13                	jne    1c27 <wake_up_timer+0x97>
+    1cc1:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
+    1cc5:	75 13                	jne    1cda <wake_up_timer+0x8f>
 										break;
 						}
 				} while ((wq_n = wq_n->next) != (struct wait_queue*)wq);
-    1c14:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-    1c17:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    1c1a:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
-    1c1d:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-    1c20:	3b 45 08             	cmp    eax,DWORD PTR [ebp+0x8]
-    1c23:	75 9f                	jne    1bc4 <wake_up_timer+0x34>
-    1c25:	eb 01                	jmp    1c28 <wake_up_timer+0x98>
+    1cc7:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+    1cca:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    1ccd:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
+    1cd0:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+    1cd3:	3b 45 08             	cmp    eax,DWORD PTR [ebp+0x8]
+    1cd6:	75 a3                	jne    1c7b <wake_up_timer+0x30>
+    1cd8:	eb 01                	jmp    1cdb <wake_up_timer+0x90>
 										break;
-    1c27:	90                   	nop
+    1cda:	90                   	nop
 		}
 		spin_unlock(&wq->lock);
-    1c28:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1c2b:	83 c0 08             	add    eax,0x8
-    1c2e:	83 ec 0c             	sub    esp,0xc
-    1c31:	50                   	push   eax
-    1c32:	e8 fc ff ff ff       	call   1c33 <wake_up_timer+0xa3>
-    1c37:	83 c4 10             	add    esp,0x10
+    1cdb:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1cde:	83 c0 08             	add    eax,0x8
+    1ce1:	89 04 24             	mov    DWORD PTR [esp],eax
+    1ce4:	e8 fc ff ff ff       	call   1ce5 <wake_up_timer+0x9a>
 		return rv;
-    1c3a:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    1ce9:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
 }
-    1c3d:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
-    1c40:	c9                   	leave
-    1c41:	c3                   	ret
+    1cec:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
+    1cef:	c9                   	leave
+    1cf0:	c3                   	ret
 
-00001c42 <wake_up_timer_all>:
+00001cf1 <wake_up_timer_all>:
 
 int wake_up_timer_all(struct wait_queue_head* wq)
 {
-    1c42:	55                   	push   ebp
-    1c43:	89 e5                	mov    ebp,esp
-    1c45:	83 ec 18             	sub    esp,0x18
+    1cf1:	55                   	push   ebp
+    1cf2:	89 e5                	mov    ebp,esp
+    1cf4:	83 ec 28             	sub    esp,0x28
 		int rv = 0;
-    1c48:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
+    1cf7:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
 		while (wake_up_timer(wq))
-    1c4f:	eb 04                	jmp    1c55 <wake_up_timer_all+0x13>
+    1cfe:	eb 04                	jmp    1d04 <wake_up_timer_all+0x13>
 				rv++;
-    1c51:	83 45 f4 01          	add    DWORD PTR [ebp-0xc],0x1
+    1d00:	83 45 f4 01          	add    DWORD PTR [ebp-0xc],0x1
 		while (wake_up_timer(wq))
-    1c55:	83 ec 0c             	sub    esp,0xc
-    1c58:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-    1c5b:	e8 fc ff ff ff       	call   1c5c <wake_up_timer_all+0x1a>
-    1c60:	83 c4 10             	add    esp,0x10
-    1c63:	85 c0                	test   eax,eax
-    1c65:	75 ea                	jne    1c51 <wake_up_timer_all+0xf>
+    1d04:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1d07:	89 04 24             	mov    DWORD PTR [esp],eax
+    1d0a:	e8 fc ff ff ff       	call   1d0b <wake_up_timer_all+0x1a>
+    1d0f:	85 c0                	test   eax,eax
+    1d11:	75 ed                	jne    1d00 <wake_up_timer_all+0xf>
 		return rv;
-    1c67:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    1d13:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
 }
-    1c6a:	c9                   	leave
-    1c6b:	c3                   	ret
+    1d16:	c9                   	leave
+    1d17:	c3                   	ret
 
-00001c6c <kidle>:
+00001d18 <kidle>:
 
 void kidle(void* data)
 {
-    1c6c:	55                   	push   ebp
-    1c6d:	89 e5                	mov    ebp,esp
-    1c6f:	83 ec 08             	sub    esp,0x8
+    1d18:	55                   	push   ebp
+    1d19:	89 e5                	mov    ebp,esp
+    1d1b:	83 ec 18             	sub    esp,0x18
 		get_task()->flags |= TIF_IDLE;
-    1c72:	e8 fc ff ff ff       	call   1c73 <kidle+0x7>
-    1c77:	8b 10                	mov    edx,DWORD PTR [eax]
-    1c79:	83 ca 40             	or     edx,0x40
-    1c7c:	89 10                	mov    DWORD PTR [eax],edx
+    1d1e:	e8 fc ff ff ff       	call   1d1f <kidle+0x7>
+    1d23:	8b 10                	mov    edx,DWORD PTR [eax]
+    1d25:	83 ca 40             	or     edx,0x40
+    1d28:	89 10                	mov    DWORD PTR [eax],edx
 		while (1) {
 				wait_on_event(&wq_idle);
-    1c7e:	83 ec 0c             	sub    esp,0xc
-    1c81:	68 00 00 00 00       	push   0x0
-    1c86:	e8 fc ff ff ff       	call   1c87 <kidle+0x1b>
-    1c8b:	83 c4 10             	add    esp,0x10
+    1d2a:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+    1d31:	e8 fc ff ff ff       	call   1d32 <kidle+0x1a>
 				asm("hlt");
-    1c8e:	f4                   	hlt
+    1d36:	f4                   	hlt
 				wait_on_event(&wq_idle);
-    1c8f:	90                   	nop
-    1c90:	eb ec                	jmp    1c7e <kidle+0x12>
+    1d37:	90                   	nop
+    1d38:	eb f0                	jmp    1d2a <kidle+0x12>
 
-00001c92 <task_schedule>:
+00001d3a <task_schedule>:
 size_t ri_ofs = 0;
 
 /* called from everyone else (using cli before). The stack is the
  * stack of the current task. */
 void task_schedule(struct tsi* prev_task)
 {
-    1c92:	55                   	push   ebp
-    1c93:	89 e5                	mov    ebp,esp
-    1c95:	53                   	push   ebx
-    1c96:	83 ec 34             	sub    esp,0x34
+    1d3a:	55                   	push   ebp
+    1d3b:	89 e5                	mov    ebp,esp
+    1d3d:	53                   	push   ebx
+    1d3e:	83 ec 54             	sub    esp,0x54
 		if (preempt_needs_init) /* returns to the task_state on the stack */
-    1c99:	a1 00 00 00 00       	mov    eax,ds:0x0
-    1c9e:	85 c0                	test   eax,eax
-    1ca0:	0f 85 83 06 00 00    	jne    2329 <task_schedule+0x697>
+    1d41:	a1 00 00 00 00       	mov    eax,ds:0x0
+    1d46:	85 c0                	test   eax,eax
+    1d48:	0f 85 68 06 00 00    	jne    23b6 <task_schedule+0x67c>
 				return;    /* of the irq0 handler, i.e. where execution stopped. */
 
 		struct tsi* t;
 		/* calculate the runtime of prev_task and go back if no preemption */
 		if (prev_task) {
-    1ca6:	83 7d 08 00          	cmp    DWORD PTR [ebp+0x8],0x0
-    1caa:	0f 84 ac 00 00 00    	je     1d5c <task_schedule+0xca>
+    1d4e:	83 7d 08 00          	cmp    DWORD PTR [ebp+0x8],0x0
+    1d52:	0f 84 ad 00 00 00    	je     1e05 <task_schedule+0xcb>
 				/* happens on same proc */
 				uint64_t rt = get_runtime(prev_task);
-    1cb0:	83 ec 0c             	sub    esp,0xc
-    1cb3:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-    1cb6:	e8 fc ff ff ff       	call   1cb7 <task_schedule+0x25>
-    1cbb:	83 c4 10             	add    esp,0x10
-    1cbe:	89 45 e0             	mov    DWORD PTR [ebp-0x20],eax
-    1cc1:	89 55 e4             	mov    DWORD PTR [ebp-0x1c],edx
+    1d58:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1d5b:	89 04 24             	mov    DWORD PTR [esp],eax
+    1d5e:	e8 fc ff ff ff       	call   1d5f <task_schedule+0x25>
+    1d63:	89 45 e0             	mov    DWORD PTR [ebp-0x20],eax
+    1d66:	89 55 e4             	mov    DWORD PTR [ebp-0x1c],edx
 				prev_task->ns_run = rt; // <- could be used for nice values
-    1cc4:	8b 4d 08             	mov    ecx,DWORD PTR [ebp+0x8]
-    1cc7:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
-    1cca:	8b 55 e4             	mov    edx,DWORD PTR [ebp-0x1c]
-    1ccd:	89 41 48             	mov    DWORD PTR [ecx+0x48],eax
-    1cd0:	89 51 4c             	mov    DWORD PTR [ecx+0x4c],edx
+    1d69:	8b 4d 08             	mov    ecx,DWORD PTR [ebp+0x8]
+    1d6c:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
+    1d6f:	8b 55 e4             	mov    edx,DWORD PTR [ebp-0x1c]
+    1d72:	89 41 48             	mov    DWORD PTR [ecx+0x48],eax
+    1d75:	89 51 4c             	mov    DWORD PTR [ecx+0x4c],edx
 				prev_task->ns_acc += rt;
-    1cd3:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1cd6:	8b 48 50             	mov    ecx,DWORD PTR [eax+0x50]
-    1cd9:	8b 58 54             	mov    ebx,DWORD PTR [eax+0x54]
-    1cdc:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
-    1cdf:	8b 55 e4             	mov    edx,DWORD PTR [ebp-0x1c]
-    1ce2:	01 c8                	add    eax,ecx
-    1ce4:	11 da                	adc    edx,ebx
-    1ce6:	8b 4d 08             	mov    ecx,DWORD PTR [ebp+0x8]
-    1ce9:	89 41 50             	mov    DWORD PTR [ecx+0x50],eax
-    1cec:	89 51 54             	mov    DWORD PTR [ecx+0x54],edx
+    1d78:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1d7b:	8b 48 50             	mov    ecx,DWORD PTR [eax+0x50]
+    1d7e:	8b 58 54             	mov    ebx,DWORD PTR [eax+0x54]
+    1d81:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
+    1d84:	8b 55 e4             	mov    edx,DWORD PTR [ebp-0x1c]
+    1d87:	01 c8                	add    eax,ecx
+    1d89:	11 da                	adc    edx,ebx
+    1d8b:	8b 4d 08             	mov    ecx,DWORD PTR [ebp+0x8]
+    1d8e:	89 41 50             	mov    DWORD PTR [ecx+0x50],eax
+    1d91:	89 51 54             	mov    DWORD PTR [ecx+0x54],edx
 				proc_add_time(rt, prev_task->flags);
-    1cef:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1cf2:	8b 00                	mov    eax,DWORD PTR [eax]
-    1cf4:	83 ec 04             	sub    esp,0x4
-    1cf7:	50                   	push   eax
-    1cf8:	ff 75 e4             	push   DWORD PTR [ebp-0x1c]
-    1cfb:	ff 75 e0             	push   DWORD PTR [ebp-0x20]
-    1cfe:	e8 fc ff ff ff       	call   1cff <task_schedule+0x6d>
-    1d03:	83 c4 10             	add    esp,0x10
+    1d94:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1d97:	8b 00                	mov    eax,DWORD PTR [eax]
+    1d99:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    1d9d:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
+    1da0:	8b 55 e4             	mov    edx,DWORD PTR [ebp-0x1c]
+    1da3:	89 04 24             	mov    DWORD PTR [esp],eax
+    1da6:	89 54 24 04          	mov    DWORD PTR [esp+0x4],edx
+    1daa:	e8 fc ff ff ff       	call   1dab <task_schedule+0x71>
 				/* go back but signify TIF_NEED_RESCHED */
 				if (prev_task->preempt_count) {
-    1d06:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1d09:	8b 40 18             	mov    eax,DWORD PTR [eax+0x18]
-    1d0c:	85 c0                	test   eax,eax
-    1d0e:	74 31                	je     1d41 <task_schedule+0xaf>
+    1daf:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1db2:	8b 40 18             	mov    eax,DWORD PTR [eax+0x18]
+    1db5:	85 c0                	test   eax,eax
+    1db7:	74 31                	je     1dea <task_schedule+0xb0>
 						prev_task->flags |= TIF_NEED_RESCHED;
-    1d10:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1d13:	8b 00                	mov    eax,DWORD PTR [eax]
-    1d15:	83 c8 01             	or     eax,0x1
-    1d18:	89 c2                	mov    edx,eax
-    1d1a:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1d1d:	89 10                	mov    DWORD PTR [eax],edx
+    1db9:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1dbc:	8b 00                	mov    eax,DWORD PTR [eax]
+    1dbe:	83 c8 01             	or     eax,0x1
+    1dc1:	89 c2                	mov    edx,eax
+    1dc3:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1dc6:	89 10                	mov    DWORD PTR [eax],edx
 						prev_task->start_time = task_gettime();
-    1d1f:	e8 fc ff ff ff       	call   1d20 <task_schedule+0x8e>
-    1d24:	8b 4d 08             	mov    ecx,DWORD PTR [ebp+0x8]
-    1d27:	89 41 34             	mov    DWORD PTR [ecx+0x34],eax
-    1d2a:	89 51 38             	mov    DWORD PTR [ecx+0x38],edx
+    1dc8:	e8 fc ff ff ff       	call   1dc9 <task_schedule+0x8f>
+    1dcd:	8b 4d 08             	mov    ecx,DWORD PTR [ebp+0x8]
+    1dd0:	89 41 34             	mov    DWORD PTR [ecx+0x34],eax
+    1dd3:	89 51 38             	mov    DWORD PTR [ecx+0x38],edx
 						prev_task->quota--; /* go into negative values */
-    1d2d:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1d30:	8b 40 2c             	mov    eax,DWORD PTR [eax+0x2c]
-    1d33:	8d 50 ff             	lea    edx,[eax-0x1]
-    1d36:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1d39:	89 50 2c             	mov    DWORD PTR [eax+0x2c],edx
+    1dd6:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1dd9:	8b 40 2c             	mov    eax,DWORD PTR [eax+0x2c]
+    1ddc:	8d 50 ff             	lea    edx,[eax-0x1]
+    1ddf:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1de2:	89 50 2c             	mov    DWORD PTR [eax+0x2c],edx
 						return;
-    1d3c:	e9 e9 05 00 00       	jmp    232a <task_schedule+0x698>
+    1de5:	e9 cd 05 00 00       	jmp    23b7 <task_schedule+0x67d>
 				} else if (prev_task->flags & TIF_NEED_RESCHED) /* clear the flag */
-    1d41:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1d44:	8b 00                	mov    eax,DWORD PTR [eax]
-    1d46:	83 e0 01             	and    eax,0x1
-    1d49:	85 c0                	test   eax,eax
-    1d4b:	74 0f                	je     1d5c <task_schedule+0xca>
+    1dea:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1ded:	8b 00                	mov    eax,DWORD PTR [eax]
+    1def:	83 e0 01             	and    eax,0x1
+    1df2:	85 c0                	test   eax,eax
+    1df4:	74 0f                	je     1e05 <task_schedule+0xcb>
 						prev_task->flags &= ~TIF_NEED_RESCHED;
-    1d4d:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1d50:	8b 00                	mov    eax,DWORD PTR [eax]
-    1d52:	83 e0 fe             	and    eax,0xfffffffe
-    1d55:	89 c2                	mov    edx,eax
-    1d57:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1d5a:	89 10                	mov    DWORD PTR [eax],edx
+    1df6:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1df9:	8b 00                	mov    eax,DWORD PTR [eax]
+    1dfb:	83 e0 fe             	and    eax,0xfffffffe
+    1dfe:	89 c2                	mov    edx,eax
+    1e00:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1e03:	89 10                	mov    DWORD PTR [eax],edx
 		}
 
 		/* enter the queue lock (entails free reign over ts values) */
 		spin_lock(&pq_lock);
-    1d5c:	83 ec 0c             	sub    esp,0xc
-    1d5f:	68 00 00 00 00       	push   0x0
-    1d64:	e8 fc ff ff ff       	call   1d65 <task_schedule+0xd3>
-    1d69:	83 c4 10             	add    esp,0x10
+    1e05:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+    1e0c:	e8 fc ff ff ff       	call   1e0d <task_schedule+0xd3>
 		/* wake up once */
 		wake_up_timer_all(&wq_timer);
-    1d6c:	83 ec 0c             	sub    esp,0xc
-    1d6f:	68 00 00 00 00       	push   0x0
-    1d74:	e8 fc ff ff ff       	call   1d75 <task_schedule+0xe3>
-    1d79:	83 c4 10             	add    esp,0x10
+    1e11:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+    1e18:	e8 fc ff ff ff       	call   1e19 <task_schedule+0xdf>
 		/* check for reinsertion */
 		for (size_t i = 0; i < ri_ofs; i++) {
-    1d7c:	c7 45 f0 00 00 00 00 	mov    DWORD PTR [ebp-0x10],0x0
-    1d83:	eb 71                	jmp    1df6 <task_schedule+0x164>
+    1e1d:	c7 45 f0 00 00 00 00 	mov    DWORD PTR [ebp-0x10],0x0
+    1e24:	eb 71                	jmp    1e97 <task_schedule+0x15d>
 				struct tsi* ti = ri_queue[i];
-    1d85:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-    1d88:	8b 04 85 00 00 00 00 	mov    eax,DWORD PTR [eax*4+0x0]
-    1d8f:	89 45 d8             	mov    DWORD PTR [ebp-0x28],eax
+    1e26:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+    1e29:	8b 04 85 00 00 00 00 	mov    eax,DWORD PTR [eax*4+0x0]
+    1e30:	89 45 d8             	mov    DWORD PTR [ebp-0x28],eax
 				if (ti->flags & TIF_RUNNING)
-    1d92:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-    1d95:	8b 00                	mov    eax,DWORD PTR [eax]
-    1d97:	83 e0 10             	and    eax,0x10
-    1d9a:	85 c0                	test   eax,eax
-    1d9c:	75 53                	jne    1df1 <task_schedule+0x15f>
+    1e33:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+    1e36:	8b 00                	mov    eax,DWORD PTR [eax]
+    1e38:	83 e0 10             	and    eax,0x10
+    1e3b:	85 c0                	test   eax,eax
+    1e3d:	75 53                	jne    1e92 <task_schedule+0x158>
 						continue;
 				/* task is eligible */
 				pq_enqueue((ti->flags & TIF_EXPIRED) ?
-    1d9e:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-    1da1:	8b 00                	mov    eax,DWORD PTR [eax]
-    1da3:	83 e0 20             	and    eax,0x20
-    1da6:	85 c0                	test   eax,eax
-    1da8:	74 07                	je     1db1 <task_schedule+0x11f>
-    1daa:	a1 00 00 00 00       	mov    eax,ds:0x0
-    1daf:	eb 05                	jmp    1db6 <task_schedule+0x124>
-    1db1:	a1 00 00 00 00       	mov    eax,ds:0x0
-    1db6:	83 ec 08             	sub    esp,0x8
-    1db9:	ff 75 d8             	push   DWORD PTR [ebp-0x28]
-    1dbc:	50                   	push   eax
-    1dbd:	e8 fc ff ff ff       	call   1dbe <task_schedule+0x12c>
-    1dc2:	83 c4 10             	add    esp,0x10
+    1e3f:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+    1e42:	8b 00                	mov    eax,DWORD PTR [eax]
+    1e44:	83 e0 20             	and    eax,0x20
+    1e47:	85 c0                	test   eax,eax
+    1e49:	74 07                	je     1e52 <task_schedule+0x118>
+    1e4b:	a1 00 00 00 00       	mov    eax,ds:0x0
+    1e50:	eb 05                	jmp    1e57 <task_schedule+0x11d>
+    1e52:	a1 00 00 00 00       	mov    eax,ds:0x0
+    1e57:	8b 55 d8             	mov    edx,DWORD PTR [ebp-0x28]
+    1e5a:	89 54 24 04          	mov    DWORD PTR [esp+0x4],edx
+    1e5e:	89 04 24             	mov    DWORD PTR [esp],eax
+    1e61:	e8 fc ff ff ff       	call   1e62 <task_schedule+0x128>
 						expired_queue : run_queue, ti);
 				/* shorten queue and redo current iteration */
 				ri_queue[i--] = ri_queue[--ri_ofs];
-    1dc5:	a1 00 00 00 00       	mov    eax,ds:0x0
-    1dca:	83 e8 01             	sub    eax,0x1
-    1dcd:	a3 00 00 00 00       	mov    ds:0x0,eax
-    1dd2:	8b 15 00 00 00 00    	mov    edx,DWORD PTR ds:0x0
-    1dd8:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-    1ddb:	8d 48 ff             	lea    ecx,[eax-0x1]
-    1dde:	89 4d f0             	mov    DWORD PTR [ebp-0x10],ecx
-    1de1:	8b 14 95 00 00 00 00 	mov    edx,DWORD PTR [edx*4+0x0]
-    1de8:	89 14 85 00 00 00 00 	mov    DWORD PTR [eax*4+0x0],edx
-    1def:	eb 01                	jmp    1df2 <task_schedule+0x160>
+    1e66:	a1 00 00 00 00       	mov    eax,ds:0x0
+    1e6b:	83 e8 01             	sub    eax,0x1
+    1e6e:	a3 00 00 00 00       	mov    ds:0x0,eax
+    1e73:	8b 15 00 00 00 00    	mov    edx,DWORD PTR ds:0x0
+    1e79:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+    1e7c:	8d 48 ff             	lea    ecx,[eax-0x1]
+    1e7f:	89 4d f0             	mov    DWORD PTR [ebp-0x10],ecx
+    1e82:	8b 14 95 00 00 00 00 	mov    edx,DWORD PTR [edx*4+0x0]
+    1e89:	89 14 85 00 00 00 00 	mov    DWORD PTR [eax*4+0x0],edx
+    1e90:	eb 01                	jmp    1e93 <task_schedule+0x159>
 						continue;
-    1df1:	90                   	nop
+    1e92:	90                   	nop
 		for (size_t i = 0; i < ri_ofs; i++) {
-    1df2:	83 45 f0 01          	add    DWORD PTR [ebp-0x10],0x1
-    1df6:	a1 00 00 00 00       	mov    eax,ds:0x0
-    1dfb:	39 45 f0             	cmp    DWORD PTR [ebp-0x10],eax
-    1dfe:	72 85                	jb     1d85 <task_schedule+0xf3>
+    1e93:	83 45 f0 01          	add    DWORD PTR [ebp-0x10],0x1
+    1e97:	a1 00 00 00 00       	mov    eax,ds:0x0
+    1e9c:	39 45 f0             	cmp    DWORD PTR [ebp-0x10],eax
+    1e9f:	72 85                	jb     1e26 <task_schedule+0xec>
 		}
 
 Pos1:
-    1e00:	90                   	nop
-    1e01:	eb 04                	jmp    1e07 <task_schedule+0x175>
+    1ea1:	90                   	nop
+    1ea2:	eb 04                	jmp    1ea8 <task_schedule+0x16e>
 		}
 
 		/* check for sleeping tasks and if so, forget the task
 		 * (wake_up is responsible for reenqueueing) */
 		if (t->flags & TIF_SLEEPING)
 				goto Pos1;
-    1e03:	90                   	nop
-    1e04:	eb 01                	jmp    1e07 <task_schedule+0x175>
+    1ea4:	90                   	nop
+    1ea5:	eb 01                	jmp    1ea8 <task_schedule+0x16e>
 				if (t != prev_task) { /* except if we're the one holding it */
 						ri_queue[ri_ofs++] = t;
 						t->quota++;
 						if (ri_ofs == RI_LIMIT)
 								die("Use a larger reinsertion queue!\n");
 						goto Pos1; /* don't schedule the same task on many procs */
-    1e06:	90                   	nop
+    1ea7:	90                   	nop
 		t = pq_dequeue(run_queue);
-    1e07:	a1 00 00 00 00       	mov    eax,ds:0x0
-    1e0c:	83 ec 0c             	sub    esp,0xc
-    1e0f:	50                   	push   eax
-    1e10:	e8 fc ff ff ff       	call   1e11 <task_schedule+0x17f>
-    1e15:	83 c4 10             	add    esp,0x10
-    1e18:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
+    1ea8:	a1 00 00 00 00       	mov    eax,ds:0x0
+    1ead:	89 04 24             	mov    DWORD PTR [esp],eax
+    1eb0:	e8 fc ff ff ff       	call   1eb1 <task_schedule+0x177>
+    1eb5:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
 		if (!t) { /* major rotation */
-    1e1b:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
-    1e1f:	75 68                	jne    1e89 <task_schedule+0x1f7>
+    1eb8:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
+    1ebc:	75 64                	jne    1f22 <task_schedule+0x1e8>
 				struct priority_queue* q = run_queue;
-    1e21:	a1 00 00 00 00       	mov    eax,ds:0x0
-    1e26:	89 45 dc             	mov    DWORD PTR [ebp-0x24],eax
+    1ebe:	a1 00 00 00 00       	mov    eax,ds:0x0
+    1ec3:	89 45 dc             	mov    DWORD PTR [ebp-0x24],eax
 				run_queue = expired_queue;
-    1e29:	a1 00 00 00 00       	mov    eax,ds:0x0
-    1e2e:	a3 00 00 00 00       	mov    ds:0x0,eax
+    1ec6:	a1 00 00 00 00       	mov    eax,ds:0x0
+    1ecb:	a3 00 00 00 00       	mov    ds:0x0,eax
 				expired_queue = q;
-    1e33:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    1e36:	a3 00 00 00 00       	mov    ds:0x0,eax
+    1ed0:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    1ed3:	a3 00 00 00 00       	mov    ds:0x0,eax
 				for (size_t i = 0; i < n_tks; i++) /* unexpire them */
-    1e3b:	c7 45 ec 00 00 00 00 	mov    DWORD PTR [ebp-0x14],0x0
-    1e42:	eb 1f                	jmp    1e63 <task_schedule+0x1d1>
+    1ed8:	c7 45 ec 00 00 00 00 	mov    DWORD PTR [ebp-0x14],0x0
+    1edf:	eb 1f                	jmp    1f00 <task_schedule+0x1c6>
 						tks[i]->flags &= ~TIF_EXPIRED;
-    1e44:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    1e47:	8b 04 85 00 00 00 00 	mov    eax,DWORD PTR [eax*4+0x0]
-    1e4e:	8b 10                	mov    edx,DWORD PTR [eax]
-    1e50:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    1e53:	8b 04 85 00 00 00 00 	mov    eax,DWORD PTR [eax*4+0x0]
-    1e5a:	83 e2 df             	and    edx,0xffffffdf
-    1e5d:	89 10                	mov    DWORD PTR [eax],edx
+    1ee1:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    1ee4:	8b 04 85 00 00 00 00 	mov    eax,DWORD PTR [eax*4+0x0]
+    1eeb:	8b 10                	mov    edx,DWORD PTR [eax]
+    1eed:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    1ef0:	8b 04 85 00 00 00 00 	mov    eax,DWORD PTR [eax*4+0x0]
+    1ef7:	83 e2 df             	and    edx,0xffffffdf
+    1efa:	89 10                	mov    DWORD PTR [eax],edx
 				for (size_t i = 0; i < n_tks; i++) /* unexpire them */
-    1e5f:	83 45 ec 01          	add    DWORD PTR [ebp-0x14],0x1
-    1e63:	a1 00 00 00 00       	mov    eax,ds:0x0
-    1e68:	39 45 ec             	cmp    DWORD PTR [ebp-0x14],eax
-    1e6b:	72 d7                	jb     1e44 <task_schedule+0x1b2>
+    1efc:	83 45 ec 01          	add    DWORD PTR [ebp-0x14],0x1
+    1f00:	a1 00 00 00 00       	mov    eax,ds:0x0
+    1f05:	39 45 ec             	cmp    DWORD PTR [ebp-0x14],eax
+    1f08:	72 d7                	jb     1ee1 <task_schedule+0x1a7>
 				STAT_INC_COUNTER(sched_mr_count, 1);
-    1e6d:	f0 83 05 00 00 00 00 01 	lock add DWORD PTR ds:0x0,0x1
+    1f0a:	f0 83 05 00 00 00 00 01 	lock add DWORD PTR ds:0x0,0x1
 				t = pq_dequeue(run_queue);
-    1e75:	a1 00 00 00 00       	mov    eax,ds:0x0
-    1e7a:	83 ec 0c             	sub    esp,0xc
-    1e7d:	50                   	push   eax
-    1e7e:	e8 fc ff ff ff       	call   1e7f <task_schedule+0x1ed>
-    1e83:	83 c4 10             	add    esp,0x10
-    1e86:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
+    1f12:	a1 00 00 00 00       	mov    eax,ds:0x0
+    1f17:	89 04 24             	mov    DWORD PTR [esp],eax
+    1f1a:	e8 fc ff ff ff       	call   1f1b <task_schedule+0x1e1>
+    1f1f:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
 		if (!t) { /* nothing to do? --> wake idle process */
-    1e89:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
-    1e8d:	75 3b                	jne    1eca <task_schedule+0x238>
+    1f22:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
+    1f26:	75 37                	jne    1f5f <task_schedule+0x225>
 				if (!prev_task || (prev_task->flags & TIF_SLEEPING)
-    1e8f:	83 7d 08 00          	cmp    DWORD PTR [ebp+0x8],0x0
-    1e93:	74 1a                	je     1eaf <task_schedule+0x21d>
-    1e95:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1e98:	8b 00                	mov    eax,DWORD PTR [eax]
-    1e9a:	25 80 00 00 00       	and    eax,0x80
-    1e9f:	85 c0                	test   eax,eax
-    1ea1:	75 0c                	jne    1eaf <task_schedule+0x21d>
+    1f28:	83 7d 08 00          	cmp    DWORD PTR [ebp+0x8],0x0
+    1f2c:	74 1a                	je     1f48 <task_schedule+0x20e>
+    1f2e:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1f31:	8b 00                	mov    eax,DWORD PTR [eax]
+    1f33:	25 80 00 00 00       	and    eax,0x80
+    1f38:	85 c0                	test   eax,eax
+    1f3a:	75 0c                	jne    1f48 <task_schedule+0x20e>
 							   || (prev_task->flags & TIF_YIELDED)) {
-    1ea3:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1ea6:	8b 00                	mov    eax,DWORD PTR [eax]
-    1ea8:	83 e0 02             	and    eax,0x2
-    1eab:	85 c0                	test   eax,eax
-    1ead:	74 15                	je     1ec4 <task_schedule+0x232>
+    1f3c:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1f3f:	8b 00                	mov    eax,DWORD PTR [eax]
+    1f41:	83 e0 02             	and    eax,0x2
+    1f44:	85 c0                	test   eax,eax
+    1f46:	74 11                	je     1f59 <task_schedule+0x21f>
 						wake_up(&wq_idle);
-    1eaf:	83 ec 0c             	sub    esp,0xc
-    1eb2:	68 00 00 00 00       	push   0x0
-    1eb7:	e8 fc ff ff ff       	call   1eb8 <task_schedule+0x226>
-    1ebc:	83 c4 10             	add    esp,0x10
+    1f48:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+    1f4f:	e8 fc ff ff ff       	call   1f50 <task_schedule+0x216>
 						goto Pos1;
-    1ebf:	e9 43 ff ff ff       	jmp    1e07 <task_schedule+0x175>
+    1f54:	e9 4f ff ff ff       	jmp    1ea8 <task_schedule+0x16e>
 						t = prev_task;
-    1ec4:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1ec7:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
+    1f59:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1f5c:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
 		if (t->flags & TIF_DEALLOCATE && !(t->flags & TIF_RUNNING)) {
-    1eca:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    1ecd:	8b 00                	mov    eax,DWORD PTR [eax]
-    1ecf:	83 e0 04             	and    eax,0x4
-    1ed2:	85 c0                	test   eax,eax
-    1ed4:	74 1f                	je     1ef5 <task_schedule+0x263>
-    1ed6:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    1ed9:	8b 00                	mov    eax,DWORD PTR [eax]
-    1edb:	83 e0 10             	and    eax,0x10
-    1ede:	85 c0                	test   eax,eax
-    1ee0:	75 13                	jne    1ef5 <task_schedule+0x263>
+    1f5f:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    1f62:	8b 00                	mov    eax,DWORD PTR [eax]
+    1f64:	83 e0 04             	and    eax,0x4
+    1f67:	85 c0                	test   eax,eax
+    1f69:	74 1c                	je     1f87 <task_schedule+0x24d>
+    1f6b:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    1f6e:	8b 00                	mov    eax,DWORD PTR [eax]
+    1f70:	83 e0 10             	and    eax,0x10
+    1f73:	85 c0                	test   eax,eax
+    1f75:	75 10                	jne    1f87 <task_schedule+0x24d>
 				task_deallocate(t);
-    1ee2:	83 ec 0c             	sub    esp,0xc
-    1ee5:	ff 75 f4             	push   DWORD PTR [ebp-0xc]
-    1ee8:	e8 fc ff ff ff       	call   1ee9 <task_schedule+0x257>
-    1eed:	83 c4 10             	add    esp,0x10
+    1f77:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    1f7a:	89 04 24             	mov    DWORD PTR [esp],eax
+    1f7d:	e8 fc ff ff ff       	call   1f7e <task_schedule+0x244>
 				goto Pos1;
-    1ef0:	e9 12 ff ff ff       	jmp    1e07 <task_schedule+0x175>
+    1f82:	e9 21 ff ff ff       	jmp    1ea8 <task_schedule+0x16e>
 		if (t->flags & TIF_SLEEPING)
-    1ef5:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    1ef8:	8b 00                	mov    eax,DWORD PTR [eax]
-    1efa:	25 80 00 00 00       	and    eax,0x80
-    1eff:	85 c0                	test   eax,eax
-    1f01:	0f 85 fc fe ff ff    	jne    1e03 <task_schedule+0x171>
+    1f87:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    1f8a:	8b 00                	mov    eax,DWORD PTR [eax]
+    1f8c:	25 80 00 00 00       	and    eax,0x80
+    1f91:	85 c0                	test   eax,eax
+    1f93:	0f 85 0b ff ff ff    	jne    1ea4 <task_schedule+0x16a>
 		if (--t->quota <= 0) {
-    1f07:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    1f0a:	8b 40 2c             	mov    eax,DWORD PTR [eax+0x2c]
-    1f0d:	8d 50 ff             	lea    edx,[eax-0x1]
-    1f10:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    1f13:	89 50 2c             	mov    DWORD PTR [eax+0x2c],edx
-    1f16:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    1f19:	8b 40 2c             	mov    eax,DWORD PTR [eax+0x2c]
-    1f1c:	85 c0                	test   eax,eax
-    1f1e:	7f 69                	jg     1f89 <task_schedule+0x2f7>
+    1f99:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    1f9c:	8b 40 2c             	mov    eax,DWORD PTR [eax+0x2c]
+    1f9f:	8d 50 ff             	lea    edx,[eax-0x1]
+    1fa2:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    1fa5:	89 50 2c             	mov    DWORD PTR [eax+0x2c],edx
+    1fa8:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    1fab:	8b 40 2c             	mov    eax,DWORD PTR [eax+0x2c]
+    1fae:	85 c0                	test   eax,eax
+    1fb0:	7f 69                	jg     201b <task_schedule+0x2e1>
 				t->quota += 10;
-    1f20:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    1f23:	8b 40 2c             	mov    eax,DWORD PTR [eax+0x2c]
-    1f26:	8d 50 0a             	lea    edx,[eax+0xa]
-    1f29:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    1f2c:	89 50 2c             	mov    DWORD PTR [eax+0x2c],edx
+    1fb2:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    1fb5:	8b 40 2c             	mov    eax,DWORD PTR [eax+0x2c]
+    1fb8:	8d 50 0a             	lea    edx,[eax+0xa]
+    1fbb:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    1fbe:	89 50 2c             	mov    DWORD PTR [eax+0x2c],edx
 				t->flags &= ~TIF_YIELDED;
-    1f2f:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    1f32:	8b 00                	mov    eax,DWORD PTR [eax]
-    1f34:	83 e0 fd             	and    eax,0xfffffffd
-    1f37:	89 c2                	mov    edx,eax
-    1f39:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    1f3c:	89 10                	mov    DWORD PTR [eax],edx
+    1fc1:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    1fc4:	8b 00                	mov    eax,DWORD PTR [eax]
+    1fc6:	83 e0 fd             	and    eax,0xfffffffd
+    1fc9:	89 c2                	mov    edx,eax
+    1fcb:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    1fce:	89 10                	mov    DWORD PTR [eax],edx
 				if (t->cur_priority != PRIORITY_MIN) {
-    1f3e:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    1f41:	8b 40 30             	mov    eax,DWORD PTR [eax+0x30]
-    1f44:	83 f8 03             	cmp    eax,0x3
-    1f47:	74 1b                	je     1f64 <task_schedule+0x2d2>
+    1fd0:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    1fd3:	8b 40 30             	mov    eax,DWORD PTR [eax+0x30]
+    1fd6:	83 f8 03             	cmp    eax,0x3
+    1fd9:	74 1b                	je     1ff6 <task_schedule+0x2bc>
 						t->cur_priority++;
-    1f49:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    1f4c:	8b 40 30             	mov    eax,DWORD PTR [eax+0x30]
-    1f4f:	8d 50 01             	lea    edx,[eax+0x1]
-    1f52:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    1f55:	89 50 30             	mov    DWORD PTR [eax+0x30],edx
+    1fdb:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    1fde:	8b 40 30             	mov    eax,DWORD PTR [eax+0x30]
+    1fe1:	8d 50 01             	lea    edx,[eax+0x1]
+    1fe4:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    1fe7:	89 50 30             	mov    DWORD PTR [eax+0x30],edx
 						STAT_INC_COUNTER(t->task_mr_bumps, 1);
-    1f58:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    1f5b:	83 c0 64             	add    eax,0x64
-    1f5e:	f0 83 00 01          	lock add DWORD PTR [eax],0x1
-    1f62:	eb 25                	jmp    1f89 <task_schedule+0x2f7>
+    1fea:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    1fed:	83 c0 64             	add    eax,0x64
+    1ff0:	f0 83 00 01          	lock add DWORD PTR [eax],0x1
+    1ff4:	eb 25                	jmp    201b <task_schedule+0x2e1>
 						t->flags |= TIF_EXPIRED;
-    1f64:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    1f67:	8b 00                	mov    eax,DWORD PTR [eax]
-    1f69:	83 c8 20             	or     eax,0x20
-    1f6c:	89 c2                	mov    edx,eax
-    1f6e:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    1f71:	89 10                	mov    DWORD PTR [eax],edx
+    1ff6:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    1ff9:	8b 00                	mov    eax,DWORD PTR [eax]
+    1ffb:	83 c8 20             	or     eax,0x20
+    1ffe:	89 c2                	mov    edx,eax
+    2000:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    2003:	89 10                	mov    DWORD PTR [eax],edx
 						t->cur_priority = t->priority;
-    1f73:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    1f76:	8b 50 28             	mov    edx,DWORD PTR [eax+0x28]
-    1f79:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    1f7c:	89 50 30             	mov    DWORD PTR [eax+0x30],edx
+    2005:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    2008:	8b 50 28             	mov    edx,DWORD PTR [eax+0x28]
+    200b:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    200e:	89 50 30             	mov    DWORD PTR [eax+0x30],edx
 						STAT_INC_COUNTER(t->task_mr_expires, 1);
-    1f7f:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    1f82:	83 c0 68             	add    eax,0x68
-    1f85:	f0 83 00 01          	lock add DWORD PTR [eax],0x1
+    2011:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    2014:	83 c0 68             	add    eax,0x68
+    2017:	f0 83 00 01          	lock add DWORD PTR [eax],0x1
 		if (__sync_fetch_and_or(&t->flags, TIF_RUNNING) & TIF_RUNNING) {
-    1f89:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-    1f8c:	8b 02                	mov    eax,DWORD PTR [edx]
-    1f8e:	89 c3                	mov    ebx,eax
-    1f90:	89 c1                	mov    ecx,eax
-    1f92:	83 c9 10             	or     ecx,0x10
-    1f95:	f0 0f b1 0a          	lock cmpxchg DWORD PTR [edx],ecx
-    1f99:	0f 94 c1             	sete   cl
-    1f9c:	84 c9                	test   cl,cl
-    1f9e:	74 ee                	je     1f8e <task_schedule+0x2fc>
-    1fa0:	89 d8                	mov    eax,ebx
-    1fa2:	83 e0 10             	and    eax,0x10
-    1fa5:	85 c0                	test   eax,eax
-    1fa7:	74 68                	je     2011 <task_schedule+0x37f>
+    201b:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+    201e:	8b 02                	mov    eax,DWORD PTR [edx]
+    2020:	89 c3                	mov    ebx,eax
+    2022:	89 c1                	mov    ecx,eax
+    2024:	83 c9 10             	or     ecx,0x10
+    2027:	f0 0f b1 0a          	lock cmpxchg DWORD PTR [edx],ecx
+    202b:	0f 94 c1             	sete   cl
+    202e:	84 c9                	test   cl,cl
+    2030:	74 ee                	je     2020 <task_schedule+0x2e6>
+    2032:	89 d8                	mov    eax,ebx
+    2034:	83 e0 10             	and    eax,0x10
+    2037:	85 c0                	test   eax,eax
+    2039:	74 66                	je     20a1 <task_schedule+0x367>
 				if (t != prev_task) { /* except if we're the one holding it */
-    1fa9:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    1fac:	3b 45 08             	cmp    eax,DWORD PTR [ebp+0x8]
-    1faf:	74 60                	je     2011 <task_schedule+0x37f>
+    203b:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    203e:	3b 45 08             	cmp    eax,DWORD PTR [ebp+0x8]
+    2041:	74 5e                	je     20a1 <task_schedule+0x367>
 						ri_queue[ri_ofs++] = t;
-    1fb1:	a1 00 00 00 00       	mov    eax,ds:0x0
-    1fb6:	8d 50 01             	lea    edx,[eax+0x1]
-    1fb9:	89 15 00 00 00 00    	mov    DWORD PTR ds:0x0,edx
-    1fbf:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-    1fc2:	89 14 85 00 00 00 00 	mov    DWORD PTR [eax*4+0x0],edx
+    2043:	a1 00 00 00 00       	mov    eax,ds:0x0
+    2048:	8d 50 01             	lea    edx,[eax+0x1]
+    204b:	89 15 00 00 00 00    	mov    DWORD PTR ds:0x0,edx
+    2051:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+    2054:	89 14 85 00 00 00 00 	mov    DWORD PTR [eax*4+0x0],edx
 						t->quota++;
-    1fc9:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    1fcc:	8b 40 2c             	mov    eax,DWORD PTR [eax+0x2c]
-    1fcf:	8d 50 01             	lea    edx,[eax+0x1]
-    1fd2:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    1fd5:	89 50 2c             	mov    DWORD PTR [eax+0x2c],edx
+    205b:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    205e:	8b 40 2c             	mov    eax,DWORD PTR [eax+0x2c]
+    2061:	8d 50 01             	lea    edx,[eax+0x1]
+    2064:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    2067:	89 50 2c             	mov    DWORD PTR [eax+0x2c],edx
 						if (ri_ofs == RI_LIMIT)
-    1fd8:	a1 00 00 00 00       	mov    eax,ds:0x0
-    1fdd:	83 f8 20             	cmp    eax,0x20
-    1fe0:	0f 85 20 fe ff ff    	jne    1e06 <task_schedule+0x174>
+    206a:	a1 00 00 00 00       	mov    eax,ds:0x0
+    206f:	83 f8 20             	cmp    eax,0x20
+    2072:	0f 85 2f fe ff ff    	jne    1ea7 <task_schedule+0x16d>
 								die("Use a larger reinsertion queue!\n");
-    1fe6:	83 ec 08             	sub    esp,0x8
-    1fe9:	68 18 04 00 00       	push   0x418
-    1fee:	6a 0c                	push   0xc
-    1ff0:	e8 fc ff ff ff       	call   1ff1 <task_schedule+0x35f>
-    1ff5:	83 c4 10             	add    esp,0x10
-    1ff8:	e8 fc ff ff ff       	call   1ff9 <task_schedule+0x367>
-    1ffd:	83 ec 0c             	sub    esp,0xc
-    2000:	68 00 00 00 00       	push   0x0
-    2005:	e8 fc ff ff ff       	call   2006 <task_schedule+0x374>
-    200a:	83 c4 10             	add    esp,0x10
-    200d:	fa                   	cli
-    200e:	f4                   	hlt
-    200f:	eb fd                	jmp    200e <task_schedule+0x37c>
+    2078:	c7 44 24 04 18 04 00 00 	mov    DWORD PTR [esp+0x4],0x418
+    2080:	c7 04 24 0c 00 00 00 	mov    DWORD PTR [esp],0xc
+    2087:	e8 fc ff ff ff       	call   2088 <task_schedule+0x34e>
+    208c:	e8 fc ff ff ff       	call   208d <task_schedule+0x353>
+    2091:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+    2098:	e8 fc ff ff ff       	call   2099 <task_schedule+0x35f>
+    209d:	fa                   	cli
+    209e:	f4                   	hlt
+    209f:	eb fd                	jmp    209e <task_schedule+0x364>
 				}
 		}
 		barrier();
 		t->run_time++; /* accounting */
-    2011:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    2014:	8b 40 24             	mov    eax,DWORD PTR [eax+0x24]
-    2017:	8d 50 01             	lea    edx,[eax+0x1]
-    201a:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    201d:	89 50 24             	mov    DWORD PTR [eax+0x24],edx
+    20a1:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    20a4:	8b 40 24             	mov    eax,DWORD PTR [eax+0x24]
+    20a7:	8d 50 01             	lea    edx,[eax+0x1]
+    20aa:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    20ad:	89 50 24             	mov    DWORD PTR [eax+0x24],edx
 
 		/* now jump into task */
 		t->start_time = task_gettime();
-    2020:	e8 fc ff ff ff       	call   2021 <task_schedule+0x38f>
-    2025:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
-    2028:	89 41 34             	mov    DWORD PTR [ecx+0x34],eax
-    202b:	89 51 38             	mov    DWORD PTR [ecx+0x38],edx
+    20b0:	e8 fc ff ff ff       	call   20b1 <task_schedule+0x377>
+    20b5:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
+    20b8:	89 41 34             	mov    DWORD PTR [ecx+0x34],eax
+    20bb:	89 51 38             	mov    DWORD PTR [ecx+0x38],edx
 		/* DEBUG check! */
 		{
 				struct stack_limits sl;
 				if (get_stack(stack_ptr(t), &sl) == -1) {
-    202e:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    2031:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    2034:	8b 40 1c             	mov    eax,DWORD PTR [eax+0x1c]
-    2037:	89 c2                	mov    edx,eax
-    2039:	83 ec 08             	sub    esp,0x8
-    203c:	8d 45 d0             	lea    eax,[ebp-0x30]
-    203f:	50                   	push   eax
-    2040:	52                   	push   edx
-    2041:	e8 fc ff ff ff       	call   2042 <task_schedule+0x3b0>
-    2046:	83 c4 10             	add    esp,0x10
-    2049:	83 f8 ff             	cmp    eax,0xffffffff
-    204c:	75 53                	jne    20a1 <task_schedule+0x40f>
+    20be:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    20c1:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    20c4:	8b 40 1c             	mov    eax,DWORD PTR [eax+0x1c]
+    20c7:	89 c2                	mov    edx,eax
+    20c9:	8d 45 d0             	lea    eax,[ebp-0x30]
+    20cc:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    20d0:	89 14 24             	mov    DWORD PTR [esp],edx
+    20d3:	e8 fc ff ff ff       	call   20d4 <task_schedule+0x39a>
+    20d8:	83 f8 ff             	cmp    eax,0xffffffff
+    20db:	75 5a                	jne    2137 <task_schedule+0x3fd>
 						die("invalid task struct at %p (esp=%p)\nt%sprev_task\n",
-    204e:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    2051:	3b 45 08             	cmp    eax,DWORD PTR [ebp+0x8]
-    2054:	75 07                	jne    205d <task_schedule+0x3cb>
-    2056:	ba 39 04 00 00       	mov    edx,0x439
-    205b:	eb 05                	jmp    2062 <task_schedule+0x3d0>
-    205d:	ba 3c 04 00 00       	mov    edx,0x43c
-    2062:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    2065:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    2068:	8b 40 1c             	mov    eax,DWORD PTR [eax+0x1c]
-    206b:	89 c1                	mov    ecx,eax
-    206d:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    2070:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    2073:	83 ec 0c             	sub    esp,0xc
-    2076:	52                   	push   edx
-    2077:	51                   	push   ecx
-    2078:	50                   	push   eax
-    2079:	68 40 04 00 00       	push   0x440
-    207e:	6a 0c                	push   0xc
-    2080:	e8 fc ff ff ff       	call   2081 <task_schedule+0x3ef>
-    2085:	83 c4 20             	add    esp,0x20
-    2088:	e8 fc ff ff ff       	call   2089 <task_schedule+0x3f7>
-    208d:	83 ec 0c             	sub    esp,0xc
-    2090:	68 00 00 00 00       	push   0x0
-    2095:	e8 fc ff ff ff       	call   2096 <task_schedule+0x404>
-    209a:	83 c4 10             	add    esp,0x10
-    209d:	fa                   	cli
-    209e:	f4                   	hlt
-    209f:	eb fd                	jmp    209e <task_schedule+0x40c>
+    20dd:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    20e0:	3b 45 08             	cmp    eax,DWORD PTR [ebp+0x8]
+    20e3:	75 07                	jne    20ec <task_schedule+0x3b2>
+    20e5:	ba 39 04 00 00       	mov    edx,0x439
+    20ea:	eb 05                	jmp    20f1 <task_schedule+0x3b7>
+    20ec:	ba 3c 04 00 00       	mov    edx,0x43c
+    20f1:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    20f4:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    20f7:	8b 40 1c             	mov    eax,DWORD PTR [eax+0x1c]
+    20fa:	89 c1                	mov    ecx,eax
+    20fc:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    20ff:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    2102:	89 54 24 10          	mov    DWORD PTR [esp+0x10],edx
+    2106:	89 4c 24 0c          	mov    DWORD PTR [esp+0xc],ecx
+    210a:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    210e:	c7 44 24 04 40 04 00 00 	mov    DWORD PTR [esp+0x4],0x440
+    2116:	c7 04 24 0c 00 00 00 	mov    DWORD PTR [esp],0xc
+    211d:	e8 fc ff ff ff       	call   211e <task_schedule+0x3e4>
+    2122:	e8 fc ff ff ff       	call   2123 <task_schedule+0x3e9>
+    2127:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+    212e:	e8 fc ff ff ff       	call   212f <task_schedule+0x3f5>
+    2133:	fa                   	cli
+    2134:	f4                   	hlt
+    2135:	eb fd                	jmp    2134 <task_schedule+0x3fa>
 								t->ts, stack_ptr(t), (t == prev_task) ? "==" : "!=");
 				} else if (stack_ptr(t) < 0x7c00) {
-    20a1:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    20a4:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    20a7:	8b 40 1c             	mov    eax,DWORD PTR [eax+0x1c]
-    20aa:	3d ff 7b 00 00       	cmp    eax,0x7bff
-    20af:	77 32                	ja     20e3 <task_schedule+0x451>
+    2137:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    213a:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    213d:	8b 40 1c             	mov    eax,DWORD PTR [eax+0x1c]
+    2140:	3d ff 7b 00 00       	cmp    eax,0x7bff
+    2145:	77 33                	ja     217a <task_schedule+0x440>
 						die("eip below 0x7c00 for task struct at %p\n", t->ts);
-    20b1:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    20b4:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    20b7:	83 ec 04             	sub    esp,0x4
-    20ba:	50                   	push   eax
-    20bb:	68 74 04 00 00       	push   0x474
-    20c0:	6a 0c                	push   0xc
-    20c2:	e8 fc ff ff ff       	call   20c3 <task_schedule+0x431>
-    20c7:	83 c4 10             	add    esp,0x10
-    20ca:	e8 fc ff ff ff       	call   20cb <task_schedule+0x439>
-    20cf:	83 ec 0c             	sub    esp,0xc
-    20d2:	68 00 00 00 00       	push   0x0
-    20d7:	e8 fc ff ff ff       	call   20d8 <task_schedule+0x446>
-    20dc:	83 c4 10             	add    esp,0x10
-    20df:	fa                   	cli
-    20e0:	f4                   	hlt
-    20e1:	eb fd                	jmp    20e0 <task_schedule+0x44e>
+    2147:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    214a:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    214d:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    2151:	c7 44 24 04 74 04 00 00 	mov    DWORD PTR [esp+0x4],0x474
+    2159:	c7 04 24 0c 00 00 00 	mov    DWORD PTR [esp],0xc
+    2160:	e8 fc ff ff ff       	call   2161 <task_schedule+0x427>
+    2165:	e8 fc ff ff ff       	call   2166 <task_schedule+0x42c>
+    216a:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+    2171:	e8 fc ff ff ff       	call   2172 <task_schedule+0x438>
+    2176:	fa                   	cli
+    2177:	f4                   	hlt
+    2178:	eb fd                	jmp    2177 <task_schedule+0x43d>
 				} else if (t->stack_base < stack_ptr(t) || t->stack_limit > stack_ptr(t)) {
-    20e3:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    20e6:	8b 50 08             	mov    edx,DWORD PTR [eax+0x8]
-    20e9:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    20ec:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    20ef:	8b 40 1c             	mov    eax,DWORD PTR [eax+0x1c]
-    20f2:	39 c2                	cmp    edx,eax
-    20f4:	72 13                	jb     2109 <task_schedule+0x477>
-    20f6:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    20f9:	8b 40 0c             	mov    eax,DWORD PTR [eax+0xc]
-    20fc:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-    20ff:	8b 52 04             	mov    edx,DWORD PTR [edx+0x4]
-    2102:	8b 52 1c             	mov    edx,DWORD PTR [edx+0x1c]
-    2105:	39 c2                	cmp    edx,eax
-    2107:	73 2b                	jae    2134 <task_schedule+0x4a2>
+    217a:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    217d:	8b 50 08             	mov    edx,DWORD PTR [eax+0x8]
+    2180:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    2183:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    2186:	8b 40 1c             	mov    eax,DWORD PTR [eax+0x1c]
+    2189:	39 c2                	cmp    edx,eax
+    218b:	72 13                	jb     21a0 <task_schedule+0x466>
+    218d:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    2190:	8b 40 0c             	mov    eax,DWORD PTR [eax+0xc]
+    2193:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+    2196:	8b 52 04             	mov    edx,DWORD PTR [edx+0x4]
+    2199:	8b 52 1c             	mov    edx,DWORD PTR [edx+0x1c]
+    219c:	39 c2                	cmp    edx,eax
+    219e:	73 29                	jae    21c9 <task_schedule+0x48f>
 						die("jumping into wrong stack!\n");
-    2109:	83 ec 08             	sub    esp,0x8
-    210c:	68 9c 04 00 00       	push   0x49c
-    2111:	6a 0c                	push   0xc
-    2113:	e8 fc ff ff ff       	call   2114 <task_schedule+0x482>
-    2118:	83 c4 10             	add    esp,0x10
-    211b:	e8 fc ff ff ff       	call   211c <task_schedule+0x48a>
-    2120:	83 ec 0c             	sub    esp,0xc
-    2123:	68 00 00 00 00       	push   0x0
-    2128:	e8 fc ff ff ff       	call   2129 <task_schedule+0x497>
-    212d:	83 c4 10             	add    esp,0x10
-    2130:	fa                   	cli
-    2131:	f4                   	hlt
-    2132:	eb fd                	jmp    2131 <task_schedule+0x49f>
+    21a0:	c7 44 24 04 9c 04 00 00 	mov    DWORD PTR [esp+0x4],0x49c
+    21a8:	c7 04 24 0c 00 00 00 	mov    DWORD PTR [esp],0xc
+    21af:	e8 fc ff ff ff       	call   21b0 <task_schedule+0x476>
+    21b4:	e8 fc ff ff ff       	call   21b5 <task_schedule+0x47b>
+    21b9:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+    21c0:	e8 fc ff ff ff       	call   21c1 <task_schedule+0x487>
+    21c5:	fa                   	cli
+    21c6:	f4                   	hlt
+    21c7:	eb fd                	jmp    21c6 <task_schedule+0x48c>
 				} else if (!t->ts)
-    2134:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    2137:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    213a:	85 c0                	test   eax,eax
-    213c:	75 2b                	jne    2169 <task_schedule+0x4d7>
+    21c9:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    21cc:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    21cf:	85 c0                	test   eax,eax
+    21d1:	75 29                	jne    21fc <task_schedule+0x4c2>
 						die("jumping into null!\n");
-    213e:	83 ec 08             	sub    esp,0x8
-    2141:	68 b7 04 00 00       	push   0x4b7
-    2146:	6a 0c                	push   0xc
-    2148:	e8 fc ff ff ff       	call   2149 <task_schedule+0x4b7>
-    214d:	83 c4 10             	add    esp,0x10
-    2150:	e8 fc ff ff ff       	call   2151 <task_schedule+0x4bf>
-    2155:	83 ec 0c             	sub    esp,0xc
-    2158:	68 00 00 00 00       	push   0x0
-    215d:	e8 fc ff ff ff       	call   215e <task_schedule+0x4cc>
-    2162:	83 c4 10             	add    esp,0x10
-    2165:	fa                   	cli
-    2166:	f4                   	hlt
-    2167:	eb fd                	jmp    2166 <task_schedule+0x4d4>
+    21d3:	c7 44 24 04 b7 04 00 00 	mov    DWORD PTR [esp+0x4],0x4b7
+    21db:	c7 04 24 0c 00 00 00 	mov    DWORD PTR [esp],0xc
+    21e2:	e8 fc ff ff ff       	call   21e3 <task_schedule+0x4a9>
+    21e7:	e8 fc ff ff ff       	call   21e8 <task_schedule+0x4ae>
+    21ec:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+    21f3:	e8 fc ff ff ff       	call   21f4 <task_schedule+0x4ba>
+    21f8:	fa                   	cli
+    21f9:	f4                   	hlt
+    21fa:	eb fd                	jmp    21f9 <task_schedule+0x4bf>
 				//check_tasks();
 				if (pr_lst) { /* ringbuffer */
-    2169:	a1 00 00 00 00       	mov    eax,ds:0x0
-    216e:	85 c0                	test   eax,eax
-    2170:	0f 84 05 01 00 00    	je     227b <task_schedule+0x5e9>
+    21fc:	a1 00 00 00 00       	mov    eax,ds:0x0
+    2201:	85 c0                	test   eax,eax
+    2203:	0f 84 05 01 00 00    	je     230e <task_schedule+0x5d4>
 						size_t idx;
 get_idx:
-    2176:	90                   	nop
+    2209:	90                   	nop
 						idx = __sync_fetch_and_add(&pr_idx, 1);
-    2177:	b8 01 00 00 00       	mov    eax,0x1
-    217c:	f0 0f c1 05 00 00 00 00 	lock xadd DWORD PTR ds:0x0,eax
-    2184:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
+    220a:	b8 01 00 00 00       	mov    eax,0x1
+    220f:	f0 0f c1 05 00 00 00 00 	lock xadd DWORD PTR ds:0x0,eax
+    2217:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
 						if (idx > 127) {
-    2187:	83 7d e8 7f          	cmp    DWORD PTR [ebp-0x18],0x7f
-    218b:	76 21                	jbe    21ae <task_schedule+0x51c>
+    221a:	83 7d e8 7f          	cmp    DWORD PTR [ebp-0x18],0x7f
+    221e:	76 21                	jbe    2241 <task_schedule+0x507>
 								if (__sync_bool_compare_and_swap(&pr_idx, idx + 1, 0))
-    218d:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
-    2190:	83 c0 01             	add    eax,0x1
-    2193:	ba 00 00 00 00       	mov    edx,0x0
-    2198:	f0 0f b1 15 00 00 00 00 	lock cmpxchg DWORD PTR ds:0x0,edx
-    21a0:	0f 94 c0             	sete   al
-    21a3:	84 c0                	test   al,al
-    21a5:	74 d0                	je     2177 <task_schedule+0x4e5>
+    2220:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
+    2223:	83 c0 01             	add    eax,0x1
+    2226:	ba 00 00 00 00       	mov    edx,0x0
+    222b:	f0 0f b1 15 00 00 00 00 	lock cmpxchg DWORD PTR ds:0x0,edx
+    2233:	0f 94 c0             	sete   al
+    2236:	84 c0                	test   al,al
+    2238:	74 d0                	je     220a <task_schedule+0x4d0>
 										idx = 0;
-    21a7:	c7 45 e8 00 00 00 00 	mov    DWORD PTR [ebp-0x18],0x0
+    223a:	c7 45 e8 00 00 00 00 	mov    DWORD PTR [ebp-0x18],0x0
 								else
 										goto get_idx;
 						}
 						if (nproc > 1)
-    21ae:	a1 00 00 00 00       	mov    eax,ds:0x0
-    21b3:	83 f8 01             	cmp    eax,0x1
-    21b6:	76 24                	jbe    21dc <task_schedule+0x54a>
+    2241:	a1 00 00 00 00       	mov    eax,ds:0x0
+    2246:	83 f8 01             	cmp    eax,0x1
+    2249:	76 24                	jbe    226f <task_schedule+0x535>
 								pr_lst[idx].proc = per_cpu_ptr()->apic_id;
-    21b8:	e8 43 de ff ff       	call   0 <per_cpu_ptr>
-    21bd:	89 c1                	mov    ecx,eax
-    21bf:	8b 1d 00 00 00 00    	mov    ebx,DWORD PTR ds:0x0
-    21c5:	8b 55 e8             	mov    edx,DWORD PTR [ebp-0x18]
-    21c8:	89 d0                	mov    eax,edx
-    21ca:	c1 e0 02             	shl    eax,0x2
-    21cd:	01 d0                	add    eax,edx
-    21cf:	c1 e0 02             	shl    eax,0x2
-    21d2:	8d 14 03             	lea    edx,[ebx+eax*1]
-    21d5:	8b 41 04             	mov    eax,DWORD PTR [ecx+0x4]
-    21d8:	89 02                	mov    DWORD PTR [edx],eax
-    21da:	eb 1b                	jmp    21f7 <task_schedule+0x565>
+    224b:	e8 b0 dd ff ff       	call   0 <per_cpu_ptr>
+    2250:	89 c1                	mov    ecx,eax
+    2252:	8b 1d 00 00 00 00    	mov    ebx,DWORD PTR ds:0x0
+    2258:	8b 55 e8             	mov    edx,DWORD PTR [ebp-0x18]
+    225b:	89 d0                	mov    eax,edx
+    225d:	c1 e0 02             	shl    eax,0x2
+    2260:	01 d0                	add    eax,edx
+    2262:	c1 e0 02             	shl    eax,0x2
+    2265:	8d 14 03             	lea    edx,[ebx+eax*1]
+    2268:	8b 41 04             	mov    eax,DWORD PTR [ecx+0x4]
+    226b:	89 02                	mov    DWORD PTR [edx],eax
+    226d:	eb 1b                	jmp    228a <task_schedule+0x550>
 						else
 								pr_lst[idx].proc = 0;
-    21dc:	8b 0d 00 00 00 00    	mov    ecx,DWORD PTR ds:0x0
-    21e2:	8b 55 e8             	mov    edx,DWORD PTR [ebp-0x18]
-    21e5:	89 d0                	mov    eax,edx
-    21e7:	c1 e0 02             	shl    eax,0x2
-    21ea:	01 d0                	add    eax,edx
-    21ec:	c1 e0 02             	shl    eax,0x2
-    21ef:	01 c8                	add    eax,ecx
-    21f1:	c7 00 00 00 00 00    	mov    DWORD PTR [eax],0x0
+    226f:	8b 0d 00 00 00 00    	mov    ecx,DWORD PTR ds:0x0
+    2275:	8b 55 e8             	mov    edx,DWORD PTR [ebp-0x18]
+    2278:	89 d0                	mov    eax,edx
+    227a:	c1 e0 02             	shl    eax,0x2
+    227d:	01 d0                	add    eax,edx
+    227f:	c1 e0 02             	shl    eax,0x2
+    2282:	01 c8                	add    eax,ecx
+    2284:	c7 00 00 00 00 00    	mov    DWORD PTR [eax],0x0
 						pr_lst[idx].task_name = t->name;
-    21f7:	8b 0d 00 00 00 00    	mov    ecx,DWORD PTR ds:0x0
-    21fd:	8b 55 e8             	mov    edx,DWORD PTR [ebp-0x18]
-    2200:	89 d0                	mov    eax,edx
-    2202:	c1 e0 02             	shl    eax,0x2
-    2205:	01 d0                	add    eax,edx
-    2207:	c1 e0 02             	shl    eax,0x2
-    220a:	8d 14 01             	lea    edx,[ecx+eax*1]
-    220d:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    2210:	8b 40 10             	mov    eax,DWORD PTR [eax+0x10]
-    2213:	89 42 08             	mov    DWORD PTR [edx+0x8],eax
+    228a:	8b 0d 00 00 00 00    	mov    ecx,DWORD PTR ds:0x0
+    2290:	8b 55 e8             	mov    edx,DWORD PTR [ebp-0x18]
+    2293:	89 d0                	mov    eax,edx
+    2295:	c1 e0 02             	shl    eax,0x2
+    2298:	01 d0                	add    eax,edx
+    229a:	c1 e0 02             	shl    eax,0x2
+    229d:	8d 14 01             	lea    edx,[ecx+eax*1]
+    22a0:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    22a3:	8b 40 10             	mov    eax,DWORD PTR [eax+0x10]
+    22a6:	89 42 08             	mov    DWORD PTR [edx+0x8],eax
 						pr_lst[idx].task_id = t->task_id;
-    2216:	8b 0d 00 00 00 00    	mov    ecx,DWORD PTR ds:0x0
-    221c:	8b 55 e8             	mov    edx,DWORD PTR [ebp-0x18]
-    221f:	89 d0                	mov    eax,edx
-    2221:	c1 e0 02             	shl    eax,0x2
-    2224:	01 d0                	add    eax,edx
-    2226:	c1 e0 02             	shl    eax,0x2
-    2229:	8d 14 01             	lea    edx,[ecx+eax*1]
-    222c:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    222f:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
-    2232:	89 42 04             	mov    DWORD PTR [edx+0x4],eax
+    22a9:	8b 0d 00 00 00 00    	mov    ecx,DWORD PTR ds:0x0
+    22af:	8b 55 e8             	mov    edx,DWORD PTR [ebp-0x18]
+    22b2:	89 d0                	mov    eax,edx
+    22b4:	c1 e0 02             	shl    eax,0x2
+    22b7:	01 d0                	add    eax,edx
+    22b9:	c1 e0 02             	shl    eax,0x2
+    22bc:	8d 14 01             	lea    edx,[ecx+eax*1]
+    22bf:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    22c2:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
+    22c5:	89 42 04             	mov    DWORD PTR [edx+0x4],eax
 						pr_lst[idx].eip = instr_ptr(t);
-    2235:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    2238:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    223b:	8b 48 30             	mov    ecx,DWORD PTR [eax+0x30]
-    223e:	8b 1d 00 00 00 00    	mov    ebx,DWORD PTR ds:0x0
-    2244:	8b 55 e8             	mov    edx,DWORD PTR [ebp-0x18]
-    2247:	89 d0                	mov    eax,edx
-    2249:	c1 e0 02             	shl    eax,0x2
-    224c:	01 d0                	add    eax,edx
-    224e:	c1 e0 02             	shl    eax,0x2
-    2251:	01 d8                	add    eax,ebx
-    2253:	89 ca                	mov    edx,ecx
-    2255:	89 50 0c             	mov    DWORD PTR [eax+0xc],edx
+    22c8:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    22cb:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    22ce:	8b 48 30             	mov    ecx,DWORD PTR [eax+0x30]
+    22d1:	8b 1d 00 00 00 00    	mov    ebx,DWORD PTR ds:0x0
+    22d7:	8b 55 e8             	mov    edx,DWORD PTR [ebp-0x18]
+    22da:	89 d0                	mov    eax,edx
+    22dc:	c1 e0 02             	shl    eax,0x2
+    22df:	01 d0                	add    eax,edx
+    22e1:	c1 e0 02             	shl    eax,0x2
+    22e4:	01 d8                	add    eax,ebx
+    22e6:	89 ca                	mov    edx,ecx
+    22e8:	89 50 0c             	mov    DWORD PTR [eax+0xc],edx
 						pr_lst[idx].esp = stack_ptr(t);
-    2258:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    225b:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    225e:	8b 48 1c             	mov    ecx,DWORD PTR [eax+0x1c]
-    2261:	8b 1d 00 00 00 00    	mov    ebx,DWORD PTR ds:0x0
-    2267:	8b 55 e8             	mov    edx,DWORD PTR [ebp-0x18]
-    226a:	89 d0                	mov    eax,edx
-    226c:	c1 e0 02             	shl    eax,0x2
-    226f:	01 d0                	add    eax,edx
-    2271:	c1 e0 02             	shl    eax,0x2
-    2274:	01 d8                	add    eax,ebx
-    2276:	89 ca                	mov    edx,ecx
-    2278:	89 50 10             	mov    DWORD PTR [eax+0x10],edx
+    22eb:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    22ee:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    22f1:	8b 48 1c             	mov    ecx,DWORD PTR [eax+0x1c]
+    22f4:	8b 1d 00 00 00 00    	mov    ebx,DWORD PTR ds:0x0
+    22fa:	8b 55 e8             	mov    edx,DWORD PTR [ebp-0x18]
+    22fd:	89 d0                	mov    eax,edx
+    22ff:	c1 e0 02             	shl    eax,0x2
+    2302:	01 d0                	add    eax,edx
+    2304:	c1 e0 02             	shl    eax,0x2
+    2307:	01 d8                	add    eax,ebx
+    2309:	89 ca                	mov    edx,ecx
+    230b:	89 50 10             	mov    DWORD PTR [eax+0x10],edx
 				}
 		}
 		/* document the processor */
 		if (nproc > 1)
-    227b:	a1 00 00 00 00       	mov    eax,ds:0x0
-    2280:	83 f8 01             	cmp    eax,0x1
-    2283:	76 0d                	jbe    2292 <task_schedule+0x600>
+    230e:	a1 00 00 00 00       	mov    eax,ds:0x0
+    2313:	83 f8 01             	cmp    eax,0x1
+    2316:	76 0d                	jbe    2325 <task_schedule+0x5eb>
 				t->task_proc = smp_processor_id();
-    2285:	e8 76 dd ff ff       	call   0 <per_cpu_ptr>
-    228a:	8b 10                	mov    edx,DWORD PTR [eax]
-    228c:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    228f:	89 50 44             	mov    DWORD PTR [eax+0x44],edx
+    2318:	e8 e3 dc ff ff       	call   0 <per_cpu_ptr>
+    231d:	8b 10                	mov    edx,DWORD PTR [eax]
+    231f:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    2322:	89 50 44             	mov    DWORD PTR [eax+0x44],edx
 		/* reinsert the previous task (if we don't do so next time) */
 		if (prev_task && (t != prev_task)) {
-    2292:	83 7d 08 00          	cmp    DWORD PTR [ebp+0x8],0x0
-    2296:	74 55                	je     22ed <task_schedule+0x65b>
-    2298:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    229b:	3b 45 08             	cmp    eax,DWORD PTR [ebp+0x8]
-    229e:	74 4d                	je     22ed <task_schedule+0x65b>
+    2325:	83 7d 08 00          	cmp    DWORD PTR [ebp+0x8],0x0
+    2329:	74 53                	je     237e <task_schedule+0x644>
+    232b:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    232e:	3b 45 08             	cmp    eax,DWORD PTR [ebp+0x8]
+    2331:	74 4b                	je     237e <task_schedule+0x644>
 				ri_queue[ri_ofs++] = prev_task;
-    22a0:	a1 00 00 00 00       	mov    eax,ds:0x0
-    22a5:	8d 50 01             	lea    edx,[eax+0x1]
-    22a8:	89 15 00 00 00 00    	mov    DWORD PTR ds:0x0,edx
-    22ae:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
-    22b1:	89 14 85 00 00 00 00 	mov    DWORD PTR [eax*4+0x0],edx
+    2333:	a1 00 00 00 00       	mov    eax,ds:0x0
+    2338:	8d 50 01             	lea    edx,[eax+0x1]
+    233b:	89 15 00 00 00 00    	mov    DWORD PTR ds:0x0,edx
+    2341:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
+    2344:	89 14 85 00 00 00 00 	mov    DWORD PTR [eax*4+0x0],edx
 				if (ri_ofs == RI_LIMIT)
-    22b8:	a1 00 00 00 00       	mov    eax,ds:0x0
-    22bd:	83 f8 20             	cmp    eax,0x20
-    22c0:	75 2b                	jne    22ed <task_schedule+0x65b>
+    234b:	a1 00 00 00 00       	mov    eax,ds:0x0
+    2350:	83 f8 20             	cmp    eax,0x20
+    2353:	75 29                	jne    237e <task_schedule+0x644>
 						die("Use a larger reinsertion queue!\n");
-    22c2:	83 ec 08             	sub    esp,0x8
-    22c5:	68 18 04 00 00       	push   0x418
-    22ca:	6a 0c                	push   0xc
-    22cc:	e8 fc ff ff ff       	call   22cd <task_schedule+0x63b>
-    22d1:	83 c4 10             	add    esp,0x10
-    22d4:	e8 fc ff ff ff       	call   22d5 <task_schedule+0x643>
-    22d9:	83 ec 0c             	sub    esp,0xc
-    22dc:	68 00 00 00 00       	push   0x0
-    22e1:	e8 fc ff ff ff       	call   22e2 <task_schedule+0x650>
-    22e6:	83 c4 10             	add    esp,0x10
-    22e9:	fa                   	cli
-    22ea:	f4                   	hlt
-    22eb:	eb fd                	jmp    22ea <task_schedule+0x658>
+    2355:	c7 44 24 04 18 04 00 00 	mov    DWORD PTR [esp+0x4],0x418
+    235d:	c7 04 24 0c 00 00 00 	mov    DWORD PTR [esp],0xc
+    2364:	e8 fc ff ff ff       	call   2365 <task_schedule+0x62b>
+    2369:	e8 fc ff ff ff       	call   236a <task_schedule+0x630>
+    236e:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+    2375:	e8 fc ff ff ff       	call   2376 <task_schedule+0x63c>
+    237a:	fa                   	cli
+    237b:	f4                   	hlt
+    237c:	eb fd                	jmp    237b <task_schedule+0x641>
 		}
 		spin_unlock(&pq_lock);
-    22ed:	83 ec 0c             	sub    esp,0xc
-    22f0:	68 00 00 00 00       	push   0x0
-    22f5:	e8 fc ff ff ff       	call   22f6 <task_schedule+0x664>
-    22fa:	83 c4 10             	add    esp,0x10
+    237e:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+    2385:	e8 fc ff ff ff       	call   2386 <task_schedule+0x64c>
 
 		/* release stack */
 		{ /* only rely on registers */
 				register void* ctx = t->ts;
-    22fd:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    2300:	8b 58 04             	mov    ebx,DWORD PTR [eax+0x4]
+    238a:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    238d:	8b 58 04             	mov    ebx,DWORD PTR [eax+0x4]
 				if (prev_task && (t != prev_task))
-    2303:	83 7d 08 00          	cmp    DWORD PTR [ebp+0x8],0x0
-    2307:	74 17                	je     2320 <task_schedule+0x68e>
-    2309:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    230c:	3b 45 08             	cmp    eax,DWORD PTR [ebp+0x8]
-    230f:	74 0f                	je     2320 <task_schedule+0x68e>
+    2390:	83 7d 08 00          	cmp    DWORD PTR [ebp+0x8],0x0
+    2394:	74 17                	je     23ad <task_schedule+0x673>
+    2396:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    2399:	3b 45 08             	cmp    eax,DWORD PTR [ebp+0x8]
+    239c:	74 0f                	je     23ad <task_schedule+0x673>
 						prev_task->flags &= ~TIF_RUNNING;
-    2311:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2314:	8b 00                	mov    eax,DWORD PTR [eax]
-    2316:	83 e0 ef             	and    eax,0xffffffef
-    2319:	89 c2                	mov    edx,eax
-    231b:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    231e:	89 10                	mov    DWORD PTR [eax],edx
+    239e:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    23a1:	8b 00                	mov    eax,DWORD PTR [eax]
+    23a3:	83 e0 ef             	and    eax,0xffffffef
+    23a6:	89 c2                	mov    edx,eax
+    23a8:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    23ab:	89 10                	mov    DWORD PTR [eax],edx
 				longjmp(ctx);
-    2320:	89 dc                	mov    esp,ebx
-    2322:	e9 fc ff ff ff       	jmp    2323 <task_schedule+0x691>
-    2327:	eb 01                	jmp    232a <task_schedule+0x698>
+    23ad:	89 dc                	mov    esp,ebx
+    23af:	e9 fc ff ff ff       	jmp    23b0 <task_schedule+0x676>
+    23b4:	eb 01                	jmp    23b7 <task_schedule+0x67d>
 				return;    /* of the irq0 handler, i.e. where execution stopped. */
-    2329:	90                   	nop
+    23b6:	90                   	nop
 		}
 }
-    232a:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
-    232d:	c9                   	leave
-    232e:	c3                   	ret
+    23b7:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
+    23ba:	c9                   	leave
+    23bb:	c3                   	ret
 
-0000232f <task_schedule_isr>:
+000023bc <task_schedule_isr>:
 
 /* called from irq0/apic handler returning with iret via longjmp.
  * These handlers are gates, i.e. not-reentrant, ensuring that
  * they have always finished execution before the task switch. */
 void task_schedule_isr(void* esp)
 {
-    232f:	55                   	push   ebp
-    2330:	89 e5                	mov    ebp,esp
-    2332:	83 ec 18             	sub    esp,0x18
+    23bc:	55                   	push   ebp
+    23bd:	89 e5                	mov    ebp,esp
+    23bf:	83 ec 28             	sub    esp,0x28
 		struct tsi* t = get_task_esp(esp);
-    2335:	83 ec 0c             	sub    esp,0xc
-    2338:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-    233b:	e8 fc ff ff ff       	call   233c <task_schedule_isr+0xd>
-    2340:	83 c4 10             	add    esp,0x10
-    2343:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
+    23c2:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    23c5:	89 04 24             	mov    DWORD PTR [esp],eax
+    23c8:	e8 fc ff ff ff       	call   23c9 <task_schedule_isr+0xd>
+    23cd:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
 		task_schedule(t);
-    2346:	83 ec 0c             	sub    esp,0xc
-    2349:	ff 75 f4             	push   DWORD PTR [ebp-0xc]
-    234c:	e8 fc ff ff ff       	call   234d <task_schedule_isr+0x1e>
-    2351:	83 c4 10             	add    esp,0x10
+    23d0:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    23d3:	89 04 24             	mov    DWORD PTR [esp],eax
+    23d6:	e8 fc ff ff ff       	call   23d7 <task_schedule_isr+0x1b>
 }
-    2354:	90                   	nop
-    2355:	c9                   	leave
-    2356:	c3                   	ret
+    23db:	90                   	nop
+    23dc:	c9                   	leave
+    23dd:	c3                   	ret
 
-00002357 <task_yield>:
+000023de <task_yield>:
 
 void task_yield()
 {
-    2357:	55                   	push   ebp
-    2358:	89 e5                	mov    ebp,esp
-    235a:	83 ec 18             	sub    esp,0x18
+    23de:	55                   	push   ebp
+    23df:	89 e5                	mov    ebp,esp
+    23e1:	83 ec 28             	sub    esp,0x28
 		struct tsi* t;
 		if (preempt_needs_init)
-    235d:	a1 00 00 00 00       	mov    eax,ds:0x0
-    2362:	85 c0                	test   eax,eax
-    2364:	0f 85 a2 00 00 00    	jne    240c <task_yield+0xb5>
+    23e4:	a1 00 00 00 00       	mov    eax,ds:0x0
+    23e9:	85 c0                	test   eax,eax
+    23eb:	0f 85 9d 00 00 00    	jne    248e <task_yield+0xb0>
 				return; /* shouldn't be called before preemption */
 		t = get_task();
-    236a:	e8 fc ff ff ff       	call   236b <task_yield+0x14>
-    236f:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
+    23f1:	e8 fc ff ff ff       	call   23f2 <task_yield+0x14>
+    23f6:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
 		if (t->preempt_count) { /* don't yield nonpreemptable task */
-    2372:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    2375:	8b 40 18             	mov    eax,DWORD PTR [eax+0x18]
-    2378:	85 c0                	test   eax,eax
-    237a:	0f 85 8f 00 00 00    	jne    240f <task_yield+0xb8>
+    23f9:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    23fc:	8b 40 18             	mov    eax,DWORD PTR [eax+0x18]
+    23ff:	85 c0                	test   eax,eax
+    2401:	0f 85 8a 00 00 00    	jne    2491 <task_yield+0xb3>
 exit:
 				return;
 		}
 		if (if_enabled())
-    2380:	e8 8f dc ff ff       	call   14 <if_enabled>
-    2385:	85 c0                	test   eax,eax
-    2387:	74 2b                	je     23b4 <task_yield+0x5d>
+    2407:	e8 08 dc ff ff       	call   14 <if_enabled>
+    240c:	85 c0                	test   eax,eax
+    240e:	74 29                	je     2439 <task_yield+0x5b>
 				die("yielding in interrupt!\n");
-    2389:	83 ec 08             	sub    esp,0x8
-    238c:	68 cb 04 00 00       	push   0x4cb
-    2391:	6a 0c                	push   0xc
-    2393:	e8 fc ff ff ff       	call   2394 <task_yield+0x3d>
-    2398:	83 c4 10             	add    esp,0x10
-    239b:	e8 fc ff ff ff       	call   239c <task_yield+0x45>
-    23a0:	83 ec 0c             	sub    esp,0xc
-    23a3:	68 00 00 00 00       	push   0x0
-    23a8:	e8 fc ff ff ff       	call   23a9 <task_yield+0x52>
-    23ad:	83 c4 10             	add    esp,0x10
-    23b0:	fa                   	cli
-    23b1:	f4                   	hlt
-    23b2:	eb fd                	jmp    23b1 <task_yield+0x5a>
+    2410:	c7 44 24 04 cb 04 00 00 	mov    DWORD PTR [esp+0x4],0x4cb
+    2418:	c7 04 24 0c 00 00 00 	mov    DWORD PTR [esp],0xc
+    241f:	e8 fc ff ff ff       	call   2420 <task_yield+0x42>
+    2424:	e8 fc ff ff ff       	call   2425 <task_yield+0x47>
+    2429:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+    2430:	e8 fc ff ff ff       	call   2431 <task_yield+0x53>
+    2435:	fa                   	cli
+    2436:	f4                   	hlt
+    2437:	eb fd                	jmp    2436 <task_yield+0x58>
 		void* ptr = &&exit;
-    23b4:	c7 45 f0 0a 24 00 00 	mov    DWORD PTR [ebp-0x10],0x240a
+    2439:	c7 45 f0 8c 24 00 00 	mov    DWORD PTR [ebp-0x10],0x248c
 		asm volatile (
-    23bb:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-    23be:	fa                   	cli
-    23bf:	9c                   	pushf
-    23c0:	81 0c 24 00 02 00 00 	or     DWORD PTR [esp],0x200
-    23c7:	0e                   	push   cs
-    23c8:	50                   	push   eax
-    23c9:	60                   	pusha
-    23ca:	1e                   	push   ds
-    23cb:	06                   	push   es
-    23cc:	0f a0                	push   fs
-    23ce:	0f a8                	push   gs
-    23d0:	89 e0                	mov    eax,esp
-    23d2:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
+    2440:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+    2443:	fa                   	cli
+    2444:	9c                   	pushf
+    2445:	81 0c 24 00 02 00 00 	or     DWORD PTR [esp],0x200
+    244c:	0e                   	push   cs
+    244d:	50                   	push   eax
+    244e:	60                   	pusha
+    244f:	1e                   	push   ds
+    2450:	06                   	push   es
+    2451:	0f a0                	push   fs
+    2453:	0f a8                	push   gs
+    2455:	89 e0                	mov    eax,esp
+    2457:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
 		: "=mr" (ptr) : "0" (ptr)
 #ifdef __x86_64__
 							 : "rax" /* we clobber rax */
 #endif
 							 );
 		t->ts = ptr;
-    23d5:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    23d8:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
-    23db:	89 50 04             	mov    DWORD PTR [eax+0x4],edx
+    245a:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    245d:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
+    2460:	89 50 04             	mov    DWORD PTR [eax+0x4],edx
 		t->flags |= TIF_YIELDED;
-    23de:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    23e1:	8b 00                	mov    eax,DWORD PTR [eax]
-    23e3:	83 c8 02             	or     eax,0x2
-    23e6:	89 c2                	mov    edx,eax
-    23e8:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    23eb:	89 10                	mov    DWORD PTR [eax],edx
+    2463:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    2466:	8b 00                	mov    eax,DWORD PTR [eax]
+    2468:	83 c8 02             	or     eax,0x2
+    246b:	89 c2                	mov    edx,eax
+    246d:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    2470:	89 10                	mov    DWORD PTR [eax],edx
 		/* NOPE! */
 		//t->flags &= ~TIF_RUNNING;
 		t->stop_time = task_gettime();
-    23ed:	e8 fc ff ff ff       	call   23ee <task_yield+0x97>
-    23f2:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
-    23f5:	89 41 3c             	mov    DWORD PTR [ecx+0x3c],eax
-    23f8:	89 51 40             	mov    DWORD PTR [ecx+0x40],edx
+    2472:	e8 fc ff ff ff       	call   2473 <task_yield+0x95>
+    2477:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
+    247a:	89 41 3c             	mov    DWORD PTR [ecx+0x3c],eax
+    247d:	89 51 40             	mov    DWORD PTR [ecx+0x40],edx
 		task_schedule(t);
-    23fb:	83 ec 0c             	sub    esp,0xc
-    23fe:	ff 75 f4             	push   DWORD PTR [ebp-0xc]
-    2401:	e8 fc ff ff ff       	call   2402 <task_yield+0xab>
-    2406:	83 c4 10             	add    esp,0x10
+    2480:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    2483:	89 04 24             	mov    DWORD PTR [esp],eax
+    2486:	e8 fc ff ff ff       	call   2487 <task_yield+0xa9>
 		goto exit;
-    2409:	90                   	nop
+    248b:	90                   	nop
 				return;
-    240a:	eb 03                	jmp    240f <task_yield+0xb8>
+    248c:	eb 03                	jmp    2491 <task_yield+0xb3>
 				return; /* shouldn't be called before preemption */
-    240c:	90                   	nop
-    240d:	eb 01                	jmp    2410 <task_yield+0xb9>
+    248e:	90                   	nop
+    248f:	eb 01                	jmp    2492 <task_yield+0xb4>
 				return;
-    240f:	90                   	nop
+    2491:	90                   	nop
 }
-    2410:	c9                   	leave
-    2411:	c3                   	ret
+    2492:	c9                   	leave
+    2493:	c3                   	ret
 
-00002412 <preempt_init>:
+00002494 <preempt_init>:
 
 /* this function makes the kernel preemptable and is freeing the
  * previous main kernel stack at 0x60000-0x80000 */
 void preempt_init()
 {
-    2412:	55                   	push   ebp
-    2413:	89 e5                	mov    ebp,esp
-    2415:	83 ec 08             	sub    esp,0x8
+    2494:	55                   	push   ebp
+    2495:	89 e5                	mov    ebp,esp
+    2497:	83 ec 18             	sub    esp,0x18
 		asm ("cli");
-    2418:	fa                   	cli
+    249a:	fa                   	cli
 		pr_lst = kmalloc(128 * sizeof(*pr_lst));
-    2419:	83 ec 0c             	sub    esp,0xc
-    241c:	68 00 0a 00 00       	push   0xa00
-    2421:	e8 fc ff ff ff       	call   2422 <preempt_init+0x10>
-    2426:	83 c4 10             	add    esp,0x10
-    2429:	a3 00 00 00 00       	mov    ds:0x0,eax
+    249b:	c7 04 24 00 0a 00 00 	mov    DWORD PTR [esp],0xa00
+    24a2:	e8 fc ff ff ff       	call   24a3 <preempt_init+0xf>
+    24a7:	a3 00 00 00 00       	mov    ds:0x0,eax
 		extern void kinit(void*);
 		extern void kredraw(void*);
 		extern void kscrub(void*);
 		task_spawn(kinit, NULL, PRIORITY_MAX);
-    242e:	68 e3 04 00 00       	push   0x4e3
-    2433:	6a 00                	push   0x0
-    2435:	6a 00                	push   0x0
-    2437:	68 00 00 00 00       	push   0x0
-    243c:	e8 fc ff ff ff       	call   243d <preempt_init+0x2b>
-    2441:	83 c4 10             	add    esp,0x10
+    24ac:	c7 44 24 0c e3 04 00 00 	mov    DWORD PTR [esp+0xc],0x4e3
+    24b4:	c7 44 24 08 00 00 00 00 	mov    DWORD PTR [esp+0x8],0x0
+    24bc:	c7 44 24 04 00 00 00 00 	mov    DWORD PTR [esp+0x4],0x0
+    24c4:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+    24cb:	e8 fc ff ff ff       	call   24cc <preempt_init+0x38>
 		task_spawn(kredraw, NULL, PRIORITY_MAX);
-    2444:	68 e9 04 00 00       	push   0x4e9
-    2449:	6a 00                	push   0x0
-    244b:	6a 00                	push   0x0
-    244d:	68 00 00 00 00       	push   0x0
-    2452:	e8 fc ff ff ff       	call   2453 <preempt_init+0x41>
-    2457:	83 c4 10             	add    esp,0x10
+    24d0:	c7 44 24 0c e9 04 00 00 	mov    DWORD PTR [esp+0xc],0x4e9
+    24d8:	c7 44 24 08 00 00 00 00 	mov    DWORD PTR [esp+0x8],0x0
+    24e0:	c7 44 24 04 00 00 00 00 	mov    DWORD PTR [esp+0x4],0x0
+    24e8:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+    24ef:	e8 fc ff ff ff       	call   24f0 <preempt_init+0x5c>
 		task_spawn(kscrub, NULL, PRIORITY_MIN);
-    245a:	68 f1 04 00 00       	push   0x4f1
-    245f:	6a 03                	push   0x3
-    2461:	6a 00                	push   0x0
-    2463:	68 00 00 00 00       	push   0x0
-    2468:	e8 fc ff ff ff       	call   2469 <preempt_init+0x57>
-    246d:	83 c4 10             	add    esp,0x10
+    24f4:	c7 44 24 0c f1 04 00 00 	mov    DWORD PTR [esp+0xc],0x4f1
+    24fc:	c7 44 24 08 03 00 00 00 	mov    DWORD PTR [esp+0x8],0x3
+    2504:	c7 44 24 04 00 00 00 00 	mov    DWORD PTR [esp+0x4],0x0
+    250c:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+    2513:	e8 fc ff ff ff       	call   2514 <preempt_init+0x80>
 		/* at least n+1 idle task are needed */
 		task_spawn(kidle, NULL, PRIORITY_MIN);
-    2470:	68 f8 04 00 00       	push   0x4f8
-    2475:	6a 03                	push   0x3
-    2477:	6a 00                	push   0x0
-    2479:	68 00 00 00 00       	push   0x0
-    247e:	e8 fc ff ff ff       	call   247f <preempt_init+0x6d>
-    2483:	83 c4 10             	add    esp,0x10
+    2518:	c7 44 24 0c f8 04 00 00 	mov    DWORD PTR [esp+0xc],0x4f8
+    2520:	c7 44 24 08 03 00 00 00 	mov    DWORD PTR [esp+0x8],0x3
+    2528:	c7 44 24 04 00 00 00 00 	mov    DWORD PTR [esp+0x4],0x0
+    2530:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+    2537:	e8 fc ff ff ff       	call   2538 <preempt_init+0xa4>
 		task_spawn(kidle, NULL, PRIORITY_MIN);
-    2486:	68 f8 04 00 00       	push   0x4f8
-    248b:	6a 03                	push   0x3
-    248d:	6a 00                	push   0x0
-    248f:	68 00 00 00 00       	push   0x0
-    2494:	e8 fc ff ff ff       	call   2495 <preempt_init+0x83>
-    2499:	83 c4 10             	add    esp,0x10
+    253c:	c7 44 24 0c f8 04 00 00 	mov    DWORD PTR [esp+0xc],0x4f8
+    2544:	c7 44 24 08 03 00 00 00 	mov    DWORD PTR [esp+0x8],0x3
+    254c:	c7 44 24 04 00 00 00 00 	mov    DWORD PTR [esp+0x4],0x0
+    2554:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+    255b:	e8 fc ff ff ff       	call   255c <preempt_init+0xc8>
 		preempt_needs_init = 0;
-    249c:	c7 05 00 00 00 00 00 00 00 00 	mov    DWORD PTR ds:0x0,0x0
+    2560:	c7 05 00 00 00 00 00 00 00 00 	mov    DWORD PTR ds:0x0,0x0
 		task_schedule(NULL);
-    24a6:	83 ec 0c             	sub    esp,0xc
-    24a9:	6a 00                	push   0x0
-    24ab:	e8 fc ff ff ff       	call   24ac <preempt_init+0x9a>
-    24b0:	83 c4 10             	add    esp,0x10
+    256a:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+    2571:	e8 fc ff ff ff       	call   2572 <preempt_init+0xde>
 }
-    24b3:	90                   	nop
-    24b4:	c9                   	leave
-    24b5:	c3                   	ret
+    2576:	90                   	nop
+    2577:	c9                   	leave
+    2578:	c3                   	ret

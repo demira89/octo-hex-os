@@ -5,12 +5,12 @@ kbd.o64:     file format elf64-x86-64
 Disassembly of section .text:
 
 0000000000000000 <outb>:
-				if (scancode == 0x2a) { /* LSHIFT */
-						kb_state |= KBD_STATE_LSHIFT;
+						/*if (kb_state & KBD_STATE_NEXT_RIGHT) *//* fake lshift */
+						/*		kb_state &= ~KBD_STATE_NEXT_RIGHT;*/
+				} else if (scancode == 0x36) { /* RSHIFT */
+						kb_state |= KBD_STATE_RSHIFT;
 						if (!(kb_state & KBD_STATE_SHIFT)) {
 								kb_state |= KBD_STATE_SHIFT;
-						}
-						/*if (kb_state & KBD_STATE_NEXT_RIGHT) *//* fake lshift */
    0:	55                   	push   rbp
    1:	48 89 e5             	mov    rbp,rsp
    4:	48 83 ec 08          	sub    rsp,0x8
@@ -18,33 +18,33 @@ Disassembly of section .text:
    a:	89 f0                	mov    eax,esi
    c:	66 89 55 fc          	mov    WORD PTR [rbp-0x4],dx
   10:	88 45 f8             	mov    BYTE PTR [rbp-0x8],al
-						/*		kb_state &= ~KBD_STATE_NEXT_RIGHT;*/
+						}
   13:	0f b6 45 f8          	movzx  eax,BYTE PTR [rbp-0x8]
   17:	0f b7 55 fc          	movzx  edx,WORD PTR [rbp-0x4]
   1b:	ee                   	out    dx,al
-				} else if (scancode == 0x36) { /* RSHIFT */
+				} else if (scancode == 0x3a) { /* CAPS_LOCK */
   1c:	90                   	nop
   1d:	c9                   	leave
   1e:	c3                   	ret
 
 000000000000001f <inb>:
-						kb_state |= KBD_STATE_RSHIFT;
-						if (!(kb_state & KBD_STATE_SHIFT)) {
-								kb_state |= KBD_STATE_SHIFT;
+						if (!(kb_state & KBD_STATE_CAPS_LOCK)) {
+							kb_state |= KBD_STATE_CAPS_LOCK;
+							kb_state ^= KBD_LIGHT_CAPS_LOCK;
   1f:	55                   	push   rbp
   20:	48 89 e5             	mov    rbp,rsp
   23:	48 83 ec 18          	sub    rsp,0x18
   27:	89 f8                	mov    eax,edi
   29:	66 89 45 ec          	mov    WORD PTR [rbp-0x14],ax
+							kbd_lights_update();
 						}
-				} else if (scancode == 0x3a) { /* CAPS_LOCK */
   2d:	0f b7 45 ec          	movzx  eax,WORD PTR [rbp-0x14]
   31:	89 c2                	mov    edx,eax
   33:	ec                   	in     al,dx
   34:	88 45 ff             	mov    BYTE PTR [rbp-0x1],al
-						if (!(kb_state & KBD_STATE_CAPS_LOCK)) {
+						/*printf("p");*/
   37:	0f b6 45 ff          	movzx  eax,BYTE PTR [rbp-0x1]
-							kb_state |= KBD_STATE_CAPS_LOCK;
+				} else if (scancode == 0x1d) { /* L/R CONTROL */
   3b:	c9                   	leave
   3c:	c3                   	ret
 

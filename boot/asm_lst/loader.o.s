@@ -329,7 +329,7 @@ int fat16_read(uint16_t* clst, int cct, uint32_t sz, struct page_range* pr, int 
 												return -1;
  2d8:	b8 ff ff ff ff       	mov    eax,0xffffffff
  2dd:	e9 85 00 00 00       	jmp    367 <fat16_read+0x1e4>
-										dst = (void*)pr->base;
+										dst = (void*)(size_t)pr->base;
  2e2:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
  2e5:	8b 50 04             	mov    edx,DWORD PTR [eax+0x4]
  2e8:	8b 00                	mov    eax,DWORD PTR [eax]

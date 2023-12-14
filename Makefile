@@ -1,14 +1,14 @@
 CC32=i686-elf-gcc -fno-builtin -ffreestanding -nostdlib -fno-asynchronous-unwind-tables \
-	 -g -m32 -fstrict-volatile-bitfields -std=gnu99 -Wall -Wextra -mincoming-stack-boundary=4
+	 -g -m32 -fstrict-volatile-bitfields -std=gnu99 -Wall -Wextra -mincoming-stack-boundary=4 -mstackrealign -mpreferred-stack-boundary=4 -maccumulate-outgoing-args -mfpmath=387 -mmmx -mno-sse
 CC64=x86_64-elf-gcc -fno-builtin -ffreestanding -nostdlib -fno-asynchronous-unwind-tables \
 	 -g -m64 -fstrict-volatile-bitfields -mno-red-zone -std=gnu99 -Wall -Wextra \
-	 -mcmodel=kernel -mincoming-stack-boundary=4
+	 -mcmodel=kernel -mincoming-stack-boundary=4 -mstackrealign -mpreferred-stack-boundary=4 -maccumulate-outgoing-args -mfpmath=387 -mmmx -mno-sse -mgeneral-regs-only
 AS32=i686-elf-as
 AS64=x86_64-elf-as
 LD32=i686-elf-gcc -Wl,--oformat,elf32-i386,--Map,ld_32.map,-cref -ffreestanding -nostdlib \
-	 -Wl,--build-id=none,-Ttext,80000000,--section-start,.trampo=6000,-z,muldefs -m32
+	 -Wl,--build-id=none,-Ttext,80000000,--section-start,.trampo=6000 -m32
 LD64=x86_64-elf-gcc -Wl,--oformat,elf64-x86-64,--Map,ld_64.map,-cref -ffreestanding -nostdlib \
-	 -Wl,--build-id=none,-Ttext,ffffffff80000000,--section-start,.trampo=6000,-z,muldefs -m64
+	 -Wl,--build-id=none,-Ttext,ffffffff80000000,--section-start,.trampo=6000 -m64 # ,-z,muldefs
 OD32=i686-elf-objdump -S -d --disassembler-options=intel -w --show-raw-insn
 OD64=x86_64-elf-objdump -S -d --disassembler-options=intel -w --show-raw-insn
 SRCS= 
@@ -100,10 +100,10 @@ ld32.map ld64.map: kernel32.elf kernel64.elf
 	./ld2nm.awk ld_64.map > ld64.map
 
 kernel64.elf: $(OBJS64)
-	$(LD64) -o $@ $^
+	$(LD64) -o $@ $^ /ucrt64/lib/gcc/x86_64-elf/14.0.0/libgcc.a
 
 kernel32.elf: $(OBJS32)
-	$(LD32) -o $@ $^
+	$(LD32) -o $@ $^ /ucrt64/lib/gcc/i686-elf/14.0.0/libgcc.a
 
 boot: FORCE
 	cd boot && $(MAKE)

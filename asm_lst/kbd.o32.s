@@ -5,12 +5,12 @@ kbd.o32:     file format elf32-i386
 Disassembly of section .text:
 
 00000000 <outb>:
-				if (scancode == 0x2a) { /* LSHIFT */
-						kb_state |= KBD_STATE_LSHIFT;
+						/*if (kb_state & KBD_STATE_NEXT_RIGHT) *//* fake lshift */
+						/*		kb_state &= ~KBD_STATE_NEXT_RIGHT;*/
+				} else if (scancode == 0x36) { /* RSHIFT */
+						kb_state |= KBD_STATE_RSHIFT;
 						if (!(kb_state & KBD_STATE_SHIFT)) {
 								kb_state |= KBD_STATE_SHIFT;
-						}
-						/*if (kb_state & KBD_STATE_NEXT_RIGHT) *//* fake lshift */
    0:	55                   	push   ebp
    1:	89 e5                	mov    ebp,esp
    3:	83 ec 08             	sub    esp,0x8
@@ -18,33 +18,33 @@ Disassembly of section .text:
    9:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
    c:	66 89 55 fc          	mov    WORD PTR [ebp-0x4],dx
   10:	88 45 f8             	mov    BYTE PTR [ebp-0x8],al
-						/*		kb_state &= ~KBD_STATE_NEXT_RIGHT;*/
+						}
   13:	0f b6 45 f8          	movzx  eax,BYTE PTR [ebp-0x8]
   17:	0f b7 55 fc          	movzx  edx,WORD PTR [ebp-0x4]
   1b:	ee                   	out    dx,al
-				} else if (scancode == 0x36) { /* RSHIFT */
+				} else if (scancode == 0x3a) { /* CAPS_LOCK */
   1c:	90                   	nop
   1d:	c9                   	leave
   1e:	c3                   	ret
 
 0000001f <inb>:
-						kb_state |= KBD_STATE_RSHIFT;
-						if (!(kb_state & KBD_STATE_SHIFT)) {
-								kb_state |= KBD_STATE_SHIFT;
+						if (!(kb_state & KBD_STATE_CAPS_LOCK)) {
+							kb_state |= KBD_STATE_CAPS_LOCK;
+							kb_state ^= KBD_LIGHT_CAPS_LOCK;
   1f:	55                   	push   ebp
   20:	89 e5                	mov    ebp,esp
   22:	83 ec 14             	sub    esp,0x14
   25:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
   28:	66 89 45 ec          	mov    WORD PTR [ebp-0x14],ax
+							kbd_lights_update();
 						}
-				} else if (scancode == 0x3a) { /* CAPS_LOCK */
   2c:	0f b7 45 ec          	movzx  eax,WORD PTR [ebp-0x14]
   30:	89 c2                	mov    edx,eax
   32:	ec                   	in     al,dx
   33:	88 45 ff             	mov    BYTE PTR [ebp-0x1],al
-						if (!(kb_state & KBD_STATE_CAPS_LOCK)) {
+						/*printf("p");*/
   36:	0f b6 45 ff          	movzx  eax,BYTE PTR [ebp-0x1]
-							kb_state |= KBD_STATE_CAPS_LOCK;
+				} else if (scancode == 0x1d) { /* L/R CONTROL */
   3a:	c9                   	leave
   3b:	c3                   	ret
 
@@ -81,1080 +81,1002 @@ Disassembly of section .text:
 {
   7e:	55                   	push   ebp
   7f:	89 e5                	mov    ebp,esp
-  81:	83 ec 18             	sub    esp,0x18
+  81:	83 ec 28             	sub    esp,0x28
 		rb_events = ringbuffer_allocate(KBD_INIT_BUFSIZE);
-  84:	83 ec 0c             	sub    esp,0xc
-  87:	68 00 02 00 00       	push   0x200
-  8c:	e8 fc ff ff ff       	call   8d <kbd_init+0xf>
-  91:	83 c4 10             	add    esp,0x10
-  94:	a3 00 00 00 00       	mov    ds:0x0,eax
+  84:	c7 04 24 00 02 00 00 	mov    DWORD PTR [esp],0x200
+  8b:	e8 fc ff ff ff       	call   8c <kbd_init+0xe>
+  90:	a3 00 00 00 00       	mov    ds:0x0,eax
 		rb_commands = ringbuffer_allocate(KBD_INIT_BUFSIZE);
-  99:	83 ec 0c             	sub    esp,0xc
-  9c:	68 00 02 00 00       	push   0x200
-  a1:	e8 fc ff ff ff       	call   a2 <kbd_init+0x24>
-  a6:	83 c4 10             	add    esp,0x10
-  a9:	a3 00 00 00 00       	mov    ds:0x0,eax
+  95:	c7 04 24 00 02 00 00 	mov    DWORD PTR [esp],0x200
+  9c:	e8 fc ff ff ff       	call   9d <kbd_init+0x1f>
+  a1:	a3 00 00 00 00       	mov    ds:0x0,eax
 		region_clear(&kb_reg);
-  ae:	83 ec 0c             	sub    esp,0xc
-  b1:	68 00 00 00 00       	push   0x0
-  b6:	e8 fc ff ff ff       	call   b7 <kbd_init+0x39>
-  bb:	83 c4 10             	add    esp,0x10
+  a6:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+  ad:	e8 fc ff ff ff       	call   ae <kbd_init+0x30>
 		rprintf(&kb_regH, "    LGTNRRRLLLSSSSSS"
-  be:	83 ec 08             	sub    esp,0x8
-  c1:	68 00 00 00 00       	push   0x0
-  c6:	68 00 00 00 00       	push   0x0
-  cb:	e8 fc ff ff ff       	call   cc <kbd_init+0x4e>
-  d0:	83 c4 10             	add    esp,0x10
+  b2:	c7 44 24 04 00 00 00 00 	mov    DWORD PTR [esp+0x4],0x0
+  ba:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+  c1:	e8 fc ff ff ff       	call   c2 <kbd_init+0x44>
 		cmd = KBC_RESET;
-  d3:	c6 45 f7 01          	mov    BYTE PTR [ebp-0x9],0x1
+  c6:	c6 45 f7 01          	mov    BYTE PTR [ebp-0x9],0x1
 		ringbuffer_enqueue(rb_commands, &cmd, sizeof(cmd));
-  d7:	a1 00 00 00 00       	mov    eax,ds:0x0
-  dc:	83 ec 04             	sub    esp,0x4
-  df:	6a 01                	push   0x1
-  e1:	8d 55 f7             	lea    edx,[ebp-0x9]
-  e4:	52                   	push   edx
-  e5:	50                   	push   eax
-  e6:	e8 fc ff ff ff       	call   e7 <kbd_init+0x69>
-  eb:	83 c4 10             	add    esp,0x10
+  ca:	a1 00 00 00 00       	mov    eax,ds:0x0
+  cf:	c7 44 24 08 01 00 00 00 	mov    DWORD PTR [esp+0x8],0x1
+  d7:	8d 55 f7             	lea    edx,[ebp-0x9]
+  da:	89 54 24 04          	mov    DWORD PTR [esp+0x4],edx
+  de:	89 04 24             	mov    DWORD PTR [esp],eax
+  e1:	e8 fc ff ff ff       	call   e2 <kbd_init+0x64>
 }
-  ee:	90                   	nop
-  ef:	c9                   	leave
-  f0:	c3                   	ret
+  e6:	90                   	nop
+  e7:	c9                   	leave
+  e8:	c3                   	ret
 
-000000f1 <kbd_wait>:
+000000e9 <kbd_wait>:
 {
-  f1:	55                   	push   ebp
-  f2:	89 e5                	mov    ebp,esp
+  e9:	55                   	push   ebp
+  ea:	89 e5                	mov    ebp,esp
+  ec:	83 ec 04             	sub    esp,0x4
 		while (!(inb(KBD_CH4) & 1));
-  f4:	90                   	nop
-  f5:	6a 64                	push   0x64
+  ef:	90                   	nop
+  f0:	c7 04 24 64 00 00 00 	mov    DWORD PTR [esp],0x64
   f7:	e8 23 ff ff ff       	call   1f <inb>
-  fc:	83 c4 04             	add    esp,0x4
-  ff:	0f b6 c0             	movzx  eax,al
- 102:	83 e0 01             	and    eax,0x1
- 105:	85 c0                	test   eax,eax
- 107:	74 ec                	je     f5 <kbd_wait+0x4>
+  fc:	0f b6 c0             	movzx  eax,al
+  ff:	83 e0 01             	and    eax,0x1
+ 102:	85 c0                	test   eax,eax
+ 104:	74 ea                	je     f0 <kbd_wait+0x7>
 }
- 109:	90                   	nop
- 10a:	90                   	nop
- 10b:	c9                   	leave
- 10c:	c3                   	ret
+ 106:	90                   	nop
+ 107:	90                   	nop
+ 108:	c9                   	leave
+ 109:	c3                   	ret
 
-0000010d <kbd_process_queue>:
+0000010a <kbd_process_queue>:
 {
- 10d:	55                   	push   ebp
- 10e:	89 e5                	mov    ebp,esp
- 110:	83 ec 18             	sub    esp,0x18
+ 10a:	55                   	push   ebp
+ 10b:	89 e5                	mov    ebp,esp
+ 10d:	83 ec 28             	sub    esp,0x28
 		preempt_disable();
- 113:	e8 fc ff ff ff       	call   114 <kbd_process_queue+0x7>
- 118:	8b 50 18             	mov    edx,DWORD PTR [eax+0x18]
- 11b:	83 c2 01             	add    edx,0x1
- 11e:	89 50 18             	mov    DWORD PTR [eax+0x18],edx
+ 110:	e8 fc ff ff ff       	call   111 <kbd_process_queue+0x7>
+ 115:	8b 50 18             	mov    edx,DWORD PTR [eax+0x18]
+ 118:	83 c2 01             	add    edx,0x1
+ 11b:	89 50 18             	mov    DWORD PTR [eax+0x18],edx
 		while ((s = ringbuffer_available(rb_commands))) {
- 121:	e9 28 02 00 00       	jmp    34e <kbd_process_queue+0x241>
+ 11e:	e9 40 02 00 00       	jmp    363 <kbd_process_queue+0x259>
 				uint8_t cmd, a1, a2, nr = 0;
- 126:	c6 45 f5 00          	mov    BYTE PTR [ebp-0xb],0x0
+ 123:	c6 45 f5 00          	mov    BYTE PTR [ebp-0xb],0x0
 				ringbuffer_dequeue(rb_commands, &cmd, sizeof(cmd));
- 12a:	a1 00 00 00 00       	mov    eax,ds:0x0
- 12f:	83 ec 04             	sub    esp,0x4
- 132:	6a 01                	push   0x1
+ 127:	a1 00 00 00 00       	mov    eax,ds:0x0
+ 12c:	c7 44 24 08 01 00 00 00 	mov    DWORD PTR [esp+0x8],0x1
  134:	8d 55 ef             	lea    edx,[ebp-0x11]
- 137:	52                   	push   edx
- 138:	50                   	push   eax
- 139:	e8 fc ff ff ff       	call   13a <kbd_process_queue+0x2d>
- 13e:	83 c4 10             	add    esp,0x10
+ 137:	89 54 24 04          	mov    DWORD PTR [esp+0x4],edx
+ 13b:	89 04 24             	mov    DWORD PTR [esp],eax
+ 13e:	e8 fc ff ff ff       	call   13f <kbd_process_queue+0x35>
 				rprintf(&kb_reg, "handling command %x\n", cmd);
- 141:	0f b6 45 ef          	movzx  eax,BYTE PTR [ebp-0x11]
- 145:	0f b6 c0             	movzx  eax,al
- 148:	83 ec 04             	sub    esp,0x4
- 14b:	50                   	push   eax
- 14c:	68 51 00 00 00       	push   0x51
- 151:	68 00 00 00 00       	push   0x0
- 156:	e8 fc ff ff ff       	call   157 <kbd_process_queue+0x4a>
- 15b:	83 c4 10             	add    esp,0x10
+ 143:	0f b6 45 ef          	movzx  eax,BYTE PTR [ebp-0x11]
+ 147:	0f b6 c0             	movzx  eax,al
+ 14a:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+ 14e:	c7 44 24 04 51 00 00 00 	mov    DWORD PTR [esp+0x4],0x51
+ 156:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+ 15d:	e8 fc ff ff ff       	call   15e <kbd_process_queue+0x54>
 				switch (cmd) {
- 15e:	0f b6 45 ef          	movzx  eax,BYTE PTR [ebp-0x11]
- 162:	0f b6 c0             	movzx  eax,al
- 165:	83 f8 04             	cmp    eax,0x4
- 168:	0f 84 1d 01 00 00    	je     28b <kbd_process_queue+0x17e>
- 16e:	83 f8 04             	cmp    eax,0x4
- 171:	0f 8f 8c 01 00 00    	jg     303 <kbd_process_queue+0x1f6>
- 177:	83 f8 03             	cmp    eax,0x3
- 17a:	74 6a                	je     1e6 <kbd_process_queue+0xd9>
- 17c:	83 f8 03             	cmp    eax,0x3
- 17f:	0f 8f 7e 01 00 00    	jg     303 <kbd_process_queue+0x1f6>
- 185:	83 f8 01             	cmp    eax,0x1
- 188:	74 0e                	je     198 <kbd_process_queue+0x8b>
- 18a:	83 f8 02             	cmp    eax,0x2
- 18d:	0f 84 83 00 00 00    	je     216 <kbd_process_queue+0x109>
+ 162:	0f b6 45 ef          	movzx  eax,BYTE PTR [ebp-0x11]
+ 166:	0f b6 c0             	movzx  eax,al
+ 169:	83 f8 04             	cmp    eax,0x4
+ 16c:	0f 84 1d 01 00 00    	je     28f <kbd_process_queue+0x185>
+ 172:	83 f8 04             	cmp    eax,0x4
+ 175:	0f 8f 93 01 00 00    	jg     30e <kbd_process_queue+0x204>
+ 17b:	83 f8 03             	cmp    eax,0x3
+ 17e:	74 6a                	je     1ea <kbd_process_queue+0xe0>
+ 180:	83 f8 03             	cmp    eax,0x3
+ 183:	0f 8f 85 01 00 00    	jg     30e <kbd_process_queue+0x204>
+ 189:	83 f8 01             	cmp    eax,0x1
+ 18c:	74 0e                	je     19c <kbd_process_queue+0x92>
+ 18e:	83 f8 02             	cmp    eax,0x2
+ 191:	0f 84 84 00 00 00    	je     21b <kbd_process_queue+0x111>
 								break;
- 193:	e9 6b 01 00 00       	jmp    303 <kbd_process_queue+0x1f6>
+ 197:	e9 72 01 00 00       	jmp    30e <kbd_process_queue+0x204>
 								outb(KBD_CH0, 0xff);
- 198:	83 ec 08             	sub    esp,0x8
- 19b:	68 ff 00 00 00       	push   0xff
- 1a0:	6a 60                	push   0x60
- 1a2:	e8 59 fe ff ff       	call   0 <outb>
- 1a7:	83 c4 10             	add    esp,0x10
+ 19c:	c7 44 24 04 ff 00 00 00 	mov    DWORD PTR [esp+0x4],0xff
+ 1a4:	c7 04 24 60 00 00 00 	mov    DWORD PTR [esp],0x60
+ 1ab:	e8 50 fe ff ff       	call   0 <outb>
 								a1 = inb(KBD_CH0);
- 1aa:	83 ec 0c             	sub    esp,0xc
- 1ad:	6a 60                	push   0x60
- 1af:	e8 6b fe ff ff       	call   1f <inb>
- 1b4:	83 c4 10             	add    esp,0x10
- 1b7:	88 45 f7             	mov    BYTE PTR [ebp-0x9],al
+ 1b0:	c7 04 24 60 00 00 00 	mov    DWORD PTR [esp],0x60
+ 1b7:	e8 63 fe ff ff       	call   1f <inb>
+ 1bc:	88 45 f7             	mov    BYTE PTR [ebp-0x9],al
 								nr = 1;
- 1ba:	c6 45 f5 01          	mov    BYTE PTR [ebp-0xb],0x1
+ 1bf:	c6 45 f5 01          	mov    BYTE PTR [ebp-0xb],0x1
 								if (a1 == 0xfa) {
- 1be:	80 7d f7 fa          	cmp    BYTE PTR [ebp-0x9],0xfa
- 1c2:	0f 85 3e 01 00 00    	jne    306 <kbd_process_queue+0x1f9>
+ 1c3:	80 7d f7 fa          	cmp    BYTE PTR [ebp-0x9],0xfa
+ 1c7:	0f 85 44 01 00 00    	jne    311 <kbd_process_queue+0x207>
 										kbd_wait();
- 1c8:	e8 fc ff ff ff       	call   1c9 <kbd_process_queue+0xbc>
+ 1cd:	e8 fc ff ff ff       	call   1ce <kbd_process_queue+0xc4>
 										a2 = inb(KBD_CH0);
- 1cd:	83 ec 0c             	sub    esp,0xc
- 1d0:	6a 60                	push   0x60
- 1d2:	e8 48 fe ff ff       	call   1f <inb>
- 1d7:	83 c4 10             	add    esp,0x10
- 1da:	88 45 f6             	mov    BYTE PTR [ebp-0xa],al
+ 1d2:	c7 04 24 60 00 00 00 	mov    DWORD PTR [esp],0x60
+ 1d9:	e8 41 fe ff ff       	call   1f <inb>
+ 1de:	88 45 f6             	mov    BYTE PTR [ebp-0xa],al
 										nr = 2;
- 1dd:	c6 45 f5 02          	mov    BYTE PTR [ebp-0xb],0x2
+ 1e1:	c6 45 f5 02          	mov    BYTE PTR [ebp-0xb],0x2
 								break;
- 1e1:	e9 20 01 00 00       	jmp    306 <kbd_process_queue+0x1f9>
+ 1e5:	e9 27 01 00 00       	jmp    311 <kbd_process_queue+0x207>
 								outb(KBD_CH0, 0xf4);
- 1e6:	83 ec 08             	sub    esp,0x8
- 1e9:	68 f4 00 00 00       	push   0xf4
- 1ee:	6a 60                	push   0x60
- 1f0:	e8 0b fe ff ff       	call   0 <outb>
- 1f5:	83 c4 10             	add    esp,0x10
+ 1ea:	c7 44 24 04 f4 00 00 00 	mov    DWORD PTR [esp+0x4],0xf4
+ 1f2:	c7 04 24 60 00 00 00 	mov    DWORD PTR [esp],0x60
+ 1f9:	e8 02 fe ff ff       	call   0 <outb>
 								kbd_wait();
- 1f8:	e8 fc ff ff ff       	call   1f9 <kbd_process_queue+0xec>
+ 1fe:	e8 fc ff ff ff       	call   1ff <kbd_process_queue+0xf5>
 								a1 = inb(KBD_CH0);
- 1fd:	83 ec 0c             	sub    esp,0xc
- 200:	6a 60                	push   0x60
- 202:	e8 18 fe ff ff       	call   1f <inb>
- 207:	83 c4 10             	add    esp,0x10
- 20a:	88 45 f7             	mov    BYTE PTR [ebp-0x9],al
+ 203:	c7 04 24 60 00 00 00 	mov    DWORD PTR [esp],0x60
+ 20a:	e8 10 fe ff ff       	call   1f <inb>
+ 20f:	88 45 f7             	mov    BYTE PTR [ebp-0x9],al
 								nr = 1;
- 20d:	c6 45 f5 01          	mov    BYTE PTR [ebp-0xb],0x1
+ 212:	c6 45 f5 01          	mov    BYTE PTR [ebp-0xb],0x1
 								break;
- 211:	e9 f4 00 00 00       	jmp    30a <kbd_process_queue+0x1fd>
+ 216:	e9 fa 00 00 00       	jmp    315 <kbd_process_queue+0x20b>
 								outb(KBD_CH0, 0xf5);
- 216:	83 ec 08             	sub    esp,0x8
- 219:	68 f5 00 00 00       	push   0xf5
- 21e:	6a 60                	push   0x60
- 220:	e8 db fd ff ff       	call   0 <outb>
- 225:	83 c4 10             	add    esp,0x10
+ 21b:	c7 44 24 04 f5 00 00 00 	mov    DWORD PTR [esp+0x4],0xf5
+ 223:	c7 04 24 60 00 00 00 	mov    DWORD PTR [esp],0x60
+ 22a:	e8 d1 fd ff ff       	call   0 <outb>
 								kbd_wait();
- 228:	e8 fc ff ff ff       	call   229 <kbd_process_queue+0x11c>
+ 22f:	e8 fc ff ff ff       	call   230 <kbd_process_queue+0x126>
 								a2 = inb(KBD_CH4);
- 22d:	83 ec 0c             	sub    esp,0xc
- 230:	6a 64                	push   0x64
- 232:	e8 e8 fd ff ff       	call   1f <inb>
- 237:	83 c4 10             	add    esp,0x10
- 23a:	88 45 f6             	mov    BYTE PTR [ebp-0xa],al
+ 234:	c7 04 24 64 00 00 00 	mov    DWORD PTR [esp],0x64
+ 23b:	e8 df fd ff ff       	call   1f <inb>
+ 240:	88 45 f6             	mov    BYTE PTR [ebp-0xa],al
 								while ((a1 = inb(KBD_CH0))) {
- 23d:	eb 2d                	jmp    26c <kbd_process_queue+0x15f>
+ 243:	eb 29                	jmp    26e <kbd_process_queue+0x164>
 										if (a1 == 0xfa || a1 == 0x00 || a1 == 0xfe)
- 23f:	80 7d f7 fa          	cmp    BYTE PTR [ebp-0x9],0xfa
- 243:	74 40                	je     285 <kbd_process_queue+0x178>
- 245:	80 7d f7 00          	cmp    BYTE PTR [ebp-0x9],0x0
- 249:	74 3a                	je     285 <kbd_process_queue+0x178>
- 24b:	80 7d f7 fe          	cmp    BYTE PTR [ebp-0x9],0xfe
- 24f:	74 34                	je     285 <kbd_process_queue+0x178>
+ 245:	80 7d f7 fa          	cmp    BYTE PTR [ebp-0x9],0xfa
+ 249:	74 3b                	je     286 <kbd_process_queue+0x17c>
+ 24b:	80 7d f7 00          	cmp    BYTE PTR [ebp-0x9],0x0
+ 24f:	74 35                	je     286 <kbd_process_queue+0x17c>
+ 251:	80 7d f7 fe          	cmp    BYTE PTR [ebp-0x9],0xfe
+ 255:	74 2f                	je     286 <kbd_process_queue+0x17c>
 										if (a2 & (1 << 5)) /* read sth useful */
- 251:	0f b6 45 f6          	movzx  eax,BYTE PTR [ebp-0xa]
- 255:	83 e0 20             	and    eax,0x20
- 258:	85 c0                	test   eax,eax
- 25a:	74 28                	je     284 <kbd_process_queue+0x177>
+ 257:	0f b6 45 f6          	movzx  eax,BYTE PTR [ebp-0xa]
+ 25b:	83 e0 20             	and    eax,0x20
+ 25e:	85 c0                	test   eax,eax
+ 260:	74 23                	je     285 <kbd_process_queue+0x17b>
 												kbd_handle_sc(a1); /* watch out for ff and fe too */
- 25c:	0f b6 45 f7          	movzx  eax,BYTE PTR [ebp-0x9]
- 260:	83 ec 0c             	sub    esp,0xc
- 263:	50                   	push   eax
- 264:	e8 fc ff ff ff       	call   265 <kbd_process_queue+0x158>
- 269:	83 c4 10             	add    esp,0x10
+ 262:	0f b6 45 f7          	movzx  eax,BYTE PTR [ebp-0x9]
+ 266:	89 04 24             	mov    DWORD PTR [esp],eax
+ 269:	e8 fc ff ff ff       	call   26a <kbd_process_queue+0x160>
 								while ((a1 = inb(KBD_CH0))) {
- 26c:	83 ec 0c             	sub    esp,0xc
- 26f:	6a 60                	push   0x60
- 271:	e8 a9 fd ff ff       	call   1f <inb>
- 276:	83 c4 10             	add    esp,0x10
- 279:	88 45 f7             	mov    BYTE PTR [ebp-0x9],al
- 27c:	80 7d f7 00          	cmp    BYTE PTR [ebp-0x9],0x0
- 280:	75 bd                	jne    23f <kbd_process_queue+0x132>
- 282:	eb 01                	jmp    285 <kbd_process_queue+0x178>
+ 26e:	c7 04 24 60 00 00 00 	mov    DWORD PTR [esp],0x60
+ 275:	e8 a5 fd ff ff       	call   1f <inb>
+ 27a:	88 45 f7             	mov    BYTE PTR [ebp-0x9],al
+ 27d:	80 7d f7 00          	cmp    BYTE PTR [ebp-0x9],0x0
+ 281:	75 c2                	jne    245 <kbd_process_queue+0x13b>
+ 283:	eb 01                	jmp    286 <kbd_process_queue+0x17c>
 												break;
- 284:	90                   	nop
+ 285:	90                   	nop
 								nr = 1;
- 285:	c6 45 f5 01          	mov    BYTE PTR [ebp-0xb],0x1
+ 286:	c6 45 f5 01          	mov    BYTE PTR [ebp-0xb],0x1
 								break;
- 289:	eb 7f                	jmp    30a <kbd_process_queue+0x1fd>
+ 28a:	e9 86 00 00 00       	jmp    315 <kbd_process_queue+0x20b>
 								outb(KBD_CH0, 0xed);
- 28b:	83 ec 08             	sub    esp,0x8
- 28e:	68 ed 00 00 00       	push   0xed
- 293:	6a 60                	push   0x60
- 295:	e8 66 fd ff ff       	call   0 <outb>
- 29a:	83 c4 10             	add    esp,0x10
+ 28f:	c7 44 24 04 ed 00 00 00 	mov    DWORD PTR [esp+0x4],0xed
+ 297:	c7 04 24 60 00 00 00 	mov    DWORD PTR [esp],0x60
+ 29e:	e8 5d fd ff ff       	call   0 <outb>
 								kbd_wait();
- 29d:	e8 fc ff ff ff       	call   29e <kbd_process_queue+0x191>
+ 2a3:	e8 fc ff ff ff       	call   2a4 <kbd_process_queue+0x19a>
 								a1 = inb(KBD_CH0);
- 2a2:	83 ec 0c             	sub    esp,0xc
- 2a5:	6a 60                	push   0x60
- 2a7:	e8 73 fd ff ff       	call   1f <inb>
- 2ac:	83 c4 10             	add    esp,0x10
- 2af:	88 45 f7             	mov    BYTE PTR [ebp-0x9],al
+ 2a8:	c7 04 24 60 00 00 00 	mov    DWORD PTR [esp],0x60
+ 2af:	e8 6b fd ff ff       	call   1f <inb>
+ 2b4:	88 45 f7             	mov    BYTE PTR [ebp-0x9],al
 								nr = 1;
- 2b2:	c6 45 f5 01          	mov    BYTE PTR [ebp-0xb],0x1
+ 2b7:	c6 45 f5 01          	mov    BYTE PTR [ebp-0xb],0x1
 								ringbuffer_dequeue(rb_commands, &cmd, sizeof(cmd));
- 2b6:	a1 00 00 00 00       	mov    eax,ds:0x0
- 2bb:	83 ec 04             	sub    esp,0x4
- 2be:	6a 01                	push   0x1
- 2c0:	8d 55 ef             	lea    edx,[ebp-0x11]
- 2c3:	52                   	push   edx
- 2c4:	50                   	push   eax
- 2c5:	e8 fc ff ff ff       	call   2c6 <kbd_process_queue+0x1b9>
- 2ca:	83 c4 10             	add    esp,0x10
+ 2bb:	a1 00 00 00 00       	mov    eax,ds:0x0
+ 2c0:	c7 44 24 08 01 00 00 00 	mov    DWORD PTR [esp+0x8],0x1
+ 2c8:	8d 55 ef             	lea    edx,[ebp-0x11]
+ 2cb:	89 54 24 04          	mov    DWORD PTR [esp+0x4],edx
+ 2cf:	89 04 24             	mov    DWORD PTR [esp],eax
+ 2d2:	e8 fc ff ff ff       	call   2d3 <kbd_process_queue+0x1c9>
 								if (a1 == 0xfa) {
- 2cd:	80 7d f7 fa          	cmp    BYTE PTR [ebp-0x9],0xfa
- 2d1:	75 36                	jne    309 <kbd_process_queue+0x1fc>
+ 2d7:	80 7d f7 fa          	cmp    BYTE PTR [ebp-0x9],0xfa
+ 2db:	75 37                	jne    314 <kbd_process_queue+0x20a>
 										outb(KBD_CH0, cmd);
- 2d3:	0f b6 45 ef          	movzx  eax,BYTE PTR [ebp-0x11]
- 2d7:	0f b6 c0             	movzx  eax,al
- 2da:	83 ec 08             	sub    esp,0x8
- 2dd:	50                   	push   eax
- 2de:	6a 60                	push   0x60
- 2e0:	e8 1b fd ff ff       	call   0 <outb>
- 2e5:	83 c4 10             	add    esp,0x10
+ 2dd:	0f b6 45 ef          	movzx  eax,BYTE PTR [ebp-0x11]
+ 2e1:	0f b6 c0             	movzx  eax,al
+ 2e4:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+ 2e8:	c7 04 24 60 00 00 00 	mov    DWORD PTR [esp],0x60
+ 2ef:	e8 0c fd ff ff       	call   0 <outb>
 										kbd_wait();
- 2e8:	e8 fc ff ff ff       	call   2e9 <kbd_process_queue+0x1dc>
+ 2f4:	e8 fc ff ff ff       	call   2f5 <kbd_process_queue+0x1eb>
 										a2 = inb(KBD_CH0);
- 2ed:	83 ec 0c             	sub    esp,0xc
- 2f0:	6a 60                	push   0x60
- 2f2:	e8 28 fd ff ff       	call   1f <inb>
- 2f7:	83 c4 10             	add    esp,0x10
- 2fa:	88 45 f6             	mov    BYTE PTR [ebp-0xa],al
+ 2f9:	c7 04 24 60 00 00 00 	mov    DWORD PTR [esp],0x60
+ 300:	e8 1a fd ff ff       	call   1f <inb>
+ 305:	88 45 f6             	mov    BYTE PTR [ebp-0xa],al
 										nr = 2;
- 2fd:	c6 45 f5 02          	mov    BYTE PTR [ebp-0xb],0x2
+ 308:	c6 45 f5 02          	mov    BYTE PTR [ebp-0xb],0x2
 								break;
- 301:	eb 06                	jmp    309 <kbd_process_queue+0x1fc>
+ 30c:	eb 06                	jmp    314 <kbd_process_queue+0x20a>
 								break;
- 303:	90                   	nop
- 304:	eb 04                	jmp    30a <kbd_process_queue+0x1fd>
+ 30e:	90                   	nop
+ 30f:	eb 04                	jmp    315 <kbd_process_queue+0x20b>
 								break;
- 306:	90                   	nop
- 307:	eb 01                	jmp    30a <kbd_process_queue+0x1fd>
+ 311:	90                   	nop
+ 312:	eb 01                	jmp    315 <kbd_process_queue+0x20b>
 								break;
- 309:	90                   	nop
+ 314:	90                   	nop
 				if (nr == 1)
- 30a:	80 7d f5 01          	cmp    BYTE PTR [ebp-0xb],0x1
- 30e:	75 1c                	jne    32c <kbd_process_queue+0x21f>
+ 315:	80 7d f5 01          	cmp    BYTE PTR [ebp-0xb],0x1
+ 319:	75 1e                	jne    339 <kbd_process_queue+0x22f>
 						rprintf(&kb_reg, "response %x\n", a1);
- 310:	0f b6 45 f7          	movzx  eax,BYTE PTR [ebp-0x9]
- 314:	83 ec 04             	sub    esp,0x4
- 317:	50                   	push   eax
- 318:	68 66 00 00 00       	push   0x66
- 31d:	68 00 00 00 00       	push   0x0
- 322:	e8 fc ff ff ff       	call   323 <kbd_process_queue+0x216>
- 327:	83 c4 10             	add    esp,0x10
- 32a:	eb 22                	jmp    34e <kbd_process_queue+0x241>
+ 31b:	0f b6 45 f7          	movzx  eax,BYTE PTR [ebp-0x9]
+ 31f:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+ 323:	c7 44 24 04 66 00 00 00 	mov    DWORD PTR [esp+0x4],0x66
+ 32b:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+ 332:	e8 fc ff ff ff       	call   333 <kbd_process_queue+0x229>
+ 337:	eb 2a                	jmp    363 <kbd_process_queue+0x259>
 				else if (nr == 2)
- 32c:	80 7d f5 02          	cmp    BYTE PTR [ebp-0xb],0x2
- 330:	75 1c                	jne    34e <kbd_process_queue+0x241>
+ 339:	80 7d f5 02          	cmp    BYTE PTR [ebp-0xb],0x2
+ 33d:	75 24                	jne    363 <kbd_process_queue+0x259>
 						rprintf(&kb_reg, "responses %x %x\n", a1, a2);
- 332:	0f b6 55 f6          	movzx  edx,BYTE PTR [ebp-0xa]
- 336:	0f b6 45 f7          	movzx  eax,BYTE PTR [ebp-0x9]
- 33a:	52                   	push   edx
- 33b:	50                   	push   eax
- 33c:	68 73 00 00 00       	push   0x73
- 341:	68 00 00 00 00       	push   0x0
- 346:	e8 fc ff ff ff       	call   347 <kbd_process_queue+0x23a>
- 34b:	83 c4 10             	add    esp,0x10
+ 33f:	0f b6 55 f6          	movzx  edx,BYTE PTR [ebp-0xa]
+ 343:	0f b6 45 f7          	movzx  eax,BYTE PTR [ebp-0x9]
+ 347:	89 54 24 0c          	mov    DWORD PTR [esp+0xc],edx
+ 34b:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+ 34f:	c7 44 24 04 73 00 00 00 	mov    DWORD PTR [esp+0x4],0x73
+ 357:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+ 35e:	e8 fc ff ff ff       	call   35f <kbd_process_queue+0x255>
 		while ((s = ringbuffer_available(rb_commands))) {
- 34e:	a1 00 00 00 00       	mov    eax,ds:0x0
- 353:	83 ec 0c             	sub    esp,0xc
- 356:	50                   	push   eax
- 357:	e8 fc ff ff ff       	call   358 <kbd_process_queue+0x24b>
- 35c:	83 c4 10             	add    esp,0x10
- 35f:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
- 362:	83 7d f0 00          	cmp    DWORD PTR [ebp-0x10],0x0
- 366:	0f 85 ba fd ff ff    	jne    126 <kbd_process_queue+0x19>
+ 363:	a1 00 00 00 00       	mov    eax,ds:0x0
+ 368:	89 04 24             	mov    DWORD PTR [esp],eax
+ 36b:	e8 fc ff ff ff       	call   36c <kbd_process_queue+0x262>
+ 370:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
+ 373:	83 7d f0 00          	cmp    DWORD PTR [ebp-0x10],0x0
+ 377:	0f 85 a6 fd ff ff    	jne    123 <kbd_process_queue+0x19>
 		preempt_enable();
- 36c:	e8 fc ff ff ff       	call   36d <kbd_process_queue+0x260>
- 371:	8b 50 18             	mov    edx,DWORD PTR [eax+0x18]
- 374:	83 ea 01             	sub    edx,0x1
- 377:	89 50 18             	mov    DWORD PTR [eax+0x18],edx
- 37a:	e8 fc ff ff ff       	call   37b <kbd_process_queue+0x26e>
- 37f:	8b 00                	mov    eax,DWORD PTR [eax]
- 381:	83 e0 01             	and    eax,0x1
- 384:	85 c0                	test   eax,eax
- 386:	74 05                	je     38d <kbd_process_queue+0x280>
- 388:	e8 fc ff ff ff       	call   389 <kbd_process_queue+0x27c>
+ 37d:	e8 fc ff ff ff       	call   37e <kbd_process_queue+0x274>
+ 382:	8b 50 18             	mov    edx,DWORD PTR [eax+0x18]
+ 385:	83 ea 01             	sub    edx,0x1
+ 388:	89 50 18             	mov    DWORD PTR [eax+0x18],edx
+ 38b:	e8 fc ff ff ff       	call   38c <kbd_process_queue+0x282>
+ 390:	8b 00                	mov    eax,DWORD PTR [eax]
+ 392:	83 e0 01             	and    eax,0x1
+ 395:	85 c0                	test   eax,eax
+ 397:	74 05                	je     39e <kbd_process_queue+0x294>
+ 399:	e8 fc ff ff ff       	call   39a <kbd_process_queue+0x290>
 }
- 38d:	90                   	nop
- 38e:	c9                   	leave
- 38f:	c3                   	ret
+ 39e:	90                   	nop
+ 39f:	c9                   	leave
+ 3a0:	c3                   	ret
 
-00000390 <kbd_event_present>:
+000003a1 <kbd_event_present>:
 {
- 390:	55                   	push   ebp
- 391:	89 e5                	mov    ebp,esp
- 393:	83 ec 08             	sub    esp,0x8
+ 3a1:	55                   	push   ebp
+ 3a2:	89 e5                	mov    ebp,esp
+ 3a4:	83 ec 18             	sub    esp,0x18
 		return ringbuffer_available(rb_events) / sizeof(struct key_event);
- 396:	a1 00 00 00 00       	mov    eax,ds:0x0
- 39b:	83 ec 0c             	sub    esp,0xc
- 39e:	50                   	push   eax
- 39f:	e8 fc ff ff ff       	call   3a0 <kbd_event_present+0x10>
- 3a4:	83 c4 10             	add    esp,0x10
- 3a7:	c1 e8 02             	shr    eax,0x2
+ 3a7:	a1 00 00 00 00       	mov    eax,ds:0x0
+ 3ac:	89 04 24             	mov    DWORD PTR [esp],eax
+ 3af:	e8 fc ff ff ff       	call   3b0 <kbd_event_present+0xf>
+ 3b4:	c1 e8 02             	shr    eax,0x2
 }
- 3aa:	c9                   	leave
- 3ab:	c3                   	ret
+ 3b7:	c9                   	leave
+ 3b8:	c3                   	ret
 
-000003ac <kbd_get_event>:
+000003b9 <kbd_get_event>:
 {
- 3ac:	55                   	push   ebp
- 3ad:	89 e5                	mov    ebp,esp
- 3af:	83 ec 18             	sub    esp,0x18
+ 3b9:	55                   	push   ebp
+ 3ba:	89 e5                	mov    ebp,esp
+ 3bc:	83 ec 28             	sub    esp,0x28
 		ringbuffer_dequeue(rb_events, &rv, sizeof(rv));
- 3b2:	a1 00 00 00 00       	mov    eax,ds:0x0
- 3b7:	83 ec 04             	sub    esp,0x4
- 3ba:	6a 04                	push   0x4
- 3bc:	8d 55 f4             	lea    edx,[ebp-0xc]
- 3bf:	52                   	push   edx
- 3c0:	50                   	push   eax
- 3c1:	e8 fc ff ff ff       	call   3c2 <kbd_get_event+0x16>
- 3c6:	83 c4 10             	add    esp,0x10
+ 3bf:	a1 00 00 00 00       	mov    eax,ds:0x0
+ 3c4:	c7 44 24 08 04 00 00 00 	mov    DWORD PTR [esp+0x8],0x4
+ 3cc:	8d 55 f4             	lea    edx,[ebp-0xc]
+ 3cf:	89 54 24 04          	mov    DWORD PTR [esp+0x4],edx
+ 3d3:	89 04 24             	mov    DWORD PTR [esp],eax
+ 3d6:	e8 fc ff ff ff       	call   3d7 <kbd_get_event+0x1e>
 		return rv;
- 3c9:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
- 3cc:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
- 3cf:	89 10                	mov    DWORD PTR [eax],edx
+ 3db:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+ 3de:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+ 3e1:	89 10                	mov    DWORD PTR [eax],edx
 }
- 3d1:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
- 3d4:	c9                   	leave
- 3d5:	c2 04 00             	ret    0x4
+ 3e3:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+ 3e6:	c9                   	leave
+ 3e7:	c2 04 00             	ret    0x4
 
-000003d8 <kbd_lights_update>:
+000003ea <kbd_lights_update>:
 {
- 3d8:	55                   	push   ebp
- 3d9:	89 e5                	mov    ebp,esp
- 3db:	83 ec 18             	sub    esp,0x18
+ 3ea:	55                   	push   ebp
+ 3eb:	89 e5                	mov    ebp,esp
+ 3ed:	83 ec 28             	sub    esp,0x28
 		cmd = KBC_DISABLE;
- 3de:	c6 45 f7 02          	mov    BYTE PTR [ebp-0x9],0x2
+ 3f0:	c6 45 f7 02          	mov    BYTE PTR [ebp-0x9],0x2
 		ringbuffer_enqueue(rb_commands, &cmd, sizeof(cmd));
- 3e2:	a1 00 00 00 00       	mov    eax,ds:0x0
- 3e7:	83 ec 04             	sub    esp,0x4
- 3ea:	6a 01                	push   0x1
- 3ec:	8d 55 f7             	lea    edx,[ebp-0x9]
- 3ef:	52                   	push   edx
- 3f0:	50                   	push   eax
- 3f1:	e8 fc ff ff ff       	call   3f2 <kbd_lights_update+0x1a>
- 3f6:	83 c4 10             	add    esp,0x10
+ 3f4:	a1 00 00 00 00       	mov    eax,ds:0x0
+ 3f9:	c7 44 24 08 01 00 00 00 	mov    DWORD PTR [esp+0x8],0x1
+ 401:	8d 55 f7             	lea    edx,[ebp-0x9]
+ 404:	89 54 24 04          	mov    DWORD PTR [esp+0x4],edx
+ 408:	89 04 24             	mov    DWORD PTR [esp],eax
+ 40b:	e8 fc ff ff ff       	call   40c <kbd_lights_update+0x22>
 		cmd = KBC_SET_LIGHTS;
- 3f9:	c6 45 f7 04          	mov    BYTE PTR [ebp-0x9],0x4
+ 410:	c6 45 f7 04          	mov    BYTE PTR [ebp-0x9],0x4
 		ringbuffer_enqueue(rb_commands, &cmd, sizeof(cmd));
- 3fd:	a1 00 00 00 00       	mov    eax,ds:0x0
- 402:	83 ec 04             	sub    esp,0x4
- 405:	6a 01                	push   0x1
- 407:	8d 55 f7             	lea    edx,[ebp-0x9]
- 40a:	52                   	push   edx
- 40b:	50                   	push   eax
- 40c:	e8 fc ff ff ff       	call   40d <kbd_lights_update+0x35>
- 411:	83 c4 10             	add    esp,0x10
+ 414:	a1 00 00 00 00       	mov    eax,ds:0x0
+ 419:	c7 44 24 08 01 00 00 00 	mov    DWORD PTR [esp+0x8],0x1
+ 421:	8d 55 f7             	lea    edx,[ebp-0x9]
+ 424:	89 54 24 04          	mov    DWORD PTR [esp+0x4],edx
+ 428:	89 04 24             	mov    DWORD PTR [esp],eax
+ 42b:	e8 fc ff ff ff       	call   42c <kbd_lights_update+0x42>
 		cmd = (kb_state & KBD_LIGHT_MASK) >> 13;
- 414:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 41b:	66 c1 e8 0d          	shr    ax,0xd
- 41f:	88 45 f7             	mov    BYTE PTR [ebp-0x9],al
+ 430:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 437:	66 c1 e8 0d          	shr    ax,0xd
+ 43b:	88 45 f7             	mov    BYTE PTR [ebp-0x9],al
 		ringbuffer_enqueue(rb_commands, &cmd, sizeof(cmd));
- 422:	a1 00 00 00 00       	mov    eax,ds:0x0
- 427:	83 ec 04             	sub    esp,0x4
- 42a:	6a 01                	push   0x1
- 42c:	8d 55 f7             	lea    edx,[ebp-0x9]
- 42f:	52                   	push   edx
- 430:	50                   	push   eax
- 431:	e8 fc ff ff ff       	call   432 <kbd_lights_update+0x5a>
- 436:	83 c4 10             	add    esp,0x10
+ 43e:	a1 00 00 00 00       	mov    eax,ds:0x0
+ 443:	c7 44 24 08 01 00 00 00 	mov    DWORD PTR [esp+0x8],0x1
+ 44b:	8d 55 f7             	lea    edx,[ebp-0x9]
+ 44e:	89 54 24 04          	mov    DWORD PTR [esp+0x4],edx
+ 452:	89 04 24             	mov    DWORD PTR [esp],eax
+ 455:	e8 fc ff ff ff       	call   456 <kbd_lights_update+0x6c>
 		cmd = KBC_ENABLE;
- 439:	c6 45 f7 03          	mov    BYTE PTR [ebp-0x9],0x3
+ 45a:	c6 45 f7 03          	mov    BYTE PTR [ebp-0x9],0x3
 		ringbuffer_enqueue(rb_commands, &cmd, sizeof(cmd));
- 43d:	a1 00 00 00 00       	mov    eax,ds:0x0
- 442:	83 ec 04             	sub    esp,0x4
- 445:	6a 01                	push   0x1
- 447:	8d 55 f7             	lea    edx,[ebp-0x9]
- 44a:	52                   	push   edx
- 44b:	50                   	push   eax
- 44c:	e8 fc ff ff ff       	call   44d <kbd_lights_update+0x75>
- 451:	83 c4 10             	add    esp,0x10
+ 45e:	a1 00 00 00 00       	mov    eax,ds:0x0
+ 463:	c7 44 24 08 01 00 00 00 	mov    DWORD PTR [esp+0x8],0x1
+ 46b:	8d 55 f7             	lea    edx,[ebp-0x9]
+ 46e:	89 54 24 04          	mov    DWORD PTR [esp+0x4],edx
+ 472:	89 04 24             	mov    DWORD PTR [esp],eax
+ 475:	e8 fc ff ff ff       	call   476 <kbd_lights_update+0x8c>
 		kb_regN.cur_x = kb_regN.cur_y = 0;
- 454:	66 c7 05 10 00 00 00 00 00 	mov    WORD PTR ds:0x10,0x0
- 45d:	0f b7 05 10 00 00 00 	movzx  eax,WORD PTR ds:0x10
- 464:	66 a3 0e 00 00 00    	mov    ds:0xe,ax
+ 47a:	66 c7 05 10 00 00 00 00 00 	mov    WORD PTR ds:0x10,0x0
+ 483:	0f b7 05 10 00 00 00 	movzx  eax,WORD PTR ds:0x10
+ 48a:	66 a3 0e 00 00 00    	mov    ds:0xe,ax
 		region_putchar(&kb_regN, (kb_state & KBD_LIGHT_NUM_LOCK) ? '#' : ' ');
- 46a:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 471:	0f b7 c0             	movzx  eax,ax
- 474:	25 00 40 00 00       	and    eax,0x4000
- 479:	85 c0                	test   eax,eax
- 47b:	74 07                	je     484 <kbd_lights_update+0xac>
- 47d:	b8 23 00 00 00       	mov    eax,0x23
- 482:	eb 05                	jmp    489 <kbd_lights_update+0xb1>
- 484:	b8 20 00 00 00       	mov    eax,0x20
- 489:	83 ec 08             	sub    esp,0x8
- 48c:	50                   	push   eax
- 48d:	68 00 00 00 00       	push   0x0
- 492:	e8 fc ff ff ff       	call   493 <kbd_lights_update+0xbb>
- 497:	83 c4 10             	add    esp,0x10
+ 490:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 497:	0f b7 c0             	movzx  eax,ax
+ 49a:	25 00 40 00 00       	and    eax,0x4000
+ 49f:	85 c0                	test   eax,eax
+ 4a1:	74 07                	je     4aa <kbd_lights_update+0xc0>
+ 4a3:	b8 23 00 00 00       	mov    eax,0x23
+ 4a8:	eb 05                	jmp    4af <kbd_lights_update+0xc5>
+ 4aa:	b8 20 00 00 00       	mov    eax,0x20
+ 4af:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+ 4b3:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+ 4ba:	e8 fc ff ff ff       	call   4bb <kbd_lights_update+0xd1>
 		region_putchar(&kb_regN, (kb_state & KBD_LIGHT_CAPS_LOCK) ? '#' : ' ');
- 49a:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 4a1:	66 85 c0             	test   ax,ax
- 4a4:	79 07                	jns    4ad <kbd_lights_update+0xd5>
- 4a6:	b8 23 00 00 00       	mov    eax,0x23
- 4ab:	eb 05                	jmp    4b2 <kbd_lights_update+0xda>
- 4ad:	b8 20 00 00 00       	mov    eax,0x20
- 4b2:	83 ec 08             	sub    esp,0x8
- 4b5:	50                   	push   eax
- 4b6:	68 00 00 00 00       	push   0x0
- 4bb:	e8 fc ff ff ff       	call   4bc <kbd_lights_update+0xe4>
- 4c0:	83 c4 10             	add    esp,0x10
+ 4bf:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 4c6:	66 85 c0             	test   ax,ax
+ 4c9:	79 07                	jns    4d2 <kbd_lights_update+0xe8>
+ 4cb:	b8 23 00 00 00       	mov    eax,0x23
+ 4d0:	eb 05                	jmp    4d7 <kbd_lights_update+0xed>
+ 4d2:	b8 20 00 00 00       	mov    eax,0x20
+ 4d7:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+ 4db:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+ 4e2:	e8 fc ff ff ff       	call   4e3 <kbd_lights_update+0xf9>
 		region_putchar(&kb_regN, (kb_state & KBD_LIGHT_SCROLL_LOCK) ? '#' : ' ');
- 4c3:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 4ca:	0f b7 c0             	movzx  eax,ax
- 4cd:	25 00 20 00 00       	and    eax,0x2000
- 4d2:	85 c0                	test   eax,eax
- 4d4:	74 07                	je     4dd <kbd_lights_update+0x105>
- 4d6:	b8 23 00 00 00       	mov    eax,0x23
- 4db:	eb 05                	jmp    4e2 <kbd_lights_update+0x10a>
- 4dd:	b8 20 00 00 00       	mov    eax,0x20
- 4e2:	83 ec 08             	sub    esp,0x8
- 4e5:	50                   	push   eax
- 4e6:	68 00 00 00 00       	push   0x0
- 4eb:	e8 fc ff ff ff       	call   4ec <kbd_lights_update+0x114>
- 4f0:	83 c4 10             	add    esp,0x10
+ 4e7:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 4ee:	0f b7 c0             	movzx  eax,ax
+ 4f1:	25 00 20 00 00       	and    eax,0x2000
+ 4f6:	85 c0                	test   eax,eax
+ 4f8:	74 07                	je     501 <kbd_lights_update+0x117>
+ 4fa:	b8 23 00 00 00       	mov    eax,0x23
+ 4ff:	eb 05                	jmp    506 <kbd_lights_update+0x11c>
+ 501:	b8 20 00 00 00       	mov    eax,0x20
+ 506:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+ 50a:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+ 511:	e8 fc ff ff ff       	call   512 <kbd_lights_update+0x128>
 }
- 4f3:	90                   	nop
- 4f4:	c9                   	leave
- 4f5:	c3                   	ret
+ 516:	90                   	nop
+ 517:	c9                   	leave
+ 518:	c3                   	ret
 
-000004f6 <kbd_handler>:
+00000519 <kbd_handler>:
 {
- 4f6:	55                   	push   ebp
- 4f7:	89 e5                	mov    ebp,esp
- 4f9:	83 ec 18             	sub    esp,0x18
+ 519:	55                   	push   ebp
+ 51a:	89 e5                	mov    ebp,esp
+ 51c:	83 ec 28             	sub    esp,0x28
 		if (!rb_events || !rb_commands) /* don't corrupt memory */
- 4fc:	a1 00 00 00 00       	mov    eax,ds:0x0
- 501:	85 c0                	test   eax,eax
- 503:	74 70                	je     575 <kbd_handler+0x7f>
- 505:	a1 00 00 00 00       	mov    eax,ds:0x0
- 50a:	85 c0                	test   eax,eax
- 50c:	74 67                	je     575 <kbd_handler+0x7f>
+ 51f:	a1 00 00 00 00       	mov    eax,ds:0x0
+ 524:	85 c0                	test   eax,eax
+ 526:	74 69                	je     591 <kbd_handler+0x78>
+ 528:	a1 00 00 00 00       	mov    eax,ds:0x0
+ 52d:	85 c0                	test   eax,eax
+ 52f:	74 60                	je     591 <kbd_handler+0x78>
 				sc = inb(KBD_CH0);
- 50e:	6a 60                	push   0x60
- 510:	e8 0a fb ff ff       	call   1f <inb>
- 515:	83 c4 04             	add    esp,0x4
- 518:	88 45 f7             	mov    BYTE PTR [ebp-0x9],al
+ 531:	c7 04 24 60 00 00 00 	mov    DWORD PTR [esp],0x60
+ 538:	e8 e2 fa ff ff       	call   1f <inb>
+ 53d:	88 45 f7             	mov    BYTE PTR [ebp-0x9],al
 				if (sc != 0xfa && sc != 0xfe && sc != 0x00 && sc != 0xff)
- 51b:	80 7d f7 fa          	cmp    BYTE PTR [ebp-0x9],0xfa
- 51f:	74 22                	je     543 <kbd_handler+0x4d>
- 521:	80 7d f7 fe          	cmp    BYTE PTR [ebp-0x9],0xfe
- 525:	74 1c                	je     543 <kbd_handler+0x4d>
- 527:	80 7d f7 00          	cmp    BYTE PTR [ebp-0x9],0x0
- 52b:	74 16                	je     543 <kbd_handler+0x4d>
- 52d:	80 7d f7 ff          	cmp    BYTE PTR [ebp-0x9],0xff
- 531:	74 10                	je     543 <kbd_handler+0x4d>
+ 540:	80 7d f7 fa          	cmp    BYTE PTR [ebp-0x9],0xfa
+ 544:	74 1e                	je     564 <kbd_handler+0x4b>
+ 546:	80 7d f7 fe          	cmp    BYTE PTR [ebp-0x9],0xfe
+ 54a:	74 18                	je     564 <kbd_handler+0x4b>
+ 54c:	80 7d f7 00          	cmp    BYTE PTR [ebp-0x9],0x0
+ 550:	74 12                	je     564 <kbd_handler+0x4b>
+ 552:	80 7d f7 ff          	cmp    BYTE PTR [ebp-0x9],0xff
+ 556:	74 0c                	je     564 <kbd_handler+0x4b>
 						kbd_handle_sc(sc);
- 533:	0f b6 45 f7          	movzx  eax,BYTE PTR [ebp-0x9]
- 537:	83 ec 0c             	sub    esp,0xc
- 53a:	50                   	push   eax
- 53b:	e8 fc ff ff ff       	call   53c <kbd_handler+0x46>
- 540:	83 c4 10             	add    esp,0x10
+ 558:	0f b6 45 f7          	movzx  eax,BYTE PTR [ebp-0x9]
+ 55c:	89 04 24             	mov    DWORD PTR [esp],eax
+ 55f:	e8 fc ff ff ff       	call   560 <kbd_handler+0x47>
 		} while ((inb(KBD_CH4) & 1));
- 543:	83 ec 0c             	sub    esp,0xc
- 546:	6a 64                	push   0x64
- 548:	e8 d2 fa ff ff       	call   1f <inb>
- 54d:	83 c4 10             	add    esp,0x10
- 550:	0f b6 c0             	movzx  eax,al
- 553:	83 e0 01             	and    eax,0x1
- 556:	85 c0                	test   eax,eax
- 558:	75 b4                	jne    50e <kbd_handler+0x18>
+ 564:	c7 04 24 64 00 00 00 	mov    DWORD PTR [esp],0x64
+ 56b:	e8 af fa ff ff       	call   1f <inb>
+ 570:	0f b6 c0             	movzx  eax,al
+ 573:	83 e0 01             	and    eax,0x1
+ 576:	85 c0                	test   eax,eax
+ 578:	75 b7                	jne    531 <kbd_handler+0x18>
 		if (kbd_event_present())
- 55a:	e8 fc ff ff ff       	call   55b <kbd_handler+0x65>
- 55f:	85 c0                	test   eax,eax
- 561:	74 13                	je     576 <kbd_handler+0x80>
+ 57a:	e8 fc ff ff ff       	call   57b <kbd_handler+0x62>
+ 57f:	85 c0                	test   eax,eax
+ 581:	74 0f                	je     592 <kbd_handler+0x79>
 				wake_up_external_event(&wq_kbd);
- 563:	83 ec 0c             	sub    esp,0xc
- 566:	68 00 00 00 00       	push   0x0
- 56b:	e8 fc ff ff ff       	call   56c <kbd_handler+0x76>
- 570:	83 c4 10             	add    esp,0x10
- 573:	eb 01                	jmp    576 <kbd_handler+0x80>
+ 583:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+ 58a:	e8 fc ff ff ff       	call   58b <kbd_handler+0x72>
+ 58f:	eb 01                	jmp    592 <kbd_handler+0x79>
 				return;
- 575:	90                   	nop
+ 591:	90                   	nop
 }
- 576:	c9                   	leave
- 577:	c3                   	ret
+ 592:	c9                   	leave
+ 593:	c3                   	ret
 
-00000578 <kbd_handle_sc>:
+00000594 <kbd_handle_sc>:
 {
- 578:	55                   	push   ebp
- 579:	89 e5                	mov    ebp,esp
- 57b:	83 ec 28             	sub    esp,0x28
- 57e:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
- 581:	88 45 e4             	mov    BYTE PTR [ebp-0x1c],al
+ 594:	55                   	push   ebp
+ 595:	89 e5                	mov    ebp,esp
+ 597:	83 ec 38             	sub    esp,0x38
+ 59a:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+ 59d:	88 45 e4             	mov    BYTE PTR [ebp-0x1c],al
 		ke.prs = !(scancode & 0x80);
- 584:	0f b6 45 e4          	movzx  eax,BYTE PTR [ebp-0x1c]
- 588:	f7 d0                	not    eax
- 58a:	c0 e8 07             	shr    al,0x7
- 58d:	88 45 f2             	mov    BYTE PTR [ebp-0xe],al
+ 5a0:	0f b6 45 e4          	movzx  eax,BYTE PTR [ebp-0x1c]
+ 5a4:	f7 d0                	not    eax
+ 5a6:	c0 e8 07             	shr    al,0x7
+ 5a9:	88 45 f2             	mov    BYTE PTR [ebp-0xe],al
 		ke.state = kb_state;
- 590:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 597:	66 89 45 f4          	mov    WORD PTR [ebp-0xc],ax
+ 5ac:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 5b3:	66 89 45 f4          	mov    WORD PTR [ebp-0xc],ax
 		ke.sc = scancode & 0x7f;
- 59b:	0f b6 45 e4          	movzx  eax,BYTE PTR [ebp-0x1c]
- 59f:	83 e0 7f             	and    eax,0x7f
- 5a2:	88 45 f3             	mov    BYTE PTR [ebp-0xd],al
+ 5b7:	0f b6 45 e4          	movzx  eax,BYTE PTR [ebp-0x1c]
+ 5bb:	83 e0 7f             	and    eax,0x7f
+ 5be:	88 45 f3             	mov    BYTE PTR [ebp-0xd],al
 		ringbuffer_enqueue(rb_events, &ke, sizeof(ke));
- 5a5:	a1 00 00 00 00       	mov    eax,ds:0x0
- 5aa:	83 ec 04             	sub    esp,0x4
- 5ad:	6a 04                	push   0x4
- 5af:	8d 55 f2             	lea    edx,[ebp-0xe]
- 5b2:	52                   	push   edx
- 5b3:	50                   	push   eax
- 5b4:	e8 fc ff ff ff       	call   5b5 <kbd_handle_sc+0x3d>
- 5b9:	83 c4 10             	add    esp,0x10
+ 5c1:	a1 00 00 00 00       	mov    eax,ds:0x0
+ 5c6:	c7 44 24 08 04 00 00 00 	mov    DWORD PTR [esp+0x8],0x4
+ 5ce:	8d 55 f2             	lea    edx,[ebp-0xe]
+ 5d1:	89 54 24 04          	mov    DWORD PTR [esp+0x4],edx
+ 5d5:	89 04 24             	mov    DWORD PTR [esp],eax
+ 5d8:	e8 fc ff ff ff       	call   5d9 <kbd_handle_sc+0x45>
 		if (scancode & 0x80) {
- 5bc:	0f b6 45 e4          	movzx  eax,BYTE PTR [ebp-0x1c]
- 5c0:	84 c0                	test   al,al
- 5c2:	0f 89 66 02 00 00    	jns    82e <kbd_handle_sc+0x2b6>
+ 5dd:	0f b6 45 e4          	movzx  eax,BYTE PTR [ebp-0x1c]
+ 5e1:	84 c0                	test   al,al
+ 5e3:	0f 89 6e 02 00 00    	jns    857 <kbd_handle_sc+0x2c3>
 				scs = scancode;
- 5c8:	0f b6 45 e4          	movzx  eax,BYTE PTR [ebp-0x1c]
- 5cc:	88 45 f7             	mov    BYTE PTR [ebp-0x9],al
+ 5e9:	0f b6 45 e4          	movzx  eax,BYTE PTR [ebp-0x1c]
+ 5ed:	88 45 f7             	mov    BYTE PTR [ebp-0x9],al
 				scancode ^= 0x80;
- 5cf:	80 75 e4 80          	xor    BYTE PTR [ebp-0x1c],0x80
+ 5f0:	80 75 e4 80          	xor    BYTE PTR [ebp-0x1c],0x80
 				if (scancode == 0x3a) { /* CAPS_LOCK */
- 5d3:	80 7d e4 3a          	cmp    BYTE PTR [ebp-0x1c],0x3a
- 5d7:	75 2a                	jne    603 <kbd_handle_sc+0x8b>
+ 5f4:	80 7d e4 3a          	cmp    BYTE PTR [ebp-0x1c],0x3a
+ 5f8:	75 2a                	jne    624 <kbd_handle_sc+0x90>
 						if (kb_state & KBD_STATE_CAPS_LOCK) {
- 5d9:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 5e0:	0f b7 c0             	movzx  eax,ax
- 5e3:	83 e0 04             	and    eax,0x4
- 5e6:	85 c0                	test   eax,eax
- 5e8:	0f 84 e8 01 00 00    	je     7d6 <kbd_handle_sc+0x25e>
+ 5fa:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 601:	0f b7 c0             	movzx  eax,ax
+ 604:	83 e0 04             	and    eax,0x4
+ 607:	85 c0                	test   eax,eax
+ 609:	0f 84 e8 01 00 00    	je     7f7 <kbd_handle_sc+0x263>
 								kb_state &= ~KBD_STATE_CAPS_LOCK;
- 5ee:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 5f5:	83 e0 fb             	and    eax,0xfffffffb
- 5f8:	66 a3 00 00 00 00    	mov    ds:0x0,ax
- 5fe:	e9 d3 01 00 00       	jmp    7d6 <kbd_handle_sc+0x25e>
+ 60f:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 616:	83 e0 fb             	and    eax,0xfffffffb
+ 619:	66 a3 00 00 00 00    	mov    ds:0x0,ax
+ 61f:	e9 d3 01 00 00       	jmp    7f7 <kbd_handle_sc+0x263>
 				} else if (scancode == 0x46) { /* SCROLL LOCK */
- 603:	80 7d e4 46          	cmp    BYTE PTR [ebp-0x1c],0x46
- 607:	75 2a                	jne    633 <kbd_handle_sc+0xbb>
+ 624:	80 7d e4 46          	cmp    BYTE PTR [ebp-0x1c],0x46
+ 628:	75 2a                	jne    654 <kbd_handle_sc+0xc0>
 						if (kb_state & KBD_STATE_SCROLL_LOCK) {
- 609:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 610:	0f b7 c0             	movzx  eax,ax
- 613:	83 e0 01             	and    eax,0x1
- 616:	85 c0                	test   eax,eax
- 618:	0f 84 b8 01 00 00    	je     7d6 <kbd_handle_sc+0x25e>
+ 62a:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 631:	0f b7 c0             	movzx  eax,ax
+ 634:	83 e0 01             	and    eax,0x1
+ 637:	85 c0                	test   eax,eax
+ 639:	0f 84 b8 01 00 00    	je     7f7 <kbd_handle_sc+0x263>
 								kb_state &= ~KBD_STATE_SCROLL_LOCK;
- 61e:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 625:	83 e0 fe             	and    eax,0xfffffffe
- 628:	66 a3 00 00 00 00    	mov    ds:0x0,ax
- 62e:	e9 a3 01 00 00       	jmp    7d6 <kbd_handle_sc+0x25e>
+ 63f:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 646:	83 e0 fe             	and    eax,0xfffffffe
+ 649:	66 a3 00 00 00 00    	mov    ds:0x0,ax
+ 64f:	e9 a3 01 00 00       	jmp    7f7 <kbd_handle_sc+0x263>
 				} else if (scancode == 0x45) { /* NUM LOCK */
- 633:	80 7d e4 45          	cmp    BYTE PTR [ebp-0x1c],0x45
- 637:	75 2a                	jne    663 <kbd_handle_sc+0xeb>
+ 654:	80 7d e4 45          	cmp    BYTE PTR [ebp-0x1c],0x45
+ 658:	75 2a                	jne    684 <kbd_handle_sc+0xf0>
 						if (kb_state & KBD_STATE_NUM_LOCK) {
- 639:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 640:	0f b7 c0             	movzx  eax,ax
- 643:	83 e0 02             	and    eax,0x2
- 646:	85 c0                	test   eax,eax
- 648:	0f 84 88 01 00 00    	je     7d6 <kbd_handle_sc+0x25e>
+ 65a:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 661:	0f b7 c0             	movzx  eax,ax
+ 664:	83 e0 02             	and    eax,0x2
+ 667:	85 c0                	test   eax,eax
+ 669:	0f 84 88 01 00 00    	je     7f7 <kbd_handle_sc+0x263>
 								kb_state &= ~KBD_STATE_NUM_LOCK;
- 64e:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 655:	83 e0 fd             	and    eax,0xfffffffd
- 658:	66 a3 00 00 00 00    	mov    ds:0x0,ax
- 65e:	e9 73 01 00 00       	jmp    7d6 <kbd_handle_sc+0x25e>
+ 66f:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 676:	83 e0 fd             	and    eax,0xfffffffd
+ 679:	66 a3 00 00 00 00    	mov    ds:0x0,ax
+ 67f:	e9 73 01 00 00       	jmp    7f7 <kbd_handle_sc+0x263>
 				} else if (scancode == 0x60) { /* RIGHT signalling */
- 663:	80 7d e4 60          	cmp    BYTE PTR [ebp-0x1c],0x60
- 667:	75 2c                	jne    695 <kbd_handle_sc+0x11d>
+ 684:	80 7d e4 60          	cmp    BYTE PTR [ebp-0x1c],0x60
+ 688:	75 2c                	jne    6b6 <kbd_handle_sc+0x122>
 						if (!(kb_state & KBD_STATE_NEXT_RIGHT)) {
- 669:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 670:	0f b7 c0             	movzx  eax,ax
- 673:	25 00 10 00 00       	and    eax,0x1000
- 678:	85 c0                	test   eax,eax
- 67a:	0f 85 56 01 00 00    	jne    7d6 <kbd_handle_sc+0x25e>
+ 68a:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 691:	0f b7 c0             	movzx  eax,ax
+ 694:	25 00 10 00 00       	and    eax,0x1000
+ 699:	85 c0                	test   eax,eax
+ 69b:	0f 85 56 01 00 00    	jne    7f7 <kbd_handle_sc+0x263>
 								kb_state |= KBD_STATE_NEXT_RIGHT;
- 680:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 687:	80 cc 10             	or     ah,0x10
- 68a:	66 a3 00 00 00 00    	mov    ds:0x0,ax
- 690:	e9 41 01 00 00       	jmp    7d6 <kbd_handle_sc+0x25e>
+ 6a1:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 6a8:	80 cc 10             	or     ah,0x10
+ 6ab:	66 a3 00 00 00 00    	mov    ds:0x0,ax
+ 6b1:	e9 41 01 00 00       	jmp    7f7 <kbd_handle_sc+0x263>
 				} else if (scancode == 0x2a) { /* LSHIFT */
- 695:	80 7d e4 2a          	cmp    BYTE PTR [ebp-0x1c],0x2a
- 699:	75 3c                	jne    6d7 <kbd_handle_sc+0x15f>
+ 6b6:	80 7d e4 2a          	cmp    BYTE PTR [ebp-0x1c],0x2a
+ 6ba:	75 3c                	jne    6f8 <kbd_handle_sc+0x164>
 						kb_state &= ~KBD_STATE_LSHIFT;
- 69b:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 6a2:	80 e4 fe             	and    ah,0xfe
- 6a5:	66 a3 00 00 00 00    	mov    ds:0x0,ax
+ 6bc:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 6c3:	80 e4 fe             	and    ah,0xfe
+ 6c6:	66 a3 00 00 00 00    	mov    ds:0x0,ax
 						if (!(kb_state & KBD_STATE_RSHIFT))
- 6ab:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 6b2:	0f b7 c0             	movzx  eax,ax
- 6b5:	25 00 08 00 00       	and    eax,0x800
- 6ba:	85 c0                	test   eax,eax
- 6bc:	0f 85 14 01 00 00    	jne    7d6 <kbd_handle_sc+0x25e>
+ 6cc:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 6d3:	0f b7 c0             	movzx  eax,ax
+ 6d6:	25 00 08 00 00       	and    eax,0x800
+ 6db:	85 c0                	test   eax,eax
+ 6dd:	0f 85 14 01 00 00    	jne    7f7 <kbd_handle_sc+0x263>
 								kb_state &= ~KBD_STATE_SHIFT;
- 6c2:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 6c9:	83 e0 df             	and    eax,0xffffffdf
- 6cc:	66 a3 00 00 00 00    	mov    ds:0x0,ax
- 6d2:	e9 ff 00 00 00       	jmp    7d6 <kbd_handle_sc+0x25e>
+ 6e3:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 6ea:	83 e0 df             	and    eax,0xffffffdf
+ 6ed:	66 a3 00 00 00 00    	mov    ds:0x0,ax
+ 6f3:	e9 ff 00 00 00       	jmp    7f7 <kbd_handle_sc+0x263>
 				} else if (scancode == 0x36) { /* RSHIFT */
- 6d7:	80 7d e4 36          	cmp    BYTE PTR [ebp-0x1c],0x36
- 6db:	75 3c                	jne    719 <kbd_handle_sc+0x1a1>
+ 6f8:	80 7d e4 36          	cmp    BYTE PTR [ebp-0x1c],0x36
+ 6fc:	75 3c                	jne    73a <kbd_handle_sc+0x1a6>
 						kb_state &= ~KBD_STATE_RSHIFT;
- 6dd:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 6e4:	80 e4 f7             	and    ah,0xf7
- 6e7:	66 a3 00 00 00 00    	mov    ds:0x0,ax
+ 6fe:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 705:	80 e4 f7             	and    ah,0xf7
+ 708:	66 a3 00 00 00 00    	mov    ds:0x0,ax
 						if (!(kb_state & KBD_STATE_LSHIFT))
- 6ed:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 6f4:	0f b7 c0             	movzx  eax,ax
- 6f7:	25 00 01 00 00       	and    eax,0x100
- 6fc:	85 c0                	test   eax,eax
- 6fe:	0f 85 d2 00 00 00    	jne    7d6 <kbd_handle_sc+0x25e>
+ 70e:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 715:	0f b7 c0             	movzx  eax,ax
+ 718:	25 00 01 00 00       	and    eax,0x100
+ 71d:	85 c0                	test   eax,eax
+ 71f:	0f 85 d2 00 00 00    	jne    7f7 <kbd_handle_sc+0x263>
 								kb_state &= ~KBD_STATE_SHIFT;
- 704:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 70b:	83 e0 df             	and    eax,0xffffffdf
- 70e:	66 a3 00 00 00 00    	mov    ds:0x0,ax
- 714:	e9 bd 00 00 00       	jmp    7d6 <kbd_handle_sc+0x25e>
+ 725:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 72c:	83 e0 df             	and    eax,0xffffffdf
+ 72f:	66 a3 00 00 00 00    	mov    ds:0x0,ax
+ 735:	e9 bd 00 00 00       	jmp    7f7 <kbd_handle_sc+0x263>
 				} else if (scancode == 0x1d) { /* L/R CONTROL */
- 719:	80 7d e4 1d          	cmp    BYTE PTR [ebp-0x1c],0x1d
- 71d:	75 5a                	jne    779 <kbd_handle_sc+0x201>
+ 73a:	80 7d e4 1d          	cmp    BYTE PTR [ebp-0x1c],0x1d
+ 73e:	75 5a                	jne    79a <kbd_handle_sc+0x206>
 						if (kb_state & KBD_STATE_NEXT_RIGHT) {
- 71f:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 726:	0f b7 c0             	movzx  eax,ax
- 729:	25 00 10 00 00       	and    eax,0x1000
- 72e:	85 c0                	test   eax,eax
- 730:	74 12                	je     744 <kbd_handle_sc+0x1cc>
+ 740:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 747:	0f b7 c0             	movzx  eax,ax
+ 74a:	25 00 10 00 00       	and    eax,0x1000
+ 74f:	85 c0                	test   eax,eax
+ 751:	74 12                	je     765 <kbd_handle_sc+0x1d1>
 								kb_state &= ~KBD_STATE_RCONTROL;
- 732:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 739:	80 e4 fd             	and    ah,0xfd
- 73c:	66 a3 00 00 00 00    	mov    ds:0x0,ax
- 742:	eb 10                	jmp    754 <kbd_handle_sc+0x1dc>
+ 753:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 75a:	80 e4 fd             	and    ah,0xfd
+ 75d:	66 a3 00 00 00 00    	mov    ds:0x0,ax
+ 763:	eb 10                	jmp    775 <kbd_handle_sc+0x1e1>
 								kb_state &= ~KBD_STATE_LCONTROL;
- 744:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 74b:	83 e0 bf             	and    eax,0xffffffbf
- 74e:	66 a3 00 00 00 00    	mov    ds:0x0,ax
+ 765:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 76c:	83 e0 bf             	and    eax,0xffffffbf
+ 76f:	66 a3 00 00 00 00    	mov    ds:0x0,ax
 						if (!(kb_state & (KBD_STATE_LCONTROL | KBD_STATE_RCONTROL)))
- 754:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 75b:	0f b7 c0             	movzx  eax,ax
- 75e:	25 40 02 00 00       	and    eax,0x240
- 763:	85 c0                	test   eax,eax
- 765:	75 6f                	jne    7d6 <kbd_handle_sc+0x25e>
+ 775:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 77c:	0f b7 c0             	movzx  eax,ax
+ 77f:	25 40 02 00 00       	and    eax,0x240
+ 784:	85 c0                	test   eax,eax
+ 786:	75 6f                	jne    7f7 <kbd_handle_sc+0x263>
 								kb_state &= ~KBD_STATE_CONTROL;
- 767:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 76e:	83 e0 f7             	and    eax,0xfffffff7
- 771:	66 a3 00 00 00 00    	mov    ds:0x0,ax
- 777:	eb 5d                	jmp    7d6 <kbd_handle_sc+0x25e>
+ 788:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 78f:	83 e0 f7             	and    eax,0xfffffff7
+ 792:	66 a3 00 00 00 00    	mov    ds:0x0,ax
+ 798:	eb 5d                	jmp    7f7 <kbd_handle_sc+0x263>
 				} else if (scancode == 0x38) { /* L/R ALT */
- 779:	80 7d e4 38          	cmp    BYTE PTR [ebp-0x1c],0x38
- 77d:	75 57                	jne    7d6 <kbd_handle_sc+0x25e>
+ 79a:	80 7d e4 38          	cmp    BYTE PTR [ebp-0x1c],0x38
+ 79e:	75 57                	jne    7f7 <kbd_handle_sc+0x263>
 						if (kb_state & KBD_STATE_NEXT_RIGHT) {
- 77f:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 786:	0f b7 c0             	movzx  eax,ax
- 789:	25 00 10 00 00       	and    eax,0x1000
- 78e:	85 c0                	test   eax,eax
- 790:	74 12                	je     7a4 <kbd_handle_sc+0x22c>
+ 7a0:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 7a7:	0f b7 c0             	movzx  eax,ax
+ 7aa:	25 00 10 00 00       	and    eax,0x1000
+ 7af:	85 c0                	test   eax,eax
+ 7b1:	74 12                	je     7c5 <kbd_handle_sc+0x231>
 								kb_state &= ~KBD_STATE_RALT;
- 792:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 799:	80 e4 fb             	and    ah,0xfb
- 79c:	66 a3 00 00 00 00    	mov    ds:0x0,ax
- 7a2:	eb 0f                	jmp    7b3 <kbd_handle_sc+0x23b>
-								kb_state &= ~KBD_STATE_LALT;
- 7a4:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 7ab:	24 7f                	and    al,0x7f
- 7ad:	66 a3 00 00 00 00    	mov    ds:0x0,ax
-						if (!(kb_state & (KBD_STATE_LALT | KBD_STATE_RALT)))
  7b3:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 7ba:	0f b7 c0             	movzx  eax,ax
- 7bd:	25 80 04 00 00       	and    eax,0x480
- 7c2:	85 c0                	test   eax,eax
- 7c4:	75 10                	jne    7d6 <kbd_handle_sc+0x25e>
+ 7ba:	80 e4 fb             	and    ah,0xfb
+ 7bd:	66 a3 00 00 00 00    	mov    ds:0x0,ax
+ 7c3:	eb 0f                	jmp    7d4 <kbd_handle_sc+0x240>
+								kb_state &= ~KBD_STATE_LALT;
+ 7c5:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 7cc:	24 7f                	and    al,0x7f
+ 7ce:	66 a3 00 00 00 00    	mov    ds:0x0,ax
+						if (!(kb_state & (KBD_STATE_LALT | KBD_STATE_RALT)))
+ 7d4:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 7db:	0f b7 c0             	movzx  eax,ax
+ 7de:	25 80 04 00 00       	and    eax,0x480
+ 7e3:	85 c0                	test   eax,eax
+ 7e5:	75 10                	jne    7f7 <kbd_handle_sc+0x263>
 								kb_state &= ~KBD_STATE_ALT;
- 7c6:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 7cd:	83 e0 ef             	and    eax,0xffffffef
- 7d0:	66 a3 00 00 00 00    	mov    ds:0x0,ax
+ 7e7:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 7ee:	83 e0 ef             	and    eax,0xffffffef
+ 7f1:	66 a3 00 00 00 00    	mov    ds:0x0,ax
 				rprintf(&kb_reg, "r%02x %016b\n", scancode, kb_state);
- 7d6:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 7dd:	0f b7 d0             	movzx  edx,ax
- 7e0:	0f b6 45 e4          	movzx  eax,BYTE PTR [ebp-0x1c]
- 7e4:	52                   	push   edx
- 7e5:	50                   	push   eax
- 7e6:	68 84 00 00 00       	push   0x84
- 7eb:	68 00 00 00 00       	push   0x0
- 7f0:	e8 fc ff ff ff       	call   7f1 <kbd_handle_sc+0x279>
- 7f5:	83 c4 10             	add    esp,0x10
+ 7f7:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 7fe:	0f b7 d0             	movzx  edx,ax
+ 801:	0f b6 45 e4          	movzx  eax,BYTE PTR [ebp-0x1c]
+ 805:	89 54 24 0c          	mov    DWORD PTR [esp+0xc],edx
+ 809:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+ 80d:	c7 44 24 04 84 00 00 00 	mov    DWORD PTR [esp+0x4],0x84
+ 815:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+ 81c:	e8 fc ff ff ff       	call   81d <kbd_handle_sc+0x289>
 				if (scancode != 0x60 && (kb_state & KBD_STATE_NEXT_RIGHT)) {
- 7f8:	80 7d e4 60          	cmp    BYTE PTR [ebp-0x1c],0x60
- 7fc:	0f 84 ba 02 00 00    	je     abc <kbd_handle_sc+0x544>
- 802:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 809:	0f b7 c0             	movzx  eax,ax
- 80c:	25 00 10 00 00       	and    eax,0x1000
- 811:	85 c0                	test   eax,eax
- 813:	0f 84 a3 02 00 00    	je     abc <kbd_handle_sc+0x544>
+ 821:	80 7d e4 60          	cmp    BYTE PTR [ebp-0x1c],0x60
+ 825:	0f 84 be 02 00 00    	je     ae9 <kbd_handle_sc+0x555>
+ 82b:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 832:	0f b7 c0             	movzx  eax,ax
+ 835:	25 00 10 00 00       	and    eax,0x1000
+ 83a:	85 c0                	test   eax,eax
+ 83c:	0f 84 a7 02 00 00    	je     ae9 <kbd_handle_sc+0x555>
 						kb_state &= ~KBD_STATE_NEXT_RIGHT;
- 819:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 820:	80 e4 ef             	and    ah,0xef
- 823:	66 a3 00 00 00 00    	mov    ds:0x0,ax
+ 842:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 849:	80 e4 ef             	and    ah,0xef
+ 84c:	66 a3 00 00 00 00    	mov    ds:0x0,ax
 				if (kb_state & KBD_STATE_NEXT_RIGHT) {
 						kb_state &= ~KBD_STATE_NEXT_RIGHT;
 				}
 				/*printf("key with scancode %x pressed\n", scancode);*/
 		}
 }
- 829:	e9 8e 02 00 00       	jmp    abc <kbd_handle_sc+0x544>
+ 852:	e9 92 02 00 00       	jmp    ae9 <kbd_handle_sc+0x555>
 				if (scancode == 0x2a) { /* LSHIFT */
- 82e:	80 7d e4 2a          	cmp    BYTE PTR [ebp-0x1c],0x2a
- 832:	75 3a                	jne    86e <kbd_handle_sc+0x2f6>
+ 857:	80 7d e4 2a          	cmp    BYTE PTR [ebp-0x1c],0x2a
+ 85b:	75 3a                	jne    897 <kbd_handle_sc+0x303>
 						kb_state |= KBD_STATE_LSHIFT;
- 834:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 83b:	80 cc 01             	or     ah,0x1
- 83e:	66 a3 00 00 00 00    	mov    ds:0x0,ax
+ 85d:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 864:	80 cc 01             	or     ah,0x1
+ 867:	66 a3 00 00 00 00    	mov    ds:0x0,ax
 						if (!(kb_state & KBD_STATE_SHIFT)) {
- 844:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 84b:	0f b7 c0             	movzx  eax,ax
- 84e:	83 e0 20             	and    eax,0x20
- 851:	85 c0                	test   eax,eax
- 853:	0f 85 1e 02 00 00    	jne    a77 <kbd_handle_sc+0x4ff>
+ 86d:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 874:	0f b7 c0             	movzx  eax,ax
+ 877:	83 e0 20             	and    eax,0x20
+ 87a:	85 c0                	test   eax,eax
+ 87c:	0f 85 1a 02 00 00    	jne    a9c <kbd_handle_sc+0x508>
 								kb_state |= KBD_STATE_SHIFT;
- 859:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 860:	83 c8 20             	or     eax,0x20
- 863:	66 a3 00 00 00 00    	mov    ds:0x0,ax
- 869:	e9 09 02 00 00       	jmp    a77 <kbd_handle_sc+0x4ff>
+ 882:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 889:	83 c8 20             	or     eax,0x20
+ 88c:	66 a3 00 00 00 00    	mov    ds:0x0,ax
+ 892:	e9 05 02 00 00       	jmp    a9c <kbd_handle_sc+0x508>
 				} else if (scancode == 0x36) { /* RSHIFT */
- 86e:	80 7d e4 36          	cmp    BYTE PTR [ebp-0x1c],0x36
- 872:	75 3a                	jne    8ae <kbd_handle_sc+0x336>
+ 897:	80 7d e4 36          	cmp    BYTE PTR [ebp-0x1c],0x36
+ 89b:	75 3a                	jne    8d7 <kbd_handle_sc+0x343>
 						kb_state |= KBD_STATE_RSHIFT;
- 874:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 87b:	80 cc 08             	or     ah,0x8
- 87e:	66 a3 00 00 00 00    	mov    ds:0x0,ax
+ 89d:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 8a4:	80 cc 08             	or     ah,0x8
+ 8a7:	66 a3 00 00 00 00    	mov    ds:0x0,ax
 						if (!(kb_state & KBD_STATE_SHIFT)) {
- 884:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 88b:	0f b7 c0             	movzx  eax,ax
- 88e:	83 e0 20             	and    eax,0x20
- 891:	85 c0                	test   eax,eax
- 893:	0f 85 de 01 00 00    	jne    a77 <kbd_handle_sc+0x4ff>
+ 8ad:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 8b4:	0f b7 c0             	movzx  eax,ax
+ 8b7:	83 e0 20             	and    eax,0x20
+ 8ba:	85 c0                	test   eax,eax
+ 8bc:	0f 85 da 01 00 00    	jne    a9c <kbd_handle_sc+0x508>
 								kb_state |= KBD_STATE_SHIFT;
- 899:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 8a0:	83 c8 20             	or     eax,0x20
- 8a3:	66 a3 00 00 00 00    	mov    ds:0x0,ax
- 8a9:	e9 c9 01 00 00       	jmp    a77 <kbd_handle_sc+0x4ff>
+ 8c2:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 8c9:	83 c8 20             	or     eax,0x20
+ 8cc:	66 a3 00 00 00 00    	mov    ds:0x0,ax
+ 8d2:	e9 c5 01 00 00       	jmp    a9c <kbd_handle_sc+0x508>
 				} else if (scancode == 0x3a) { /* CAPS_LOCK */
- 8ae:	80 7d e4 3a          	cmp    BYTE PTR [ebp-0x1c],0x3a
- 8b2:	75 40                	jne    8f4 <kbd_handle_sc+0x37c>
+ 8d7:	80 7d e4 3a          	cmp    BYTE PTR [ebp-0x1c],0x3a
+ 8db:	75 40                	jne    91d <kbd_handle_sc+0x389>
 						if (!(kb_state & KBD_STATE_CAPS_LOCK)) {
- 8b4:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 8bb:	0f b7 c0             	movzx  eax,ax
- 8be:	83 e0 04             	and    eax,0x4
- 8c1:	85 c0                	test   eax,eax
- 8c3:	0f 85 ae 01 00 00    	jne    a77 <kbd_handle_sc+0x4ff>
+ 8dd:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 8e4:	0f b7 c0             	movzx  eax,ax
+ 8e7:	83 e0 04             	and    eax,0x4
+ 8ea:	85 c0                	test   eax,eax
+ 8ec:	0f 85 aa 01 00 00    	jne    a9c <kbd_handle_sc+0x508>
 							kb_state |= KBD_STATE_CAPS_LOCK;
- 8c9:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 8d0:	83 c8 04             	or     eax,0x4
- 8d3:	66 a3 00 00 00 00    	mov    ds:0x0,ax
+ 8f2:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 8f9:	83 c8 04             	or     eax,0x4
+ 8fc:	66 a3 00 00 00 00    	mov    ds:0x0,ax
 							kb_state ^= KBD_LIGHT_CAPS_LOCK;
- 8d9:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 8e0:	66 35 00 80          	xor    ax,0x8000
- 8e4:	66 a3 00 00 00 00    	mov    ds:0x0,ax
+ 902:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 909:	66 35 00 80          	xor    ax,0x8000
+ 90d:	66 a3 00 00 00 00    	mov    ds:0x0,ax
 							kbd_lights_update();
- 8ea:	e8 fc ff ff ff       	call   8eb <kbd_handle_sc+0x373>
- 8ef:	e9 83 01 00 00       	jmp    a77 <kbd_handle_sc+0x4ff>
+ 913:	e8 fc ff ff ff       	call   914 <kbd_handle_sc+0x380>
+ 918:	e9 7f 01 00 00       	jmp    a9c <kbd_handle_sc+0x508>
 				} else if (scancode == 0x1d) { /* L/R CONTROL */
- 8f4:	80 7d e4 1d          	cmp    BYTE PTR [ebp-0x1c],0x1d
- 8f8:	75 4a                	jne    944 <kbd_handle_sc+0x3cc>
+ 91d:	80 7d e4 1d          	cmp    BYTE PTR [ebp-0x1c],0x1d
+ 921:	75 4a                	jne    96d <kbd_handle_sc+0x3d9>
 						if (kb_state & KBD_STATE_NEXT_RIGHT) {
- 8fa:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 901:	0f b7 c0             	movzx  eax,ax
- 904:	25 00 10 00 00       	and    eax,0x1000
- 909:	85 c0                	test   eax,eax
- 90b:	74 12                	je     91f <kbd_handle_sc+0x3a7>
+ 923:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 92a:	0f b7 c0             	movzx  eax,ax
+ 92d:	25 00 10 00 00       	and    eax,0x1000
+ 932:	85 c0                	test   eax,eax
+ 934:	74 12                	je     948 <kbd_handle_sc+0x3b4>
 								kb_state |= KBD_STATE_RCONTROL;
- 90d:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 914:	80 cc 02             	or     ah,0x2
- 917:	66 a3 00 00 00 00    	mov    ds:0x0,ax
- 91d:	eb 10                	jmp    92f <kbd_handle_sc+0x3b7>
+ 936:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 93d:	80 cc 02             	or     ah,0x2
+ 940:	66 a3 00 00 00 00    	mov    ds:0x0,ax
+ 946:	eb 10                	jmp    958 <kbd_handle_sc+0x3c4>
 								kb_state |= KBD_STATE_LCONTROL;
- 91f:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 926:	83 c8 40             	or     eax,0x40
- 929:	66 a3 00 00 00 00    	mov    ds:0x0,ax
+ 948:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 94f:	83 c8 40             	or     eax,0x40
+ 952:	66 a3 00 00 00 00    	mov    ds:0x0,ax
 						kb_state |= KBD_STATE_CONTROL;
- 92f:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 936:	83 c8 08             	or     eax,0x8
- 939:	66 a3 00 00 00 00    	mov    ds:0x0,ax
- 93f:	e9 33 01 00 00       	jmp    a77 <kbd_handle_sc+0x4ff>
+ 958:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 95f:	83 c8 08             	or     eax,0x8
+ 962:	66 a3 00 00 00 00    	mov    ds:0x0,ax
+ 968:	e9 2f 01 00 00       	jmp    a9c <kbd_handle_sc+0x508>
 				} else if (scancode == 0x38) { /* L/R ALT */
- 944:	80 7d e4 38          	cmp    BYTE PTR [ebp-0x1c],0x38
- 948:	75 49                	jne    993 <kbd_handle_sc+0x41b>
+ 96d:	80 7d e4 38          	cmp    BYTE PTR [ebp-0x1c],0x38
+ 971:	75 49                	jne    9bc <kbd_handle_sc+0x428>
 						if (kb_state & KBD_STATE_NEXT_RIGHT) {
- 94a:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 951:	0f b7 c0             	movzx  eax,ax
- 954:	25 00 10 00 00       	and    eax,0x1000
- 959:	85 c0                	test   eax,eax
- 95b:	74 12                	je     96f <kbd_handle_sc+0x3f7>
+ 973:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 97a:	0f b7 c0             	movzx  eax,ax
+ 97d:	25 00 10 00 00       	and    eax,0x1000
+ 982:	85 c0                	test   eax,eax
+ 984:	74 12                	je     998 <kbd_handle_sc+0x404>
 								kb_state |= KBD_STATE_RALT;
- 95d:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 964:	80 cc 04             	or     ah,0x4
- 967:	66 a3 00 00 00 00    	mov    ds:0x0,ax
- 96d:	eb 0f                	jmp    97e <kbd_handle_sc+0x406>
+ 986:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 98d:	80 cc 04             	or     ah,0x4
+ 990:	66 a3 00 00 00 00    	mov    ds:0x0,ax
+ 996:	eb 0f                	jmp    9a7 <kbd_handle_sc+0x413>
 								kb_state |= KBD_STATE_LALT;
- 96f:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 976:	0c 80                	or     al,0x80
- 978:	66 a3 00 00 00 00    	mov    ds:0x0,ax
+ 998:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 99f:	0c 80                	or     al,0x80
+ 9a1:	66 a3 00 00 00 00    	mov    ds:0x0,ax
 						kb_state |= KBD_STATE_ALT;
- 97e:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 985:	83 c8 10             	or     eax,0x10
- 988:	66 a3 00 00 00 00    	mov    ds:0x0,ax
- 98e:	e9 e4 00 00 00       	jmp    a77 <kbd_handle_sc+0x4ff>
+ 9a7:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 9ae:	83 c8 10             	or     eax,0x10
+ 9b1:	66 a3 00 00 00 00    	mov    ds:0x0,ax
+ 9b7:	e9 e0 00 00 00       	jmp    a9c <kbd_handle_sc+0x508>
 				} else if (scancode == 0x46) { /* SCROLL_LOCK */
- 993:	80 7d e4 46          	cmp    BYTE PTR [ebp-0x1c],0x46
- 997:	75 3f                	jne    9d8 <kbd_handle_sc+0x460>
+ 9bc:	80 7d e4 46          	cmp    BYTE PTR [ebp-0x1c],0x46
+ 9c0:	75 3f                	jne    a01 <kbd_handle_sc+0x46d>
 						if (!(kb_state & KBD_STATE_SCROLL_LOCK)) {
- 999:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 9a0:	0f b7 c0             	movzx  eax,ax
- 9a3:	83 e0 01             	and    eax,0x1
- 9a6:	85 c0                	test   eax,eax
- 9a8:	0f 85 c9 00 00 00    	jne    a77 <kbd_handle_sc+0x4ff>
+ 9c2:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 9c9:	0f b7 c0             	movzx  eax,ax
+ 9cc:	83 e0 01             	and    eax,0x1
+ 9cf:	85 c0                	test   eax,eax
+ 9d1:	0f 85 c5 00 00 00    	jne    a9c <kbd_handle_sc+0x508>
 							kb_state |= KBD_STATE_SCROLL_LOCK;
- 9ae:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 9b5:	83 c8 01             	or     eax,0x1
- 9b8:	66 a3 00 00 00 00    	mov    ds:0x0,ax
+ 9d7:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 9de:	83 c8 01             	or     eax,0x1
+ 9e1:	66 a3 00 00 00 00    	mov    ds:0x0,ax
 							kb_state ^= KBD_LIGHT_SCROLL_LOCK;
- 9be:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 9c5:	80 f4 20             	xor    ah,0x20
- 9c8:	66 a3 00 00 00 00    	mov    ds:0x0,ax
+ 9e7:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ 9ee:	80 f4 20             	xor    ah,0x20
+ 9f1:	66 a3 00 00 00 00    	mov    ds:0x0,ax
 							kbd_lights_update();
- 9ce:	e8 fc ff ff ff       	call   9cf <kbd_handle_sc+0x457>
- 9d3:	e9 9f 00 00 00       	jmp    a77 <kbd_handle_sc+0x4ff>
+ 9f7:	e8 fc ff ff ff       	call   9f8 <kbd_handle_sc+0x464>
+ 9fc:	e9 9b 00 00 00       	jmp    a9c <kbd_handle_sc+0x508>
 				} else if (scancode == 0x45) { /* NUM_LOCK and brk */
- 9d8:	80 7d e4 45          	cmp    BYTE PTR [ebp-0x1c],0x45
- 9dc:	75 5c                	jne    a3a <kbd_handle_sc+0x4c2>
+ a01:	80 7d e4 45          	cmp    BYTE PTR [ebp-0x1c],0x45
+ a05:	75 5c                	jne    a63 <kbd_handle_sc+0x4cf>
 						if (kb_state & KBD_STATE_CONTROL) {
- 9de:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- 9e5:	0f b7 c0             	movzx  eax,ax
- 9e8:	83 e0 08             	and    eax,0x8
- 9eb:	85 c0                	test   eax,eax
- 9ed:	74 13                	je     a02 <kbd_handle_sc+0x48a>
+ a07:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ a0e:	0f b7 c0             	movzx  eax,ax
+ a11:	83 e0 08             	and    eax,0x8
+ a14:	85 c0                	test   eax,eax
+ a16:	74 13                	je     a2b <kbd_handle_sc+0x497>
 								cur_brk = !cur_brk;
- 9ef:	0f b6 05 00 00 00 00 	movzx  eax,BYTE PTR ds:0x0
- 9f6:	84 c0                	test   al,al
- 9f8:	0f 94 c0             	sete   al
- 9fb:	a2 00 00 00 00       	mov    ds:0x0,al
- a00:	eb 75                	jmp    a77 <kbd_handle_sc+0x4ff>
+ a18:	0f b6 05 00 00 00 00 	movzx  eax,BYTE PTR ds:0x0
+ a1f:	84 c0                	test   al,al
+ a21:	0f 94 c0             	sete   al
+ a24:	a2 00 00 00 00       	mov    ds:0x0,al
+ a29:	eb 71                	jmp    a9c <kbd_handle_sc+0x508>
 						} else if (!(kb_state & KBD_STATE_NUM_LOCK)) {
- a02:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- a09:	0f b7 c0             	movzx  eax,ax
- a0c:	83 e0 02             	and    eax,0x2
- a0f:	85 c0                	test   eax,eax
- a11:	75 64                	jne    a77 <kbd_handle_sc+0x4ff>
+ a2b:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ a32:	0f b7 c0             	movzx  eax,ax
+ a35:	83 e0 02             	and    eax,0x2
+ a38:	85 c0                	test   eax,eax
+ a3a:	75 60                	jne    a9c <kbd_handle_sc+0x508>
 							kb_state |= KBD_STATE_NUM_LOCK;
- a13:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- a1a:	83 c8 02             	or     eax,0x2
- a1d:	66 a3 00 00 00 00    	mov    ds:0x0,ax
+ a3c:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ a43:	83 c8 02             	or     eax,0x2
+ a46:	66 a3 00 00 00 00    	mov    ds:0x0,ax
 							kb_state ^= KBD_LIGHT_NUM_LOCK;
- a23:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- a2a:	80 f4 40             	xor    ah,0x40
- a2d:	66 a3 00 00 00 00    	mov    ds:0x0,ax
+ a4c:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ a53:	80 f4 40             	xor    ah,0x40
+ a56:	66 a3 00 00 00 00    	mov    ds:0x0,ax
 							kbd_lights_update();
- a33:	e8 fc ff ff ff       	call   a34 <kbd_handle_sc+0x4bc>
- a38:	eb 3d                	jmp    a77 <kbd_handle_sc+0x4ff>
+ a5c:	e8 fc ff ff ff       	call   a5d <kbd_handle_sc+0x4c9>
+ a61:	eb 39                	jmp    a9c <kbd_handle_sc+0x508>
 				} else if (scancode == 0x53) { /* delete */
- a3a:	80 7d e4 53          	cmp    BYTE PTR [ebp-0x1c],0x53
- a3e:	75 37                	jne    a77 <kbd_handle_sc+0x4ff>
+ a63:	80 7d e4 53          	cmp    BYTE PTR [ebp-0x1c],0x53
+ a67:	75 33                	jne    a9c <kbd_handle_sc+0x508>
 						if ((kb_state & KBD_STATE_CONTROL) && (kb_state & KBD_STATE_ALT)) {
- a40:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- a47:	0f b7 c0             	movzx  eax,ax
- a4a:	83 e0 08             	and    eax,0x8
- a4d:	85 c0                	test   eax,eax
- a4f:	74 26                	je     a77 <kbd_handle_sc+0x4ff>
- a51:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- a58:	0f b7 c0             	movzx  eax,ax
- a5b:	83 e0 10             	and    eax,0x10
- a5e:	85 c0                	test   eax,eax
- a60:	74 15                	je     a77 <kbd_handle_sc+0x4ff>
+ a69:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ a70:	0f b7 c0             	movzx  eax,ax
+ a73:	83 e0 08             	and    eax,0x8
+ a76:	85 c0                	test   eax,eax
+ a78:	74 22                	je     a9c <kbd_handle_sc+0x508>
+ a7a:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ a81:	0f b7 c0             	movzx  eax,ax
+ a84:	83 e0 10             	and    eax,0x10
+ a87:	85 c0                	test   eax,eax
+ a89:	74 11                	je     a9c <kbd_handle_sc+0x508>
 								printf("rebooting\n");
- a62:	83 ec 0c             	sub    esp,0xc
- a65:	68 91 00 00 00       	push   0x91
- a6a:	e8 fc ff ff ff       	call   a6b <kbd_handle_sc+0x4f3>
- a6f:	83 c4 10             	add    esp,0x10
+ a8b:	c7 04 24 91 00 00 00 	mov    DWORD PTR [esp],0x91
+ a92:	e8 fc ff ff ff       	call   a93 <kbd_handle_sc+0x4ff>
 								pc_reset();
- a72:	e8 fc ff ff ff       	call   a73 <kbd_handle_sc+0x4fb>
+ a97:	e8 fc ff ff ff       	call   a98 <kbd_handle_sc+0x504>
 				rprintf(&kb_reg, "p%02x %016b\n", scancode, kb_state);
- a77:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- a7e:	0f b7 d0             	movzx  edx,ax
- a81:	0f b6 45 e4          	movzx  eax,BYTE PTR [ebp-0x1c]
- a85:	52                   	push   edx
- a86:	50                   	push   eax
- a87:	68 9c 00 00 00       	push   0x9c
- a8c:	68 00 00 00 00       	push   0x0
- a91:	e8 fc ff ff ff       	call   a92 <kbd_handle_sc+0x51a>
- a96:	83 c4 10             	add    esp,0x10
+ a9c:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ aa3:	0f b7 d0             	movzx  edx,ax
+ aa6:	0f b6 45 e4          	movzx  eax,BYTE PTR [ebp-0x1c]
+ aaa:	89 54 24 0c          	mov    DWORD PTR [esp+0xc],edx
+ aae:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+ ab2:	c7 44 24 04 9c 00 00 00 	mov    DWORD PTR [esp+0x4],0x9c
+ aba:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+ ac1:	e8 fc ff ff ff       	call   ac2 <kbd_handle_sc+0x52e>
 				if (kb_state & KBD_STATE_NEXT_RIGHT) {
- a99:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- aa0:	0f b7 c0             	movzx  eax,ax
- aa3:	25 00 10 00 00       	and    eax,0x1000
- aa8:	85 c0                	test   eax,eax
- aaa:	74 10                	je     abc <kbd_handle_sc+0x544>
+ ac6:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ acd:	0f b7 c0             	movzx  eax,ax
+ ad0:	25 00 10 00 00       	and    eax,0x1000
+ ad5:	85 c0                	test   eax,eax
+ ad7:	74 10                	je     ae9 <kbd_handle_sc+0x555>
 						kb_state &= ~KBD_STATE_NEXT_RIGHT;
- aac:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
- ab3:	80 e4 ef             	and    ah,0xef
- ab6:	66 a3 00 00 00 00    	mov    ds:0x0,ax
+ ad9:	0f b7 05 00 00 00 00 	movzx  eax,WORD PTR ds:0x0
+ ae0:	80 e4 ef             	and    ah,0xef
+ ae3:	66 a3 00 00 00 00    	mov    ds:0x0,ax
 }
- abc:	90                   	nop
- abd:	c9                   	leave
- abe:	c3                   	ret
+ ae9:	90                   	nop
+ aea:	c9                   	leave
+ aeb:	c3                   	ret
 
-00000abf <kbd_event_translate>:
+00000aec <kbd_event_translate>:
 };
 
 /* TODO: keymaps(5)-like support 
  *       notify event consumers */
 int kbd_event_translate(const struct key_event* ke)
 {
- abf:	55                   	push   ebp
- ac0:	89 e5                	mov    ebp,esp
- ac2:	83 ec 10             	sub    esp,0x10
+ aec:	55                   	push   ebp
+ aed:	89 e5                	mov    ebp,esp
+ aef:	83 ec 10             	sub    esp,0x10
 		/* miserable kludge <-> 128x256 keymaps in code */
 		if (ke->prs) {
- ac5:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
- ac8:	0f b6 00             	movzx  eax,BYTE PTR [eax]
- acb:	84 c0                	test   al,al
- acd:	0f 84 5a 01 00 00    	je     c2d <kbd_event_translate+0x16e>
+ af2:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+ af5:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+ af8:	84 c0                	test   al,al
+ afa:	0f 84 5a 01 00 00    	je     c5a <kbd_event_translate+0x16e>
 				uint16_t kbs = ke->state & (KBD_STATE_SHIFT | KBD_LIGHT_CAPS_LOCK);
- ad3:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
- ad6:	0f b7 40 02          	movzx  eax,WORD PTR [eax+0x2]
- ada:	66 25 20 80          	and    ax,0x8020
- ade:	66 89 45 fc          	mov    WORD PTR [ebp-0x4],ax
+ b00:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+ b03:	0f b7 40 02          	movzx  eax,WORD PTR [eax+0x2]
+ b07:	66 25 20 80          	and    ax,0x8020
+ b0b:	66 89 45 fc          	mov    WORD PTR [ebp-0x4],ax
 				char rv;
 				if (!(ke->state & KBD_STATE_NEXT_RIGHT) && (ke->state & KBD_LIGHT_NUM_LOCK)
- ae2:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
- ae5:	0f b7 40 02          	movzx  eax,WORD PTR [eax+0x2]
- ae9:	0f b7 c0             	movzx  eax,ax
- aec:	25 00 10 00 00       	and    eax,0x1000
- af1:	85 c0                	test   eax,eax
- af3:	0f 85 c9 00 00 00    	jne    bc2 <kbd_event_translate+0x103>
- af9:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
- afc:	0f b7 40 02          	movzx  eax,WORD PTR [eax+0x2]
- b00:	0f b7 c0             	movzx  eax,ax
- b03:	25 00 40 00 00       	and    eax,0x4000
- b08:	85 c0                	test   eax,eax
- b0a:	0f 84 b2 00 00 00    	je     bc2 <kbd_event_translate+0x103>
-					&& ((ke->sc >= 0x47 && ke->sc <= 0x49)
- b10:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
- b13:	0f b6 40 01          	movzx  eax,BYTE PTR [eax+0x1]
- b17:	3c 46                	cmp    al,0x46
- b19:	76 0b                	jbe    b26 <kbd_event_translate+0x67>
- b1b:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
- b1e:	0f b6 40 01          	movzx  eax,BYTE PTR [eax+0x1]
- b22:	3c 49                	cmp    al,0x49
- b24:	76 2c                	jbe    b52 <kbd_event_translate+0x93>
-					|| (ke->sc >= 0x4b && ke->sc <= 0x4d)
+ b0f:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+ b12:	0f b7 40 02          	movzx  eax,WORD PTR [eax+0x2]
+ b16:	0f b7 c0             	movzx  eax,ax
+ b19:	25 00 10 00 00       	and    eax,0x1000
+ b1e:	85 c0                	test   eax,eax
+ b20:	0f 85 c9 00 00 00    	jne    bef <kbd_event_translate+0x103>
  b26:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
- b29:	0f b6 40 01          	movzx  eax,BYTE PTR [eax+0x1]
- b2d:	3c 4a                	cmp    al,0x4a
- b2f:	76 0b                	jbe    b3c <kbd_event_translate+0x7d>
- b31:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
- b34:	0f b6 40 01          	movzx  eax,BYTE PTR [eax+0x1]
- b38:	3c 4d                	cmp    al,0x4d
- b3a:	76 16                	jbe    b52 <kbd_event_translate+0x93>
+ b29:	0f b7 40 02          	movzx  eax,WORD PTR [eax+0x2]
+ b2d:	0f b7 c0             	movzx  eax,ax
+ b30:	25 00 40 00 00       	and    eax,0x4000
+ b35:	85 c0                	test   eax,eax
+ b37:	0f 84 b2 00 00 00    	je     bef <kbd_event_translate+0x103>
+					&& ((ke->sc >= 0x47 && ke->sc <= 0x49)
+ b3d:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+ b40:	0f b6 40 01          	movzx  eax,BYTE PTR [eax+0x1]
+ b44:	3c 46                	cmp    al,0x46
+ b46:	76 0b                	jbe    b53 <kbd_event_translate+0x67>
+ b48:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+ b4b:	0f b6 40 01          	movzx  eax,BYTE PTR [eax+0x1]
+ b4f:	3c 49                	cmp    al,0x49
+ b51:	76 2c                	jbe    b7f <kbd_event_translate+0x93>
+					|| (ke->sc >= 0x4b && ke->sc <= 0x4d)
+ b53:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+ b56:	0f b6 40 01          	movzx  eax,BYTE PTR [eax+0x1]
+ b5a:	3c 4a                	cmp    al,0x4a
+ b5c:	76 0b                	jbe    b69 <kbd_event_translate+0x7d>
+ b5e:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+ b61:	0f b6 40 01          	movzx  eax,BYTE PTR [eax+0x1]
+ b65:	3c 4d                	cmp    al,0x4d
+ b67:	76 16                	jbe    b7f <kbd_event_translate+0x93>
 					|| (ke->sc >= 0x4f && ke->sc <= 0x53))) {
- b3c:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
- b3f:	0f b6 40 01          	movzx  eax,BYTE PTR [eax+0x1]
- b43:	3c 4e                	cmp    al,0x4e
- b45:	76 7b                	jbe    bc2 <kbd_event_translate+0x103>
- b47:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
- b4a:	0f b6 40 01          	movzx  eax,BYTE PTR [eax+0x1]
- b4e:	3c 53                	cmp    al,0x53
- b50:	77 70                	ja     bc2 <kbd_event_translate+0x103>
+ b69:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+ b6c:	0f b6 40 01          	movzx  eax,BYTE PTR [eax+0x1]
+ b70:	3c 4e                	cmp    al,0x4e
+ b72:	76 7b                	jbe    bef <kbd_event_translate+0x103>
+ b74:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+ b77:	0f b6 40 01          	movzx  eax,BYTE PTR [eax+0x1]
+ b7b:	3c 53                	cmp    al,0x53
+ b7d:	77 70                	ja     bef <kbd_event_translate+0x103>
 						/* produce numbers and . */
 						if (ke->sc <= 0x49)
- b52:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
- b55:	0f b6 40 01          	movzx  eax,BYTE PTR [eax+0x1]
- b59:	3c 49                	cmp    al,0x49
- b5b:	77 12                	ja     b6f <kbd_event_translate+0xb0>
+ b7f:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+ b82:	0f b6 40 01          	movzx  eax,BYTE PTR [eax+0x1]
+ b86:	3c 49                	cmp    al,0x49
+ b88:	77 12                	ja     b9c <kbd_event_translate+0xb0>
 								return '7' + (ke->sc - 0x47);
- b5d:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
- b60:	0f b6 40 01          	movzx  eax,BYTE PTR [eax+0x1]
- b64:	0f b6 c0             	movzx  eax,al
- b67:	83 e8 10             	sub    eax,0x10
- b6a:	e9 c3 00 00 00       	jmp    c32 <kbd_event_translate+0x173>
+ b8a:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+ b8d:	0f b6 40 01          	movzx  eax,BYTE PTR [eax+0x1]
+ b91:	0f b6 c0             	movzx  eax,al
+ b94:	83 e8 10             	sub    eax,0x10
+ b97:	e9 c3 00 00 00       	jmp    c5f <kbd_event_translate+0x173>
 						else if (ke->sc <= 0x4d)
- b6f:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
- b72:	0f b6 40 01          	movzx  eax,BYTE PTR [eax+0x1]
- b76:	3c 4d                	cmp    al,0x4d
- b78:	77 12                	ja     b8c <kbd_event_translate+0xcd>
+ b9c:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+ b9f:	0f b6 40 01          	movzx  eax,BYTE PTR [eax+0x1]
+ ba3:	3c 4d                	cmp    al,0x4d
+ ba5:	77 12                	ja     bb9 <kbd_event_translate+0xcd>
 								return '4' + (ke->sc - 0x4b);
- b7a:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
- b7d:	0f b6 40 01          	movzx  eax,BYTE PTR [eax+0x1]
- b81:	0f b6 c0             	movzx  eax,al
- b84:	83 e8 17             	sub    eax,0x17
- b87:	e9 a6 00 00 00       	jmp    c32 <kbd_event_translate+0x173>
+ ba7:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+ baa:	0f b6 40 01          	movzx  eax,BYTE PTR [eax+0x1]
+ bae:	0f b6 c0             	movzx  eax,al
+ bb1:	83 e8 17             	sub    eax,0x17
+ bb4:	e9 a6 00 00 00       	jmp    c5f <kbd_event_translate+0x173>
 						else if (ke->sc <= 0x51)
- b8c:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
- b8f:	0f b6 40 01          	movzx  eax,BYTE PTR [eax+0x1]
- b93:	3c 51                	cmp    al,0x51
- b95:	77 12                	ja     ba9 <kbd_event_translate+0xea>
+ bb9:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+ bbc:	0f b6 40 01          	movzx  eax,BYTE PTR [eax+0x1]
+ bc0:	3c 51                	cmp    al,0x51
+ bc2:	77 12                	ja     bd6 <kbd_event_translate+0xea>
 								return '1' + (ke->sc - 0x4f);
- b97:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
- b9a:	0f b6 40 01          	movzx  eax,BYTE PTR [eax+0x1]
- b9e:	0f b6 c0             	movzx  eax,al
- ba1:	83 e8 1e             	sub    eax,0x1e
- ba4:	e9 89 00 00 00       	jmp    c32 <kbd_event_translate+0x173>
+ bc4:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+ bc7:	0f b6 40 01          	movzx  eax,BYTE PTR [eax+0x1]
+ bcb:	0f b6 c0             	movzx  eax,al
+ bce:	83 e8 1e             	sub    eax,0x1e
+ bd1:	e9 89 00 00 00       	jmp    c5f <kbd_event_translate+0x173>
 						else if (ke->sc == 0x52)
- ba9:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
- bac:	0f b6 40 01          	movzx  eax,BYTE PTR [eax+0x1]
- bb0:	3c 52                	cmp    al,0x52
- bb2:	75 07                	jne    bbb <kbd_event_translate+0xfc>
+ bd6:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+ bd9:	0f b6 40 01          	movzx  eax,BYTE PTR [eax+0x1]
+ bdd:	3c 52                	cmp    al,0x52
+ bdf:	75 07                	jne    be8 <kbd_event_translate+0xfc>
 								return '0';
- bb4:	b8 30 00 00 00       	mov    eax,0x30
- bb9:	eb 77                	jmp    c32 <kbd_event_translate+0x173>
+ be1:	b8 30 00 00 00       	mov    eax,0x30
+ be6:	eb 77                	jmp    c5f <kbd_event_translate+0x173>
 						else
 								return '.';
- bbb:	b8 2e 00 00 00       	mov    eax,0x2e
- bc0:	eb 70                	jmp    c32 <kbd_event_translate+0x173>
+ be8:	b8 2e 00 00 00       	mov    eax,0x2e
+ bed:	eb 70                	jmp    c5f <kbd_event_translate+0x173>
 				}
 				/* get the characters */
 				if (kbs != 0 && kbs != (KBD_STATE_SHIFT & KBD_LIGHT_CAPS_LOCK)) /* caps */
- bc2:	66 83 7d fc 00       	cmp    WORD PTR [ebp-0x4],0x0
- bc7:	74 23                	je     bec <kbd_event_translate+0x12d>
- bc9:	66 83 7d fc 00       	cmp    WORD PTR [ebp-0x4],0x0
- bce:	74 1c                	je     bec <kbd_event_translate+0x12d>
+ bef:	66 83 7d fc 00       	cmp    WORD PTR [ebp-0x4],0x0
+ bf4:	74 23                	je     c19 <kbd_event_translate+0x12d>
+ bf6:	66 83 7d fc 00       	cmp    WORD PTR [ebp-0x4],0x0
+ bfb:	74 1c                	je     c19 <kbd_event_translate+0x12d>
 						rv = kb_scancodes[(ke->sc & 0x7f) + 128];
- bd0:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
- bd3:	0f b6 40 01          	movzx  eax,BYTE PTR [eax+0x1]
- bd7:	0f b6 c0             	movzx  eax,al
- bda:	83 e0 7f             	and    eax,0x7f
- bdd:	83 e8 80             	sub    eax,0xffffff80
- be0:	0f b6 80 00 00 00 00 	movzx  eax,BYTE PTR [eax+0x0]
- be7:	88 45 ff             	mov    BYTE PTR [ebp-0x1],al
- bea:	eb 17                	jmp    c03 <kbd_event_translate+0x144>
+ bfd:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+ c00:	0f b6 40 01          	movzx  eax,BYTE PTR [eax+0x1]
+ c04:	0f b6 c0             	movzx  eax,al
+ c07:	83 e0 7f             	and    eax,0x7f
+ c0a:	83 e8 80             	sub    eax,0xffffff80
+ c0d:	0f b6 80 00 00 00 00 	movzx  eax,BYTE PTR [eax+0x0]
+ c14:	88 45 ff             	mov    BYTE PTR [ebp-0x1],al
+ c17:	eb 17                	jmp    c30 <kbd_event_translate+0x144>
 				else /* small */
 						rv = kb_scancodes[ke->sc & 0x7f];
- bec:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
- bef:	0f b6 40 01          	movzx  eax,BYTE PTR [eax+0x1]
- bf3:	0f b6 c0             	movzx  eax,al
- bf6:	83 e0 7f             	and    eax,0x7f
- bf9:	0f b6 80 00 00 00 00 	movzx  eax,BYTE PTR [eax+0x0]
- c00:	88 45 ff             	mov    BYTE PTR [ebp-0x1],al
+ c19:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+ c1c:	0f b6 40 01          	movzx  eax,BYTE PTR [eax+0x1]
+ c20:	0f b6 c0             	movzx  eax,al
+ c23:	83 e0 7f             	and    eax,0x7f
+ c26:	0f b6 80 00 00 00 00 	movzx  eax,BYTE PTR [eax+0x0]
+ c2d:	88 45 ff             	mov    BYTE PTR [ebp-0x1],al
 				/* treat ctrl+z as EOF */
 				if (ke->state & KBD_STATE_CONTROL && (rv == 'z' || rv == 'd'))
- c03:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
- c06:	0f b7 40 02          	movzx  eax,WORD PTR [eax+0x2]
- c0a:	0f b7 c0             	movzx  eax,ax
- c0d:	83 e0 08             	and    eax,0x8
- c10:	85 c0                	test   eax,eax
- c12:	74 13                	je     c27 <kbd_event_translate+0x168>
- c14:	80 7d ff 7a          	cmp    BYTE PTR [ebp-0x1],0x7a
- c18:	74 06                	je     c20 <kbd_event_translate+0x161>
- c1a:	80 7d ff 64          	cmp    BYTE PTR [ebp-0x1],0x64
- c1e:	75 07                	jne    c27 <kbd_event_translate+0x168>
+ c30:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+ c33:	0f b7 40 02          	movzx  eax,WORD PTR [eax+0x2]
+ c37:	0f b7 c0             	movzx  eax,ax
+ c3a:	83 e0 08             	and    eax,0x8
+ c3d:	85 c0                	test   eax,eax
+ c3f:	74 13                	je     c54 <kbd_event_translate+0x168>
+ c41:	80 7d ff 7a          	cmp    BYTE PTR [ebp-0x1],0x7a
+ c45:	74 06                	je     c4d <kbd_event_translate+0x161>
+ c47:	80 7d ff 64          	cmp    BYTE PTR [ebp-0x1],0x64
+ c4b:	75 07                	jne    c54 <kbd_event_translate+0x168>
 						return EOF;
- c20:	b8 ff ff ff ff       	mov    eax,0xffffffff
- c25:	eb 0b                	jmp    c32 <kbd_event_translate+0x173>
+ c4d:	b8 ff ff ff ff       	mov    eax,0xffffffff
+ c52:	eb 0b                	jmp    c5f <kbd_event_translate+0x173>
 				/* TODO: ctrl+c etc. signal handlers */
 				return rv;
- c27:	0f be 45 ff          	movsx  eax,BYTE PTR [ebp-0x1]
- c2b:	eb 05                	jmp    c32 <kbd_event_translate+0x173>
+ c54:	0f be 45 ff          	movsx  eax,BYTE PTR [ebp-0x1]
+ c58:	eb 05                	jmp    c5f <kbd_event_translate+0x173>
 		}
 		return 0;
- c2d:	b8 00 00 00 00       	mov    eax,0x0
+ c5a:	b8 00 00 00 00       	mov    eax,0x0
 }
- c32:	c9                   	leave
- c33:	c3                   	ret
+ c5f:	c9                   	leave
+ c60:	c3                   	ret

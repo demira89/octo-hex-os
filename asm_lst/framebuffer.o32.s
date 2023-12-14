@@ -5,24 +5,24 @@ framebuffer.o32:     file format elf32-i386
 Disassembly of section .text:
 
 00000000 <memcpy>:
-								mem += 4;
-								bitc -= 32;
-						} else if (bitc) {
-								die("cant happen with dword sized pixels!\n");
-						}
 						break;
+				}
+
+				/* and don't advance as r = 0 is already handled (sth. remains) */
+				if (px_x) {
+						px_x -= bitc / 32;
        0:	55                   	push   ebp
        1:	89 e5                	mov    ebp,esp
        3:	83 ec 10             	sub    esp,0x10
-				}
+						p0_x += bitc / 32; /* unneccessary as r does not change anymore */
        6:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
        9:	89 45 fc             	mov    DWORD PTR [ebp-0x4],eax
-
+				} else
        c:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
        f:	89 45 f8             	mov    DWORD PTR [ebp-0x8],eax
-				/* and don't advance as r = 0 is already handled (sth. remains) */
+						break;
       12:	eb 17                	jmp    2b <memcpy+0x2b>
-				if (px_x) {
+		}
       14:	8b 55 f8             	mov    edx,DWORD PTR [ebp-0x8]
       17:	8d 42 01             	lea    eax,[edx+0x1]
       1a:	89 45 f8             	mov    DWORD PTR [ebp-0x8],eax
@@ -31,13 +31,13 @@ Disassembly of section .text:
       23:	89 4d fc             	mov    DWORD PTR [ebp-0x4],ecx
       26:	0f b6 12             	movzx  edx,BYTE PTR [edx]
       29:	88 10                	mov    BYTE PTR [eax],dl
-				/* and don't advance as r = 0 is already handled (sth. remains) */
+						break;
       2b:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
       2e:	8d 50 ff             	lea    edx,[eax-0x1]
       31:	89 55 10             	mov    DWORD PTR [ebp+0x10],edx
       34:	85 c0                	test   eax,eax
       36:	75 dc                	jne    14 <memcpy+0x14>
-						px_x -= bitc / 32;
+}
       38:	90                   	nop
       39:	90                   	nop
       3a:	c9                   	leave
@@ -50,5192 +50,5201 @@ Disassembly of section .text:
       3f:	57                   	push   edi
       40:	56                   	push   esi
       41:	53                   	push   ebx
-      42:	83 ec 1c             	sub    esp,0x1c
+      42:	83 ec 4c             	sub    esp,0x4c
 		memcpy(&video_mode, FM_VIDEO_MODE, sizeof(video_mode));
-      45:	6a 1c                	push   0x1c
-      47:	68 00 f0 04 00       	push   0x4f000
-      4c:	68 00 00 00 00       	push   0x0
-      51:	e8 aa ff ff ff       	call   0 <memcpy>
-      56:	83 c4 0c             	add    esp,0xc
+      45:	c7 44 24 08 1c 00 00 00 	mov    DWORD PTR [esp+0x8],0x1c
+      4d:	c7 44 24 04 00 f0 04 00 	mov    DWORD PTR [esp+0x4],0x4f000
+      55:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+      5c:	e8 9f ff ff ff       	call   0 <memcpy>
 		vga_font = (const char*)video_mode.fnt;
-      59:	a1 10 00 00 00       	mov    eax,ds:0x10
-      5e:	a3 00 00 00 00       	mov    ds:0x0,eax
+      61:	a1 10 00 00 00       	mov    eax,ds:0x10
+      66:	a3 00 00 00 00       	mov    ds:0x0,eax
 		vmd = (void*)video_mode.ptr;
-      63:	a1 18 00 00 00       	mov    eax,ds:0x18
-      68:	89 45 e4             	mov    DWORD PTR [ebp-0x1c],eax
+      6b:	a1 18 00 00 00       	mov    eax,ds:0x18
+      70:	89 45 e4             	mov    DWORD PTR [ebp-0x1c],eax
 		vga_mem_ptr = (void*)vmd->vga_virt;
-      6b:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
-      6e:	8b 50 14             	mov    edx,DWORD PTR [eax+0x14]
-      71:	8b 40 10             	mov    eax,DWORD PTR [eax+0x10]
-      74:	a3 00 00 00 00       	mov    ds:0x0,eax
+      73:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
+      76:	8b 50 14             	mov    edx,DWORD PTR [eax+0x14]
+      79:	8b 40 10             	mov    eax,DWORD PTR [eax+0x10]
+      7c:	a3 00 00 00 00       	mov    ds:0x0,eax
 		vga_pmem = (void*)vmd->vga_base;
-      79:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
-      7c:	8b 50 04             	mov    edx,DWORD PTR [eax+0x4]
-      7f:	8b 00                	mov    eax,DWORD PTR [eax]
-      81:	a3 00 00 00 00       	mov    ds:0x0,eax
+      81:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
+      84:	8b 50 04             	mov    edx,DWORD PTR [eax+0x4]
+      87:	8b 00                	mov    eax,DWORD PTR [eax]
+      89:	a3 00 00 00 00       	mov    ds:0x0,eax
 		vga_pmem_size = (size_t)vmd->vga_size;
-      86:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
-      89:	8b 50 0c             	mov    edx,DWORD PTR [eax+0xc]
-      8c:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
-      8f:	a3 00 00 00 00       	mov    ds:0x0,eax
+      8e:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
+      91:	8b 50 0c             	mov    edx,DWORD PTR [eax+0xc]
+      94:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
+      97:	a3 00 00 00 00       	mov    ds:0x0,eax
 						video_mode.height / 16 /* char_width_xy*/);
-      94:	a1 08 00 00 00       	mov    eax,ds:0x8
+      9c:	a1 08 00 00 00       	mov    eax,ds:0x8
 		framebuffer_initialize(&fb_initial, (void*)video_mode.fnt,
-      99:	8d 50 0f             	lea    edx,[eax+0xf]
-      9c:	85 c0                	test   eax,eax
-      9e:	0f 48 c2             	cmovs  eax,edx
-      a1:	c1 f8 04             	sar    eax,0x4
-      a4:	89 c7                	mov    edi,eax
+      a1:	8d 50 0f             	lea    edx,[eax+0xf]
+      a4:	85 c0                	test   eax,eax
+      a6:	0f 48 c2             	cmovs  eax,edx
+      a9:	c1 f8 04             	sar    eax,0x4
+      ac:	89 c7                	mov    edi,eax
 						0, 0, /* char_ofs_xy*/ video_mode.width / 8,
-      a6:	a1 04 00 00 00       	mov    eax,ds:0x4
+      ae:	a1 04 00 00 00       	mov    eax,ds:0x4
 		framebuffer_initialize(&fb_initial, (void*)video_mode.fnt,
-      ab:	8d 50 07             	lea    edx,[eax+0x7]
-      ae:	85 c0                	test   eax,eax
-      b0:	0f 48 c2             	cmovs  eax,edx
-      b3:	c1 f8 03             	sar    eax,0x3
-      b6:	89 c6                	mov    esi,eax
+      b3:	8d 50 07             	lea    edx,[eax+0x7]
+      b6:	85 c0                	test   eax,eax
+      b8:	0f 48 c2             	cmovs  eax,edx
+      bb:	c1 f8 03             	sar    eax,0x3
+      be:	89 c6                	mov    esi,eax
 						video_mode.height / 16, 0, 0, /* pxl_ofs_xy*/
-      b8:	a1 08 00 00 00       	mov    eax,ds:0x8
+      c0:	a1 08 00 00 00       	mov    eax,ds:0x8
 		framebuffer_initialize(&fb_initial, (void*)video_mode.fnt,
-      bd:	8d 50 0f             	lea    edx,[eax+0xf]
-      c0:	85 c0                	test   eax,eax
-      c2:	0f 48 c2             	cmovs  eax,edx
-      c5:	c1 f8 04             	sar    eax,0x4
-      c8:	89 c3                	mov    ebx,eax
+      c5:	8d 50 0f             	lea    edx,[eax+0xf]
+      c8:	85 c0                	test   eax,eax
+      ca:	0f 48 c2             	cmovs  eax,edx
+      cd:	c1 f8 04             	sar    eax,0x4
+      d0:	89 c3                	mov    ebx,eax
 						(void*)video_mode.txt,video_mode.width / 8,
-      ca:	a1 04 00 00 00       	mov    eax,ds:0x4
+      d2:	a1 04 00 00 00       	mov    eax,ds:0x4
 		framebuffer_initialize(&fb_initial, (void*)video_mode.fnt,
-      cf:	8d 50 07             	lea    edx,[eax+0x7]
-      d2:	85 c0                	test   eax,eax
-      d4:	0f 48 c2             	cmovs  eax,edx
-      d7:	c1 f8 03             	sar    eax,0x3
-      da:	89 c1                	mov    ecx,eax
+      d7:	8d 50 07             	lea    edx,[eax+0x7]
+      da:	85 c0                	test   eax,eax
+      dc:	0f 48 c2             	cmovs  eax,edx
+      df:	c1 f8 03             	sar    eax,0x3
+      e2:	89 c1                	mov    ecx,eax
 						(void*)video_mode.txt,video_mode.width / 8,
-      dc:	a1 14 00 00 00       	mov    eax,ds:0x14
+      e4:	a1 14 00 00 00       	mov    eax,ds:0x14
 		framebuffer_initialize(&fb_initial, (void*)video_mode.fnt,
-      e1:	89 c2                	mov    edx,eax
-      e3:	a1 10 00 00 00       	mov    eax,ds:0x10
-      e8:	83 ec 04             	sub    esp,0x4
-      eb:	57                   	push   edi
-      ec:	56                   	push   esi
-      ed:	6a 00                	push   0x0
-      ef:	6a 00                	push   0x0
-      f1:	6a 00                	push   0x0
-      f3:	6a 00                	push   0x0
-      f5:	53                   	push   ebx
-      f6:	51                   	push   ecx
-      f7:	52                   	push   edx
-      f8:	50                   	push   eax
-      f9:	68 00 00 00 00       	push   0x0
-      fe:	e8 fc ff ff ff       	call   ff <fb_video_setup+0xc3>
-     103:	83 c4 30             	add    esp,0x30
+      e9:	89 c2                	mov    edx,eax
+      eb:	a1 10 00 00 00       	mov    eax,ds:0x10
+      f0:	89 7c 24 28          	mov    DWORD PTR [esp+0x28],edi
+      f4:	89 74 24 24          	mov    DWORD PTR [esp+0x24],esi
+      f8:	c7 44 24 20 00 00 00 00 	mov    DWORD PTR [esp+0x20],0x0
+     100:	c7 44 24 1c 00 00 00 00 	mov    DWORD PTR [esp+0x1c],0x0
+     108:	c7 44 24 18 00 00 00 00 	mov    DWORD PTR [esp+0x18],0x0
+     110:	c7 44 24 14 00 00 00 00 	mov    DWORD PTR [esp+0x14],0x0
+     118:	89 5c 24 10          	mov    DWORD PTR [esp+0x10],ebx
+     11c:	89 4c 24 0c          	mov    DWORD PTR [esp+0xc],ecx
+     120:	89 54 24 08          	mov    DWORD PTR [esp+0x8],edx
+     124:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+     128:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+     12f:	e8 fc ff ff ff       	call   130 <fb_video_setup+0xf4>
 		kio_fb_resize();
-     106:	e8 fc ff ff ff       	call   107 <fb_video_setup+0xcb>
+     134:	e8 fc ff ff ff       	call   135 <fb_video_setup+0xf9>
 		puts("done setting up the framebuffer");
-     10b:	83 ec 0c             	sub    esp,0xc
-     10e:	68 00 00 00 00       	push   0x0
-     113:	e8 fc ff ff ff       	call   114 <fb_video_setup+0xd8>
-     118:	83 c4 10             	add    esp,0x10
+     139:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+     140:	e8 fc ff ff ff       	call   141 <fb_video_setup+0x105>
 		framebuffer_redraw(&fb_initial);
-     11b:	83 ec 0c             	sub    esp,0xc
-     11e:	68 00 00 00 00       	push   0x0
-     123:	e8 fc ff ff ff       	call   124 <fb_video_setup+0xe8>
-     128:	83 c4 10             	add    esp,0x10
+     145:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+     14c:	e8 fc ff ff ff       	call   14d <fb_video_setup+0x111>
 }
-     12b:	90                   	nop
-     12c:	8d 65 f4             	lea    esp,[ebp-0xc]
-     12f:	5b                   	pop    ebx
-     130:	5e                   	pop    esi
-     131:	5f                   	pop    edi
-     132:	5d                   	pop    ebp
-     133:	c3                   	ret
+     151:	90                   	nop
+     152:	83 c4 4c             	add    esp,0x4c
+     155:	5b                   	pop    ebx
+     156:	5e                   	pop    esi
+     157:	5f                   	pop    edi
+     158:	5d                   	pop    ebp
+     159:	c3                   	ret
 
-00000134 <framebuffer_initialize>:
+0000015a <framebuffer_initialize>:
 {
-     134:	55                   	push   ebp
-     135:	89 e5                	mov    ebp,esp
+     15a:	55                   	push   ebp
+     15b:	89 e5                	mov    ebp,esp
 		fb->text_mem = textmem;
-     137:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     13a:	8b 55 10             	mov    edx,DWORD PTR [ebp+0x10]
-     13d:	89 10                	mov    DWORD PTR [eax],edx
+     15d:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     160:	8b 55 10             	mov    edx,DWORD PTR [ebp+0x10]
+     163:	89 10                	mov    DWORD PTR [eax],edx
 		fb->font = font;
-     13f:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     142:	8b 55 0c             	mov    edx,DWORD PTR [ebp+0xc]
-     145:	89 50 0c             	mov    DWORD PTR [eax+0xc],edx
+     165:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     168:	8b 55 0c             	mov    edx,DWORD PTR [ebp+0xc]
+     16b:	89 50 0c             	mov    DWORD PTR [eax+0xc],edx
 		fb->width = width;
-     148:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     14b:	8b 55 14             	mov    edx,DWORD PTR [ebp+0x14]
-     14e:	89 50 04             	mov    DWORD PTR [eax+0x4],edx
-		fb->height = height;
-     151:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     154:	8b 55 18             	mov    edx,DWORD PTR [ebp+0x18]
-     157:	89 50 08             	mov    DWORD PTR [eax+0x8],edx
-		fb->is_visible = 1;
-     15a:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     15d:	c7 40 10 01 00 00 00 	mov    DWORD PTR [eax+0x10],0x1
-		fb->cur_x = fb->cur_y = 0;
-     164:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     167:	c7 40 18 00 00 00 00 	mov    DWORD PTR [eax+0x18],0x0
      16e:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     171:	8b 50 18             	mov    edx,DWORD PTR [eax+0x18]
-     174:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     177:	89 50 14             	mov    DWORD PTR [eax+0x14],edx
+     171:	8b 55 14             	mov    edx,DWORD PTR [ebp+0x14]
+     174:	89 50 04             	mov    DWORD PTR [eax+0x4],edx
+		fb->height = height;
+     177:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     17a:	8b 55 18             	mov    edx,DWORD PTR [ebp+0x18]
+     17d:	89 50 08             	mov    DWORD PTR [eax+0x8],edx
+		fb->is_visible = 1;
+     180:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     183:	c7 40 10 01 00 00 00 	mov    DWORD PTR [eax+0x10],0x1
+		fb->cur_x = fb->cur_y = 0;
+     18a:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     18d:	c7 40 18 00 00 00 00 	mov    DWORD PTR [eax+0x18],0x0
+     194:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     197:	8b 50 18             	mov    edx,DWORD PTR [eax+0x18]
+     19a:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     19d:	89 50 14             	mov    DWORD PTR [eax+0x14],edx
 		fb->pix_x = pxl_ofs_x;
-     17a:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     17d:	8b 55 1c             	mov    edx,DWORD PTR [ebp+0x1c]
-     180:	89 50 1c             	mov    DWORD PTR [eax+0x1c],edx
+     1a0:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     1a3:	8b 55 1c             	mov    edx,DWORD PTR [ebp+0x1c]
+     1a6:	89 50 1c             	mov    DWORD PTR [eax+0x1c],edx
 		fb->pix_y = pxl_ofs_y;
-     183:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     186:	8b 55 20             	mov    edx,DWORD PTR [ebp+0x20]
-     189:	89 50 20             	mov    DWORD PTR [eax+0x20],edx
+     1a9:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     1ac:	8b 55 20             	mov    edx,DWORD PTR [ebp+0x20]
+     1af:	89 50 20             	mov    DWORD PTR [eax+0x20],edx
 		fb->cho_x = char_ofs_x;
-     18c:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     18f:	8b 55 24             	mov    edx,DWORD PTR [ebp+0x24]
-     192:	89 50 24             	mov    DWORD PTR [eax+0x24],edx
+     1b2:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     1b5:	8b 55 24             	mov    edx,DWORD PTR [ebp+0x24]
+     1b8:	89 50 24             	mov    DWORD PTR [eax+0x24],edx
 		fb->cho_y = char_ofs_y;
-     195:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     198:	8b 55 28             	mov    edx,DWORD PTR [ebp+0x28]
-     19b:	89 50 28             	mov    DWORD PTR [eax+0x28],edx
+     1bb:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     1be:	8b 55 28             	mov    edx,DWORD PTR [ebp+0x28]
+     1c1:	89 50 28             	mov    DWORD PTR [eax+0x28],edx
 		fb->chw_x = char_width_x;
-     19e:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     1a1:	8b 55 2c             	mov    edx,DWORD PTR [ebp+0x2c]
-     1a4:	89 50 2c             	mov    DWORD PTR [eax+0x2c],edx
+     1c4:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     1c7:	8b 55 2c             	mov    edx,DWORD PTR [ebp+0x2c]
+     1ca:	89 50 2c             	mov    DWORD PTR [eax+0x2c],edx
 		fb->chw_y = char_width_y;
-     1a7:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     1aa:	8b 55 30             	mov    edx,DWORD PTR [ebp+0x30]
-     1ad:	89 50 30             	mov    DWORD PTR [eax+0x30],edx
+     1cd:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     1d0:	8b 55 30             	mov    edx,DWORD PTR [ebp+0x30]
+     1d3:	89 50 30             	mov    DWORD PTR [eax+0x30],edx
 		fb->r_ud = NULL;
-     1b0:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     1b3:	c7 40 34 00 00 00 00 	mov    DWORD PTR [eax+0x34],0x0
+     1d6:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     1d9:	c7 40 34 00 00 00 00 	mov    DWORD PTR [eax+0x34],0x0
 		fb->r_excl = NULL;
-     1ba:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     1bd:	c7 40 38 00 00 00 00 	mov    DWORD PTR [eax+0x38],0x0
+     1e0:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     1e3:	c7 40 38 00 00 00 00 	mov    DWORD PTR [eax+0x38],0x0
 }
-     1c4:	90                   	nop
-     1c5:	5d                   	pop    ebp
-     1c6:	c3                   	ret
+     1ea:	90                   	nop
+     1eb:	5d                   	pop    ebp
+     1ec:	c3                   	ret
 
-000001c7 <framebuffer_add_exclude_rect>:
+000001ed <framebuffer_add_exclude_rect>:
 {
-     1c7:	55                   	push   ebp
-     1c8:	89 e5                	mov    ebp,esp
-     1ca:	53                   	push   ebx
+     1ed:	55                   	push   ebp
+     1ee:	89 e5                	mov    ebp,esp
+     1f0:	53                   	push   ebx
 		if (!r)
-     1cb:	83 7d 0c 00          	cmp    DWORD PTR [ebp+0xc],0x0
-     1cf:	74 2f                	je     200 <framebuffer_add_exclude_rect+0x39>
+     1f1:	83 7d 0c 00          	cmp    DWORD PTR [ebp+0xc],0x0
+     1f5:	74 2f                	je     226 <framebuffer_add_exclude_rect+0x39>
 				r->next = fb->r_excl;
-     1d1:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     1d4:	8b 50 38             	mov    edx,DWORD PTR [eax+0x38]
-     1d7:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     1da:	89 50 10             	mov    DWORD PTR [eax+0x10],edx
+     1f7:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     1fa:	8b 50 38             	mov    edx,DWORD PTR [eax+0x38]
+     1fd:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     200:	89 50 10             	mov    DWORD PTR [eax+0x10],edx
 		} while (!__sync_bool_compare_and_swap(&fb->r_excl, r->next, r));
-     1dd:	8b 55 0c             	mov    edx,DWORD PTR [ebp+0xc]
-     1e0:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     1e3:	8b 40 10             	mov    eax,DWORD PTR [eax+0x10]
-     1e6:	89 c3                	mov    ebx,eax
-     1e8:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     1eb:	8d 48 38             	lea    ecx,[eax+0x38]
-     1ee:	89 d8                	mov    eax,ebx
-     1f0:	f0 0f b1 11          	lock cmpxchg DWORD PTR [ecx],edx
-     1f4:	0f 94 c0             	sete   al
-     1f7:	83 f0 01             	xor    eax,0x1
-     1fa:	84 c0                	test   al,al
-     1fc:	75 d3                	jne    1d1 <framebuffer_add_exclude_rect+0xa>
-     1fe:	eb 01                	jmp    201 <framebuffer_add_exclude_rect+0x3a>
+     203:	8b 55 0c             	mov    edx,DWORD PTR [ebp+0xc]
+     206:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     209:	8b 40 10             	mov    eax,DWORD PTR [eax+0x10]
+     20c:	89 c3                	mov    ebx,eax
+     20e:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     211:	8d 48 38             	lea    ecx,[eax+0x38]
+     214:	89 d8                	mov    eax,ebx
+     216:	f0 0f b1 11          	lock cmpxchg DWORD PTR [ecx],edx
+     21a:	0f 94 c0             	sete   al
+     21d:	83 f0 01             	xor    eax,0x1
+     220:	84 c0                	test   al,al
+     222:	75 d3                	jne    1f7 <framebuffer_add_exclude_rect+0xa>
+     224:	eb 01                	jmp    227 <framebuffer_add_exclude_rect+0x3a>
 				return;
-     200:	90                   	nop
+     226:	90                   	nop
 }
-     201:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
-     204:	c9                   	leave
-     205:	c3                   	ret
+     227:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
+     22a:	c9                   	leave
+     22b:	c3                   	ret
 
-00000206 <framebuffer_remove_exclude_rect>:
+0000022c <framebuffer_remove_exclude_rect>:
 {
-     206:	55                   	push   ebp
-     207:	89 e5                	mov    ebp,esp
-     209:	83 ec 10             	sub    esp,0x10
+     22c:	55                   	push   ebp
+     22d:	89 e5                	mov    ebp,esp
+     22f:	83 ec 10             	sub    esp,0x10
 		er = &fb->r_excl;
-     20c:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     20f:	83 c0 38             	add    eax,0x38
-     212:	89 45 fc             	mov    DWORD PTR [ebp-0x4],eax
+     232:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     235:	83 c0 38             	add    eax,0x38
+     238:	89 45 fc             	mov    DWORD PTR [ebp-0x4],eax
 		while ((r2 = *er)) {
-     215:	eb 2c                	jmp    243 <framebuffer_remove_exclude_rect+0x3d>
+     23b:	eb 2c                	jmp    269 <framebuffer_remove_exclude_rect+0x3d>
 				if (r2 == r) {
-     217:	8b 45 f8             	mov    eax,DWORD PTR [ebp-0x8]
-     21a:	3b 45 0c             	cmp    eax,DWORD PTR [ebp+0xc]
-     21d:	75 1b                	jne    23a <framebuffer_remove_exclude_rect+0x34>
+     23d:	8b 45 f8             	mov    eax,DWORD PTR [ebp-0x8]
+     240:	3b 45 0c             	cmp    eax,DWORD PTR [ebp+0xc]
+     243:	75 1b                	jne    260 <framebuffer_remove_exclude_rect+0x34>
 						if (__sync_bool_compare_and_swap(er, r, r->next))
-     21f:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     222:	8b 40 10             	mov    eax,DWORD PTR [eax+0x10]
-     225:	89 c1                	mov    ecx,eax
-     227:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     22a:	8b 55 fc             	mov    edx,DWORD PTR [ebp-0x4]
-     22d:	f0 0f b1 0a          	lock cmpxchg DWORD PTR [edx],ecx
-     231:	0f 94 c0             	sete   al
-     234:	84 c0                	test   al,al
-     236:	75 1b                	jne    253 <framebuffer_remove_exclude_rect+0x4d>
+     245:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     248:	8b 40 10             	mov    eax,DWORD PTR [eax+0x10]
+     24b:	89 c1                	mov    ecx,eax
+     24d:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     250:	8b 55 fc             	mov    edx,DWORD PTR [ebp-0x4]
+     253:	f0 0f b1 0a          	lock cmpxchg DWORD PTR [edx],ecx
+     257:	0f 94 c0             	sete   al
+     25a:	84 c0                	test   al,al
+     25c:	75 1b                	jne    279 <framebuffer_remove_exclude_rect+0x4d>
 								goto Pos1;
-     238:	eb d2                	jmp    20c <framebuffer_remove_exclude_rect+0x6>
+     25e:	eb d2                	jmp    232 <framebuffer_remove_exclude_rect+0x6>
 				er = &r2->next;
-     23a:	8b 45 f8             	mov    eax,DWORD PTR [ebp-0x8]
-     23d:	83 c0 10             	add    eax,0x10
-     240:	89 45 fc             	mov    DWORD PTR [ebp-0x4],eax
+     260:	8b 45 f8             	mov    eax,DWORD PTR [ebp-0x8]
+     263:	83 c0 10             	add    eax,0x10
+     266:	89 45 fc             	mov    DWORD PTR [ebp-0x4],eax
 		while ((r2 = *er)) {
-     243:	8b 45 fc             	mov    eax,DWORD PTR [ebp-0x4]
-     246:	8b 00                	mov    eax,DWORD PTR [eax]
-     248:	89 45 f8             	mov    DWORD PTR [ebp-0x8],eax
-     24b:	83 7d f8 00          	cmp    DWORD PTR [ebp-0x8],0x0
-     24f:	75 c6                	jne    217 <framebuffer_remove_exclude_rect+0x11>
-     251:	eb 01                	jmp    254 <framebuffer_remove_exclude_rect+0x4e>
+     269:	8b 45 fc             	mov    eax,DWORD PTR [ebp-0x4]
+     26c:	8b 00                	mov    eax,DWORD PTR [eax]
+     26e:	89 45 f8             	mov    DWORD PTR [ebp-0x8],eax
+     271:	83 7d f8 00          	cmp    DWORD PTR [ebp-0x8],0x0
+     275:	75 c6                	jne    23d <framebuffer_remove_exclude_rect+0x11>
+     277:	eb 01                	jmp    27a <framebuffer_remove_exclude_rect+0x4e>
 								return;
-     253:	90                   	nop
+     279:	90                   	nop
 }
-     254:	c9                   	leave
-     255:	c3                   	ret
+     27a:	c9                   	leave
+     27b:	c3                   	ret
 
-00000256 <get_tm_color>:
+0000027c <get_tm_color>:
 {
-     256:	55                   	push   ebp
-     257:	89 e5                	mov    ebp,esp
-     259:	83 ec 18             	sub    esp,0x18
-     25c:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
-     25f:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     262:	88 55 ec             	mov    BYTE PTR [ebp-0x14],dl
-     265:	88 45 e8             	mov    BYTE PTR [ebp-0x18],al
+     27c:	55                   	push   ebp
+     27d:	89 e5                	mov    ebp,esp
+     27f:	83 ec 18             	sub    esp,0x18
+     282:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
+     285:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     288:	88 55 ec             	mov    BYTE PTR [ebp-0x14],dl
+     28b:	88 45 e8             	mov    BYTE PTR [ebp-0x18],al
 		switch (btpp) {
-     268:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-     26b:	83 e8 04             	sub    eax,0x4
-     26e:	83 f8 1c             	cmp    eax,0x1c
-     271:	0f 87 10 01 00 00    	ja     387 <get_tm_color+0x131>
-     277:	8b 04 85 20 00 00 00 	mov    eax,DWORD PTR [eax*4+0x20]
-     27e:	ff e0                	jmp    eax
+     28e:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+     291:	83 e8 04             	sub    eax,0x4
+     294:	83 f8 1c             	cmp    eax,0x1c
+     297:	0f 87 10 01 00 00    	ja     3ad <get_tm_color+0x131>
+     29d:	8b 04 85 20 00 00 00 	mov    eax,DWORD PTR [eax*4+0x20]
+     2a4:	ff e0                	jmp    eax
 						if (is_set)
-     280:	80 7d e8 00          	cmp    BYTE PTR [ebp-0x18],0x0
-     284:	74 0c                	je     292 <get_tm_color+0x3c>
+     2a6:	80 7d e8 00          	cmp    BYTE PTR [ebp-0x18],0x0
+     2aa:	74 0c                	je     2b8 <get_tm_color+0x3c>
 								return col & 0x0f;
-     286:	0f be 45 ec          	movsx  eax,BYTE PTR [ebp-0x14]
-     28a:	83 e0 0f             	and    eax,0xf
-     28d:	e9 fa 00 00 00       	jmp    38c <get_tm_color+0x136>
+     2ac:	0f be 45 ec          	movsx  eax,BYTE PTR [ebp-0x14]
+     2b0:	83 e0 0f             	and    eax,0xf
+     2b3:	e9 fa 00 00 00       	jmp    3b2 <get_tm_color+0x136>
 								return (col >> 4) & 0x0f;
-     292:	0f b6 45 ec          	movzx  eax,BYTE PTR [ebp-0x14]
-     296:	c0 f8 04             	sar    al,0x4
-     299:	0f be c0             	movsx  eax,al
-     29c:	83 e0 0f             	and    eax,0xf
-     29f:	e9 e8 00 00 00       	jmp    38c <get_tm_color+0x136>
+     2b8:	0f b6 45 ec          	movzx  eax,BYTE PTR [ebp-0x14]
+     2bc:	c0 f8 04             	sar    al,0x4
+     2bf:	0f be c0             	movsx  eax,al
+     2c2:	83 e0 0f             	and    eax,0xf
+     2c5:	e9 e8 00 00 00       	jmp    3b2 <get_tm_color+0x136>
 						if (is_set)
-     2a4:	80 7d e8 00          	cmp    BYTE PTR [ebp-0x18],0x0
-     2a8:	74 0c                	je     2b6 <get_tm_color+0x60>
+     2ca:	80 7d e8 00          	cmp    BYTE PTR [ebp-0x18],0x0
+     2ce:	74 0c                	je     2dc <get_tm_color+0x60>
 								return col & 0x0f;
-     2aa:	0f be 45 ec          	movsx  eax,BYTE PTR [ebp-0x14]
-     2ae:	83 e0 0f             	and    eax,0xf
-     2b1:	e9 d6 00 00 00       	jmp    38c <get_tm_color+0x136>
+     2d0:	0f be 45 ec          	movsx  eax,BYTE PTR [ebp-0x14]
+     2d4:	83 e0 0f             	and    eax,0xf
+     2d7:	e9 d6 00 00 00       	jmp    3b2 <get_tm_color+0x136>
 								return (col >> 4) & 0x0f;
-     2b6:	0f b6 45 ec          	movzx  eax,BYTE PTR [ebp-0x14]
-     2ba:	c0 f8 04             	sar    al,0x4
-     2bd:	0f be c0             	movsx  eax,al
-     2c0:	83 e0 0f             	and    eax,0xf
-     2c3:	e9 c4 00 00 00       	jmp    38c <get_tm_color+0x136>
+     2dc:	0f b6 45 ec          	movzx  eax,BYTE PTR [ebp-0x14]
+     2e0:	c0 f8 04             	sar    al,0x4
+     2e3:	0f be c0             	movsx  eax,al
+     2e6:	83 e0 0f             	and    eax,0xf
+     2e9:	e9 c4 00 00 00       	jmp    3b2 <get_tm_color+0x136>
 						if (is_set)
-     2c8:	80 7d e8 00          	cmp    BYTE PTR [ebp-0x18],0x0
-     2cc:	74 13                	je     2e1 <get_tm_color+0x8b>
+     2ee:	80 7d e8 00          	cmp    BYTE PTR [ebp-0x18],0x0
+     2f2:	74 13                	je     307 <get_tm_color+0x8b>
 								iv = palette_32[col & 0x0f];
-     2ce:	0f be 45 ec          	movsx  eax,BYTE PTR [ebp-0x14]
-     2d2:	83 e0 0f             	and    eax,0xf
-     2d5:	8b 04 85 00 00 00 00 	mov    eax,DWORD PTR [eax*4+0x0]
-     2dc:	89 45 f8             	mov    DWORD PTR [ebp-0x8],eax
-     2df:	eb 17                	jmp    2f8 <get_tm_color+0xa2>
+     2f4:	0f be 45 ec          	movsx  eax,BYTE PTR [ebp-0x14]
+     2f8:	83 e0 0f             	and    eax,0xf
+     2fb:	8b 04 85 00 00 00 00 	mov    eax,DWORD PTR [eax*4+0x0]
+     302:	89 45 f8             	mov    DWORD PTR [ebp-0x8],eax
+     305:	eb 17                	jmp    31e <get_tm_color+0xa2>
 								iv = palette_32[(col >> 4) & 0x0f];
-     2e1:	0f b6 45 ec          	movzx  eax,BYTE PTR [ebp-0x14]
-     2e5:	c0 f8 04             	sar    al,0x4
-     2e8:	0f be c0             	movsx  eax,al
-     2eb:	83 e0 0f             	and    eax,0xf
-     2ee:	8b 04 85 00 00 00 00 	mov    eax,DWORD PTR [eax*4+0x0]
-     2f5:	89 45 f8             	mov    DWORD PTR [ebp-0x8],eax
+     307:	0f b6 45 ec          	movzx  eax,BYTE PTR [ebp-0x14]
+     30b:	c0 f8 04             	sar    al,0x4
+     30e:	0f be c0             	movsx  eax,al
+     311:	83 e0 0f             	and    eax,0xf
+     314:	8b 04 85 00 00 00 00 	mov    eax,DWORD PTR [eax*4+0x0]
+     31b:	89 45 f8             	mov    DWORD PTR [ebp-0x8],eax
 						if (btpp == 15)
-     2f8:	83 7d 10 0f          	cmp    DWORD PTR [ebp+0x10],0xf
-     2fc:	75 2d                	jne    32b <get_tm_color+0xd5>
+     31e:	83 7d 10 0f          	cmp    DWORD PTR [ebp+0x10],0xf
+     322:	75 2d                	jne    351 <get_tm_color+0xd5>
 								rv = (iv.b >> 3) | ((iv.g >> 3) << 5) | ((iv.r >> 3) << 10);
-     2fe:	0f b6 45 f8          	movzx  eax,BYTE PTR [ebp-0x8]
-     302:	c0 e8 03             	shr    al,0x3
-     305:	0f b6 c0             	movzx  eax,al
-     308:	0f b6 55 f9          	movzx  edx,BYTE PTR [ebp-0x7]
-     30c:	c0 ea 03             	shr    dl,0x3
-     30f:	0f b6 d2             	movzx  edx,dl
-     312:	c1 e2 05             	shl    edx,0x5
-     315:	09 c2                	or     edx,eax
-     317:	0f b6 45 fa          	movzx  eax,BYTE PTR [ebp-0x6]
-     31b:	c0 e8 03             	shr    al,0x3
-     31e:	0f b6 c0             	movzx  eax,al
-     321:	c1 e0 0a             	shl    eax,0xa
-     324:	09 d0                	or     eax,edx
-     326:	89 45 fc             	mov    DWORD PTR [ebp-0x4],eax
-     329:	eb 2b                	jmp    356 <get_tm_color+0x100>
+     324:	0f b6 45 f8          	movzx  eax,BYTE PTR [ebp-0x8]
+     328:	c0 e8 03             	shr    al,0x3
+     32b:	0f b6 c0             	movzx  eax,al
+     32e:	0f b6 55 f9          	movzx  edx,BYTE PTR [ebp-0x7]
+     332:	c0 ea 03             	shr    dl,0x3
+     335:	0f b6 d2             	movzx  edx,dl
+     338:	c1 e2 05             	shl    edx,0x5
+     33b:	09 c2                	or     edx,eax
+     33d:	0f b6 45 fa          	movzx  eax,BYTE PTR [ebp-0x6]
+     341:	c0 e8 03             	shr    al,0x3
+     344:	0f b6 c0             	movzx  eax,al
+     347:	c1 e0 0a             	shl    eax,0xa
+     34a:	09 d0                	or     eax,edx
+     34c:	89 45 fc             	mov    DWORD PTR [ebp-0x4],eax
+     34f:	eb 2b                	jmp    37c <get_tm_color+0x100>
 								rv = (iv.b >> 3) | ((iv.g >> 2) << 5) | ((iv.r >> 3) << 11);
-     32b:	0f b6 45 f8          	movzx  eax,BYTE PTR [ebp-0x8]
-     32f:	c0 e8 03             	shr    al,0x3
-     332:	0f b6 c0             	movzx  eax,al
-     335:	0f b6 55 f9          	movzx  edx,BYTE PTR [ebp-0x7]
-     339:	c0 ea 02             	shr    dl,0x2
-     33c:	0f b6 d2             	movzx  edx,dl
-     33f:	c1 e2 05             	shl    edx,0x5
-     342:	09 c2                	or     edx,eax
-     344:	0f b6 45 fa          	movzx  eax,BYTE PTR [ebp-0x6]
-     348:	c0 e8 03             	shr    al,0x3
-     34b:	0f b6 c0             	movzx  eax,al
-     34e:	c1 e0 0b             	shl    eax,0xb
-     351:	09 d0                	or     eax,edx
-     353:	89 45 fc             	mov    DWORD PTR [ebp-0x4],eax
+     351:	0f b6 45 f8          	movzx  eax,BYTE PTR [ebp-0x8]
+     355:	c0 e8 03             	shr    al,0x3
+     358:	0f b6 c0             	movzx  eax,al
+     35b:	0f b6 55 f9          	movzx  edx,BYTE PTR [ebp-0x7]
+     35f:	c0 ea 02             	shr    dl,0x2
+     362:	0f b6 d2             	movzx  edx,dl
+     365:	c1 e2 05             	shl    edx,0x5
+     368:	09 c2                	or     edx,eax
+     36a:	0f b6 45 fa          	movzx  eax,BYTE PTR [ebp-0x6]
+     36e:	c0 e8 03             	shr    al,0x3
+     371:	0f b6 c0             	movzx  eax,al
+     374:	c1 e0 0b             	shl    eax,0xb
+     377:	09 d0                	or     eax,edx
+     379:	89 45 fc             	mov    DWORD PTR [ebp-0x4],eax
 						return rv;
-     356:	8b 45 fc             	mov    eax,DWORD PTR [ebp-0x4]
-     359:	eb 31                	jmp    38c <get_tm_color+0x136>
+     37c:	8b 45 fc             	mov    eax,DWORD PTR [ebp-0x4]
+     37f:	eb 31                	jmp    3b2 <get_tm_color+0x136>
 						if (is_set)
-     35b:	80 7d e8 00          	cmp    BYTE PTR [ebp-0x18],0x0
-     35f:	74 10                	je     371 <get_tm_color+0x11b>
+     381:	80 7d e8 00          	cmp    BYTE PTR [ebp-0x18],0x0
+     385:	74 10                	je     397 <get_tm_color+0x11b>
 								return palette_32[col & 0x0f].val;
-     361:	0f be 45 ec          	movsx  eax,BYTE PTR [ebp-0x14]
-     365:	83 e0 0f             	and    eax,0xf
-     368:	8b 04 85 00 00 00 00 	mov    eax,DWORD PTR [eax*4+0x0]
-     36f:	eb 1b                	jmp    38c <get_tm_color+0x136>
+     387:	0f be 45 ec          	movsx  eax,BYTE PTR [ebp-0x14]
+     38b:	83 e0 0f             	and    eax,0xf
+     38e:	8b 04 85 00 00 00 00 	mov    eax,DWORD PTR [eax*4+0x0]
+     395:	eb 1b                	jmp    3b2 <get_tm_color+0x136>
 								return palette_32[(col >> 4) & 0x0f].val;
-     371:	0f b6 45 ec          	movzx  eax,BYTE PTR [ebp-0x14]
-     375:	c0 f8 04             	sar    al,0x4
-     378:	0f be c0             	movsx  eax,al
-     37b:	83 e0 0f             	and    eax,0xf
-     37e:	8b 04 85 00 00 00 00 	mov    eax,DWORD PTR [eax*4+0x0]
-     385:	eb 05                	jmp    38c <get_tm_color+0x136>
+     397:	0f b6 45 ec          	movzx  eax,BYTE PTR [ebp-0x14]
+     39b:	c0 f8 04             	sar    al,0x4
+     39e:	0f be c0             	movsx  eax,al
+     3a1:	83 e0 0f             	and    eax,0xf
+     3a4:	8b 04 85 00 00 00 00 	mov    eax,DWORD PTR [eax*4+0x0]
+     3ab:	eb 05                	jmp    3b2 <get_tm_color+0x136>
 		return 0x2f0c0c2f; /* canary */
-     387:	b8 2f 0c 0c 2f       	mov    eax,0x2f0c0c2f
+     3ad:	b8 2f 0c 0c 2f       	mov    eax,0x2f0c0c2f
 }
-     38c:	c9                   	leave
-     38d:	c3                   	ret
+     3b2:	c9                   	leave
+     3b3:	c3                   	ret
 
-0000038e <generate_char_colors>:
+000003b4 <generate_char_colors>:
 {
-     38e:	55                   	push   ebp
-     38f:	89 e5                	mov    ebp,esp
-     391:	53                   	push   ebx
-     392:	83 ec 24             	sub    esp,0x24
-     395:	8b 55 0c             	mov    edx,DWORD PTR [ebp+0xc]
-     398:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-     39b:	88 55 e4             	mov    BYTE PTR [ebp-0x1c],dl
-     39e:	88 45 e0             	mov    BYTE PTR [ebp-0x20],al
+     3b4:	55                   	push   ebp
+     3b5:	89 e5                	mov    ebp,esp
+     3b7:	53                   	push   ebx
+     3b8:	83 ec 34             	sub    esp,0x34
+     3bb:	8b 55 0c             	mov    edx,DWORD PTR [ebp+0xc]
+     3be:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+     3c1:	88 55 e4             	mov    BYTE PTR [ebp-0x1c],dl
+     3c4:	88 45 e0             	mov    BYTE PTR [ebp-0x20],al
 		int rv = 0;
-     3a1:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
+     3c7:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
 		uint8_t f = (uint8_t)font[c * 16];
-     3a8:	0f be 45 e4          	movsx  eax,BYTE PTR [ebp-0x1c]
-     3ac:	c1 e0 04             	shl    eax,0x4
-     3af:	89 c2                	mov    edx,eax
-     3b1:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     3b4:	01 d0                	add    eax,edx
-     3b6:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     3b9:	88 45 ef             	mov    BYTE PTR [ebp-0x11],al
+     3ce:	0f be 45 e4          	movsx  eax,BYTE PTR [ebp-0x1c]
+     3d2:	c1 e0 04             	shl    eax,0x4
+     3d5:	89 c2                	mov    edx,eax
+     3d7:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     3da:	01 d0                	add    eax,edx
+     3dc:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     3df:	88 45 ef             	mov    BYTE PTR [ebp-0x11],al
 		for (; r < rmax; r++) {
-     3bc:	e9 fd 00 00 00       	jmp    4be <generate_char_colors+0x130>
+     3e2:	e9 00 01 00 00       	jmp    4e7 <generate_char_colors+0x133>
 				int is_set = f & (1 << (7 - r));
-     3c1:	0f b6 55 ef          	movzx  edx,BYTE PTR [ebp-0x11]
-     3c5:	b8 07 00 00 00       	mov    eax,0x7
-     3ca:	2b 45 18             	sub    eax,DWORD PTR [ebp+0x18]
-     3cd:	bb 01 00 00 00       	mov    ebx,0x1
-     3d2:	89 c1                	mov    ecx,eax
-     3d4:	d3 e3                	shl    ebx,cl
-     3d6:	89 d8                	mov    eax,ebx
-     3d8:	21 d0                	and    eax,edx
-     3da:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
+     3e7:	0f b6 55 ef          	movzx  edx,BYTE PTR [ebp-0x11]
+     3eb:	b8 07 00 00 00       	mov    eax,0x7
+     3f0:	2b 45 18             	sub    eax,DWORD PTR [ebp+0x18]
+     3f3:	bb 01 00 00 00       	mov    ebx,0x1
+     3f8:	89 c1                	mov    ecx,eax
+     3fa:	d3 e3                	shl    ebx,cl
+     3fc:	89 d8                	mov    eax,ebx
+     3fe:	21 d0                	and    eax,edx
+     400:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
 				if (inv)
-     3dd:	83 7d 24 00          	cmp    DWORD PTR [ebp+0x24],0x0
-     3e1:	74 0d                	je     3f0 <generate_char_colors+0x62>
+     403:	83 7d 24 00          	cmp    DWORD PTR [ebp+0x24],0x0
+     407:	74 0d                	je     416 <generate_char_colors+0x62>
 						is_set = !is_set;
-     3e3:	83 7d f0 00          	cmp    DWORD PTR [ebp-0x10],0x0
-     3e7:	0f 94 c0             	sete   al
-     3ea:	0f b6 c0             	movzx  eax,al
-     3ed:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
+     409:	83 7d f0 00          	cmp    DWORD PTR [ebp-0x10],0x0
+     40d:	0f 94 c0             	sete   al
+     410:	0f b6 c0             	movzx  eax,al
+     413:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
 				cv = get_tm_color(fmt, is_set, btpp);
-     3f0:	8b 4d 14             	mov    ecx,DWORD PTR [ebp+0x14]
-     3f3:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-     3f6:	0f be d0             	movsx  edx,al
-     3f9:	0f be 45 e0          	movsx  eax,BYTE PTR [ebp-0x20]
-     3fd:	51                   	push   ecx
-     3fe:	52                   	push   edx
-     3ff:	50                   	push   eax
-     400:	e8 fc ff ff ff       	call   401 <generate_char_colors+0x73>
-     405:	83 c4 0c             	add    esp,0xc
-     408:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
+     416:	8b 4d 14             	mov    ecx,DWORD PTR [ebp+0x14]
+     419:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+     41c:	0f be d0             	movsx  edx,al
+     41f:	0f be 45 e0          	movsx  eax,BYTE PTR [ebp-0x20]
+     423:	89 4c 24 08          	mov    DWORD PTR [esp+0x8],ecx
+     427:	89 54 24 04          	mov    DWORD PTR [esp+0x4],edx
+     42b:	89 04 24             	mov    DWORD PTR [esp],eax
+     42e:	e8 fc ff ff ff       	call   42f <generate_char_colors+0x7b>
+     433:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
 				switch (btpp) {
-     40b:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
-     40e:	83 e8 04             	sub    eax,0x4
-     411:	83 f8 1c             	cmp    eax,0x1c
-     414:	0f 87 a0 00 00 00    	ja     4ba <generate_char_colors+0x12c>
-     41a:	8b 04 85 a8 00 00 00 	mov    eax,DWORD PTR [eax*4+0xa8]
-     421:	ff e0                	jmp    eax
+     436:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
+     439:	83 e8 04             	sub    eax,0x4
+     43c:	83 f8 1c             	cmp    eax,0x1c
+     43f:	0f 87 9e 00 00 00    	ja     4e3 <generate_char_colors+0x12f>
+     445:	8b 04 85 a8 00 00 00 	mov    eax,DWORD PTR [eax*4+0xa8]
+     44c:	ff e0                	jmp    eax
 								*(uint32_t*)cvs = (uint32_t)cv;
-     423:	8b 45 20             	mov    eax,DWORD PTR [ebp+0x20]
-     426:	8b 55 e8             	mov    edx,DWORD PTR [ebp-0x18]
-     429:	89 10                	mov    DWORD PTR [eax],edx
+     44e:	8b 45 20             	mov    eax,DWORD PTR [ebp+0x20]
+     451:	8b 55 e8             	mov    edx,DWORD PTR [ebp-0x18]
+     454:	89 10                	mov    DWORD PTR [eax],edx
 								cvs += 4; rv += 32;
-     42b:	83 45 20 04          	add    DWORD PTR [ebp+0x20],0x4
-     42f:	83 45 f4 20          	add    DWORD PTR [ebp-0xc],0x20
+     456:	83 45 20 04          	add    DWORD PTR [ebp+0x20],0x4
+     45a:	83 45 f4 20          	add    DWORD PTR [ebp-0xc],0x20
 								break;
-     433:	e9 82 00 00 00       	jmp    4ba <generate_char_colors+0x12c>
+     45e:	e9 80 00 00 00       	jmp    4e3 <generate_char_colors+0x12f>
 								*(uint16_t*)cvs = (uint16_t)(cv & 0xffff);
-     438:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
-     43b:	89 c2                	mov    edx,eax
-     43d:	8b 45 20             	mov    eax,DWORD PTR [ebp+0x20]
-     440:	66 89 10             	mov    WORD PTR [eax],dx
+     463:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
+     466:	89 c2                	mov    edx,eax
+     468:	8b 45 20             	mov    eax,DWORD PTR [ebp+0x20]
+     46b:	66 89 10             	mov    WORD PTR [eax],dx
 								cvs += 2;
-     443:	83 45 20 02          	add    DWORD PTR [ebp+0x20],0x2
+     46e:	83 45 20 02          	add    DWORD PTR [ebp+0x20],0x2
 								*(uint8_t*)cvs++ = (uint8_t)(cv >> 16);
-     447:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
-     44a:	c1 e8 10             	shr    eax,0x10
-     44d:	89 c1                	mov    ecx,eax
-     44f:	8b 45 20             	mov    eax,DWORD PTR [ebp+0x20]
-     452:	8d 50 01             	lea    edx,[eax+0x1]
-     455:	89 55 20             	mov    DWORD PTR [ebp+0x20],edx
-     458:	89 ca                	mov    edx,ecx
-     45a:	88 10                	mov    BYTE PTR [eax],dl
+     472:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
+     475:	c1 e8 10             	shr    eax,0x10
+     478:	89 c1                	mov    ecx,eax
+     47a:	8b 45 20             	mov    eax,DWORD PTR [ebp+0x20]
+     47d:	8d 50 01             	lea    edx,[eax+0x1]
+     480:	89 55 20             	mov    DWORD PTR [ebp+0x20],edx
+     483:	89 ca                	mov    edx,ecx
+     485:	88 10                	mov    BYTE PTR [eax],dl
 								rv += 24;
-     45c:	83 45 f4 18          	add    DWORD PTR [ebp-0xc],0x18
+     487:	83 45 f4 18          	add    DWORD PTR [ebp-0xc],0x18
 								break;
-     460:	eb 58                	jmp    4ba <generate_char_colors+0x12c>
+     48b:	eb 56                	jmp    4e3 <generate_char_colors+0x12f>
 								*(uint16_t*)cvs = (uint16_t)cv;
-     462:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
-     465:	89 c2                	mov    edx,eax
-     467:	8b 45 20             	mov    eax,DWORD PTR [ebp+0x20]
-     46a:	66 89 10             	mov    WORD PTR [eax],dx
+     48d:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
+     490:	89 c2                	mov    edx,eax
+     492:	8b 45 20             	mov    eax,DWORD PTR [ebp+0x20]
+     495:	66 89 10             	mov    WORD PTR [eax],dx
 								cvs += 2; rv += 16; /* even for 15 */
-     46d:	83 45 20 02          	add    DWORD PTR [ebp+0x20],0x2
-     471:	83 45 f4 10          	add    DWORD PTR [ebp-0xc],0x10
+     498:	83 45 20 02          	add    DWORD PTR [ebp+0x20],0x2
+     49c:	83 45 f4 10          	add    DWORD PTR [ebp-0xc],0x10
 								break;
-     475:	eb 43                	jmp    4ba <generate_char_colors+0x12c>
+     4a0:	eb 41                	jmp    4e3 <generate_char_colors+0x12f>
 								*cvs++ = (uint8_t)cv; rv += 8;
-     477:	8b 45 20             	mov    eax,DWORD PTR [ebp+0x20]
-     47a:	8d 50 01             	lea    edx,[eax+0x1]
-     47d:	89 55 20             	mov    DWORD PTR [ebp+0x20],edx
-     480:	8b 55 e8             	mov    edx,DWORD PTR [ebp-0x18]
-     483:	88 10                	mov    BYTE PTR [eax],dl
-     485:	83 45 f4 08          	add    DWORD PTR [ebp-0xc],0x8
+     4a2:	8b 45 20             	mov    eax,DWORD PTR [ebp+0x20]
+     4a5:	8d 50 01             	lea    edx,[eax+0x1]
+     4a8:	89 55 20             	mov    DWORD PTR [ebp+0x20],edx
+     4ab:	8b 55 e8             	mov    edx,DWORD PTR [ebp-0x18]
+     4ae:	88 10                	mov    BYTE PTR [eax],dl
+     4b0:	83 45 f4 08          	add    DWORD PTR [ebp-0xc],0x8
 								break;
-     489:	eb 2f                	jmp    4ba <generate_char_colors+0x12c>
+     4b4:	eb 2d                	jmp    4e3 <generate_char_colors+0x12f>
 								rv += 4;
-     48b:	83 45 f4 04          	add    DWORD PTR [ebp-0xc],0x4
+     4b6:	83 45 f4 04          	add    DWORD PTR [ebp-0xc],0x4
 								die("also complicated!\n");
-     48f:	83 ec 08             	sub    esp,0x8
-     492:	68 94 00 00 00       	push   0x94
-     497:	6a 0c                	push   0xc
-     499:	e8 fc ff ff ff       	call   49a <generate_char_colors+0x10c>
-     49e:	83 c4 10             	add    esp,0x10
-     4a1:	e8 fc ff ff ff       	call   4a2 <generate_char_colors+0x114>
-     4a6:	83 ec 0c             	sub    esp,0xc
-     4a9:	68 00 00 00 00       	push   0x0
-     4ae:	e8 fc ff ff ff       	call   4af <generate_char_colors+0x121>
-     4b3:	83 c4 10             	add    esp,0x10
-     4b6:	fa                   	cli
-     4b7:	f4                   	hlt
-     4b8:	eb fd                	jmp    4b7 <generate_char_colors+0x129>
+     4ba:	c7 44 24 04 94 00 00 00 	mov    DWORD PTR [esp+0x4],0x94
+     4c2:	c7 04 24 0c 00 00 00 	mov    DWORD PTR [esp],0xc
+     4c9:	e8 fc ff ff ff       	call   4ca <generate_char_colors+0x116>
+     4ce:	e8 fc ff ff ff       	call   4cf <generate_char_colors+0x11b>
+     4d3:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+     4da:	e8 fc ff ff ff       	call   4db <generate_char_colors+0x127>
+     4df:	fa                   	cli
+     4e0:	f4                   	hlt
+     4e1:	eb fd                	jmp    4e0 <generate_char_colors+0x12c>
 		for (; r < rmax; r++) {
-     4ba:	83 45 18 01          	add    DWORD PTR [ebp+0x18],0x1
-     4be:	8b 45 18             	mov    eax,DWORD PTR [ebp+0x18]
-     4c1:	3b 45 1c             	cmp    eax,DWORD PTR [ebp+0x1c]
-     4c4:	0f 8c f7 fe ff ff    	jl     3c1 <generate_char_colors+0x33>
+     4e3:	83 45 18 01          	add    DWORD PTR [ebp+0x18],0x1
+     4e7:	8b 45 18             	mov    eax,DWORD PTR [ebp+0x18]
+     4ea:	3b 45 1c             	cmp    eax,DWORD PTR [ebp+0x1c]
+     4ed:	0f 8c f4 fe ff ff    	jl     3e7 <generate_char_colors+0x33>
 		return rv;
-     4ca:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     4f3:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
 }
-     4cd:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
-     4d0:	c9                   	leave
-     4d1:	c3                   	ret
+     4f6:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
+     4f9:	c9                   	leave
+     4fa:	c3                   	ret
 
-000004d2 <render_text_scanline_32btpp_sse>:
+000004fb <render_text_scanline_32btpp_sse>:
 {
-     4d2:	55                   	push   ebp
-     4d3:	89 e5                	mov    ebp,esp
-     4d5:	53                   	push   ebx
-     4d6:	83 ec 64             	sub    esp,0x64
+     4fb:	55                   	push   ebp
+     4fc:	89 e5                	mov    ebp,esp
+     4fe:	56                   	push   esi
+     4ff:	53                   	push   ebx
+     500:	83 c4 80             	add    esp,0xffffff80
 		ssize_t misalign = ((size_t)mem % 16) ? (16 - (size_t)mem % 16) : 0;
-     4d9:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-     4dc:	83 e0 0f             	and    eax,0xf
-     4df:	85 c0                	test   eax,eax
-     4e1:	74 11                	je     4f4 <render_text_scanline_32btpp_sse+0x22>
-     4e3:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-     4e6:	83 e0 0f             	and    eax,0xf
-     4e9:	ba 10 00 00 00       	mov    edx,0x10
-     4ee:	29 c2                	sub    edx,eax
-     4f0:	89 d0                	mov    eax,edx
-     4f2:	eb 05                	jmp    4f9 <render_text_scanline_32btpp_sse+0x27>
-     4f4:	b8 00 00 00 00       	mov    eax,0x0
-     4f9:	89 45 ec             	mov    DWORD PTR [ebp-0x14],eax
+     503:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+     506:	83 e0 0f             	and    eax,0xf
+     509:	85 c0                	test   eax,eax
+     50b:	74 11                	je     51e <render_text_scanline_32btpp_sse+0x23>
+     50d:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+     510:	83 e0 0f             	and    eax,0xf
+     513:	ba 10 00 00 00       	mov    edx,0x10
+     518:	29 c2                	sub    edx,eax
+     51a:	89 d0                	mov    eax,edx
+     51c:	eb 05                	jmp    523 <render_text_scanline_32btpp_sse+0x28>
+     51e:	b8 00 00 00 00       	mov    eax,0x0
+     523:	89 45 ec             	mov    DWORD PTR [ebp-0x14],eax
 		ssize_t r = p0_x % 8;
-     4fc:	8b 55 1c             	mov    edx,DWORD PTR [ebp+0x1c]
-     4ff:	89 d0                	mov    eax,edx
-     501:	c1 f8 1f             	sar    eax,0x1f
-     504:	c1 e8 1d             	shr    eax,0x1d
-     507:	01 c2                	add    edx,eax
-     509:	83 e2 07             	and    edx,0x7
-     50c:	29 c2                	sub    edx,eax
-     50e:	89 55 e8             	mov    DWORD PTR [ebp-0x18],edx
+     526:	8b 55 1c             	mov    edx,DWORD PTR [ebp+0x1c]
+     529:	89 d0                	mov    eax,edx
+     52b:	c1 f8 1f             	sar    eax,0x1f
+     52e:	c1 e8 1d             	shr    eax,0x1d
+     531:	01 c2                	add    edx,eax
+     533:	83 e2 07             	and    edx,0x7
+     536:	29 c2                	sub    edx,eax
+     538:	89 55 e8             	mov    DWORD PTR [ebp-0x18],edx
 		uint8_t* pixbuf = pxb + (((size_t)pxb % 16) ? (16 - ((size_t)pxb % 16)) : 0);
-     511:	8d 45 9d             	lea    eax,[ebp-0x63]
-     514:	83 e0 0f             	and    eax,0xf
-     517:	85 c0                	test   eax,eax
-     519:	74 11                	je     52c <render_text_scanline_32btpp_sse+0x5a>
-     51b:	8d 45 9d             	lea    eax,[ebp-0x63]
-     51e:	83 e0 0f             	and    eax,0xf
-     521:	89 c2                	mov    edx,eax
-     523:	b8 10 00 00 00       	mov    eax,0x10
-     528:	29 d0                	sub    eax,edx
-     52a:	eb 05                	jmp    531 <render_text_scanline_32btpp_sse+0x5f>
-     52c:	b8 00 00 00 00       	mov    eax,0x0
-     531:	8d 55 9d             	lea    edx,[ebp-0x63]
-     534:	01 d0                	add    eax,edx
-     536:	89 45 98             	mov    DWORD PTR [ebp-0x68],eax
+     53b:	8d 45 9d             	lea    eax,[ebp-0x63]
+     53e:	83 e0 0f             	and    eax,0xf
+     541:	85 c0                	test   eax,eax
+     543:	74 11                	je     556 <render_text_scanline_32btpp_sse+0x5b>
+     545:	8d 45 9d             	lea    eax,[ebp-0x63]
+     548:	83 e0 0f             	and    eax,0xf
+     54b:	89 c2                	mov    edx,eax
+     54d:	b8 10 00 00 00       	mov    eax,0x10
+     552:	29 d0                	sub    eax,edx
+     554:	eb 05                	jmp    55b <render_text_scanline_32btpp_sse+0x60>
+     556:	b8 00 00 00 00       	mov    eax,0x0
+     55b:	8d 55 9d             	lea    edx,[ebp-0x63]
+     55e:	01 d0                	add    eax,edx
+     560:	89 45 98             	mov    DWORD PTR [ebp-0x68],eax
 		if (misalign) { /* LFB is dword aligned, we want (dq/o)word access */
-     539:	83 7d ec 00          	cmp    DWORD PTR [ebp-0x14],0x0
-     53d:	0f 84 1a 03 00 00    	je     85d <render_text_scanline_32btpp_sse+0x38b>
+     563:	83 7d ec 00          	cmp    DWORD PTR [ebp-0x14],0x0
+     567:	0f 84 8d 03 00 00    	je     8fa <render_text_scanline_32btpp_sse+0x3ff>
 				int col = p0_x / 8, inv = (col == cur_x);
-     543:	8b 45 1c             	mov    eax,DWORD PTR [ebp+0x1c]
-     546:	8d 50 07             	lea    edx,[eax+0x7]
-     549:	85 c0                	test   eax,eax
-     54b:	0f 48 c2             	cmovs  eax,edx
-     54e:	c1 f8 03             	sar    eax,0x3
-     551:	89 45 e4             	mov    DWORD PTR [ebp-0x1c],eax
-     554:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
-     557:	3b 45 18             	cmp    eax,DWORD PTR [ebp+0x18]
-     55a:	0f 94 c0             	sete   al
-     55d:	0f b6 c0             	movzx  eax,al
-     560:	89 45 e0             	mov    DWORD PTR [ebp-0x20],eax
+     56d:	8b 45 1c             	mov    eax,DWORD PTR [ebp+0x1c]
+     570:	8d 50 07             	lea    edx,[eax+0x7]
+     573:	85 c0                	test   eax,eax
+     575:	0f 48 c2             	cmovs  eax,edx
+     578:	c1 f8 03             	sar    eax,0x3
+     57b:	89 45 e4             	mov    DWORD PTR [ebp-0x1c],eax
+     57e:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
+     581:	3b 45 18             	cmp    eax,DWORD PTR [ebp+0x18]
+     584:	0f 94 c0             	sete   al
+     587:	0f b6 c0             	movzx  eax,al
+     58a:	89 45 e0             	mov    DWORD PTR [ebp-0x20],eax
 				ssize_t bc = min(misalign, 4 * px_x);
-     563:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
-     566:	c1 e0 02             	shl    eax,0x2
-     569:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
-     56c:	39 c2                	cmp    edx,eax
-     56e:	0f 4e c2             	cmovle eax,edx
-     571:	89 45 dc             	mov    DWORD PTR [ebp-0x24],eax
+     58d:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
+     590:	c1 e0 02             	shl    eax,0x2
+     593:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
+     596:	39 c2                	cmp    edx,eax
+     598:	0f 4e c2             	cmovle eax,edx
+     59b:	89 45 dc             	mov    DWORD PTR [ebp-0x24],eax
 				ssize_t cc = rdiv(misalign, 4);
-     574:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-     577:	8d 50 03             	lea    edx,[eax+0x3]
-     57a:	85 c0                	test   eax,eax
-     57c:	0f 48 c2             	cmovs  eax,edx
-     57f:	c1 f8 02             	sar    eax,0x2
-     582:	89 c2                	mov    edx,eax
-     584:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-     587:	83 e0 03             	and    eax,0x3
-     58a:	85 c0                	test   eax,eax
-     58c:	0f 95 c0             	setne  al
-     58f:	0f b6 c0             	movzx  eax,al
-     592:	01 d0                	add    eax,edx
-     594:	89 45 d8             	mov    DWORD PTR [ebp-0x28],eax
+     59e:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+     5a1:	8d 50 03             	lea    edx,[eax+0x3]
+     5a4:	85 c0                	test   eax,eax
+     5a6:	0f 48 c2             	cmovs  eax,edx
+     5a9:	c1 f8 02             	sar    eax,0x2
+     5ac:	89 c2                	mov    edx,eax
+     5ae:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+     5b1:	83 e0 03             	and    eax,0x3
+     5b4:	85 c0                	test   eax,eax
+     5b6:	0f 95 c0             	setne  al
+     5b9:	0f b6 c0             	movzx  eax,al
+     5bc:	01 d0                	add    eax,edx
+     5be:	89 45 d8             	mov    DWORD PTR [ebp-0x28],eax
 				ssize_t rmax = min(8, r + cc), cc1 = rmax - r;
-     597:	8b 55 e8             	mov    edx,DWORD PTR [ebp-0x18]
-     59a:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-     59d:	01 d0                	add    eax,edx
-     59f:	ba 08 00 00 00       	mov    edx,0x8
-     5a4:	39 d0                	cmp    eax,edx
-     5a6:	0f 4f c2             	cmovg  eax,edx
-     5a9:	89 45 d4             	mov    DWORD PTR [ebp-0x2c],eax
-     5ac:	8b 45 d4             	mov    eax,DWORD PTR [ebp-0x2c]
-     5af:	2b 45 e8             	sub    eax,DWORD PTR [ebp-0x18]
-     5b2:	89 45 d0             	mov    DWORD PTR [ebp-0x30],eax
+     5c1:	8b 55 e8             	mov    edx,DWORD PTR [ebp-0x18]
+     5c4:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+     5c7:	01 d0                	add    eax,edx
+     5c9:	ba 08 00 00 00       	mov    edx,0x8
+     5ce:	39 d0                	cmp    eax,edx
+     5d0:	0f 4f c2             	cmovg  eax,edx
+     5d3:	89 45 d4             	mov    DWORD PTR [ebp-0x2c],eax
+     5d6:	8b 45 d4             	mov    eax,DWORD PTR [ebp-0x2c]
+     5d9:	2b 45 e8             	sub    eax,DWORD PTR [ebp-0x18]
+     5dc:	89 45 d0             	mov    DWORD PTR [ebp-0x30],eax
 				generate_char_colors(font, str[0], str[1], 32,
-     5b5:	8b 4d 98             	mov    ecx,DWORD PTR [ebp-0x68]
-     5b8:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     5bb:	83 c0 01             	add    eax,0x1
-     5be:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     5c1:	0f be d0             	movsx  edx,al
-     5c4:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     5c7:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     5ca:	0f be c0             	movsx  eax,al
-     5cd:	ff 75 e0             	push   DWORD PTR [ebp-0x20]
-     5d0:	51                   	push   ecx
-     5d1:	ff 75 d4             	push   DWORD PTR [ebp-0x2c]
-     5d4:	ff 75 e8             	push   DWORD PTR [ebp-0x18]
-     5d7:	6a 20                	push   0x20
-     5d9:	52                   	push   edx
-     5da:	50                   	push   eax
-     5db:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-     5de:	e8 fc ff ff ff       	call   5df <render_text_scanline_32btpp_sse+0x10d>
-     5e3:	83 c4 20             	add    esp,0x20
+     5df:	8b 4d 98             	mov    ecx,DWORD PTR [ebp-0x68]
+     5e2:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     5e5:	83 c0 01             	add    eax,0x1
+     5e8:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     5eb:	0f be d0             	movsx  edx,al
+     5ee:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     5f1:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     5f4:	0f be c0             	movsx  eax,al
+     5f7:	8b 5d e0             	mov    ebx,DWORD PTR [ebp-0x20]
+     5fa:	89 5c 24 1c          	mov    DWORD PTR [esp+0x1c],ebx
+     5fe:	89 4c 24 18          	mov    DWORD PTR [esp+0x18],ecx
+     602:	8b 4d d4             	mov    ecx,DWORD PTR [ebp-0x2c]
+     605:	89 4c 24 14          	mov    DWORD PTR [esp+0x14],ecx
+     609:	8b 4d e8             	mov    ecx,DWORD PTR [ebp-0x18]
+     60c:	89 4c 24 10          	mov    DWORD PTR [esp+0x10],ecx
+     610:	c7 44 24 0c 20 00 00 00 	mov    DWORD PTR [esp+0xc],0x20
+     618:	89 54 24 08          	mov    DWORD PTR [esp+0x8],edx
+     61c:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+     620:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     623:	89 04 24             	mov    DWORD PTR [esp],eax
+     626:	e8 fc ff ff ff       	call   627 <render_text_scanline_32btpp_sse+0x12c>
 				if (rmax == 8)
-     5e6:	83 7d d4 08          	cmp    DWORD PTR [ebp-0x2c],0x8
-     5ea:	75 04                	jne    5f0 <render_text_scanline_32btpp_sse+0x11e>
+     62b:	83 7d d4 08          	cmp    DWORD PTR [ebp-0x2c],0x8
+     62f:	75 04                	jne    635 <render_text_scanline_32btpp_sse+0x13a>
 						str += 2;
-     5ec:	83 45 0c 02          	add    DWORD PTR [ebp+0xc],0x2
+     631:	83 45 0c 02          	add    DWORD PTR [ebp+0xc],0x2
 				if (cc > cc1) { /* generate the new char */
-     5f0:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-     5f3:	3b 45 d0             	cmp    eax,DWORD PTR [ebp-0x30]
-     5f6:	7e 52                	jle    64a <render_text_scanline_32btpp_sse+0x178>
+     635:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+     638:	3b 45 d0             	cmp    eax,DWORD PTR [ebp-0x30]
+     63b:	7e 6e                	jle    6ab <render_text_scanline_32btpp_sse+0x1b0>
 						col++; inv = (col == cur_x);
-     5f8:	83 45 e4 01          	add    DWORD PTR [ebp-0x1c],0x1
-     5fc:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
-     5ff:	3b 45 18             	cmp    eax,DWORD PTR [ebp+0x18]
-     602:	0f 94 c0             	sete   al
-     605:	0f b6 c0             	movzx  eax,al
-     608:	89 45 e0             	mov    DWORD PTR [ebp-0x20],eax
+     63d:	83 45 e4 01          	add    DWORD PTR [ebp-0x1c],0x1
+     641:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
+     644:	3b 45 18             	cmp    eax,DWORD PTR [ebp+0x18]
+     647:	0f 94 c0             	sete   al
+     64a:	0f b6 c0             	movzx  eax,al
+     64d:	89 45 e0             	mov    DWORD PTR [ebp-0x20],eax
 						generate_char_colors(font, str[0], str[1], 32,
-     60b:	8b 45 98             	mov    eax,DWORD PTR [ebp-0x68]
+     650:	8b 45 98             	mov    eax,DWORD PTR [ebp-0x68]
 										0, cc - cc1, pixbuf + cc1 * 4, inv);
-     60e:	8b 55 d0             	mov    edx,DWORD PTR [ebp-0x30]
-     611:	c1 e2 02             	shl    edx,0x2
+     653:	8b 55 d0             	mov    edx,DWORD PTR [ebp-0x30]
+     656:	c1 e2 02             	shl    edx,0x2
 						generate_char_colors(font, str[0], str[1], 32,
-     614:	8d 1c 10             	lea    ebx,[eax+edx*1]
-     617:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-     61a:	2b 45 d0             	sub    eax,DWORD PTR [ebp-0x30]
-     61d:	89 c1                	mov    ecx,eax
-     61f:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     622:	83 c0 01             	add    eax,0x1
-     625:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     628:	0f be d0             	movsx  edx,al
-     62b:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     62e:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     631:	0f be c0             	movsx  eax,al
-     634:	ff 75 e0             	push   DWORD PTR [ebp-0x20]
-     637:	53                   	push   ebx
-     638:	51                   	push   ecx
-     639:	6a 00                	push   0x0
-     63b:	6a 20                	push   0x20
-     63d:	52                   	push   edx
-     63e:	50                   	push   eax
-     63f:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-     642:	e8 fc ff ff ff       	call   643 <render_text_scanline_32btpp_sse+0x171>
-     647:	83 c4 20             	add    esp,0x20
+     659:	8d 34 10             	lea    esi,[eax+edx*1]
+     65c:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+     65f:	2b 45 d0             	sub    eax,DWORD PTR [ebp-0x30]
+     662:	89 c1                	mov    ecx,eax
+     664:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     667:	83 c0 01             	add    eax,0x1
+     66a:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     66d:	0f be d0             	movsx  edx,al
+     670:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     673:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     676:	0f be c0             	movsx  eax,al
+     679:	8b 5d e0             	mov    ebx,DWORD PTR [ebp-0x20]
+     67c:	89 5c 24 1c          	mov    DWORD PTR [esp+0x1c],ebx
+     680:	89 74 24 18          	mov    DWORD PTR [esp+0x18],esi
+     684:	89 4c 24 14          	mov    DWORD PTR [esp+0x14],ecx
+     688:	c7 44 24 10 00 00 00 00 	mov    DWORD PTR [esp+0x10],0x0
+     690:	c7 44 24 0c 20 00 00 00 	mov    DWORD PTR [esp+0xc],0x20
+     698:	89 54 24 08          	mov    DWORD PTR [esp+0x8],edx
+     69c:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+     6a0:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     6a3:	89 04 24             	mov    DWORD PTR [esp],eax
+     6a6:	e8 fc ff ff ff       	call   6a7 <render_text_scanline_32btpp_sse+0x1ac>
 				memcpy(mem, pixbuf, bc);
-     64a:	8b 4d dc             	mov    ecx,DWORD PTR [ebp-0x24]
-     64d:	8b 55 98             	mov    edx,DWORD PTR [ebp-0x68]
-     650:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-     653:	83 ec 04             	sub    esp,0x4
-     656:	51                   	push   ecx
-     657:	52                   	push   edx
-     658:	50                   	push   eax
-     659:	e8 a2 f9 ff ff       	call   0 <memcpy>
-     65e:	83 c4 10             	add    esp,0x10
+     6ab:	8b 4d dc             	mov    ecx,DWORD PTR [ebp-0x24]
+     6ae:	8b 55 98             	mov    edx,DWORD PTR [ebp-0x68]
+     6b1:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+     6b4:	89 4c 24 08          	mov    DWORD PTR [esp+0x8],ecx
+     6b8:	89 54 24 04          	mov    DWORD PTR [esp+0x4],edx
+     6bc:	89 04 24             	mov    DWORD PTR [esp],eax
+     6bf:	e8 3c f9 ff ff       	call   0 <memcpy>
 				px_x -= cc;
-     661:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-     664:	29 45 14             	sub    DWORD PTR [ebp+0x14],eax
+     6c4:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+     6c7:	29 45 14             	sub    DWORD PTR [ebp+0x14],eax
 				p0_x += cc;
-     667:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-     66a:	01 45 1c             	add    DWORD PTR [ebp+0x1c],eax
+     6ca:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+     6cd:	01 45 1c             	add    DWORD PTR [ebp+0x1c],eax
 				mem += bc;
-     66d:	8b 55 10             	mov    edx,DWORD PTR [ebp+0x10]
-     670:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-     673:	01 d0                	add    eax,edx
-     675:	89 45 10             	mov    DWORD PTR [ebp+0x10],eax
+     6d0:	8b 55 10             	mov    edx,DWORD PTR [ebp+0x10]
+     6d3:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+     6d6:	01 d0                	add    eax,edx
+     6d8:	89 45 10             	mov    DWORD PTR [ebp+0x10],eax
 		while (px_x) {
-     678:	e9 e0 01 00 00       	jmp    85d <render_text_scanline_32btpp_sse+0x38b>
+     6db:	e9 1a 02 00 00       	jmp    8fa <render_text_scanline_32btpp_sse+0x3ff>
 				int col = p0_x / 8, inv = (col == cur_x);
-     67d:	8b 45 1c             	mov    eax,DWORD PTR [ebp+0x1c]
-     680:	8d 50 07             	lea    edx,[eax+0x7]
-     683:	85 c0                	test   eax,eax
-     685:	0f 48 c2             	cmovs  eax,edx
-     688:	c1 f8 03             	sar    eax,0x3
-     68b:	89 45 cc             	mov    DWORD PTR [ebp-0x34],eax
-     68e:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-     691:	3b 45 18             	cmp    eax,DWORD PTR [ebp+0x18]
-     694:	0f 94 c0             	sete   al
-     697:	0f b6 c0             	movzx  eax,al
-     69a:	89 45 c8             	mov    DWORD PTR [ebp-0x38],eax
+     6e0:	8b 45 1c             	mov    eax,DWORD PTR [ebp+0x1c]
+     6e3:	8d 50 07             	lea    edx,[eax+0x7]
+     6e6:	85 c0                	test   eax,eax
+     6e8:	0f 48 c2             	cmovs  eax,edx
+     6eb:	c1 f8 03             	sar    eax,0x3
+     6ee:	89 45 cc             	mov    DWORD PTR [ebp-0x34],eax
+     6f1:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+     6f4:	3b 45 18             	cmp    eax,DWORD PTR [ebp+0x18]
+     6f7:	0f 94 c0             	sete   al
+     6fa:	0f b6 c0             	movzx  eax,al
+     6fd:	89 45 c8             	mov    DWORD PTR [ebp-0x38],eax
 				ssize_t rmax, bitc, btt = min(128, 32 * px_x);
-     69d:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
-     6a0:	c1 e0 05             	shl    eax,0x5
-     6a3:	ba 80 00 00 00       	mov    edx,0x80
-     6a8:	39 d0                	cmp    eax,edx
-     6aa:	0f 4f c2             	cmovg  eax,edx
-     6ad:	89 45 c4             	mov    DWORD PTR [ebp-0x3c],eax
+     700:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
+     703:	c1 e0 05             	shl    eax,0x5
+     706:	ba 80 00 00 00       	mov    edx,0x80
+     70b:	39 d0                	cmp    eax,edx
+     70d:	0f 4f c2             	cmovg  eax,edx
+     710:	89 45 c4             	mov    DWORD PTR [ebp-0x3c],eax
 				r = p0_x % 8;
-     6b0:	8b 55 1c             	mov    edx,DWORD PTR [ebp+0x1c]
-     6b3:	89 d0                	mov    eax,edx
-     6b5:	c1 f8 1f             	sar    eax,0x1f
-     6b8:	c1 e8 1d             	shr    eax,0x1d
-     6bb:	01 c2                	add    edx,eax
-     6bd:	83 e2 07             	and    edx,0x7
-     6c0:	29 c2                	sub    edx,eax
-     6c2:	89 55 e8             	mov    DWORD PTR [ebp-0x18],edx
+     713:	8b 55 1c             	mov    edx,DWORD PTR [ebp+0x1c]
+     716:	89 d0                	mov    eax,edx
+     718:	c1 f8 1f             	sar    eax,0x1f
+     71b:	c1 e8 1d             	shr    eax,0x1d
+     71e:	01 c2                	add    edx,eax
+     720:	83 e2 07             	and    edx,0x7
+     723:	29 c2                	sub    edx,eax
+     725:	89 55 e8             	mov    DWORD PTR [ebp-0x18],edx
 				rmax = min(8, r + min(4, px_x)); /* only 4 pixels */
-     6c5:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
-     6c8:	ba 04 00 00 00       	mov    edx,0x4
-     6cd:	39 d0                	cmp    eax,edx
-     6cf:	0f 4e d0             	cmovle edx,eax
-     6d2:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
-     6d5:	01 d0                	add    eax,edx
-     6d7:	ba 08 00 00 00       	mov    edx,0x8
-     6dc:	39 d0                	cmp    eax,edx
-     6de:	0f 4f c2             	cmovg  eax,edx
-     6e1:	89 45 c0             	mov    DWORD PTR [ebp-0x40],eax
+     728:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
+     72b:	ba 04 00 00 00       	mov    edx,0x4
+     730:	39 d0                	cmp    eax,edx
+     732:	0f 4e d0             	cmovle edx,eax
+     735:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
+     738:	01 d0                	add    eax,edx
+     73a:	ba 08 00 00 00       	mov    edx,0x8
+     73f:	39 d0                	cmp    eax,edx
+     741:	0f 4f c2             	cmovg  eax,edx
+     744:	89 45 c0             	mov    DWORD PTR [ebp-0x40],eax
 				bitc = generate_char_colors(font, str[0], str[1], 32,
-     6e4:	8b 4d 98             	mov    ecx,DWORD PTR [ebp-0x68]
-     6e7:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     6ea:	83 c0 01             	add    eax,0x1
-     6ed:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     6f0:	0f be d0             	movsx  edx,al
-     6f3:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     6f6:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     6f9:	0f be c0             	movsx  eax,al
-     6fc:	ff 75 c8             	push   DWORD PTR [ebp-0x38]
-     6ff:	51                   	push   ecx
-     700:	ff 75 c0             	push   DWORD PTR [ebp-0x40]
-     703:	ff 75 e8             	push   DWORD PTR [ebp-0x18]
-     706:	6a 20                	push   0x20
-     708:	52                   	push   edx
-     709:	50                   	push   eax
-     70a:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-     70d:	e8 fc ff ff ff       	call   70e <render_text_scanline_32btpp_sse+0x23c>
-     712:	83 c4 20             	add    esp,0x20
-     715:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
+     747:	8b 4d 98             	mov    ecx,DWORD PTR [ebp-0x68]
+     74a:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     74d:	83 c0 01             	add    eax,0x1
+     750:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     753:	0f be d0             	movsx  edx,al
+     756:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     759:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     75c:	0f be c0             	movsx  eax,al
+     75f:	8b 5d c8             	mov    ebx,DWORD PTR [ebp-0x38]
+     762:	89 5c 24 1c          	mov    DWORD PTR [esp+0x1c],ebx
+     766:	89 4c 24 18          	mov    DWORD PTR [esp+0x18],ecx
+     76a:	8b 4d c0             	mov    ecx,DWORD PTR [ebp-0x40]
+     76d:	89 4c 24 14          	mov    DWORD PTR [esp+0x14],ecx
+     771:	8b 4d e8             	mov    ecx,DWORD PTR [ebp-0x18]
+     774:	89 4c 24 10          	mov    DWORD PTR [esp+0x10],ecx
+     778:	c7 44 24 0c 20 00 00 00 	mov    DWORD PTR [esp+0xc],0x20
+     780:	89 54 24 08          	mov    DWORD PTR [esp+0x8],edx
+     784:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+     788:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     78b:	89 04 24             	mov    DWORD PTR [esp],eax
+     78e:	e8 fc ff ff ff       	call   78f <render_text_scanline_32btpp_sse+0x294>
+     793:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
 				if (rmax == 8)
-     718:	83 7d c0 08          	cmp    DWORD PTR [ebp-0x40],0x8
-     71c:	75 04                	jne    722 <render_text_scanline_32btpp_sse+0x250>
+     796:	83 7d c0 08          	cmp    DWORD PTR [ebp-0x40],0x8
+     79a:	75 04                	jne    7a0 <render_text_scanline_32btpp_sse+0x2a5>
 						str += 2;
-     71e:	83 45 0c 02          	add    DWORD PTR [ebp+0xc],0x2
+     79c:	83 45 0c 02          	add    DWORD PTR [ebp+0xc],0x2
 				if (bitc < btt) {
-     722:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     725:	3b 45 c4             	cmp    eax,DWORD PTR [ebp-0x3c]
-     728:	7d 6b                	jge    795 <render_text_scanline_32btpp_sse+0x2c3>
+     7a0:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     7a3:	3b 45 c4             	cmp    eax,DWORD PTR [ebp-0x3c]
+     7a6:	0f 8d 88 00 00 00    	jge    834 <render_text_scanline_32btpp_sse+0x339>
 						col++; int pc = (btt - bitc) / 32;
-     72a:	83 45 cc 01          	add    DWORD PTR [ebp-0x34],0x1
-     72e:	8b 45 c4             	mov    eax,DWORD PTR [ebp-0x3c]
-     731:	2b 45 f4             	sub    eax,DWORD PTR [ebp-0xc]
-     734:	8d 50 1f             	lea    edx,[eax+0x1f]
-     737:	85 c0                	test   eax,eax
-     739:	0f 48 c2             	cmovs  eax,edx
-     73c:	c1 f8 05             	sar    eax,0x5
-     73f:	89 45 bc             	mov    DWORD PTR [ebp-0x44],eax
+     7ac:	83 45 cc 01          	add    DWORD PTR [ebp-0x34],0x1
+     7b0:	8b 45 c4             	mov    eax,DWORD PTR [ebp-0x3c]
+     7b3:	2b 45 f4             	sub    eax,DWORD PTR [ebp-0xc]
+     7b6:	8d 50 1f             	lea    edx,[eax+0x1f]
+     7b9:	85 c0                	test   eax,eax
+     7bb:	0f 48 c2             	cmovs  eax,edx
+     7be:	c1 f8 05             	sar    eax,0x5
+     7c1:	89 45 bc             	mov    DWORD PTR [ebp-0x44],eax
 						inv = (col == cur_x);
-     742:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-     745:	3b 45 18             	cmp    eax,DWORD PTR [ebp+0x18]
-     748:	0f 94 c0             	sete   al
-     74b:	0f b6 c0             	movzx  eax,al
-     74e:	89 45 c8             	mov    DWORD PTR [ebp-0x38],eax
+     7c4:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+     7c7:	3b 45 18             	cmp    eax,DWORD PTR [ebp+0x18]
+     7ca:	0f 94 c0             	sete   al
+     7cd:	0f b6 c0             	movzx  eax,al
+     7d0:	89 45 c8             	mov    DWORD PTR [ebp-0x38],eax
 						bitc += generate_char_colors(font, str[0], str[1], 32,
-     751:	8b 55 98             	mov    edx,DWORD PTR [ebp-0x68]
+     7d3:	8b 55 98             	mov    edx,DWORD PTR [ebp-0x68]
 										0, pc, pixbuf + bitc / 32, inv);
-     754:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     757:	8d 48 1f             	lea    ecx,[eax+0x1f]
-     75a:	85 c0                	test   eax,eax
-     75c:	0f 48 c1             	cmovs  eax,ecx
-     75f:	c1 f8 05             	sar    eax,0x5
+     7d6:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     7d9:	8d 48 1f             	lea    ecx,[eax+0x1f]
+     7dc:	85 c0                	test   eax,eax
+     7de:	0f 48 c1             	cmovs  eax,ecx
+     7e1:	c1 f8 05             	sar    eax,0x5
 						bitc += generate_char_colors(font, str[0], str[1], 32,
-     762:	8d 0c 02             	lea    ecx,[edx+eax*1]
-     765:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     768:	83 c0 01             	add    eax,0x1
-     76b:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     76e:	0f be d0             	movsx  edx,al
-     771:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     774:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     777:	0f be c0             	movsx  eax,al
-     77a:	ff 75 c8             	push   DWORD PTR [ebp-0x38]
-     77d:	51                   	push   ecx
-     77e:	ff 75 bc             	push   DWORD PTR [ebp-0x44]
-     781:	6a 00                	push   0x0
-     783:	6a 20                	push   0x20
-     785:	52                   	push   edx
-     786:	50                   	push   eax
-     787:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-     78a:	e8 fc ff ff ff       	call   78b <render_text_scanline_32btpp_sse+0x2b9>
-     78f:	83 c4 20             	add    esp,0x20
-     792:	01 45 f4             	add    DWORD PTR [ebp-0xc],eax
+     7e4:	8d 1c 02             	lea    ebx,[edx+eax*1]
+     7e7:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     7ea:	83 c0 01             	add    eax,0x1
+     7ed:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     7f0:	0f be d0             	movsx  edx,al
+     7f3:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     7f6:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     7f9:	0f be c0             	movsx  eax,al
+     7fc:	8b 4d c8             	mov    ecx,DWORD PTR [ebp-0x38]
+     7ff:	89 4c 24 1c          	mov    DWORD PTR [esp+0x1c],ecx
+     803:	89 5c 24 18          	mov    DWORD PTR [esp+0x18],ebx
+     807:	8b 4d bc             	mov    ecx,DWORD PTR [ebp-0x44]
+     80a:	89 4c 24 14          	mov    DWORD PTR [esp+0x14],ecx
+     80e:	c7 44 24 10 00 00 00 00 	mov    DWORD PTR [esp+0x10],0x0
+     816:	c7 44 24 0c 20 00 00 00 	mov    DWORD PTR [esp+0xc],0x20
+     81e:	89 54 24 08          	mov    DWORD PTR [esp+0x8],edx
+     822:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+     826:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     829:	89 04 24             	mov    DWORD PTR [esp],eax
+     82c:	e8 fc ff ff ff       	call   82d <render_text_scanline_32btpp_sse+0x332>
+     831:	01 45 f4             	add    DWORD PTR [ebp-0xc],eax
 				if (bitc >= 128) {
-     795:	83 7d f4 7f          	cmp    DWORD PTR [ebp-0xc],0x7f
-     799:	7e 21                	jle    7bc <render_text_scanline_32btpp_sse+0x2ea>
+     834:	83 7d f4 7f          	cmp    DWORD PTR [ebp-0xc],0x7f
+     838:	7e 21                	jle    85b <render_text_scanline_32btpp_sse+0x360>
 						move_128(pixbuf, mem);
-     79b:	8b 45 98             	mov    eax,DWORD PTR [ebp-0x68]
-     79e:	8b 55 10             	mov    edx,DWORD PTR [ebp+0x10]
-     7a1:	0f 28 00             	movaps xmm0,XMMWORD PTR [eax]
-     7a4:	0f 29 02             	movaps XMMWORD PTR [edx],xmm0
+     83a:	8b 45 98             	mov    eax,DWORD PTR [ebp-0x68]
+     83d:	8b 55 10             	mov    edx,DWORD PTR [ebp+0x10]
+     840:	0f 28 00             	movaps xmm0,XMMWORD PTR [eax]
+     843:	0f 29 02             	movaps XMMWORD PTR [edx],xmm0
 						mem += 16; /* intentionally no bitc subtract */
-     7a7:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-     7aa:	83 c0 10             	add    eax,0x10
-     7ad:	89 45 10             	mov    DWORD PTR [ebp+0x10],eax
+     846:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+     849:	83 c0 10             	add    eax,0x10
+     84c:	89 45 10             	mov    DWORD PTR [ebp+0x10],eax
 				if (px_x) {
-     7b0:	83 7d 14 00          	cmp    DWORD PTR [ebp+0x14],0x0
-     7b4:	0f 84 af 00 00 00    	je     869 <render_text_scanline_32btpp_sse+0x397>
-     7ba:	eb 7d                	jmp    839 <render_text_scanline_32btpp_sse+0x367>
+     84f:	83 7d 14 00          	cmp    DWORD PTR [ebp+0x14],0x0
+     853:	0f 84 ad 00 00 00    	je     906 <render_text_scanline_32btpp_sse+0x40b>
+     859:	eb 7b                	jmp    8d6 <render_text_scanline_32btpp_sse+0x3db>
 						uint8_t* pt = pixbuf;
-     7bc:	8b 45 98             	mov    eax,DWORD PTR [ebp-0x68]
-     7bf:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
+     85b:	8b 45 98             	mov    eax,DWORD PTR [ebp-0x68]
+     85e:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
 						if (bitc >= 64) {
-     7c2:	83 7d f4 3f          	cmp    DWORD PTR [ebp-0xc],0x3f
-     7c6:	7e 1d                	jle    7e5 <render_text_scanline_32btpp_sse+0x313>
+     861:	83 7d f4 3f          	cmp    DWORD PTR [ebp-0xc],0x3f
+     865:	7e 1d                	jle    884 <render_text_scanline_32btpp_sse+0x389>
 								move_64(pixbuf, mem);
-     7c8:	8b 45 98             	mov    eax,DWORD PTR [ebp-0x68]
-     7cb:	8b 55 10             	mov    edx,DWORD PTR [ebp+0x10]
-     7ce:	0f 6f 00             	movq   mm0,QWORD PTR [eax]
-     7d1:	0f 7f 02             	movq   QWORD PTR [edx],mm0
+     867:	8b 45 98             	mov    eax,DWORD PTR [ebp-0x68]
+     86a:	8b 55 10             	mov    edx,DWORD PTR [ebp+0x10]
+     86d:	0f 6f 00             	movq   mm0,QWORD PTR [eax]
+     870:	0f 7f 02             	movq   QWORD PTR [edx],mm0
 								pt += 8;
-     7d4:	83 45 f0 08          	add    DWORD PTR [ebp-0x10],0x8
+     873:	83 45 f0 08          	add    DWORD PTR [ebp-0x10],0x8
 								mem += 8;
-     7d8:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-     7db:	83 c0 08             	add    eax,0x8
-     7de:	89 45 10             	mov    DWORD PTR [ebp+0x10],eax
+     877:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+     87a:	83 c0 08             	add    eax,0x8
+     87d:	89 45 10             	mov    DWORD PTR [ebp+0x10],eax
 								bitc -= 64;
-     7e1:	83 6d f4 40          	sub    DWORD PTR [ebp-0xc],0x40
+     880:	83 6d f4 40          	sub    DWORD PTR [ebp-0xc],0x40
 						if (bitc >= 32) {
-     7e5:	83 7d f4 1f          	cmp    DWORD PTR [ebp-0xc],0x1f
-     7e9:	7e 1d                	jle    808 <render_text_scanline_32btpp_sse+0x336>
+     884:	83 7d f4 1f          	cmp    DWORD PTR [ebp-0xc],0x1f
+     888:	7e 1d                	jle    8a7 <render_text_scanline_32btpp_sse+0x3ac>
 								*(uint32_t*)mem = *(uint32_t*)pt;
-     7eb:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-     7ee:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
-     7f1:	8b 12                	mov    edx,DWORD PTR [edx]
-     7f3:	89 10                	mov    DWORD PTR [eax],edx
+     88a:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+     88d:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
+     890:	8b 12                	mov    edx,DWORD PTR [edx]
+     892:	89 10                	mov    DWORD PTR [eax],edx
 								pt += 4;
-     7f5:	83 45 f0 04          	add    DWORD PTR [ebp-0x10],0x4
+     894:	83 45 f0 04          	add    DWORD PTR [ebp-0x10],0x4
 								mem += 4;
-     7f9:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-     7fc:	83 c0 04             	add    eax,0x4
-     7ff:	89 45 10             	mov    DWORD PTR [ebp+0x10],eax
+     898:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+     89b:	83 c0 04             	add    eax,0x4
+     89e:	89 45 10             	mov    DWORD PTR [ebp+0x10],eax
 								bitc -= 32;
-     802:	83 6d f4 20          	sub    DWORD PTR [ebp-0xc],0x20
+     8a1:	83 6d f4 20          	sub    DWORD PTR [ebp-0xc],0x20
 						break;
-     806:	eb 64                	jmp    86c <render_text_scanline_32btpp_sse+0x39a>
+     8a5:	eb 62                	jmp    909 <render_text_scanline_32btpp_sse+0x40e>
 						} else if (bitc) {
-     808:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
-     80c:	74 5e                	je     86c <render_text_scanline_32btpp_sse+0x39a>
+     8a7:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
+     8ab:	74 5c                	je     909 <render_text_scanline_32btpp_sse+0x40e>
 								die("cant happen with dword sized pixels!\n");
-     80e:	83 ec 08             	sub    esp,0x8
-     811:	68 1c 01 00 00       	push   0x11c
-     816:	6a 0c                	push   0xc
-     818:	e8 fc ff ff ff       	call   819 <render_text_scanline_32btpp_sse+0x347>
-     81d:	83 c4 10             	add    esp,0x10
-     820:	e8 fc ff ff ff       	call   821 <render_text_scanline_32btpp_sse+0x34f>
-     825:	83 ec 0c             	sub    esp,0xc
-     828:	68 00 00 00 00       	push   0x0
-     82d:	e8 fc ff ff ff       	call   82e <render_text_scanline_32btpp_sse+0x35c>
-     832:	83 c4 10             	add    esp,0x10
-     835:	fa                   	cli
-     836:	f4                   	hlt
-     837:	eb fd                	jmp    836 <render_text_scanline_32btpp_sse+0x364>
+     8ad:	c7 44 24 04 1c 01 00 00 	mov    DWORD PTR [esp+0x4],0x11c
+     8b5:	c7 04 24 0c 00 00 00 	mov    DWORD PTR [esp],0xc
+     8bc:	e8 fc ff ff ff       	call   8bd <render_text_scanline_32btpp_sse+0x3c2>
+     8c1:	e8 fc ff ff ff       	call   8c2 <render_text_scanline_32btpp_sse+0x3c7>
+     8c6:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+     8cd:	e8 fc ff ff ff       	call   8ce <render_text_scanline_32btpp_sse+0x3d3>
+     8d2:	fa                   	cli
+     8d3:	f4                   	hlt
+     8d4:	eb fd                	jmp    8d3 <render_text_scanline_32btpp_sse+0x3d8>
 						px_x -= bitc / 32;
-     839:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     83c:	8d 50 1f             	lea    edx,[eax+0x1f]
-     83f:	85 c0                	test   eax,eax
-     841:	0f 48 c2             	cmovs  eax,edx
-     844:	c1 f8 05             	sar    eax,0x5
-     847:	f7 d8                	neg    eax
-     849:	01 45 14             	add    DWORD PTR [ebp+0x14],eax
+     8d6:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     8d9:	8d 50 1f             	lea    edx,[eax+0x1f]
+     8dc:	85 c0                	test   eax,eax
+     8de:	0f 48 c2             	cmovs  eax,edx
+     8e1:	c1 f8 05             	sar    eax,0x5
+     8e4:	f7 d8                	neg    eax
+     8e6:	01 45 14             	add    DWORD PTR [ebp+0x14],eax
 						p0_x += bitc / 32; /* unneccessary as r does not change anymore */
-     84c:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     84f:	8d 50 1f             	lea    edx,[eax+0x1f]
-     852:	85 c0                	test   eax,eax
-     854:	0f 48 c2             	cmovs  eax,edx
-     857:	c1 f8 05             	sar    eax,0x5
-     85a:	01 45 1c             	add    DWORD PTR [ebp+0x1c],eax
+     8e9:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     8ec:	8d 50 1f             	lea    edx,[eax+0x1f]
+     8ef:	85 c0                	test   eax,eax
+     8f1:	0f 48 c2             	cmovs  eax,edx
+     8f4:	c1 f8 05             	sar    eax,0x5
+     8f7:	01 45 1c             	add    DWORD PTR [ebp+0x1c],eax
 		while (px_x) {
-     85d:	83 7d 14 00          	cmp    DWORD PTR [ebp+0x14],0x0
-     861:	0f 85 16 fe ff ff    	jne    67d <render_text_scanline_32btpp_sse+0x1ab>
-				} else
-						break;
-		}
+     8fa:	83 7d 14 00          	cmp    DWORD PTR [ebp+0x14],0x0
+     8fe:	0f 85 dc fd ff ff    	jne    6e0 <render_text_scanline_32btpp_sse+0x1e5>
 }
-     867:	eb 04                	jmp    86d <render_text_scanline_32btpp_sse+0x39b>
+     904:	eb 04                	jmp    90a <render_text_scanline_32btpp_sse+0x40f>
 						break;
-     869:	90                   	nop
-     86a:	eb 01                	jmp    86d <render_text_scanline_32btpp_sse+0x39b>
+     906:	90                   	nop
+     907:	eb 01                	jmp    90a <render_text_scanline_32btpp_sse+0x40f>
 						break;
-     86c:	90                   	nop
+     909:	90                   	nop
 }
-     86d:	90                   	nop
-     86e:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
-     871:	c9                   	leave
-     872:	c3                   	ret
+     90a:	90                   	nop
+     90b:	83 ec 80             	sub    esp,0xffffff80
+     90e:	5b                   	pop    ebx
+     90f:	5e                   	pop    esi
+     910:	5d                   	pop    ebp
+     911:	c3                   	ret
 
-00000873 <render_text_scanline_24btpp_sse>:
+00000912 <render_text_scanline_24btpp_sse>:
 
 /* we're generating 3byte colorvalues /w unknown alignment. To enable
  * 16 byte transfers, 6 pixels /w 18 bytes have to be generated. */
 void render_text_scanline_24btpp_sse(const char* font, char* str, void* mem,
 				ssize_t px_x, ssize_t cur_x, ssize_t p0_x)
 {
-     873:	55                   	push   ebp
-     874:	89 e5                	mov    ebp,esp
-     876:	53                   	push   ebx
-     877:	83 ec 74             	sub    esp,0x74
+     912:	55                   	push   ebp
+     913:	89 e5                	mov    ebp,esp
+     915:	56                   	push   esi
+     916:	53                   	push   ebx
+     917:	81 ec 90 00 00 00    	sub    esp,0x90
 		uint8_t pxb[18 + 2 + 15]; /* 15 for stack alignment, 2 for bt_ofs */
 		ssize_t misalign = ((size_t)mem % 16) ? (16 - (size_t)mem % 16) : 0;
-     87a:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-     87d:	83 e0 0f             	and    eax,0xf
-     880:	85 c0                	test   eax,eax
-     882:	74 11                	je     895 <render_text_scanline_24btpp_sse+0x22>
-     884:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-     887:	83 e0 0f             	and    eax,0xf
-     88a:	ba 10 00 00 00       	mov    edx,0x10
-     88f:	29 c2                	sub    edx,eax
-     891:	89 d0                	mov    eax,edx
-     893:	eb 05                	jmp    89a <render_text_scanline_24btpp_sse+0x27>
-     895:	b8 00 00 00 00       	mov    eax,0x0
-     89a:	89 45 e4             	mov    DWORD PTR [ebp-0x1c],eax
+     91d:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+     920:	83 e0 0f             	and    eax,0xf
+     923:	85 c0                	test   eax,eax
+     925:	74 11                	je     938 <render_text_scanline_24btpp_sse+0x26>
+     927:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+     92a:	83 e0 0f             	and    eax,0xf
+     92d:	ba 10 00 00 00       	mov    edx,0x10
+     932:	29 c2                	sub    edx,eax
+     934:	89 d0                	mov    eax,edx
+     936:	eb 05                	jmp    93d <render_text_scanline_24btpp_sse+0x2b>
+     938:	b8 00 00 00 00       	mov    eax,0x0
+     93d:	89 45 e4             	mov    DWORD PTR [ebp-0x1c],eax
 		ssize_t r = p0_x % 8;
-     89d:	8b 55 1c             	mov    edx,DWORD PTR [ebp+0x1c]
-     8a0:	89 d0                	mov    eax,edx
-     8a2:	c1 f8 1f             	sar    eax,0x1f
-     8a5:	c1 e8 1d             	shr    eax,0x1d
-     8a8:	01 c2                	add    edx,eax
-     8aa:	83 e2 07             	and    edx,0x7
-     8ad:	29 c2                	sub    edx,eax
-     8af:	89 55 e0             	mov    DWORD PTR [ebp-0x20],edx
+     940:	8b 55 1c             	mov    edx,DWORD PTR [ebp+0x1c]
+     943:	89 d0                	mov    eax,edx
+     945:	c1 f8 1f             	sar    eax,0x1f
+     948:	c1 e8 1d             	shr    eax,0x1d
+     94b:	01 c2                	add    edx,eax
+     94d:	83 e2 07             	and    edx,0x7
+     950:	29 c2                	sub    edx,eax
+     952:	89 55 e0             	mov    DWORD PTR [ebp-0x20],edx
 		uint8_t* pixbuf = pxb + (((size_t)pxb % 16) ? (16 - ((size_t)pxb % 16)) : 0);
-     8b2:	8d 45 91             	lea    eax,[ebp-0x6f]
-     8b5:	83 e0 0f             	and    eax,0xf
-     8b8:	85 c0                	test   eax,eax
-     8ba:	74 11                	je     8cd <render_text_scanline_24btpp_sse+0x5a>
-     8bc:	8d 45 91             	lea    eax,[ebp-0x6f]
-     8bf:	83 e0 0f             	and    eax,0xf
-     8c2:	89 c2                	mov    edx,eax
-     8c4:	b8 10 00 00 00       	mov    eax,0x10
-     8c9:	29 d0                	sub    eax,edx
-     8cb:	eb 05                	jmp    8d2 <render_text_scanline_24btpp_sse+0x5f>
-     8cd:	b8 00 00 00 00       	mov    eax,0x0
-     8d2:	8d 55 91             	lea    edx,[ebp-0x6f]
-     8d5:	01 d0                	add    eax,edx
-     8d7:	89 45 8c             	mov    DWORD PTR [ebp-0x74],eax
+     955:	8d 45 91             	lea    eax,[ebp-0x6f]
+     958:	83 e0 0f             	and    eax,0xf
+     95b:	85 c0                	test   eax,eax
+     95d:	74 11                	je     970 <render_text_scanline_24btpp_sse+0x5e>
+     95f:	8d 45 91             	lea    eax,[ebp-0x6f]
+     962:	83 e0 0f             	and    eax,0xf
+     965:	89 c2                	mov    edx,eax
+     967:	b8 10 00 00 00       	mov    eax,0x10
+     96c:	29 d0                	sub    eax,edx
+     96e:	eb 05                	jmp    975 <render_text_scanline_24btpp_sse+0x63>
+     970:	b8 00 00 00 00       	mov    eax,0x0
+     975:	8d 55 91             	lea    edx,[ebp-0x6f]
+     978:	01 d0                	add    eax,edx
+     97a:	89 45 8c             	mov    DWORD PTR [ebp-0x74],eax
 		ssize_t bt_ofs = 0; /* used to control writing into pixbuf (1/3 pixels)*/
-     8da:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
+     97d:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
 		/* 64-bit aligned moves are enough */
 
 		if (misalign) { /* LFB is dword aligned, we want (dq/o)word access */
-     8e1:	83 7d e4 00          	cmp    DWORD PTR [ebp-0x1c],0x0
-     8e5:	0f 84 11 04 00 00    	je     cfc <render_text_scanline_24btpp_sse+0x489>
+     984:	83 7d e4 00          	cmp    DWORD PTR [ebp-0x1c],0x0
+     988:	0f 84 83 04 00 00    	je     e11 <render_text_scanline_24btpp_sse+0x4ff>
 				int col = p0_x / 8, inv = (col == cur_x);
-     8eb:	8b 45 1c             	mov    eax,DWORD PTR [ebp+0x1c]
-     8ee:	8d 50 07             	lea    edx,[eax+0x7]
-     8f1:	85 c0                	test   eax,eax
-     8f3:	0f 48 c2             	cmovs  eax,edx
-     8f6:	c1 f8 03             	sar    eax,0x3
-     8f9:	89 45 dc             	mov    DWORD PTR [ebp-0x24],eax
-     8fc:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-     8ff:	3b 45 18             	cmp    eax,DWORD PTR [ebp+0x18]
-     902:	0f 94 c0             	sete   al
-     905:	0f b6 c0             	movzx  eax,al
-     908:	89 45 d8             	mov    DWORD PTR [ebp-0x28],eax
+     98e:	8b 45 1c             	mov    eax,DWORD PTR [ebp+0x1c]
+     991:	8d 50 07             	lea    edx,[eax+0x7]
+     994:	85 c0                	test   eax,eax
+     996:	0f 48 c2             	cmovs  eax,edx
+     999:	c1 f8 03             	sar    eax,0x3
+     99c:	89 45 dc             	mov    DWORD PTR [ebp-0x24],eax
+     99f:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+     9a2:	3b 45 18             	cmp    eax,DWORD PTR [ebp+0x18]
+     9a5:	0f 94 c0             	sete   al
+     9a8:	0f b6 c0             	movzx  eax,al
+     9ab:	89 45 d8             	mov    DWORD PTR [ebp-0x28],eax
 				ssize_t bc = min(misalign, 3 * px_x);
-     90b:	8b 55 14             	mov    edx,DWORD PTR [ebp+0x14]
-     90e:	89 d0                	mov    eax,edx
-     910:	01 c0                	add    eax,eax
-     912:	01 d0                	add    eax,edx
-     914:	8b 55 e4             	mov    edx,DWORD PTR [ebp-0x1c]
-     917:	39 c2                	cmp    edx,eax
-     919:	0f 4e c2             	cmovle eax,edx
-     91c:	89 45 d4             	mov    DWORD PTR [ebp-0x2c],eax
+     9ae:	8b 55 14             	mov    edx,DWORD PTR [ebp+0x14]
+     9b1:	89 d0                	mov    eax,edx
+     9b3:	01 c0                	add    eax,eax
+     9b5:	01 d0                	add    eax,edx
+     9b7:	8b 55 e4             	mov    edx,DWORD PTR [ebp-0x1c]
+     9ba:	39 c2                	cmp    edx,eax
+     9bc:	0f 4e c2             	cmovle eax,edx
+     9bf:	89 45 d4             	mov    DWORD PTR [ebp-0x2c],eax
 				ssize_t cc = rdiv(bc, 3);
-     91f:	8b 4d d4             	mov    ecx,DWORD PTR [ebp-0x2c]
-     922:	ba 56 55 55 55       	mov    edx,0x55555556
-     927:	89 c8                	mov    eax,ecx
-     929:	f7 ea                	imul   edx
-     92b:	89 c8                	mov    eax,ecx
-     92d:	c1 f8 1f             	sar    eax,0x1f
-     930:	89 d3                	mov    ebx,edx
-     932:	29 c3                	sub    ebx,eax
-     934:	8b 4d d4             	mov    ecx,DWORD PTR [ebp-0x2c]
-     937:	ba 56 55 55 55       	mov    edx,0x55555556
-     93c:	89 c8                	mov    eax,ecx
-     93e:	f7 ea                	imul   edx
-     940:	89 c8                	mov    eax,ecx
-     942:	c1 f8 1f             	sar    eax,0x1f
-     945:	29 c2                	sub    edx,eax
-     947:	89 d0                	mov    eax,edx
-     949:	01 c0                	add    eax,eax
-     94b:	01 d0                	add    eax,edx
-     94d:	29 c1                	sub    ecx,eax
-     94f:	89 ca                	mov    edx,ecx
-     951:	85 d2                	test   edx,edx
-     953:	0f 95 c0             	setne  al
-     956:	0f b6 c0             	movzx  eax,al
-     959:	01 d8                	add    eax,ebx
-     95b:	89 45 d0             	mov    DWORD PTR [ebp-0x30],eax
+     9c2:	8b 4d d4             	mov    ecx,DWORD PTR [ebp-0x2c]
+     9c5:	ba 56 55 55 55       	mov    edx,0x55555556
+     9ca:	89 c8                	mov    eax,ecx
+     9cc:	f7 ea                	imul   edx
+     9ce:	89 c8                	mov    eax,ecx
+     9d0:	c1 f8 1f             	sar    eax,0x1f
+     9d3:	89 d3                	mov    ebx,edx
+     9d5:	29 c3                	sub    ebx,eax
+     9d7:	8b 4d d4             	mov    ecx,DWORD PTR [ebp-0x2c]
+     9da:	ba 56 55 55 55       	mov    edx,0x55555556
+     9df:	89 c8                	mov    eax,ecx
+     9e1:	f7 ea                	imul   edx
+     9e3:	89 c8                	mov    eax,ecx
+     9e5:	c1 f8 1f             	sar    eax,0x1f
+     9e8:	29 c2                	sub    edx,eax
+     9ea:	89 d0                	mov    eax,edx
+     9ec:	01 c0                	add    eax,eax
+     9ee:	01 d0                	add    eax,edx
+     9f0:	29 c1                	sub    ecx,eax
+     9f2:	89 ca                	mov    edx,ecx
+     9f4:	85 d2                	test   edx,edx
+     9f6:	0f 95 c0             	setne  al
+     9f9:	0f b6 c0             	movzx  eax,al
+     9fc:	01 d8                	add    eax,ebx
+     9fe:	89 45 d0             	mov    DWORD PTR [ebp-0x30],eax
 				ssize_t rmax = min(8, r + cc), cc1 = rmax - r;
-     95e:	8b 55 e0             	mov    edx,DWORD PTR [ebp-0x20]
-     961:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-     964:	01 d0                	add    eax,edx
-     966:	ba 08 00 00 00       	mov    edx,0x8
-     96b:	39 d0                	cmp    eax,edx
-     96d:	0f 4f c2             	cmovg  eax,edx
-     970:	89 45 cc             	mov    DWORD PTR [ebp-0x34],eax
-     973:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-     976:	2b 45 e0             	sub    eax,DWORD PTR [ebp-0x20]
-     979:	89 45 c8             	mov    DWORD PTR [ebp-0x38],eax
+     a01:	8b 55 e0             	mov    edx,DWORD PTR [ebp-0x20]
+     a04:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+     a07:	01 d0                	add    eax,edx
+     a09:	ba 08 00 00 00       	mov    edx,0x8
+     a0e:	39 d0                	cmp    eax,edx
+     a10:	0f 4f c2             	cmovg  eax,edx
+     a13:	89 45 cc             	mov    DWORD PTR [ebp-0x34],eax
+     a16:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+     a19:	2b 45 e0             	sub    eax,DWORD PTR [ebp-0x20]
+     a1c:	89 45 c8             	mov    DWORD PTR [ebp-0x38],eax
 
 				generate_char_colors(font, str[0], str[1], 24,
-     97c:	8b 4d 8c             	mov    ecx,DWORD PTR [ebp-0x74]
-     97f:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     982:	83 c0 01             	add    eax,0x1
-     985:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     988:	0f be d0             	movsx  edx,al
-     98b:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     98e:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     991:	0f be c0             	movsx  eax,al
-     994:	ff 75 d8             	push   DWORD PTR [ebp-0x28]
-     997:	51                   	push   ecx
-     998:	ff 75 cc             	push   DWORD PTR [ebp-0x34]
-     99b:	ff 75 e0             	push   DWORD PTR [ebp-0x20]
-     99e:	6a 18                	push   0x18
-     9a0:	52                   	push   edx
-     9a1:	50                   	push   eax
-     9a2:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-     9a5:	e8 fc ff ff ff       	call   9a6 <render_text_scanline_24btpp_sse+0x133>
-     9aa:	83 c4 20             	add    esp,0x20
+     a1f:	8b 4d 8c             	mov    ecx,DWORD PTR [ebp-0x74]
+     a22:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     a25:	83 c0 01             	add    eax,0x1
+     a28:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     a2b:	0f be d0             	movsx  edx,al
+     a2e:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     a31:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     a34:	0f be c0             	movsx  eax,al
+     a37:	8b 5d d8             	mov    ebx,DWORD PTR [ebp-0x28]
+     a3a:	89 5c 24 1c          	mov    DWORD PTR [esp+0x1c],ebx
+     a3e:	89 4c 24 18          	mov    DWORD PTR [esp+0x18],ecx
+     a42:	8b 4d cc             	mov    ecx,DWORD PTR [ebp-0x34]
+     a45:	89 4c 24 14          	mov    DWORD PTR [esp+0x14],ecx
+     a49:	8b 4d e0             	mov    ecx,DWORD PTR [ebp-0x20]
+     a4c:	89 4c 24 10          	mov    DWORD PTR [esp+0x10],ecx
+     a50:	c7 44 24 0c 18 00 00 00 	mov    DWORD PTR [esp+0xc],0x18
+     a58:	89 54 24 08          	mov    DWORD PTR [esp+0x8],edx
+     a5c:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+     a60:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     a63:	89 04 24             	mov    DWORD PTR [esp],eax
+     a66:	e8 fc ff ff ff       	call   a67 <render_text_scanline_24btpp_sse+0x155>
 								r, rmax, pixbuf, inv);
 				if (rmax == 8)
-     9ad:	83 7d cc 08          	cmp    DWORD PTR [ebp-0x34],0x8
-     9b1:	75 04                	jne    9b7 <render_text_scanline_24btpp_sse+0x144>
+     a6b:	83 7d cc 08          	cmp    DWORD PTR [ebp-0x34],0x8
+     a6f:	75 04                	jne    a75 <render_text_scanline_24btpp_sse+0x163>
 						str += 2;
-     9b3:	83 45 0c 02          	add    DWORD PTR [ebp+0xc],0x2
+     a71:	83 45 0c 02          	add    DWORD PTR [ebp+0xc],0x2
 				if (cc > cc1) { /* generate the new char */
-     9b7:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-     9ba:	3b 45 c8             	cmp    eax,DWORD PTR [ebp-0x38]
-     9bd:	7e 55                	jle    a14 <render_text_scanline_24btpp_sse+0x1a1>
+     a75:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+     a78:	3b 45 c8             	cmp    eax,DWORD PTR [ebp-0x38]
+     a7b:	7e 71                	jle    aee <render_text_scanline_24btpp_sse+0x1dc>
 						col++; inv = (col == cur_x);
-     9bf:	83 45 dc 01          	add    DWORD PTR [ebp-0x24],0x1
-     9c3:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-     9c6:	3b 45 18             	cmp    eax,DWORD PTR [ebp+0x18]
-     9c9:	0f 94 c0             	sete   al
-     9cc:	0f b6 c0             	movzx  eax,al
-     9cf:	89 45 d8             	mov    DWORD PTR [ebp-0x28],eax
+     a7d:	83 45 dc 01          	add    DWORD PTR [ebp-0x24],0x1
+     a81:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+     a84:	3b 45 18             	cmp    eax,DWORD PTR [ebp+0x18]
+     a87:	0f 94 c0             	sete   al
+     a8a:	0f b6 c0             	movzx  eax,al
+     a8d:	89 45 d8             	mov    DWORD PTR [ebp-0x28],eax
 						generate_char_colors(font, str[0], str[1], 24,
-     9d2:	8b 4d 8c             	mov    ecx,DWORD PTR [ebp-0x74]
+     a90:	8b 4d 8c             	mov    ecx,DWORD PTR [ebp-0x74]
 										0, cc - cc1, pixbuf + cc1 * 3, inv);
-     9d5:	8b 55 c8             	mov    edx,DWORD PTR [ebp-0x38]
-     9d8:	89 d0                	mov    eax,edx
-     9da:	01 c0                	add    eax,eax
-     9dc:	01 d0                	add    eax,edx
+     a93:	8b 55 c8             	mov    edx,DWORD PTR [ebp-0x38]
+     a96:	89 d0                	mov    eax,edx
+     a98:	01 c0                	add    eax,eax
+     a9a:	01 d0                	add    eax,edx
 						generate_char_colors(font, str[0], str[1], 24,
-     9de:	8d 1c 01             	lea    ebx,[ecx+eax*1]
-     9e1:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-     9e4:	2b 45 c8             	sub    eax,DWORD PTR [ebp-0x38]
-     9e7:	89 c1                	mov    ecx,eax
-     9e9:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     9ec:	83 c0 01             	add    eax,0x1
-     9ef:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     9f2:	0f be d0             	movsx  edx,al
-     9f5:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     9f8:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     9fb:	0f be c0             	movsx  eax,al
-     9fe:	ff 75 d8             	push   DWORD PTR [ebp-0x28]
-     a01:	53                   	push   ebx
-     a02:	51                   	push   ecx
-     a03:	6a 00                	push   0x0
-     a05:	6a 18                	push   0x18
-     a07:	52                   	push   edx
-     a08:	50                   	push   eax
-     a09:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-     a0c:	e8 fc ff ff ff       	call   a0d <render_text_scanline_24btpp_sse+0x19a>
-     a11:	83 c4 20             	add    esp,0x20
+     a9c:	8d 34 01             	lea    esi,[ecx+eax*1]
+     a9f:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+     aa2:	2b 45 c8             	sub    eax,DWORD PTR [ebp-0x38]
+     aa5:	89 c1                	mov    ecx,eax
+     aa7:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     aaa:	83 c0 01             	add    eax,0x1
+     aad:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     ab0:	0f be d0             	movsx  edx,al
+     ab3:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     ab6:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     ab9:	0f be c0             	movsx  eax,al
+     abc:	8b 5d d8             	mov    ebx,DWORD PTR [ebp-0x28]
+     abf:	89 5c 24 1c          	mov    DWORD PTR [esp+0x1c],ebx
+     ac3:	89 74 24 18          	mov    DWORD PTR [esp+0x18],esi
+     ac7:	89 4c 24 14          	mov    DWORD PTR [esp+0x14],ecx
+     acb:	c7 44 24 10 00 00 00 00 	mov    DWORD PTR [esp+0x10],0x0
+     ad3:	c7 44 24 0c 18 00 00 00 	mov    DWORD PTR [esp+0xc],0x18
+     adb:	89 54 24 08          	mov    DWORD PTR [esp+0x8],edx
+     adf:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+     ae3:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     ae6:	89 04 24             	mov    DWORD PTR [esp],eax
+     ae9:	e8 fc ff ff ff       	call   aea <render_text_scanline_24btpp_sse+0x1d8>
 				}
 				memcpy(mem, pixbuf, bc);
-     a14:	8b 4d d4             	mov    ecx,DWORD PTR [ebp-0x2c]
-     a17:	8b 55 8c             	mov    edx,DWORD PTR [ebp-0x74]
-     a1a:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-     a1d:	83 ec 04             	sub    esp,0x4
-     a20:	51                   	push   ecx
-     a21:	52                   	push   edx
-     a22:	50                   	push   eax
-     a23:	e8 d8 f5 ff ff       	call   0 <memcpy>
-     a28:	83 c4 10             	add    esp,0x10
+     aee:	8b 4d d4             	mov    ecx,DWORD PTR [ebp-0x2c]
+     af1:	8b 55 8c             	mov    edx,DWORD PTR [ebp-0x74]
+     af4:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+     af7:	89 4c 24 08          	mov    DWORD PTR [esp+0x8],ecx
+     afb:	89 54 24 04          	mov    DWORD PTR [esp+0x4],edx
+     aff:	89 04 24             	mov    DWORD PTR [esp],eax
+     b02:	e8 f9 f4 ff ff       	call   0 <memcpy>
 				/* now indicate the remaining pixel part if there and
 				 * copy the data to the front for the later transfer */
 				if (bc % 3) {
-     a2b:	8b 4d d4             	mov    ecx,DWORD PTR [ebp-0x2c]
-     a2e:	ba 56 55 55 55       	mov    edx,0x55555556
-     a33:	89 c8                	mov    eax,ecx
-     a35:	f7 ea                	imul   edx
-     a37:	89 c8                	mov    eax,ecx
-     a39:	c1 f8 1f             	sar    eax,0x1f
-     a3c:	29 c2                	sub    edx,eax
-     a3e:	89 d0                	mov    eax,edx
-     a40:	01 c0                	add    eax,eax
-     a42:	01 d0                	add    eax,edx
-     a44:	29 c1                	sub    ecx,eax
-     a46:	89 ca                	mov    edx,ecx
-     a48:	85 d2                	test   edx,edx
-     a4a:	74 2b                	je     a77 <render_text_scanline_24btpp_sse+0x204>
+     b07:	8b 4d d4             	mov    ecx,DWORD PTR [ebp-0x2c]
+     b0a:	ba 56 55 55 55       	mov    edx,0x55555556
+     b0f:	89 c8                	mov    eax,ecx
+     b11:	f7 ea                	imul   edx
+     b13:	89 c8                	mov    eax,ecx
+     b15:	c1 f8 1f             	sar    eax,0x1f
+     b18:	29 c2                	sub    edx,eax
+     b1a:	89 d0                	mov    eax,edx
+     b1c:	01 c0                	add    eax,eax
+     b1e:	01 d0                	add    eax,edx
+     b20:	29 c1                	sub    ecx,eax
+     b22:	89 ca                	mov    edx,ecx
+     b24:	85 d2                	test   edx,edx
+     b26:	74 2d                	je     b55 <render_text_scanline_24btpp_sse+0x243>
 						bt_ofs = 3 * cc - bc;
-     a4c:	8b 55 d0             	mov    edx,DWORD PTR [ebp-0x30]
-     a4f:	89 d0                	mov    eax,edx
-     a51:	01 c0                	add    eax,eax
-     a53:	01 d0                	add    eax,edx
-     a55:	2b 45 d4             	sub    eax,DWORD PTR [ebp-0x2c]
-     a58:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
+     b28:	8b 55 d0             	mov    edx,DWORD PTR [ebp-0x30]
+     b2b:	89 d0                	mov    eax,edx
+     b2d:	01 c0                	add    eax,eax
+     b2f:	01 d0                	add    eax,edx
+     b31:	2b 45 d4             	sub    eax,DWORD PTR [ebp-0x2c]
+     b34:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
 						memcpy(pixbuf, pixbuf + bc, bt_ofs);
-     a5b:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-     a5e:	8b 4d 8c             	mov    ecx,DWORD PTR [ebp-0x74]
-     a61:	8b 45 d4             	mov    eax,DWORD PTR [ebp-0x2c]
-     a64:	01 c1                	add    ecx,eax
-     a66:	8b 45 8c             	mov    eax,DWORD PTR [ebp-0x74]
-     a69:	83 ec 04             	sub    esp,0x4
-     a6c:	52                   	push   edx
-     a6d:	51                   	push   ecx
-     a6e:	50                   	push   eax
-     a6f:	e8 8c f5 ff ff       	call   0 <memcpy>
-     a74:	83 c4 10             	add    esp,0x10
+     b37:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+     b3a:	8b 4d 8c             	mov    ecx,DWORD PTR [ebp-0x74]
+     b3d:	8b 45 d4             	mov    eax,DWORD PTR [ebp-0x2c]
+     b40:	01 c1                	add    ecx,eax
+     b42:	8b 45 8c             	mov    eax,DWORD PTR [ebp-0x74]
+     b45:	89 54 24 08          	mov    DWORD PTR [esp+0x8],edx
+     b49:	89 4c 24 04          	mov    DWORD PTR [esp+0x4],ecx
+     b4d:	89 04 24             	mov    DWORD PTR [esp],eax
+     b50:	e8 ab f4 ff ff       	call   0 <memcpy>
 						/* no bt_ofs pixels from this pixel are left in pixbuf */
 				}
 				px_x -= cc;
-     a77:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-     a7a:	29 45 14             	sub    DWORD PTR [ebp+0x14],eax
+     b55:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+     b58:	29 45 14             	sub    DWORD PTR [ebp+0x14],eax
 				p0_x += cc;
-     a7d:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-     a80:	01 45 1c             	add    DWORD PTR [ebp+0x1c],eax
+     b5b:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+     b5e:	01 45 1c             	add    DWORD PTR [ebp+0x1c],eax
 				mem += misalign; /* safer than bc */
-     a83:	8b 55 10             	mov    edx,DWORD PTR [ebp+0x10]
-     a86:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
-     a89:	01 d0                	add    eax,edx
-     a8b:	89 45 10             	mov    DWORD PTR [ebp+0x10],eax
+     b61:	8b 55 10             	mov    edx,DWORD PTR [ebp+0x10]
+     b64:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
+     b67:	01 d0                	add    eax,edx
+     b69:	89 45 10             	mov    DWORD PTR [ebp+0x10],eax
 		}
 
 		/* draw 5 2/3 pixels each (6,5,5) */
 		while (px_x) { /* 144 bit vs. 128 16bt remain (2/3) */
-     a8e:	e9 69 02 00 00       	jmp    cfc <render_text_scanline_24btpp_sse+0x489>
+     b6c:	e9 a0 02 00 00       	jmp    e11 <render_text_scanline_24btpp_sse+0x4ff>
 				int col = p0_x / 8, inv = (col == cur_x);
-     a93:	8b 45 1c             	mov    eax,DWORD PTR [ebp+0x1c]
-     a96:	8d 50 07             	lea    edx,[eax+0x7]
-     a99:	85 c0                	test   eax,eax
-     a9b:	0f 48 c2             	cmovs  eax,edx
-     a9e:	c1 f8 03             	sar    eax,0x3
-     aa1:	89 45 c4             	mov    DWORD PTR [ebp-0x3c],eax
-     aa4:	8b 45 c4             	mov    eax,DWORD PTR [ebp-0x3c]
-     aa7:	3b 45 18             	cmp    eax,DWORD PTR [ebp+0x18]
-     aaa:	0f 94 c0             	sete   al
-     aad:	0f b6 c0             	movzx  eax,al
-     ab0:	89 45 c0             	mov    DWORD PTR [ebp-0x40],eax
+     b71:	8b 45 1c             	mov    eax,DWORD PTR [ebp+0x1c]
+     b74:	8d 50 07             	lea    edx,[eax+0x7]
+     b77:	85 c0                	test   eax,eax
+     b79:	0f 48 c2             	cmovs  eax,edx
+     b7c:	c1 f8 03             	sar    eax,0x3
+     b7f:	89 45 c4             	mov    DWORD PTR [ebp-0x3c],eax
+     b82:	8b 45 c4             	mov    eax,DWORD PTR [ebp-0x3c]
+     b85:	3b 45 18             	cmp    eax,DWORD PTR [ebp+0x18]
+     b88:	0f 94 c0             	sete   al
+     b8b:	0f b6 c0             	movzx  eax,al
+     b8e:	89 45 c0             	mov    DWORD PTR [ebp-0x40],eax
 				ssize_t cc = min(bt_ofs ? 5 : 6, px_x), cc1; /* 655 */
-     ab3:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
-     ab7:	74 07                	je     ac0 <render_text_scanline_24btpp_sse+0x24d>
-     ab9:	b8 05 00 00 00       	mov    eax,0x5
-     abe:	eb 05                	jmp    ac5 <render_text_scanline_24btpp_sse+0x252>
-     ac0:	b8 06 00 00 00       	mov    eax,0x6
-     ac5:	8b 55 14             	mov    edx,DWORD PTR [ebp+0x14]
-     ac8:	39 d0                	cmp    eax,edx
-     aca:	0f 4f c2             	cmovg  eax,edx
-     acd:	89 45 bc             	mov    DWORD PTR [ebp-0x44],eax
+     b91:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
+     b95:	74 07                	je     b9e <render_text_scanline_24btpp_sse+0x28c>
+     b97:	b8 05 00 00 00       	mov    eax,0x5
+     b9c:	eb 05                	jmp    ba3 <render_text_scanline_24btpp_sse+0x291>
+     b9e:	b8 06 00 00 00       	mov    eax,0x6
+     ba3:	8b 55 14             	mov    edx,DWORD PTR [ebp+0x14]
+     ba6:	39 d0                	cmp    eax,edx
+     ba8:	0f 4f c2             	cmovg  eax,edx
+     bab:	89 45 bc             	mov    DWORD PTR [ebp-0x44],eax
 				ssize_t rmax, bitc, btt = min(128, 24 * px_x + 8 * bt_ofs);
-     ad0:	8b 55 14             	mov    edx,DWORD PTR [ebp+0x14]
-     ad3:	89 d0                	mov    eax,edx
-     ad5:	01 c0                	add    eax,eax
-     ad7:	01 c2                	add    edx,eax
-     ad9:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     adc:	01 d0                	add    eax,edx
-     ade:	c1 e0 03             	shl    eax,0x3
-     ae1:	ba 80 00 00 00       	mov    edx,0x80
-     ae6:	39 d0                	cmp    eax,edx
-     ae8:	0f 4f c2             	cmovg  eax,edx
-     aeb:	89 45 ec             	mov    DWORD PTR [ebp-0x14],eax
+     bae:	8b 55 14             	mov    edx,DWORD PTR [ebp+0x14]
+     bb1:	89 d0                	mov    eax,edx
+     bb3:	01 c0                	add    eax,eax
+     bb5:	01 c2                	add    edx,eax
+     bb7:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     bba:	01 d0                	add    eax,edx
+     bbc:	c1 e0 03             	shl    eax,0x3
+     bbf:	ba 80 00 00 00       	mov    edx,0x80
+     bc4:	39 d0                	cmp    eax,edx
+     bc6:	0f 4f c2             	cmovg  eax,edx
+     bc9:	89 45 ec             	mov    DWORD PTR [ebp-0x14],eax
 				r = p0_x % 8;
-     aee:	8b 55 1c             	mov    edx,DWORD PTR [ebp+0x1c]
-     af1:	89 d0                	mov    eax,edx
-     af3:	c1 f8 1f             	sar    eax,0x1f
-     af6:	c1 e8 1d             	shr    eax,0x1d
-     af9:	01 c2                	add    edx,eax
-     afb:	83 e2 07             	and    edx,0x7
-     afe:	29 c2                	sub    edx,eax
-     b00:	89 55 e0             	mov    DWORD PTR [ebp-0x20],edx
+     bcc:	8b 55 1c             	mov    edx,DWORD PTR [ebp+0x1c]
+     bcf:	89 d0                	mov    eax,edx
+     bd1:	c1 f8 1f             	sar    eax,0x1f
+     bd4:	c1 e8 1d             	shr    eax,0x1d
+     bd7:	01 c2                	add    edx,eax
+     bd9:	83 e2 07             	and    edx,0x7
+     bdc:	29 c2                	sub    edx,eax
+     bde:	89 55 e0             	mov    DWORD PTR [ebp-0x20],edx
 				rmax = min(8, r + cc); /* only up to 6 pixels */
-     b03:	8b 55 e0             	mov    edx,DWORD PTR [ebp-0x20]
-     b06:	8b 45 bc             	mov    eax,DWORD PTR [ebp-0x44]
-     b09:	01 d0                	add    eax,edx
-     b0b:	ba 08 00 00 00       	mov    edx,0x8
-     b10:	39 d0                	cmp    eax,edx
-     b12:	0f 4f c2             	cmovg  eax,edx
-     b15:	89 45 b8             	mov    DWORD PTR [ebp-0x48],eax
+     be1:	8b 55 e0             	mov    edx,DWORD PTR [ebp-0x20]
+     be4:	8b 45 bc             	mov    eax,DWORD PTR [ebp-0x44]
+     be7:	01 d0                	add    eax,edx
+     be9:	ba 08 00 00 00       	mov    edx,0x8
+     bee:	39 d0                	cmp    eax,edx
+     bf0:	0f 4f c2             	cmovg  eax,edx
+     bf3:	89 45 b8             	mov    DWORD PTR [ebp-0x48],eax
 				/* get the remaining character pixels */
 				bitc = generate_char_colors(font, str[0], str[1], 24,
-     b18:	8b 55 8c             	mov    edx,DWORD PTR [ebp-0x74]
-     b1b:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     b1e:	8d 0c 02             	lea    ecx,[edx+eax*1]
-     b21:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     b24:	83 c0 01             	add    eax,0x1
-     b27:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     b2a:	0f be d0             	movsx  edx,al
-     b2d:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     b30:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     b33:	0f be c0             	movsx  eax,al
-     b36:	ff 75 c0             	push   DWORD PTR [ebp-0x40]
-     b39:	51                   	push   ecx
-     b3a:	ff 75 b8             	push   DWORD PTR [ebp-0x48]
-     b3d:	ff 75 e0             	push   DWORD PTR [ebp-0x20]
-     b40:	6a 18                	push   0x18
-     b42:	52                   	push   edx
-     b43:	50                   	push   eax
-     b44:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-     b47:	e8 fc ff ff ff       	call   b48 <render_text_scanline_24btpp_sse+0x2d5>
-     b4c:	83 c4 20             	add    esp,0x20
-     b4f:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
+     bf6:	8b 55 8c             	mov    edx,DWORD PTR [ebp-0x74]
+     bf9:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     bfc:	8d 1c 02             	lea    ebx,[edx+eax*1]
+     bff:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     c02:	83 c0 01             	add    eax,0x1
+     c05:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     c08:	0f be d0             	movsx  edx,al
+     c0b:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     c0e:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     c11:	0f be c0             	movsx  eax,al
+     c14:	8b 4d c0             	mov    ecx,DWORD PTR [ebp-0x40]
+     c17:	89 4c 24 1c          	mov    DWORD PTR [esp+0x1c],ecx
+     c1b:	89 5c 24 18          	mov    DWORD PTR [esp+0x18],ebx
+     c1f:	8b 4d b8             	mov    ecx,DWORD PTR [ebp-0x48]
+     c22:	89 4c 24 14          	mov    DWORD PTR [esp+0x14],ecx
+     c26:	8b 4d e0             	mov    ecx,DWORD PTR [ebp-0x20]
+     c29:	89 4c 24 10          	mov    DWORD PTR [esp+0x10],ecx
+     c2d:	c7 44 24 0c 18 00 00 00 	mov    DWORD PTR [esp+0xc],0x18
+     c35:	89 54 24 08          	mov    DWORD PTR [esp+0x8],edx
+     c39:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+     c3d:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     c40:	89 04 24             	mov    DWORD PTR [esp],eax
+     c43:	e8 fc ff ff ff       	call   c44 <render_text_scanline_24btpp_sse+0x332>
+     c48:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
 								r, rmax, pixbuf + bt_ofs, inv);
 				cc1 = rmax - r;
-     b52:	8b 45 b8             	mov    eax,DWORD PTR [ebp-0x48]
-     b55:	2b 45 e0             	sub    eax,DWORD PTR [ebp-0x20]
-     b58:	89 45 b4             	mov    DWORD PTR [ebp-0x4c],eax
+     c4b:	8b 45 b8             	mov    eax,DWORD PTR [ebp-0x48]
+     c4e:	2b 45 e0             	sub    eax,DWORD PTR [ebp-0x20]
+     c51:	89 45 b4             	mov    DWORD PTR [ebp-0x4c],eax
 				/* now advance if neccessary */
 				if (rmax == 8)
-     b5b:	83 7d b8 08          	cmp    DWORD PTR [ebp-0x48],0x8
-     b5f:	75 04                	jne    b65 <render_text_scanline_24btpp_sse+0x2f2>
+     c54:	83 7d b8 08          	cmp    DWORD PTR [ebp-0x48],0x8
+     c58:	75 04                	jne    c5e <render_text_scanline_24btpp_sse+0x34c>
 						str += 2;
-     b61:	83 45 0c 02          	add    DWORD PTR [ebp+0xc],0x2
+     c5a:	83 45 0c 02          	add    DWORD PTR [ebp+0xc],0x2
 				/* and fetch up to five more pixels if needed (r=0) */
 				if (cc > cc1) {
-     b65:	8b 45 bc             	mov    eax,DWORD PTR [ebp-0x44]
-     b68:	3b 45 b4             	cmp    eax,DWORD PTR [ebp-0x4c]
-     b6b:	7e 5f                	jle    bcc <render_text_scanline_24btpp_sse+0x359>
+     c5e:	8b 45 bc             	mov    eax,DWORD PTR [ebp-0x44]
+     c61:	3b 45 b4             	cmp    eax,DWORD PTR [ebp-0x4c]
+     c64:	7e 7b                	jle    ce1 <render_text_scanline_24btpp_sse+0x3cf>
 						col++; inv = (col == cur_x);
-     b6d:	83 45 c4 01          	add    DWORD PTR [ebp-0x3c],0x1
-     b71:	8b 45 c4             	mov    eax,DWORD PTR [ebp-0x3c]
-     b74:	3b 45 18             	cmp    eax,DWORD PTR [ebp+0x18]
-     b77:	0f 94 c0             	sete   al
-     b7a:	0f b6 c0             	movzx  eax,al
-     b7d:	89 45 c0             	mov    DWORD PTR [ebp-0x40],eax
+     c66:	83 45 c4 01          	add    DWORD PTR [ebp-0x3c],0x1
+     c6a:	8b 45 c4             	mov    eax,DWORD PTR [ebp-0x3c]
+     c6d:	3b 45 18             	cmp    eax,DWORD PTR [ebp+0x18]
+     c70:	0f 94 c0             	sete   al
+     c73:	0f b6 c0             	movzx  eax,al
+     c76:	89 45 c0             	mov    DWORD PTR [ebp-0x40],eax
 						bitc += generate_char_colors(font, str[0], str[1], 24,
-     b80:	8b 4d 8c             	mov    ecx,DWORD PTR [ebp-0x74]
+     c79:	8b 4d 8c             	mov    ecx,DWORD PTR [ebp-0x74]
 										0, cc - cc1, pixbuf + bt_ofs + cc1 * 3, inv);
-     b83:	8b 55 b4             	mov    edx,DWORD PTR [ebp-0x4c]
-     b86:	89 d0                	mov    eax,edx
-     b88:	01 c0                	add    eax,eax
-     b8a:	01 d0                	add    eax,edx
-     b8c:	89 c2                	mov    edx,eax
-     b8e:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     b91:	01 d0                	add    eax,edx
+     c7c:	8b 55 b4             	mov    edx,DWORD PTR [ebp-0x4c]
+     c7f:	89 d0                	mov    eax,edx
+     c81:	01 c0                	add    eax,eax
+     c83:	01 d0                	add    eax,edx
+     c85:	89 c2                	mov    edx,eax
+     c87:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     c8a:	01 d0                	add    eax,edx
 						bitc += generate_char_colors(font, str[0], str[1], 24,
-     b93:	8d 1c 01             	lea    ebx,[ecx+eax*1]
-     b96:	8b 45 bc             	mov    eax,DWORD PTR [ebp-0x44]
-     b99:	2b 45 b4             	sub    eax,DWORD PTR [ebp-0x4c]
-     b9c:	89 c1                	mov    ecx,eax
-     b9e:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     ba1:	83 c0 01             	add    eax,0x1
-     ba4:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     ba7:	0f be d0             	movsx  edx,al
-     baa:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     bad:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     bb0:	0f be c0             	movsx  eax,al
-     bb3:	ff 75 c0             	push   DWORD PTR [ebp-0x40]
-     bb6:	53                   	push   ebx
-     bb7:	51                   	push   ecx
-     bb8:	6a 00                	push   0x0
-     bba:	6a 18                	push   0x18
-     bbc:	52                   	push   edx
-     bbd:	50                   	push   eax
-     bbe:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-     bc1:	e8 fc ff ff ff       	call   bc2 <render_text_scanline_24btpp_sse+0x34f>
-     bc6:	83 c4 20             	add    esp,0x20
-     bc9:	01 45 f0             	add    DWORD PTR [ebp-0x10],eax
+     c8c:	8d 34 01             	lea    esi,[ecx+eax*1]
+     c8f:	8b 45 bc             	mov    eax,DWORD PTR [ebp-0x44]
+     c92:	2b 45 b4             	sub    eax,DWORD PTR [ebp-0x4c]
+     c95:	89 c1                	mov    ecx,eax
+     c97:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     c9a:	83 c0 01             	add    eax,0x1
+     c9d:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     ca0:	0f be d0             	movsx  edx,al
+     ca3:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     ca6:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     ca9:	0f be c0             	movsx  eax,al
+     cac:	8b 5d c0             	mov    ebx,DWORD PTR [ebp-0x40]
+     caf:	89 5c 24 1c          	mov    DWORD PTR [esp+0x1c],ebx
+     cb3:	89 74 24 18          	mov    DWORD PTR [esp+0x18],esi
+     cb7:	89 4c 24 14          	mov    DWORD PTR [esp+0x14],ecx
+     cbb:	c7 44 24 10 00 00 00 00 	mov    DWORD PTR [esp+0x10],0x0
+     cc3:	c7 44 24 0c 18 00 00 00 	mov    DWORD PTR [esp+0xc],0x18
+     ccb:	89 54 24 08          	mov    DWORD PTR [esp+0x8],edx
+     ccf:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+     cd3:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     cd6:	89 04 24             	mov    DWORD PTR [esp],eax
+     cd9:	e8 fc ff ff ff       	call   cda <render_text_scanline_24btpp_sse+0x3c8>
+     cde:	01 45 f0             	add    DWORD PTR [ebp-0x10],eax
 				}
 				/* now transfer */
 				if (btt >= 128) {
-     bcc:	83 7d ec 7f          	cmp    DWORD PTR [ebp-0x14],0x7f
-     bd0:	7e 24                	jle    bf6 <render_text_scanline_24btpp_sse+0x383>
+     ce1:	83 7d ec 7f          	cmp    DWORD PTR [ebp-0x14],0x7f
+     ce5:	7e 24                	jle    d0b <render_text_scanline_24btpp_sse+0x3f9>
 						move_128(pixbuf, mem);
-     bd2:	8b 45 8c             	mov    eax,DWORD PTR [ebp-0x74]
-     bd5:	8b 55 10             	mov    edx,DWORD PTR [ebp+0x10]
-     bd8:	0f 28 00             	movaps xmm0,XMMWORD PTR [eax]
-     bdb:	0f 29 02             	movaps XMMWORD PTR [edx],xmm0
+     ce7:	8b 45 8c             	mov    eax,DWORD PTR [ebp-0x74]
+     cea:	8b 55 10             	mov    edx,DWORD PTR [ebp+0x10]
+     ced:	0f 28 00             	movaps xmm0,XMMWORD PTR [eax]
+     cf0:	0f 29 02             	movaps XMMWORD PTR [edx],xmm0
 						mem += 16;
-     bde:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-     be1:	83 c0 10             	add    eax,0x10
-     be4:	89 45 10             	mov    DWORD PTR [ebp+0x10],eax
+     cf3:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+     cf6:	83 c0 10             	add    eax,0x10
+     cf9:	89 45 10             	mov    DWORD PTR [ebp+0x10],eax
 						}
 						break;
 				}
 
 				/* and don't advance as r = 0 is already handled (sth. remains) */
 				if (px_x) {
-     be7:	83 7d 14 00          	cmp    DWORD PTR [ebp+0x14],0x0
-     beb:	0f 84 17 01 00 00    	je     d08 <render_text_scanline_24btpp_sse+0x495>
-     bf1:	e9 cc 00 00 00       	jmp    cc2 <render_text_scanline_24btpp_sse+0x44f>
+     cfc:	83 7d 14 00          	cmp    DWORD PTR [ebp+0x14],0x0
+     d00:	0f 84 17 01 00 00    	je     e1d <render_text_scanline_24btpp_sse+0x50b>
+     d06:	e9 ca 00 00 00       	jmp    dd5 <render_text_scanline_24btpp_sse+0x4c3>
 						uint8_t* pt = pixbuf;
-     bf6:	8b 45 8c             	mov    eax,DWORD PTR [ebp-0x74]
-     bf9:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
+     d0b:	8b 45 8c             	mov    eax,DWORD PTR [ebp-0x74]
+     d0e:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
 						if (btt >= 64) {
-     bfc:	83 7d ec 3f          	cmp    DWORD PTR [ebp-0x14],0x3f
-     c00:	7e 1d                	jle    c1f <render_text_scanline_24btpp_sse+0x3ac>
+     d11:	83 7d ec 3f          	cmp    DWORD PTR [ebp-0x14],0x3f
+     d15:	7e 1d                	jle    d34 <render_text_scanline_24btpp_sse+0x422>
 								move_64(pixbuf, mem);
-     c02:	8b 45 8c             	mov    eax,DWORD PTR [ebp-0x74]
-     c05:	8b 55 10             	mov    edx,DWORD PTR [ebp+0x10]
-     c08:	0f 6f 00             	movq   mm0,QWORD PTR [eax]
-     c0b:	0f 7f 02             	movq   QWORD PTR [edx],mm0
+     d17:	8b 45 8c             	mov    eax,DWORD PTR [ebp-0x74]
+     d1a:	8b 55 10             	mov    edx,DWORD PTR [ebp+0x10]
+     d1d:	0f 6f 00             	movq   mm0,QWORD PTR [eax]
+     d20:	0f 7f 02             	movq   QWORD PTR [edx],mm0
 								pt += 8;
-     c0e:	83 45 e8 08          	add    DWORD PTR [ebp-0x18],0x8
+     d23:	83 45 e8 08          	add    DWORD PTR [ebp-0x18],0x8
 								mem += 8;
-     c12:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-     c15:	83 c0 08             	add    eax,0x8
-     c18:	89 45 10             	mov    DWORD PTR [ebp+0x10],eax
+     d27:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+     d2a:	83 c0 08             	add    eax,0x8
+     d2d:	89 45 10             	mov    DWORD PTR [ebp+0x10],eax
 								btt -= 64;
-     c1b:	83 6d ec 40          	sub    DWORD PTR [ebp-0x14],0x40
+     d30:	83 6d ec 40          	sub    DWORD PTR [ebp-0x14],0x40
 						if (btt >= 32) {
-     c1f:	83 7d ec 1f          	cmp    DWORD PTR [ebp-0x14],0x1f
-     c23:	7e 20                	jle    c45 <render_text_scanline_24btpp_sse+0x3d2>
+     d34:	83 7d ec 1f          	cmp    DWORD PTR [ebp-0x14],0x1f
+     d38:	7e 20                	jle    d5a <render_text_scanline_24btpp_sse+0x448>
 								*(uint32_t*)mem = *(uint32_t*)pt;
-     c25:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-     c28:	8b 55 e8             	mov    edx,DWORD PTR [ebp-0x18]
-     c2b:	8b 12                	mov    edx,DWORD PTR [edx]
-     c2d:	89 10                	mov    DWORD PTR [eax],edx
+     d3a:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+     d3d:	8b 55 e8             	mov    edx,DWORD PTR [ebp-0x18]
+     d40:	8b 12                	mov    edx,DWORD PTR [edx]
+     d42:	89 10                	mov    DWORD PTR [eax],edx
 								pt += 4;
-     c2f:	83 45 e8 04          	add    DWORD PTR [ebp-0x18],0x4
+     d44:	83 45 e8 04          	add    DWORD PTR [ebp-0x18],0x4
 								mem += 4;
-     c33:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-     c36:	83 c0 04             	add    eax,0x4
-     c39:	89 45 10             	mov    DWORD PTR [ebp+0x10],eax
+     d48:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+     d4b:	83 c0 04             	add    eax,0x4
+     d4e:	89 45 10             	mov    DWORD PTR [ebp+0x10],eax
 								btt -= 32;
-     c3c:	83 6d ec 20          	sub    DWORD PTR [ebp-0x14],0x20
+     d51:	83 6d ec 20          	sub    DWORD PTR [ebp-0x14],0x20
 						break;
-     c40:	e9 c6 00 00 00       	jmp    d0b <render_text_scanline_24btpp_sse+0x498>
+     d55:	e9 c6 00 00 00       	jmp    e20 <render_text_scanline_24btpp_sse+0x50e>
 						} else if (btt >= 16) {
-     c45:	83 7d ec 0f          	cmp    DWORD PTR [ebp-0x14],0xf
-     c49:	7e 22                	jle    c6d <render_text_scanline_24btpp_sse+0x3fa>
+     d5a:	83 7d ec 0f          	cmp    DWORD PTR [ebp-0x14],0xf
+     d5e:	7e 22                	jle    d82 <render_text_scanline_24btpp_sse+0x470>
 								*(uint16_t*)mem = *(uint16_t*)pt;
-     c4b:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-     c4e:	8b 55 e8             	mov    edx,DWORD PTR [ebp-0x18]
-     c51:	0f b7 12             	movzx  edx,WORD PTR [edx]
-     c54:	66 89 10             	mov    WORD PTR [eax],dx
+     d60:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+     d63:	8b 55 e8             	mov    edx,DWORD PTR [ebp-0x18]
+     d66:	0f b7 12             	movzx  edx,WORD PTR [edx]
+     d69:	66 89 10             	mov    WORD PTR [eax],dx
 								pt += 2;
-     c57:	83 45 e8 02          	add    DWORD PTR [ebp-0x18],0x2
+     d6c:	83 45 e8 02          	add    DWORD PTR [ebp-0x18],0x2
 								mem += 2;
-     c5b:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-     c5e:	83 c0 02             	add    eax,0x2
-     c61:	89 45 10             	mov    DWORD PTR [ebp+0x10],eax
+     d70:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+     d73:	83 c0 02             	add    eax,0x2
+     d76:	89 45 10             	mov    DWORD PTR [ebp+0x10],eax
 								btt -= 16;
-     c64:	83 6d ec 10          	sub    DWORD PTR [ebp-0x14],0x10
+     d79:	83 6d ec 10          	sub    DWORD PTR [ebp-0x14],0x10
 						break;
-     c68:	e9 9e 00 00 00       	jmp    d0b <render_text_scanline_24btpp_sse+0x498>
+     d7d:	e9 9e 00 00 00       	jmp    e20 <render_text_scanline_24btpp_sse+0x50e>
 						} else if (bitc >= 8) {
-     c6d:	83 7d f0 07          	cmp    DWORD PTR [ebp-0x10],0x7
-     c71:	7e 1e                	jle    c91 <render_text_scanline_24btpp_sse+0x41e>
+     d82:	83 7d f0 07          	cmp    DWORD PTR [ebp-0x10],0x7
+     d86:	7e 1e                	jle    da6 <render_text_scanline_24btpp_sse+0x494>
 								*(uint8_t*)mem = *(uint8_t*)pt;
-     c73:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-     c76:	8b 55 e8             	mov    edx,DWORD PTR [ebp-0x18]
-     c79:	0f b6 12             	movzx  edx,BYTE PTR [edx]
-     c7c:	88 10                	mov    BYTE PTR [eax],dl
+     d88:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+     d8b:	8b 55 e8             	mov    edx,DWORD PTR [ebp-0x18]
+     d8e:	0f b6 12             	movzx  edx,BYTE PTR [edx]
+     d91:	88 10                	mov    BYTE PTR [eax],dl
 								pt += 1;
-     c7e:	83 45 e8 01          	add    DWORD PTR [ebp-0x18],0x1
+     d93:	83 45 e8 01          	add    DWORD PTR [ebp-0x18],0x1
 								mem += 1;
-     c82:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-     c85:	83 c0 01             	add    eax,0x1
-     c88:	89 45 10             	mov    DWORD PTR [ebp+0x10],eax
+     d97:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+     d9a:	83 c0 01             	add    eax,0x1
+     d9d:	89 45 10             	mov    DWORD PTR [ebp+0x10],eax
 								btt -= 8;
-     c8b:	83 6d ec 08          	sub    DWORD PTR [ebp-0x14],0x8
+     da0:	83 6d ec 08          	sub    DWORD PTR [ebp-0x14],0x8
 						break;
-     c8f:	eb 7a                	jmp    d0b <render_text_scanline_24btpp_sse+0x498>
+     da4:	eb 7a                	jmp    e20 <render_text_scanline_24btpp_sse+0x50e>
 						} else if (bitc) {
-     c91:	83 7d f0 00          	cmp    DWORD PTR [ebp-0x10],0x0
-     c95:	74 74                	je     d0b <render_text_scanline_24btpp_sse+0x498>
+     da6:	83 7d f0 00          	cmp    DWORD PTR [ebp-0x10],0x0
+     daa:	74 74                	je     e20 <render_text_scanline_24btpp_sse+0x50e>
 								die("can't happen with 3byte sized pixels\n");
-     c97:	83 ec 08             	sub    esp,0x8
-     c9a:	68 44 01 00 00       	push   0x144
-     c9f:	6a 0c                	push   0xc
-     ca1:	e8 fc ff ff ff       	call   ca2 <render_text_scanline_24btpp_sse+0x42f>
-     ca6:	83 c4 10             	add    esp,0x10
-     ca9:	e8 fc ff ff ff       	call   caa <render_text_scanline_24btpp_sse+0x437>
-     cae:	83 ec 0c             	sub    esp,0xc
-     cb1:	68 00 00 00 00       	push   0x0
-     cb6:	e8 fc ff ff ff       	call   cb7 <render_text_scanline_24btpp_sse+0x444>
-     cbb:	83 c4 10             	add    esp,0x10
-     cbe:	fa                   	cli
-     cbf:	f4                   	hlt
-     cc0:	eb fd                	jmp    cbf <render_text_scanline_24btpp_sse+0x44c>
+     dac:	c7 44 24 04 44 01 00 00 	mov    DWORD PTR [esp+0x4],0x144
+     db4:	c7 04 24 0c 00 00 00 	mov    DWORD PTR [esp],0xc
+     dbb:	e8 fc ff ff ff       	call   dbc <render_text_scanline_24btpp_sse+0x4aa>
+     dc0:	e8 fc ff ff ff       	call   dc1 <render_text_scanline_24btpp_sse+0x4af>
+     dc5:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+     dcc:	e8 fc ff ff ff       	call   dcd <render_text_scanline_24btpp_sse+0x4bb>
+     dd1:	fa                   	cli
+     dd2:	f4                   	hlt
+     dd3:	eb fd                	jmp    dd2 <render_text_scanline_24btpp_sse+0x4c0>
 						px_x -= cc; /* bitc is 24-divisible */
-     cc2:	8b 45 bc             	mov    eax,DWORD PTR [ebp-0x44]
-     cc5:	29 45 14             	sub    DWORD PTR [ebp+0x14],eax
+     dd5:	8b 45 bc             	mov    eax,DWORD PTR [ebp-0x44]
+     dd8:	29 45 14             	sub    DWORD PTR [ebp+0x14],eax
 						p0_x += cc; /* unneccessary as r does not change anymore */
-     cc8:	8b 45 bc             	mov    eax,DWORD PTR [ebp-0x44]
-     ccb:	01 45 1c             	add    DWORD PTR [ebp+0x1c],eax
+     ddb:	8b 45 bc             	mov    eax,DWORD PTR [ebp-0x44]
+     dde:	01 45 1c             	add    DWORD PTR [ebp+0x1c],eax
 						/* copy remaining data */
 						/* |bt_ofs*8-bitc| */
 						if (!bt_ofs--)
-     cce:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     cd1:	8d 50 ff             	lea    edx,[eax-0x1]
-     cd4:	89 55 f4             	mov    DWORD PTR [ebp-0xc],edx
-     cd7:	85 c0                	test   eax,eax
-     cd9:	75 07                	jne    ce2 <render_text_scanline_24btpp_sse+0x46f>
+     de1:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     de4:	8d 50 ff             	lea    edx,[eax-0x1]
+     de7:	89 55 f4             	mov    DWORD PTR [ebp-0xc],edx
+     dea:	85 c0                	test   eax,eax
+     dec:	75 07                	jne    df5 <render_text_scanline_24btpp_sse+0x4e3>
 								bt_ofs = 2;
-     cdb:	c7 45 f4 02 00 00 00 	mov    DWORD PTR [ebp-0xc],0x2
+     dee:	c7 45 f4 02 00 00 00 	mov    DWORD PTR [ebp-0xc],0x2
 						memcpy(pixbuf, pixbuf + 16, bt_ofs);
-     ce2:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-     ce5:	8b 45 8c             	mov    eax,DWORD PTR [ebp-0x74]
-     ce8:	8d 48 10             	lea    ecx,[eax+0x10]
-     ceb:	8b 45 8c             	mov    eax,DWORD PTR [ebp-0x74]
-     cee:	83 ec 04             	sub    esp,0x4
-     cf1:	52                   	push   edx
-     cf2:	51                   	push   ecx
-     cf3:	50                   	push   eax
-     cf4:	e8 07 f3 ff ff       	call   0 <memcpy>
-     cf9:	83 c4 10             	add    esp,0x10
+     df5:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+     df8:	8b 45 8c             	mov    eax,DWORD PTR [ebp-0x74]
+     dfb:	8d 48 10             	lea    ecx,[eax+0x10]
+     dfe:	8b 45 8c             	mov    eax,DWORD PTR [ebp-0x74]
+     e01:	89 54 24 08          	mov    DWORD PTR [esp+0x8],edx
+     e05:	89 4c 24 04          	mov    DWORD PTR [esp+0x4],ecx
+     e09:	89 04 24             	mov    DWORD PTR [esp],eax
+     e0c:	e8 ef f1 ff ff       	call   0 <memcpy>
 		while (px_x) { /* 144 bit vs. 128 16bt remain (2/3) */
-     cfc:	83 7d 14 00          	cmp    DWORD PTR [ebp+0x14],0x0
-     d00:	0f 85 8d fd ff ff    	jne    a93 <render_text_scanline_24btpp_sse+0x220>
-     d06:	eb 04                	jmp    d0c <render_text_scanline_24btpp_sse+0x499>
+     e11:	83 7d 14 00          	cmp    DWORD PTR [ebp+0x14],0x0
+     e15:	0f 85 56 fd ff ff    	jne    b71 <render_text_scanline_24btpp_sse+0x25f>
+     e1b:	eb 04                	jmp    e21 <render_text_scanline_24btpp_sse+0x50f>
 				} else
 						break;
-     d08:	90                   	nop
-     d09:	eb 01                	jmp    d0c <render_text_scanline_24btpp_sse+0x499>
+     e1d:	90                   	nop
+     e1e:	eb 01                	jmp    e21 <render_text_scanline_24btpp_sse+0x50f>
 						break;
-     d0b:	90                   	nop
+     e20:	90                   	nop
 		}
 
 		/* transfer the leftover pixel data */
 		if (bt_ofs)
-     d0c:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
-     d10:	74 17                	je     d29 <render_text_scanline_24btpp_sse+0x4b6>
+     e21:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
+     e25:	74 19                	je     e40 <render_text_scanline_24btpp_sse+0x52e>
 				memcpy(pixbuf, mem, bt_ofs);
-     d12:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
-     d15:	8b 55 10             	mov    edx,DWORD PTR [ebp+0x10]
-     d18:	8b 45 8c             	mov    eax,DWORD PTR [ebp-0x74]
-     d1b:	83 ec 04             	sub    esp,0x4
-     d1e:	51                   	push   ecx
-     d1f:	52                   	push   edx
-     d20:	50                   	push   eax
-     d21:	e8 da f2 ff ff       	call   0 <memcpy>
-     d26:	83 c4 10             	add    esp,0x10
+     e27:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
+     e2a:	8b 55 10             	mov    edx,DWORD PTR [ebp+0x10]
+     e2d:	8b 45 8c             	mov    eax,DWORD PTR [ebp-0x74]
+     e30:	89 4c 24 08          	mov    DWORD PTR [esp+0x8],ecx
+     e34:	89 54 24 04          	mov    DWORD PTR [esp+0x4],edx
+     e38:	89 04 24             	mov    DWORD PTR [esp],eax
+     e3b:	e8 c0 f1 ff ff       	call   0 <memcpy>
 }
-     d29:	90                   	nop
-     d2a:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
-     d2d:	c9                   	leave
-     d2e:	c3                   	ret
+     e40:	90                   	nop
+     e41:	81 c4 90 00 00 00    	add    esp,0x90
+     e47:	5b                   	pop    ebx
+     e48:	5e                   	pop    esi
+     e49:	5d                   	pop    ebp
+     e4a:	c3                   	ret
 
-00000d2f <render_text_scanline_16btpp>:
+00000e4b <render_text_scanline_16btpp>:
 
 /* we're generating 2byte colorvalues /w unknown alignment. To enable
  * 8 byte transfer, four pixels have to be generated. */
 void render_text_scanline_16btpp(const char* font, char* str, void* mem,
 				ssize_t px_x, ssize_t cur_x, ssize_t p0_x, size_t btpp)
 {
-     d2f:	55                   	push   ebp
-     d30:	89 e5                	mov    ebp,esp
-     d32:	53                   	push   ebx
-     d33:	83 ec 54             	sub    esp,0x54
+     e4b:	55                   	push   ebp
+     e4c:	89 e5                	mov    ebp,esp
+     e4e:	56                   	push   esi
+     e4f:	53                   	push   ebx
+     e50:	83 ec 70             	sub    esp,0x70
 		uint8_t pxb[8 + 7]; /* 7 for stack alignment */
 		ssize_t misalign = ((size_t)mem % 8) ? (8 - (size_t)mem % 8) : 0;
-     d36:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-     d39:	83 e0 07             	and    eax,0x7
-     d3c:	85 c0                	test   eax,eax
-     d3e:	74 11                	je     d51 <render_text_scanline_16btpp+0x22>
-     d40:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-     d43:	83 e0 07             	and    eax,0x7
-     d46:	ba 08 00 00 00       	mov    edx,0x8
-     d4b:	29 c2                	sub    edx,eax
-     d4d:	89 d0                	mov    eax,edx
-     d4f:	eb 05                	jmp    d56 <render_text_scanline_16btpp+0x27>
-     d51:	b8 00 00 00 00       	mov    eax,0x0
-     d56:	89 45 ec             	mov    DWORD PTR [ebp-0x14],eax
+     e53:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+     e56:	83 e0 07             	and    eax,0x7
+     e59:	85 c0                	test   eax,eax
+     e5b:	74 11                	je     e6e <render_text_scanline_16btpp+0x23>
+     e5d:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+     e60:	83 e0 07             	and    eax,0x7
+     e63:	ba 08 00 00 00       	mov    edx,0x8
+     e68:	29 c2                	sub    edx,eax
+     e6a:	89 d0                	mov    eax,edx
+     e6c:	eb 05                	jmp    e73 <render_text_scanline_16btpp+0x28>
+     e6e:	b8 00 00 00 00       	mov    eax,0x0
+     e73:	89 45 ec             	mov    DWORD PTR [ebp-0x14],eax
 		ssize_t r = p0_x % 8;
-     d59:	8b 55 1c             	mov    edx,DWORD PTR [ebp+0x1c]
-     d5c:	89 d0                	mov    eax,edx
-     d5e:	c1 f8 1f             	sar    eax,0x1f
-     d61:	c1 e8 1d             	shr    eax,0x1d
-     d64:	01 c2                	add    edx,eax
-     d66:	83 e2 07             	and    edx,0x7
-     d69:	29 c2                	sub    edx,eax
-     d6b:	89 55 e8             	mov    DWORD PTR [ebp-0x18],edx
+     e76:	8b 55 1c             	mov    edx,DWORD PTR [ebp+0x1c]
+     e79:	89 d0                	mov    eax,edx
+     e7b:	c1 f8 1f             	sar    eax,0x1f
+     e7e:	c1 e8 1d             	shr    eax,0x1d
+     e81:	01 c2                	add    edx,eax
+     e83:	83 e2 07             	and    edx,0x7
+     e86:	29 c2                	sub    edx,eax
+     e88:	89 55 e8             	mov    DWORD PTR [ebp-0x18],edx
 		uint8_t* pixbuf = pxb + (((size_t)pxb % 8) ? (8 - ((size_t)pxb % 8)) : 0);
-     d6e:	8d 45 b1             	lea    eax,[ebp-0x4f]
-     d71:	83 e0 07             	and    eax,0x7
-     d74:	85 c0                	test   eax,eax
-     d76:	74 11                	je     d89 <render_text_scanline_16btpp+0x5a>
-     d78:	8d 45 b1             	lea    eax,[ebp-0x4f]
-     d7b:	83 e0 07             	and    eax,0x7
-     d7e:	89 c2                	mov    edx,eax
-     d80:	b8 08 00 00 00       	mov    eax,0x8
-     d85:	29 d0                	sub    eax,edx
-     d87:	eb 05                	jmp    d8e <render_text_scanline_16btpp+0x5f>
-     d89:	b8 00 00 00 00       	mov    eax,0x0
-     d8e:	8d 55 b1             	lea    edx,[ebp-0x4f]
-     d91:	01 d0                	add    eax,edx
-     d93:	89 45 ac             	mov    DWORD PTR [ebp-0x54],eax
+     e8b:	8d 45 b1             	lea    eax,[ebp-0x4f]
+     e8e:	83 e0 07             	and    eax,0x7
+     e91:	85 c0                	test   eax,eax
+     e93:	74 11                	je     ea6 <render_text_scanline_16btpp+0x5b>
+     e95:	8d 45 b1             	lea    eax,[ebp-0x4f]
+     e98:	83 e0 07             	and    eax,0x7
+     e9b:	89 c2                	mov    edx,eax
+     e9d:	b8 08 00 00 00       	mov    eax,0x8
+     ea2:	29 d0                	sub    eax,edx
+     ea4:	eb 05                	jmp    eab <render_text_scanline_16btpp+0x60>
+     ea6:	b8 00 00 00 00       	mov    eax,0x0
+     eab:	8d 55 b1             	lea    edx,[ebp-0x4f]
+     eae:	01 d0                	add    eax,edx
+     eb0:	89 45 ac             	mov    DWORD PTR [ebp-0x54],eax
 		/* 64-bit aligned moves are enough */
 
 		if (misalign) { /* LFB is dword aligned, we want qword access */
-     d96:	83 7d ec 00          	cmp    DWORD PTR [ebp-0x14],0x0
-     d9a:	0f 84 0a 03 00 00    	je     10aa <render_text_scanline_16btpp+0x37b>
+     eb3:	83 7d ec 00          	cmp    DWORD PTR [ebp-0x14],0x0
+     eb7:	0f 84 78 03 00 00    	je     1235 <render_text_scanline_16btpp+0x3ea>
 				int col = p0_x / 8, inv = (col == cur_x);
-     da0:	8b 45 1c             	mov    eax,DWORD PTR [ebp+0x1c]
-     da3:	8d 50 07             	lea    edx,[eax+0x7]
-     da6:	85 c0                	test   eax,eax
-     da8:	0f 48 c2             	cmovs  eax,edx
-     dab:	c1 f8 03             	sar    eax,0x3
-     dae:	89 45 e4             	mov    DWORD PTR [ebp-0x1c],eax
-     db1:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
-     db4:	3b 45 18             	cmp    eax,DWORD PTR [ebp+0x18]
-     db7:	0f 94 c0             	sete   al
-     dba:	0f b6 c0             	movzx  eax,al
-     dbd:	89 45 e0             	mov    DWORD PTR [ebp-0x20],eax
+     ebd:	8b 45 1c             	mov    eax,DWORD PTR [ebp+0x1c]
+     ec0:	8d 50 07             	lea    edx,[eax+0x7]
+     ec3:	85 c0                	test   eax,eax
+     ec5:	0f 48 c2             	cmovs  eax,edx
+     ec8:	c1 f8 03             	sar    eax,0x3
+     ecb:	89 45 e4             	mov    DWORD PTR [ebp-0x1c],eax
+     ece:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
+     ed1:	3b 45 18             	cmp    eax,DWORD PTR [ebp+0x18]
+     ed4:	0f 94 c0             	sete   al
+     ed7:	0f b6 c0             	movzx  eax,al
+     eda:	89 45 e0             	mov    DWORD PTR [ebp-0x20],eax
 				ssize_t bc = min(misalign, 2 * px_x);
-     dc0:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
-     dc3:	01 c0                	add    eax,eax
-     dc5:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
-     dc8:	39 c2                	cmp    edx,eax
-     dca:	0f 4e c2             	cmovle eax,edx
-     dcd:	89 45 dc             	mov    DWORD PTR [ebp-0x24],eax
+     edd:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
+     ee0:	01 c0                	add    eax,eax
+     ee2:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
+     ee5:	39 c2                	cmp    edx,eax
+     ee7:	0f 4e c2             	cmovle eax,edx
+     eea:	89 45 dc             	mov    DWORD PTR [ebp-0x24],eax
 				ssize_t cc = rdiv(misalign, 2);
-     dd0:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-     dd3:	89 c2                	mov    edx,eax
-     dd5:	c1 ea 1f             	shr    edx,0x1f
-     dd8:	01 d0                	add    eax,edx
-     dda:	d1 f8                	sar    eax,1
-     ddc:	89 c2                	mov    edx,eax
-     dde:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-     de1:	83 e0 01             	and    eax,0x1
-     de4:	01 d0                	add    eax,edx
-     de6:	89 45 d8             	mov    DWORD PTR [ebp-0x28],eax
+     eed:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+     ef0:	89 c2                	mov    edx,eax
+     ef2:	c1 ea 1f             	shr    edx,0x1f
+     ef5:	01 d0                	add    eax,edx
+     ef7:	d1 f8                	sar    eax,1
+     ef9:	89 c2                	mov    edx,eax
+     efb:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+     efe:	83 e0 01             	and    eax,0x1
+     f01:	01 d0                	add    eax,edx
+     f03:	89 45 d8             	mov    DWORD PTR [ebp-0x28],eax
 				ssize_t rmax = min(8, r + cc), cc1 = rmax - r;
-     de9:	8b 55 e8             	mov    edx,DWORD PTR [ebp-0x18]
-     dec:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-     def:	01 d0                	add    eax,edx
-     df1:	ba 08 00 00 00       	mov    edx,0x8
-     df6:	39 d0                	cmp    eax,edx
-     df8:	0f 4f c2             	cmovg  eax,edx
-     dfb:	89 45 d4             	mov    DWORD PTR [ebp-0x2c],eax
-     dfe:	8b 45 d4             	mov    eax,DWORD PTR [ebp-0x2c]
-     e01:	2b 45 e8             	sub    eax,DWORD PTR [ebp-0x18]
-     e04:	89 45 d0             	mov    DWORD PTR [ebp-0x30],eax
+     f06:	8b 55 e8             	mov    edx,DWORD PTR [ebp-0x18]
+     f09:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+     f0c:	01 d0                	add    eax,edx
+     f0e:	ba 08 00 00 00       	mov    edx,0x8
+     f13:	39 d0                	cmp    eax,edx
+     f15:	0f 4f c2             	cmovg  eax,edx
+     f18:	89 45 d4             	mov    DWORD PTR [ebp-0x2c],eax
+     f1b:	8b 45 d4             	mov    eax,DWORD PTR [ebp-0x2c]
+     f1e:	2b 45 e8             	sub    eax,DWORD PTR [ebp-0x18]
+     f21:	89 45 d0             	mov    DWORD PTR [ebp-0x30],eax
 
 				generate_char_colors(font, str[0], str[1], btpp,
-     e07:	8b 4d ac             	mov    ecx,DWORD PTR [ebp-0x54]
-     e0a:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     e0d:	83 c0 01             	add    eax,0x1
-     e10:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     e13:	0f be d0             	movsx  edx,al
-     e16:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     e19:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     e1c:	0f be c0             	movsx  eax,al
-     e1f:	ff 75 e0             	push   DWORD PTR [ebp-0x20]
-     e22:	51                   	push   ecx
-     e23:	ff 75 d4             	push   DWORD PTR [ebp-0x2c]
-     e26:	ff 75 e8             	push   DWORD PTR [ebp-0x18]
-     e29:	ff 75 20             	push   DWORD PTR [ebp+0x20]
-     e2c:	52                   	push   edx
-     e2d:	50                   	push   eax
-     e2e:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-     e31:	e8 fc ff ff ff       	call   e32 <render_text_scanline_16btpp+0x103>
-     e36:	83 c4 20             	add    esp,0x20
+     f24:	8b 4d ac             	mov    ecx,DWORD PTR [ebp-0x54]
+     f27:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     f2a:	83 c0 01             	add    eax,0x1
+     f2d:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     f30:	0f be d0             	movsx  edx,al
+     f33:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     f36:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     f39:	0f be c0             	movsx  eax,al
+     f3c:	8b 5d e0             	mov    ebx,DWORD PTR [ebp-0x20]
+     f3f:	89 5c 24 1c          	mov    DWORD PTR [esp+0x1c],ebx
+     f43:	89 4c 24 18          	mov    DWORD PTR [esp+0x18],ecx
+     f47:	8b 4d d4             	mov    ecx,DWORD PTR [ebp-0x2c]
+     f4a:	89 4c 24 14          	mov    DWORD PTR [esp+0x14],ecx
+     f4e:	8b 4d e8             	mov    ecx,DWORD PTR [ebp-0x18]
+     f51:	89 4c 24 10          	mov    DWORD PTR [esp+0x10],ecx
+     f55:	8b 4d 20             	mov    ecx,DWORD PTR [ebp+0x20]
+     f58:	89 4c 24 0c          	mov    DWORD PTR [esp+0xc],ecx
+     f5c:	89 54 24 08          	mov    DWORD PTR [esp+0x8],edx
+     f60:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+     f64:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     f67:	89 04 24             	mov    DWORD PTR [esp],eax
+     f6a:	e8 fc ff ff ff       	call   f6b <render_text_scanline_16btpp+0x120>
 								r, rmax, pixbuf, inv);
 				if (rmax == 8)
-     e39:	83 7d d4 08          	cmp    DWORD PTR [ebp-0x2c],0x8
-     e3d:	75 04                	jne    e43 <render_text_scanline_16btpp+0x114>
+     f6f:	83 7d d4 08          	cmp    DWORD PTR [ebp-0x2c],0x8
+     f73:	75 04                	jne    f79 <render_text_scanline_16btpp+0x12e>
 						str += 2;
-     e3f:	83 45 0c 02          	add    DWORD PTR [ebp+0xc],0x2
+     f75:	83 45 0c 02          	add    DWORD PTR [ebp+0xc],0x2
 				if (cc > cc1) {
-     e43:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-     e46:	3b 45 d0             	cmp    eax,DWORD PTR [ebp-0x30]
-     e49:	7e 50                	jle    e9b <render_text_scanline_16btpp+0x16c>
+     f79:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+     f7c:	3b 45 d0             	cmp    eax,DWORD PTR [ebp-0x30]
+     f7f:	7e 6a                	jle    feb <render_text_scanline_16btpp+0x1a0>
 						col++; inv = (col == cur_x);
-     e4b:	83 45 e4 01          	add    DWORD PTR [ebp-0x1c],0x1
-     e4f:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
-     e52:	3b 45 18             	cmp    eax,DWORD PTR [ebp+0x18]
-     e55:	0f 94 c0             	sete   al
-     e58:	0f b6 c0             	movzx  eax,al
-     e5b:	89 45 e0             	mov    DWORD PTR [ebp-0x20],eax
+     f81:	83 45 e4 01          	add    DWORD PTR [ebp-0x1c],0x1
+     f85:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
+     f88:	3b 45 18             	cmp    eax,DWORD PTR [ebp+0x18]
+     f8b:	0f 94 c0             	sete   al
+     f8e:	0f b6 c0             	movzx  eax,al
+     f91:	89 45 e0             	mov    DWORD PTR [ebp-0x20],eax
 						generate_char_colors(font, str[0], str[1], btpp,
-     e5e:	8b 55 ac             	mov    edx,DWORD PTR [ebp-0x54]
-     e61:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-     e64:	8d 1c 02             	lea    ebx,[edx+eax*1]
-     e67:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-     e6a:	2b 45 d0             	sub    eax,DWORD PTR [ebp-0x30]
-     e6d:	89 c1                	mov    ecx,eax
-     e6f:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     e72:	83 c0 01             	add    eax,0x1
-     e75:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     e78:	0f be d0             	movsx  edx,al
-     e7b:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     e7e:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     e81:	0f be c0             	movsx  eax,al
-     e84:	ff 75 e0             	push   DWORD PTR [ebp-0x20]
-     e87:	53                   	push   ebx
-     e88:	51                   	push   ecx
-     e89:	6a 00                	push   0x0
-     e8b:	ff 75 20             	push   DWORD PTR [ebp+0x20]
-     e8e:	52                   	push   edx
-     e8f:	50                   	push   eax
-     e90:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-     e93:	e8 fc ff ff ff       	call   e94 <render_text_scanline_16btpp+0x165>
-     e98:	83 c4 20             	add    esp,0x20
+     f94:	8b 55 ac             	mov    edx,DWORD PTR [ebp-0x54]
+     f97:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+     f9a:	8d 34 02             	lea    esi,[edx+eax*1]
+     f9d:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+     fa0:	2b 45 d0             	sub    eax,DWORD PTR [ebp-0x30]
+     fa3:	89 c1                	mov    ecx,eax
+     fa5:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     fa8:	83 c0 01             	add    eax,0x1
+     fab:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     fae:	0f be d0             	movsx  edx,al
+     fb1:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     fb4:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     fb7:	0f be c0             	movsx  eax,al
+     fba:	8b 5d e0             	mov    ebx,DWORD PTR [ebp-0x20]
+     fbd:	89 5c 24 1c          	mov    DWORD PTR [esp+0x1c],ebx
+     fc1:	89 74 24 18          	mov    DWORD PTR [esp+0x18],esi
+     fc5:	89 4c 24 14          	mov    DWORD PTR [esp+0x14],ecx
+     fc9:	c7 44 24 10 00 00 00 00 	mov    DWORD PTR [esp+0x10],0x0
+     fd1:	8b 4d 20             	mov    ecx,DWORD PTR [ebp+0x20]
+     fd4:	89 4c 24 0c          	mov    DWORD PTR [esp+0xc],ecx
+     fd8:	89 54 24 08          	mov    DWORD PTR [esp+0x8],edx
+     fdc:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+     fe0:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     fe3:	89 04 24             	mov    DWORD PTR [esp],eax
+     fe6:	e8 fc ff ff ff       	call   fe7 <render_text_scanline_16btpp+0x19c>
 										0, cc - cc1, pixbuf + cc1, inv);
 				}
 				memcpy(mem, pixbuf, bc);
-     e9b:	8b 4d dc             	mov    ecx,DWORD PTR [ebp-0x24]
-     e9e:	8b 55 ac             	mov    edx,DWORD PTR [ebp-0x54]
-     ea1:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-     ea4:	83 ec 04             	sub    esp,0x4
-     ea7:	51                   	push   ecx
-     ea8:	52                   	push   edx
-     ea9:	50                   	push   eax
-     eaa:	e8 51 f1 ff ff       	call   0 <memcpy>
-     eaf:	83 c4 10             	add    esp,0x10
+     feb:	8b 4d dc             	mov    ecx,DWORD PTR [ebp-0x24]
+     fee:	8b 55 ac             	mov    edx,DWORD PTR [ebp-0x54]
+     ff1:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+     ff4:	89 4c 24 08          	mov    DWORD PTR [esp+0x8],ecx
+     ff8:	89 54 24 04          	mov    DWORD PTR [esp+0x4],edx
+     ffc:	89 04 24             	mov    DWORD PTR [esp],eax
+     fff:	e8 fc ef ff ff       	call   0 <memcpy>
 				px_x -= cc;
-     eb2:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-     eb5:	29 45 14             	sub    DWORD PTR [ebp+0x14],eax
+    1004:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+    1007:	29 45 14             	sub    DWORD PTR [ebp+0x14],eax
 				p0_x += cc;
-     eb8:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-     ebb:	01 45 1c             	add    DWORD PTR [ebp+0x1c],eax
+    100a:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+    100d:	01 45 1c             	add    DWORD PTR [ebp+0x1c],eax
 				mem += bc;
-     ebe:	8b 55 10             	mov    edx,DWORD PTR [ebp+0x10]
-     ec1:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-     ec4:	01 d0                	add    eax,edx
-     ec6:	89 45 10             	mov    DWORD PTR [ebp+0x10],eax
+    1010:	8b 55 10             	mov    edx,DWORD PTR [ebp+0x10]
+    1013:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    1016:	01 d0                	add    eax,edx
+    1018:	89 45 10             	mov    DWORD PTR [ebp+0x10],eax
 		}
 
 		/* draw 4 pixels each */
 		while (px_x) {
-     ec9:	e9 dc 01 00 00       	jmp    10aa <render_text_scanline_16btpp+0x37b>
+    101b:	e9 15 02 00 00       	jmp    1235 <render_text_scanline_16btpp+0x3ea>
 				int col = p0_x / 8, inv = (col == cur_x);
-     ece:	8b 45 1c             	mov    eax,DWORD PTR [ebp+0x1c]
-     ed1:	8d 50 07             	lea    edx,[eax+0x7]
-     ed4:	85 c0                	test   eax,eax
-     ed6:	0f 48 c2             	cmovs  eax,edx
-     ed9:	c1 f8 03             	sar    eax,0x3
-     edc:	89 45 cc             	mov    DWORD PTR [ebp-0x34],eax
-     edf:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-     ee2:	3b 45 18             	cmp    eax,DWORD PTR [ebp+0x18]
-     ee5:	0f 94 c0             	sete   al
-     ee8:	0f b6 c0             	movzx  eax,al
-     eeb:	89 45 c8             	mov    DWORD PTR [ebp-0x38],eax
+    1020:	8b 45 1c             	mov    eax,DWORD PTR [ebp+0x1c]
+    1023:	8d 50 07             	lea    edx,[eax+0x7]
+    1026:	85 c0                	test   eax,eax
+    1028:	0f 48 c2             	cmovs  eax,edx
+    102b:	c1 f8 03             	sar    eax,0x3
+    102e:	89 45 cc             	mov    DWORD PTR [ebp-0x34],eax
+    1031:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    1034:	3b 45 18             	cmp    eax,DWORD PTR [ebp+0x18]
+    1037:	0f 94 c0             	sete   al
+    103a:	0f b6 c0             	movzx  eax,al
+    103d:	89 45 c8             	mov    DWORD PTR [ebp-0x38],eax
 				ssize_t rmax, bitc, btt = min(64, 16 * px_x);
-     eee:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
-     ef1:	c1 e0 04             	shl    eax,0x4
-     ef4:	ba 40 00 00 00       	mov    edx,0x40
-     ef9:	39 d0                	cmp    eax,edx
-     efb:	0f 4f c2             	cmovg  eax,edx
-     efe:	89 45 c4             	mov    DWORD PTR [ebp-0x3c],eax
+    1040:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
+    1043:	c1 e0 04             	shl    eax,0x4
+    1046:	ba 40 00 00 00       	mov    edx,0x40
+    104b:	39 d0                	cmp    eax,edx
+    104d:	0f 4f c2             	cmovg  eax,edx
+    1050:	89 45 c4             	mov    DWORD PTR [ebp-0x3c],eax
 				r = p0_x % 8;
-     f01:	8b 55 1c             	mov    edx,DWORD PTR [ebp+0x1c]
-     f04:	89 d0                	mov    eax,edx
-     f06:	c1 f8 1f             	sar    eax,0x1f
-     f09:	c1 e8 1d             	shr    eax,0x1d
-     f0c:	01 c2                	add    edx,eax
-     f0e:	83 e2 07             	and    edx,0x7
-     f11:	29 c2                	sub    edx,eax
-     f13:	89 55 e8             	mov    DWORD PTR [ebp-0x18],edx
+    1053:	8b 55 1c             	mov    edx,DWORD PTR [ebp+0x1c]
+    1056:	89 d0                	mov    eax,edx
+    1058:	c1 f8 1f             	sar    eax,0x1f
+    105b:	c1 e8 1d             	shr    eax,0x1d
+    105e:	01 c2                	add    edx,eax
+    1060:	83 e2 07             	and    edx,0x7
+    1063:	29 c2                	sub    edx,eax
+    1065:	89 55 e8             	mov    DWORD PTR [ebp-0x18],edx
 				rmax = min(8, r + min(4, px_x)); /* only 2 pixels */
-     f16:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
-     f19:	ba 04 00 00 00       	mov    edx,0x4
-     f1e:	39 d0                	cmp    eax,edx
-     f20:	0f 4e d0             	cmovle edx,eax
-     f23:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
-     f26:	01 d0                	add    eax,edx
-     f28:	ba 08 00 00 00       	mov    edx,0x8
-     f2d:	39 d0                	cmp    eax,edx
-     f2f:	0f 4f c2             	cmovg  eax,edx
-     f32:	89 45 c0             	mov    DWORD PTR [ebp-0x40],eax
+    1068:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
+    106b:	ba 04 00 00 00       	mov    edx,0x4
+    1070:	39 d0                	cmp    eax,edx
+    1072:	0f 4e d0             	cmovle edx,eax
+    1075:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
+    1078:	01 d0                	add    eax,edx
+    107a:	ba 08 00 00 00       	mov    edx,0x8
+    107f:	39 d0                	cmp    eax,edx
+    1081:	0f 4f c2             	cmovg  eax,edx
+    1084:	89 45 c0             	mov    DWORD PTR [ebp-0x40],eax
 				/* get the remaining character pixels */
 				bitc = generate_char_colors(font, str[0], str[1], btpp,
-     f35:	8b 4d ac             	mov    ecx,DWORD PTR [ebp-0x54]
-     f38:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     f3b:	83 c0 01             	add    eax,0x1
-     f3e:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     f41:	0f be d0             	movsx  edx,al
-     f44:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     f47:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     f4a:	0f be c0             	movsx  eax,al
-     f4d:	ff 75 c8             	push   DWORD PTR [ebp-0x38]
-     f50:	51                   	push   ecx
-     f51:	ff 75 c0             	push   DWORD PTR [ebp-0x40]
-     f54:	ff 75 e8             	push   DWORD PTR [ebp-0x18]
-     f57:	ff 75 20             	push   DWORD PTR [ebp+0x20]
-     f5a:	52                   	push   edx
-     f5b:	50                   	push   eax
-     f5c:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-     f5f:	e8 fc ff ff ff       	call   f60 <render_text_scanline_16btpp+0x231>
-     f64:	83 c4 20             	add    esp,0x20
-     f67:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
+    1087:	8b 4d ac             	mov    ecx,DWORD PTR [ebp-0x54]
+    108a:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    108d:	83 c0 01             	add    eax,0x1
+    1090:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+    1093:	0f be d0             	movsx  edx,al
+    1096:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    1099:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+    109c:	0f be c0             	movsx  eax,al
+    109f:	8b 5d c8             	mov    ebx,DWORD PTR [ebp-0x38]
+    10a2:	89 5c 24 1c          	mov    DWORD PTR [esp+0x1c],ebx
+    10a6:	89 4c 24 18          	mov    DWORD PTR [esp+0x18],ecx
+    10aa:	8b 4d c0             	mov    ecx,DWORD PTR [ebp-0x40]
+    10ad:	89 4c 24 14          	mov    DWORD PTR [esp+0x14],ecx
+    10b1:	8b 4d e8             	mov    ecx,DWORD PTR [ebp-0x18]
+    10b4:	89 4c 24 10          	mov    DWORD PTR [esp+0x10],ecx
+    10b8:	8b 4d 20             	mov    ecx,DWORD PTR [ebp+0x20]
+    10bb:	89 4c 24 0c          	mov    DWORD PTR [esp+0xc],ecx
+    10bf:	89 54 24 08          	mov    DWORD PTR [esp+0x8],edx
+    10c3:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    10c7:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    10ca:	89 04 24             	mov    DWORD PTR [esp],eax
+    10cd:	e8 fc ff ff ff       	call   10ce <render_text_scanline_16btpp+0x283>
+    10d2:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
 								r, rmax, pixbuf, inv);
 				/* now advance if neccessary */
 				if (rmax == 8)
-     f6a:	83 7d c0 08          	cmp    DWORD PTR [ebp-0x40],0x8
-     f6e:	75 04                	jne    f74 <render_text_scanline_16btpp+0x245>
+    10d5:	83 7d c0 08          	cmp    DWORD PTR [ebp-0x40],0x8
+    10d9:	75 04                	jne    10df <render_text_scanline_16btpp+0x294>
 						str += 2;
-     f70:	83 45 0c 02          	add    DWORD PTR [ebp+0xc],0x2
+    10db:	83 45 0c 02          	add    DWORD PTR [ebp+0xc],0x2
 				/* and fetch up to three more pixels if needed (r=0) */
 				if (bitc < btt) {
-     f74:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     f77:	3b 45 c4             	cmp    eax,DWORD PTR [ebp-0x3c]
-     f7a:	7d 69                	jge    fe5 <render_text_scanline_16btpp+0x2b6>
+    10df:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    10e2:	3b 45 c4             	cmp    eax,DWORD PTR [ebp-0x3c]
+    10e5:	0f 8d 83 00 00 00    	jge    116e <render_text_scanline_16btpp+0x323>
 						col++;
-     f7c:	83 45 cc 01          	add    DWORD PTR [ebp-0x34],0x1
+    10eb:	83 45 cc 01          	add    DWORD PTR [ebp-0x34],0x1
 						inv = (col == cur_x);
-     f80:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-     f83:	3b 45 18             	cmp    eax,DWORD PTR [ebp+0x18]
-     f86:	0f 94 c0             	sete   al
-     f89:	0f b6 c0             	movzx  eax,al
-     f8c:	89 45 c8             	mov    DWORD PTR [ebp-0x38],eax
+    10ef:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    10f2:	3b 45 18             	cmp    eax,DWORD PTR [ebp+0x18]
+    10f5:	0f 94 c0             	sete   al
+    10f8:	0f b6 c0             	movzx  eax,al
+    10fb:	89 45 c8             	mov    DWORD PTR [ebp-0x38],eax
 						bitc += generate_char_colors(font, str[0], str[1], btpp,
-     f8f:	8b 55 ac             	mov    edx,DWORD PTR [ebp-0x54]
+    10fe:	8b 55 ac             	mov    edx,DWORD PTR [ebp-0x54]
 										0, (btt - bitc) / 16, pixbuf + bitc / 16, inv);
-     f92:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     f95:	8d 48 0f             	lea    ecx,[eax+0xf]
-     f98:	85 c0                	test   eax,eax
-     f9a:	0f 48 c1             	cmovs  eax,ecx
-     f9d:	c1 f8 04             	sar    eax,0x4
+    1101:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    1104:	8d 48 0f             	lea    ecx,[eax+0xf]
+    1107:	85 c0                	test   eax,eax
+    1109:	0f 48 c1             	cmovs  eax,ecx
+    110c:	c1 f8 04             	sar    eax,0x4
 						bitc += generate_char_colors(font, str[0], str[1], btpp,
-     fa0:	8d 0c 02             	lea    ecx,[edx+eax*1]
+    110f:	8d 1c 02             	lea    ebx,[edx+eax*1]
 										0, (btt - bitc) / 16, pixbuf + bitc / 16, inv);
-     fa3:	8b 45 c4             	mov    eax,DWORD PTR [ebp-0x3c]
-     fa6:	2b 45 f4             	sub    eax,DWORD PTR [ebp-0xc]
+    1112:	8b 45 c4             	mov    eax,DWORD PTR [ebp-0x3c]
+    1115:	2b 45 f4             	sub    eax,DWORD PTR [ebp-0xc]
 						bitc += generate_char_colors(font, str[0], str[1], btpp,
-     fa9:	8d 50 0f             	lea    edx,[eax+0xf]
-     fac:	85 c0                	test   eax,eax
-     fae:	0f 48 c2             	cmovs  eax,edx
-     fb1:	c1 f8 04             	sar    eax,0x4
-     fb4:	89 c3                	mov    ebx,eax
-     fb6:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     fb9:	83 c0 01             	add    eax,0x1
-     fbc:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     fbf:	0f be d0             	movsx  edx,al
-     fc2:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     fc5:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     fc8:	0f be c0             	movsx  eax,al
-     fcb:	ff 75 c8             	push   DWORD PTR [ebp-0x38]
-     fce:	51                   	push   ecx
-     fcf:	53                   	push   ebx
-     fd0:	6a 00                	push   0x0
-     fd2:	ff 75 20             	push   DWORD PTR [ebp+0x20]
-     fd5:	52                   	push   edx
-     fd6:	50                   	push   eax
-     fd7:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-     fda:	e8 fc ff ff ff       	call   fdb <render_text_scanline_16btpp+0x2ac>
-     fdf:	83 c4 20             	add    esp,0x20
-     fe2:	01 45 f4             	add    DWORD PTR [ebp-0xc],eax
+    1118:	8d 50 0f             	lea    edx,[eax+0xf]
+    111b:	85 c0                	test   eax,eax
+    111d:	0f 48 c2             	cmovs  eax,edx
+    1120:	c1 f8 04             	sar    eax,0x4
+    1123:	89 c6                	mov    esi,eax
+    1125:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    1128:	83 c0 01             	add    eax,0x1
+    112b:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+    112e:	0f be d0             	movsx  edx,al
+    1131:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    1134:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+    1137:	0f be c0             	movsx  eax,al
+    113a:	8b 4d c8             	mov    ecx,DWORD PTR [ebp-0x38]
+    113d:	89 4c 24 1c          	mov    DWORD PTR [esp+0x1c],ecx
+    1141:	89 5c 24 18          	mov    DWORD PTR [esp+0x18],ebx
+    1145:	89 74 24 14          	mov    DWORD PTR [esp+0x14],esi
+    1149:	c7 44 24 10 00 00 00 00 	mov    DWORD PTR [esp+0x10],0x0
+    1151:	8b 4d 20             	mov    ecx,DWORD PTR [ebp+0x20]
+    1154:	89 4c 24 0c          	mov    DWORD PTR [esp+0xc],ecx
+    1158:	89 54 24 08          	mov    DWORD PTR [esp+0x8],edx
+    115c:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    1160:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1163:	89 04 24             	mov    DWORD PTR [esp],eax
+    1166:	e8 fc ff ff ff       	call   1167 <render_text_scanline_16btpp+0x31c>
+    116b:	01 45 f4             	add    DWORD PTR [ebp-0xc],eax
 				}
 				/* now transfer */
 				if (bitc >= 64) {
-     fe5:	83 7d f4 3f          	cmp    DWORD PTR [ebp-0xc],0x3f
-     fe9:	7e 21                	jle    100c <render_text_scanline_16btpp+0x2dd>
+    116e:	83 7d f4 3f          	cmp    DWORD PTR [ebp-0xc],0x3f
+    1172:	7e 21                	jle    1195 <render_text_scanline_16btpp+0x34a>
 						move_64(pixbuf, mem);
-     feb:	8b 45 ac             	mov    eax,DWORD PTR [ebp-0x54]
-     fee:	8b 55 10             	mov    edx,DWORD PTR [ebp+0x10]
-     ff1:	0f 6f 00             	movq   mm0,QWORD PTR [eax]
-     ff4:	0f 7f 02             	movq   QWORD PTR [edx],mm0
+    1174:	8b 45 ac             	mov    eax,DWORD PTR [ebp-0x54]
+    1177:	8b 55 10             	mov    edx,DWORD PTR [ebp+0x10]
+    117a:	0f 6f 00             	movq   mm0,QWORD PTR [eax]
+    117d:	0f 7f 02             	movq   QWORD PTR [edx],mm0
 						mem += 8; /* intentionally no bitc subtract */
-     ff7:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-     ffa:	83 c0 08             	add    eax,0x8
-     ffd:	89 45 10             	mov    DWORD PTR [ebp+0x10],eax
+    1180:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    1183:	83 c0 08             	add    eax,0x8
+    1186:	89 45 10             	mov    DWORD PTR [ebp+0x10],eax
 						}
 						break;
 				}
 
 				/* and don't advance as r = 0 is already handled (sth. remains) */
 				if (px_x) {
-    1000:	83 7d 14 00          	cmp    DWORD PTR [ebp+0x14],0x0
-    1004:	0f 84 ac 00 00 00    	je     10b6 <render_text_scanline_16btpp+0x387>
-    100a:	eb 7a                	jmp    1086 <render_text_scanline_16btpp+0x357>
+    1189:	83 7d 14 00          	cmp    DWORD PTR [ebp+0x14],0x0
+    118d:	0f 84 ae 00 00 00    	je     1241 <render_text_scanline_16btpp+0x3f6>
+    1193:	eb 7c                	jmp    1211 <render_text_scanline_16btpp+0x3c6>
 						void* pt = pixbuf;
-    100c:	8b 45 ac             	mov    eax,DWORD PTR [ebp-0x54]
-    100f:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
+    1195:	8b 45 ac             	mov    eax,DWORD PTR [ebp-0x54]
+    1198:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
 						if (bitc >= 32) {
-    1012:	83 7d f4 1f          	cmp    DWORD PTR [ebp-0xc],0x1f
-    1016:	7e 1b                	jle    1033 <render_text_scanline_16btpp+0x304>
+    119b:	83 7d f4 1f          	cmp    DWORD PTR [ebp-0xc],0x1f
+    119f:	7e 1b                	jle    11bc <render_text_scanline_16btpp+0x371>
 								*(uint32_t*)mem = *(uint32_t*)pixbuf;
-    1018:	8b 55 ac             	mov    edx,DWORD PTR [ebp-0x54]
-    101b:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-    101e:	8b 12                	mov    edx,DWORD PTR [edx]
-    1020:	89 10                	mov    DWORD PTR [eax],edx
+    11a1:	8b 55 ac             	mov    edx,DWORD PTR [ebp-0x54]
+    11a4:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    11a7:	8b 12                	mov    edx,DWORD PTR [edx]
+    11a9:	89 10                	mov    DWORD PTR [eax],edx
 								mem += 4;
-    1022:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-    1025:	83 c0 04             	add    eax,0x4
-    1028:	89 45 10             	mov    DWORD PTR [ebp+0x10],eax
+    11ab:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    11ae:	83 c0 04             	add    eax,0x4
+    11b1:	89 45 10             	mov    DWORD PTR [ebp+0x10],eax
 								pt += 4;
-    102b:	83 45 f0 04          	add    DWORD PTR [ebp-0x10],0x4
+    11b4:	83 45 f0 04          	add    DWORD PTR [ebp-0x10],0x4
 								bitc -= 32;
-    102f:	83 6d f4 20          	sub    DWORD PTR [ebp-0xc],0x20
+    11b8:	83 6d f4 20          	sub    DWORD PTR [ebp-0xc],0x20
 						if (bitc >= 16) {
-    1033:	83 7d f4 0f          	cmp    DWORD PTR [ebp-0xc],0xf
-    1037:	7e 19                	jle    1052 <render_text_scanline_16btpp+0x323>
+    11bc:	83 7d f4 0f          	cmp    DWORD PTR [ebp-0xc],0xf
+    11c0:	7e 19                	jle    11db <render_text_scanline_16btpp+0x390>
 								*(uint32_t*)mem = *(uint32_t*)pt;
-    1039:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-    103c:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
-    103f:	8b 12                	mov    edx,DWORD PTR [edx]
-    1041:	89 10                	mov    DWORD PTR [eax],edx
+    11c2:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    11c5:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
+    11c8:	8b 12                	mov    edx,DWORD PTR [edx]
+    11ca:	89 10                	mov    DWORD PTR [eax],edx
 								mem += 2;
-    1043:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-    1046:	83 c0 02             	add    eax,0x2
-    1049:	89 45 10             	mov    DWORD PTR [ebp+0x10],eax
+    11cc:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    11cf:	83 c0 02             	add    eax,0x2
+    11d2:	89 45 10             	mov    DWORD PTR [ebp+0x10],eax
 								bitc -= 16;
-    104c:	83 6d f4 10          	sub    DWORD PTR [ebp-0xc],0x10
+    11d5:	83 6d f4 10          	sub    DWORD PTR [ebp-0xc],0x10
 						break;
-    1050:	eb 67                	jmp    10b9 <render_text_scanline_16btpp+0x38a>
+    11d9:	eb 69                	jmp    1244 <render_text_scanline_16btpp+0x3f9>
 						} else if (bitc) {
-    1052:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
-    1056:	74 61                	je     10b9 <render_text_scanline_16btpp+0x38a>
+    11db:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
+    11df:	74 63                	je     1244 <render_text_scanline_16btpp+0x3f9>
 								die("cant happen with word sized pixels! %d\n", px_x);
-    1058:	83 ec 04             	sub    esp,0x4
-    105b:	ff 75 14             	push   DWORD PTR [ebp+0x14]
-    105e:	68 6c 01 00 00       	push   0x16c
-    1063:	6a 0c                	push   0xc
-    1065:	e8 fc ff ff ff       	call   1066 <render_text_scanline_16btpp+0x337>
-    106a:	83 c4 10             	add    esp,0x10
-    106d:	e8 fc ff ff ff       	call   106e <render_text_scanline_16btpp+0x33f>
-    1072:	83 ec 0c             	sub    esp,0xc
-    1075:	68 00 00 00 00       	push   0x0
-    107a:	e8 fc ff ff ff       	call   107b <render_text_scanline_16btpp+0x34c>
-    107f:	83 c4 10             	add    esp,0x10
-    1082:	fa                   	cli
-    1083:	f4                   	hlt
-    1084:	eb fd                	jmp    1083 <render_text_scanline_16btpp+0x354>
+    11e1:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
+    11e4:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    11e8:	c7 44 24 04 6c 01 00 00 	mov    DWORD PTR [esp+0x4],0x16c
+    11f0:	c7 04 24 0c 00 00 00 	mov    DWORD PTR [esp],0xc
+    11f7:	e8 fc ff ff ff       	call   11f8 <render_text_scanline_16btpp+0x3ad>
+    11fc:	e8 fc ff ff ff       	call   11fd <render_text_scanline_16btpp+0x3b2>
+    1201:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+    1208:	e8 fc ff ff ff       	call   1209 <render_text_scanline_16btpp+0x3be>
+    120d:	fa                   	cli
+    120e:	f4                   	hlt
+    120f:	eb fd                	jmp    120e <render_text_scanline_16btpp+0x3c3>
 						px_x -= bitc / 16;
-    1086:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    1089:	8d 50 0f             	lea    edx,[eax+0xf]
-    108c:	85 c0                	test   eax,eax
-    108e:	0f 48 c2             	cmovs  eax,edx
-    1091:	c1 f8 04             	sar    eax,0x4
-    1094:	f7 d8                	neg    eax
-    1096:	01 45 14             	add    DWORD PTR [ebp+0x14],eax
+    1211:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    1214:	8d 50 0f             	lea    edx,[eax+0xf]
+    1217:	85 c0                	test   eax,eax
+    1219:	0f 48 c2             	cmovs  eax,edx
+    121c:	c1 f8 04             	sar    eax,0x4
+    121f:	f7 d8                	neg    eax
+    1221:	01 45 14             	add    DWORD PTR [ebp+0x14],eax
 						p0_x += bitc / 16; /* unneccessary as r does not change anymore */
-    1099:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    109c:	8d 50 0f             	lea    edx,[eax+0xf]
-    109f:	85 c0                	test   eax,eax
-    10a1:	0f 48 c2             	cmovs  eax,edx
-    10a4:	c1 f8 04             	sar    eax,0x4
-    10a7:	01 45 1c             	add    DWORD PTR [ebp+0x1c],eax
+    1224:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    1227:	8d 50 0f             	lea    edx,[eax+0xf]
+    122a:	85 c0                	test   eax,eax
+    122c:	0f 48 c2             	cmovs  eax,edx
+    122f:	c1 f8 04             	sar    eax,0x4
+    1232:	01 45 1c             	add    DWORD PTR [ebp+0x1c],eax
 		while (px_x) {
-    10aa:	83 7d 14 00          	cmp    DWORD PTR [ebp+0x14],0x0
-    10ae:	0f 85 1a fe ff ff    	jne    ece <render_text_scanline_16btpp+0x19f>
+    1235:	83 7d 14 00          	cmp    DWORD PTR [ebp+0x14],0x0
+    1239:	0f 85 e1 fd ff ff    	jne    1020 <render_text_scanline_16btpp+0x1d5>
 				} else
 						break;
 		}
 }
-    10b4:	eb 04                	jmp    10ba <render_text_scanline_16btpp+0x38b>
+    123f:	eb 04                	jmp    1245 <render_text_scanline_16btpp+0x3fa>
 						break;
-    10b6:	90                   	nop
-    10b7:	eb 01                	jmp    10ba <render_text_scanline_16btpp+0x38b>
+    1241:	90                   	nop
+    1242:	eb 01                	jmp    1245 <render_text_scanline_16btpp+0x3fa>
 						break;
-    10b9:	90                   	nop
+    1244:	90                   	nop
 }
-    10ba:	90                   	nop
-    10bb:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
-    10be:	c9                   	leave
-    10bf:	c3                   	ret
+    1245:	90                   	nop
+    1246:	83 c4 70             	add    esp,0x70
+    1249:	5b                   	pop    ebx
+    124a:	5e                   	pop    esi
+    124b:	5d                   	pop    ebp
+    124c:	c3                   	ret
 
-000010c0 <render_text_scanline_32btpp>:
+0000124d <render_text_scanline_32btpp>:
 
 /* we're generating 4byte colorvalues /w unknown alignment. To enable
  * 8 byte transfer, two pixel have to be generated. */
 void render_text_scanline_32btpp(const char* font, char* str, void* mem,
 				ssize_t px_x, ssize_t cur_x, ssize_t p0_x)
 {
-    10c0:	55                   	push   ebp
-    10c1:	89 e5                	mov    ebp,esp
-    10c3:	83 ec 58             	sub    esp,0x58
+    124d:	55                   	push   ebp
+    124e:	89 e5                	mov    ebp,esp
+    1250:	53                   	push   ebx
+    1251:	83 ec 74             	sub    esp,0x74
 		uint8_t pxb[8 + 7]; /* 7 for stack alignment */
 		ssize_t misalign = ((size_t)mem % 8) ? (8 - (size_t)mem % 8) : 0;
-    10c6:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-    10c9:	83 e0 07             	and    eax,0x7
-    10cc:	85 c0                	test   eax,eax
-    10ce:	74 11                	je     10e1 <render_text_scanline_32btpp+0x21>
-    10d0:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-    10d3:	83 e0 07             	and    eax,0x7
-    10d6:	ba 08 00 00 00       	mov    edx,0x8
-    10db:	29 c2                	sub    edx,eax
-    10dd:	89 d0                	mov    eax,edx
-    10df:	eb 05                	jmp    10e6 <render_text_scanline_32btpp+0x26>
-    10e1:	b8 00 00 00 00       	mov    eax,0x0
-    10e6:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
+    1254:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    1257:	83 e0 07             	and    eax,0x7
+    125a:	85 c0                	test   eax,eax
+    125c:	74 11                	je     126f <render_text_scanline_32btpp+0x22>
+    125e:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    1261:	83 e0 07             	and    eax,0x7
+    1264:	ba 08 00 00 00       	mov    edx,0x8
+    1269:	29 c2                	sub    edx,eax
+    126b:	89 d0                	mov    eax,edx
+    126d:	eb 05                	jmp    1274 <render_text_scanline_32btpp+0x27>
+    126f:	b8 00 00 00 00       	mov    eax,0x0
+    1274:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
 		ssize_t r = p0_x % 8;
-    10e9:	8b 55 1c             	mov    edx,DWORD PTR [ebp+0x1c]
-    10ec:	89 d0                	mov    eax,edx
-    10ee:	c1 f8 1f             	sar    eax,0x1f
-    10f1:	c1 e8 1d             	shr    eax,0x1d
-    10f4:	01 c2                	add    edx,eax
-    10f6:	83 e2 07             	and    edx,0x7
-    10f9:	29 c2                	sub    edx,eax
-    10fb:	89 55 ec             	mov    DWORD PTR [ebp-0x14],edx
+    1277:	8b 55 1c             	mov    edx,DWORD PTR [ebp+0x1c]
+    127a:	89 d0                	mov    eax,edx
+    127c:	c1 f8 1f             	sar    eax,0x1f
+    127f:	c1 e8 1d             	shr    eax,0x1d
+    1282:	01 c2                	add    edx,eax
+    1284:	83 e2 07             	and    edx,0x7
+    1287:	29 c2                	sub    edx,eax
+    1289:	89 55 ec             	mov    DWORD PTR [ebp-0x14],edx
 		uint8_t* pixbuf = pxb + (((size_t)pxb % 8) ? (8 - ((size_t)pxb % 8)) : 0);
-    10fe:	8d 45 b9             	lea    eax,[ebp-0x47]
-    1101:	83 e0 07             	and    eax,0x7
-    1104:	85 c0                	test   eax,eax
-    1106:	74 11                	je     1119 <render_text_scanline_32btpp+0x59>
-    1108:	8d 45 b9             	lea    eax,[ebp-0x47]
-    110b:	83 e0 07             	and    eax,0x7
-    110e:	89 c2                	mov    edx,eax
-    1110:	b8 08 00 00 00       	mov    eax,0x8
-    1115:	29 d0                	sub    eax,edx
-    1117:	eb 05                	jmp    111e <render_text_scanline_32btpp+0x5e>
-    1119:	b8 00 00 00 00       	mov    eax,0x0
-    111e:	8d 55 b9             	lea    edx,[ebp-0x47]
-    1121:	01 d0                	add    eax,edx
-    1123:	89 45 b4             	mov    DWORD PTR [ebp-0x4c],eax
+    128c:	8d 45 b9             	lea    eax,[ebp-0x47]
+    128f:	83 e0 07             	and    eax,0x7
+    1292:	85 c0                	test   eax,eax
+    1294:	74 11                	je     12a7 <render_text_scanline_32btpp+0x5a>
+    1296:	8d 45 b9             	lea    eax,[ebp-0x47]
+    1299:	83 e0 07             	and    eax,0x7
+    129c:	89 c2                	mov    edx,eax
+    129e:	b8 08 00 00 00       	mov    eax,0x8
+    12a3:	29 d0                	sub    eax,edx
+    12a5:	eb 05                	jmp    12ac <render_text_scanline_32btpp+0x5f>
+    12a7:	b8 00 00 00 00       	mov    eax,0x0
+    12ac:	8d 55 b9             	lea    edx,[ebp-0x47]
+    12af:	01 d0                	add    eax,edx
+    12b1:	89 45 b4             	mov    DWORD PTR [ebp-0x4c],eax
 		/* 64-bit aligned moves are enough */
 
 		if (misalign) { /* LFB is dword aligned, we want qword access */
-    1126:	83 7d f0 00          	cmp    DWORD PTR [ebp-0x10],0x0
-    112a:	0f 84 67 02 00 00    	je     1397 <render_text_scanline_32btpp+0x2d7>
+    12b4:	83 7d f0 00          	cmp    DWORD PTR [ebp-0x10],0x0
+    12b8:	0f 84 bc 02 00 00    	je     157a <render_text_scanline_32btpp+0x32d>
 				int col = p0_x / 8, inv = (col == cur_x);
-    1130:	8b 45 1c             	mov    eax,DWORD PTR [ebp+0x1c]
-    1133:	8d 50 07             	lea    edx,[eax+0x7]
-    1136:	85 c0                	test   eax,eax
-    1138:	0f 48 c2             	cmovs  eax,edx
-    113b:	c1 f8 03             	sar    eax,0x3
-    113e:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
-    1141:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
-    1144:	3b 45 18             	cmp    eax,DWORD PTR [ebp+0x18]
-    1147:	0f 94 c0             	sete   al
-    114a:	0f b6 c0             	movzx  eax,al
-    114d:	89 45 e4             	mov    DWORD PTR [ebp-0x1c],eax
+    12be:	8b 45 1c             	mov    eax,DWORD PTR [ebp+0x1c]
+    12c1:	8d 50 07             	lea    edx,[eax+0x7]
+    12c4:	85 c0                	test   eax,eax
+    12c6:	0f 48 c2             	cmovs  eax,edx
+    12c9:	c1 f8 03             	sar    eax,0x3
+    12cc:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
+    12cf:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
+    12d2:	3b 45 18             	cmp    eax,DWORD PTR [ebp+0x18]
+    12d5:	0f 94 c0             	sete   al
+    12d8:	0f b6 c0             	movzx  eax,al
+    12db:	89 45 e4             	mov    DWORD PTR [ebp-0x1c],eax
 				ssize_t bc = min(misalign, 4 * px_x);
-    1150:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
-    1153:	c1 e0 02             	shl    eax,0x2
-    1156:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
-    1159:	39 c2                	cmp    edx,eax
-    115b:	0f 4e c2             	cmovle eax,edx
-    115e:	89 45 e0             	mov    DWORD PTR [ebp-0x20],eax
+    12de:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
+    12e1:	c1 e0 02             	shl    eax,0x2
+    12e4:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
+    12e7:	39 c2                	cmp    edx,eax
+    12e9:	0f 4e c2             	cmovle eax,edx
+    12ec:	89 45 e0             	mov    DWORD PTR [ebp-0x20],eax
 				ssize_t cc = rdiv(misalign, 4);
-    1161:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-    1164:	8d 50 03             	lea    edx,[eax+0x3]
-    1167:	85 c0                	test   eax,eax
-    1169:	0f 48 c2             	cmovs  eax,edx
-    116c:	c1 f8 02             	sar    eax,0x2
-    116f:	89 c2                	mov    edx,eax
-    1171:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-    1174:	83 e0 03             	and    eax,0x3
-    1177:	85 c0                	test   eax,eax
-    1179:	0f 95 c0             	setne  al
-    117c:	0f b6 c0             	movzx  eax,al
-    117f:	01 d0                	add    eax,edx
-    1181:	89 45 dc             	mov    DWORD PTR [ebp-0x24],eax
+    12ef:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+    12f2:	8d 50 03             	lea    edx,[eax+0x3]
+    12f5:	85 c0                	test   eax,eax
+    12f7:	0f 48 c2             	cmovs  eax,edx
+    12fa:	c1 f8 02             	sar    eax,0x2
+    12fd:	89 c2                	mov    edx,eax
+    12ff:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+    1302:	83 e0 03             	and    eax,0x3
+    1305:	85 c0                	test   eax,eax
+    1307:	0f 95 c0             	setne  al
+    130a:	0f b6 c0             	movzx  eax,al
+    130d:	01 d0                	add    eax,edx
+    130f:	89 45 dc             	mov    DWORD PTR [ebp-0x24],eax
 				ssize_t rmax = min(8, r + cc); //, cc1 = rmax - r;
-    1184:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
-    1187:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    118a:	01 d0                	add    eax,edx
-    118c:	ba 08 00 00 00       	mov    edx,0x8
-    1191:	39 d0                	cmp    eax,edx
-    1193:	0f 4f c2             	cmovg  eax,edx
-    1196:	89 45 d8             	mov    DWORD PTR [ebp-0x28],eax
+    1312:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
+    1315:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    1318:	01 d0                	add    eax,edx
+    131a:	ba 08 00 00 00       	mov    edx,0x8
+    131f:	39 d0                	cmp    eax,edx
+    1321:	0f 4f c2             	cmovg  eax,edx
+    1324:	89 45 d8             	mov    DWORD PTR [ebp-0x28],eax
 
 				generate_char_colors(font, str[0], str[1], 32,
-    1199:	8b 4d b4             	mov    ecx,DWORD PTR [ebp-0x4c]
-    119c:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    119f:	83 c0 01             	add    eax,0x1
-    11a2:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-    11a5:	0f be d0             	movsx  edx,al
-    11a8:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    11ab:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-    11ae:	0f be c0             	movsx  eax,al
-    11b1:	ff 75 e4             	push   DWORD PTR [ebp-0x1c]
-    11b4:	51                   	push   ecx
-    11b5:	ff 75 d8             	push   DWORD PTR [ebp-0x28]
-    11b8:	ff 75 ec             	push   DWORD PTR [ebp-0x14]
-    11bb:	6a 20                	push   0x20
-    11bd:	52                   	push   edx
-    11be:	50                   	push   eax
-    11bf:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-    11c2:	e8 fc ff ff ff       	call   11c3 <render_text_scanline_32btpp+0x103>
-    11c7:	83 c4 20             	add    esp,0x20
+    1327:	8b 4d b4             	mov    ecx,DWORD PTR [ebp-0x4c]
+    132a:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    132d:	83 c0 01             	add    eax,0x1
+    1330:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+    1333:	0f be d0             	movsx  edx,al
+    1336:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    1339:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+    133c:	0f be c0             	movsx  eax,al
+    133f:	8b 5d e4             	mov    ebx,DWORD PTR [ebp-0x1c]
+    1342:	89 5c 24 1c          	mov    DWORD PTR [esp+0x1c],ebx
+    1346:	89 4c 24 18          	mov    DWORD PTR [esp+0x18],ecx
+    134a:	8b 4d d8             	mov    ecx,DWORD PTR [ebp-0x28]
+    134d:	89 4c 24 14          	mov    DWORD PTR [esp+0x14],ecx
+    1351:	8b 4d ec             	mov    ecx,DWORD PTR [ebp-0x14]
+    1354:	89 4c 24 10          	mov    DWORD PTR [esp+0x10],ecx
+    1358:	c7 44 24 0c 20 00 00 00 	mov    DWORD PTR [esp+0xc],0x20
+    1360:	89 54 24 08          	mov    DWORD PTR [esp+0x8],edx
+    1364:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    1368:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    136b:	89 04 24             	mov    DWORD PTR [esp],eax
+    136e:	e8 fc ff ff ff       	call   136f <render_text_scanline_32btpp+0x122>
 								r, rmax, pixbuf, inv);
 				if (rmax == 8)
-    11ca:	83 7d d8 08          	cmp    DWORD PTR [ebp-0x28],0x8
-    11ce:	75 04                	jne    11d4 <render_text_scanline_32btpp+0x114>
+    1373:	83 7d d8 08          	cmp    DWORD PTR [ebp-0x28],0x8
+    1377:	75 04                	jne    137d <render_text_scanline_32btpp+0x130>
 						str += 2;
-    11d0:	83 45 0c 02          	add    DWORD PTR [ebp+0xc],0x2
+    1379:	83 45 0c 02          	add    DWORD PTR [ebp+0xc],0x2
 				// if (cc > cc1) <- does not happen cc always 1
 				memcpy(mem, pixbuf, bc);
-    11d4:	8b 4d e0             	mov    ecx,DWORD PTR [ebp-0x20]
-    11d7:	8b 55 b4             	mov    edx,DWORD PTR [ebp-0x4c]
-    11da:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-    11dd:	83 ec 04             	sub    esp,0x4
-    11e0:	51                   	push   ecx
-    11e1:	52                   	push   edx
-    11e2:	50                   	push   eax
-    11e3:	e8 18 ee ff ff       	call   0 <memcpy>
-    11e8:	83 c4 10             	add    esp,0x10
+    137d:	8b 4d e0             	mov    ecx,DWORD PTR [ebp-0x20]
+    1380:	8b 55 b4             	mov    edx,DWORD PTR [ebp-0x4c]
+    1383:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    1386:	89 4c 24 08          	mov    DWORD PTR [esp+0x8],ecx
+    138a:	89 54 24 04          	mov    DWORD PTR [esp+0x4],edx
+    138e:	89 04 24             	mov    DWORD PTR [esp],eax
+    1391:	e8 6a ec ff ff       	call   0 <memcpy>
 				px_x -= cc;
-    11eb:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    11ee:	29 45 14             	sub    DWORD PTR [ebp+0x14],eax
+    1396:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    1399:	29 45 14             	sub    DWORD PTR [ebp+0x14],eax
 				p0_x += cc;
-    11f1:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    11f4:	01 45 1c             	add    DWORD PTR [ebp+0x1c],eax
+    139c:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    139f:	01 45 1c             	add    DWORD PTR [ebp+0x1c],eax
 				mem += bc;
-    11f7:	8b 55 10             	mov    edx,DWORD PTR [ebp+0x10]
-    11fa:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
-    11fd:	01 d0                	add    eax,edx
-    11ff:	89 45 10             	mov    DWORD PTR [ebp+0x10],eax
+    13a2:	8b 55 10             	mov    edx,DWORD PTR [ebp+0x10]
+    13a5:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
+    13a8:	01 d0                	add    eax,edx
+    13aa:	89 45 10             	mov    DWORD PTR [ebp+0x10],eax
 		}
 
 		/* draw 2 pixels each */
 		while (px_x) {
-    1202:	e9 90 01 00 00       	jmp    1397 <render_text_scanline_32btpp+0x2d7>
+    13ad:	e9 c8 01 00 00       	jmp    157a <render_text_scanline_32btpp+0x32d>
 				int col = p0_x / 8, inv = (col == cur_x);
-    1207:	8b 45 1c             	mov    eax,DWORD PTR [ebp+0x1c]
-    120a:	8d 50 07             	lea    edx,[eax+0x7]
-    120d:	85 c0                	test   eax,eax
-    120f:	0f 48 c2             	cmovs  eax,edx
-    1212:	c1 f8 03             	sar    eax,0x3
-    1215:	89 45 d4             	mov    DWORD PTR [ebp-0x2c],eax
-    1218:	8b 45 d4             	mov    eax,DWORD PTR [ebp-0x2c]
-    121b:	3b 45 18             	cmp    eax,DWORD PTR [ebp+0x18]
-    121e:	0f 94 c0             	sete   al
-    1221:	0f b6 c0             	movzx  eax,al
-    1224:	89 45 d0             	mov    DWORD PTR [ebp-0x30],eax
+    13b2:	8b 45 1c             	mov    eax,DWORD PTR [ebp+0x1c]
+    13b5:	8d 50 07             	lea    edx,[eax+0x7]
+    13b8:	85 c0                	test   eax,eax
+    13ba:	0f 48 c2             	cmovs  eax,edx
+    13bd:	c1 f8 03             	sar    eax,0x3
+    13c0:	89 45 d4             	mov    DWORD PTR [ebp-0x2c],eax
+    13c3:	8b 45 d4             	mov    eax,DWORD PTR [ebp-0x2c]
+    13c6:	3b 45 18             	cmp    eax,DWORD PTR [ebp+0x18]
+    13c9:	0f 94 c0             	sete   al
+    13cc:	0f b6 c0             	movzx  eax,al
+    13cf:	89 45 d0             	mov    DWORD PTR [ebp-0x30],eax
 				ssize_t rmax, bitc, btt = min(64, 32 * px_x);
-    1227:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
-    122a:	c1 e0 05             	shl    eax,0x5
-    122d:	ba 40 00 00 00       	mov    edx,0x40
-    1232:	39 d0                	cmp    eax,edx
-    1234:	0f 4f c2             	cmovg  eax,edx
-    1237:	89 45 cc             	mov    DWORD PTR [ebp-0x34],eax
+    13d2:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
+    13d5:	c1 e0 05             	shl    eax,0x5
+    13d8:	ba 40 00 00 00       	mov    edx,0x40
+    13dd:	39 d0                	cmp    eax,edx
+    13df:	0f 4f c2             	cmovg  eax,edx
+    13e2:	89 45 cc             	mov    DWORD PTR [ebp-0x34],eax
 				r = p0_x % 8;
-    123a:	8b 55 1c             	mov    edx,DWORD PTR [ebp+0x1c]
-    123d:	89 d0                	mov    eax,edx
-    123f:	c1 f8 1f             	sar    eax,0x1f
-    1242:	c1 e8 1d             	shr    eax,0x1d
-    1245:	01 c2                	add    edx,eax
-    1247:	83 e2 07             	and    edx,0x7
-    124a:	29 c2                	sub    edx,eax
-    124c:	89 55 ec             	mov    DWORD PTR [ebp-0x14],edx
+    13e5:	8b 55 1c             	mov    edx,DWORD PTR [ebp+0x1c]
+    13e8:	89 d0                	mov    eax,edx
+    13ea:	c1 f8 1f             	sar    eax,0x1f
+    13ed:	c1 e8 1d             	shr    eax,0x1d
+    13f0:	01 c2                	add    edx,eax
+    13f2:	83 e2 07             	and    edx,0x7
+    13f5:	29 c2                	sub    edx,eax
+    13f7:	89 55 ec             	mov    DWORD PTR [ebp-0x14],edx
 				rmax = min(8, r + min(2, px_x)); /* only 2 pixels */
-    124f:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
-    1252:	ba 02 00 00 00       	mov    edx,0x2
-    1257:	39 d0                	cmp    eax,edx
-    1259:	0f 4e d0             	cmovle edx,eax
-    125c:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    125f:	01 d0                	add    eax,edx
-    1261:	ba 08 00 00 00       	mov    edx,0x8
-    1266:	39 d0                	cmp    eax,edx
-    1268:	0f 4f c2             	cmovg  eax,edx
-    126b:	89 45 c8             	mov    DWORD PTR [ebp-0x38],eax
+    13fa:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
+    13fd:	ba 02 00 00 00       	mov    edx,0x2
+    1402:	39 d0                	cmp    eax,edx
+    1404:	0f 4e d0             	cmovle edx,eax
+    1407:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    140a:	01 d0                	add    eax,edx
+    140c:	ba 08 00 00 00       	mov    edx,0x8
+    1411:	39 d0                	cmp    eax,edx
+    1413:	0f 4f c2             	cmovg  eax,edx
+    1416:	89 45 c8             	mov    DWORD PTR [ebp-0x38],eax
 				/* get the remaining character pixels */
 				bitc = generate_char_colors(font, str[0], str[1], 32,
-    126e:	8b 4d b4             	mov    ecx,DWORD PTR [ebp-0x4c]
-    1271:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    1274:	83 c0 01             	add    eax,0x1
-    1277:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-    127a:	0f be d0             	movsx  edx,al
-    127d:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    1280:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-    1283:	0f be c0             	movsx  eax,al
-    1286:	ff 75 d0             	push   DWORD PTR [ebp-0x30]
-    1289:	51                   	push   ecx
-    128a:	ff 75 c8             	push   DWORD PTR [ebp-0x38]
-    128d:	ff 75 ec             	push   DWORD PTR [ebp-0x14]
-    1290:	6a 20                	push   0x20
-    1292:	52                   	push   edx
-    1293:	50                   	push   eax
-    1294:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-    1297:	e8 fc ff ff ff       	call   1298 <render_text_scanline_32btpp+0x1d8>
-    129c:	83 c4 20             	add    esp,0x20
-    129f:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
+    1419:	8b 4d b4             	mov    ecx,DWORD PTR [ebp-0x4c]
+    141c:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    141f:	83 c0 01             	add    eax,0x1
+    1422:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+    1425:	0f be d0             	movsx  edx,al
+    1428:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    142b:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+    142e:	0f be c0             	movsx  eax,al
+    1431:	8b 5d d0             	mov    ebx,DWORD PTR [ebp-0x30]
+    1434:	89 5c 24 1c          	mov    DWORD PTR [esp+0x1c],ebx
+    1438:	89 4c 24 18          	mov    DWORD PTR [esp+0x18],ecx
+    143c:	8b 4d c8             	mov    ecx,DWORD PTR [ebp-0x38]
+    143f:	89 4c 24 14          	mov    DWORD PTR [esp+0x14],ecx
+    1443:	8b 4d ec             	mov    ecx,DWORD PTR [ebp-0x14]
+    1446:	89 4c 24 10          	mov    DWORD PTR [esp+0x10],ecx
+    144a:	c7 44 24 0c 20 00 00 00 	mov    DWORD PTR [esp+0xc],0x20
+    1452:	89 54 24 08          	mov    DWORD PTR [esp+0x8],edx
+    1456:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    145a:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    145d:	89 04 24             	mov    DWORD PTR [esp],eax
+    1460:	e8 fc ff ff ff       	call   1461 <render_text_scanline_32btpp+0x214>
+    1465:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
 								r, rmax, pixbuf, inv);
 				/* now advance if neccessary */
 				if (rmax == 8)
-    12a2:	83 7d c8 08          	cmp    DWORD PTR [ebp-0x38],0x8
-    12a6:	75 04                	jne    12ac <render_text_scanline_32btpp+0x1ec>
+    1468:	83 7d c8 08          	cmp    DWORD PTR [ebp-0x38],0x8
+    146c:	75 04                	jne    1472 <render_text_scanline_32btpp+0x225>
 						str += 2;
-    12a8:	83 45 0c 02          	add    DWORD PTR [ebp+0xc],0x2
+    146e:	83 45 0c 02          	add    DWORD PTR [ebp+0xc],0x2
 				/* and fetch one more pixel if needed (r=0) */
 				if (bitc < btt) {
-    12ac:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    12af:	3b 45 cc             	cmp    eax,DWORD PTR [ebp-0x34]
-    12b2:	7d 48                	jge    12fc <render_text_scanline_32btpp+0x23c>
+    1472:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    1475:	3b 45 cc             	cmp    eax,DWORD PTR [ebp-0x34]
+    1478:	7d 67                	jge    14e1 <render_text_scanline_32btpp+0x294>
 						col++;
-    12b4:	83 45 d4 01          	add    DWORD PTR [ebp-0x2c],0x1
+    147a:	83 45 d4 01          	add    DWORD PTR [ebp-0x2c],0x1
 						inv = (col == cur_x);
-    12b8:	8b 45 d4             	mov    eax,DWORD PTR [ebp-0x2c]
-    12bb:	3b 45 18             	cmp    eax,DWORD PTR [ebp+0x18]
-    12be:	0f 94 c0             	sete   al
-    12c1:	0f b6 c0             	movzx  eax,al
-    12c4:	89 45 d0             	mov    DWORD PTR [ebp-0x30],eax
+    147e:	8b 45 d4             	mov    eax,DWORD PTR [ebp-0x2c]
+    1481:	3b 45 18             	cmp    eax,DWORD PTR [ebp+0x18]
+    1484:	0f 94 c0             	sete   al
+    1487:	0f b6 c0             	movzx  eax,al
+    148a:	89 45 d0             	mov    DWORD PTR [ebp-0x30],eax
 						bitc += generate_char_colors(font, str[0], str[1], 32,
-    12c7:	8b 45 b4             	mov    eax,DWORD PTR [ebp-0x4c]
-    12ca:	8d 48 04             	lea    ecx,[eax+0x4]
-    12cd:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    12d0:	83 c0 01             	add    eax,0x1
-    12d3:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-    12d6:	0f be d0             	movsx  edx,al
-    12d9:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    12dc:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-    12df:	0f be c0             	movsx  eax,al
-    12e2:	ff 75 d0             	push   DWORD PTR [ebp-0x30]
-    12e5:	51                   	push   ecx
-    12e6:	6a 01                	push   0x1
-    12e8:	6a 00                	push   0x0
-    12ea:	6a 20                	push   0x20
-    12ec:	52                   	push   edx
-    12ed:	50                   	push   eax
-    12ee:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-    12f1:	e8 fc ff ff ff       	call   12f2 <render_text_scanline_32btpp+0x232>
-    12f6:	83 c4 20             	add    esp,0x20
-    12f9:	01 45 f4             	add    DWORD PTR [ebp-0xc],eax
+    148d:	8b 45 b4             	mov    eax,DWORD PTR [ebp-0x4c]
+    1490:	8d 58 04             	lea    ebx,[eax+0x4]
+    1493:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    1496:	83 c0 01             	add    eax,0x1
+    1499:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+    149c:	0f be d0             	movsx  edx,al
+    149f:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    14a2:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+    14a5:	0f be c0             	movsx  eax,al
+    14a8:	8b 4d d0             	mov    ecx,DWORD PTR [ebp-0x30]
+    14ab:	89 4c 24 1c          	mov    DWORD PTR [esp+0x1c],ecx
+    14af:	89 5c 24 18          	mov    DWORD PTR [esp+0x18],ebx
+    14b3:	c7 44 24 14 01 00 00 00 	mov    DWORD PTR [esp+0x14],0x1
+    14bb:	c7 44 24 10 00 00 00 00 	mov    DWORD PTR [esp+0x10],0x0
+    14c3:	c7 44 24 0c 20 00 00 00 	mov    DWORD PTR [esp+0xc],0x20
+    14cb:	89 54 24 08          	mov    DWORD PTR [esp+0x8],edx
+    14cf:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    14d3:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    14d6:	89 04 24             	mov    DWORD PTR [esp],eax
+    14d9:	e8 fc ff ff ff       	call   14da <render_text_scanline_32btpp+0x28d>
+    14de:	01 45 f4             	add    DWORD PTR [ebp-0xc],eax
 										0, 1, pixbuf + 4, inv);
 				}
 				/* now transfer */
 				if (bitc >= 64) {
-    12fc:	83 7d f4 3f          	cmp    DWORD PTR [ebp-0xc],0x3f
-    1300:	7e 21                	jle    1323 <render_text_scanline_32btpp+0x263>
+    14e1:	83 7d f4 3f          	cmp    DWORD PTR [ebp-0xc],0x3f
+    14e5:	7e 21                	jle    1508 <render_text_scanline_32btpp+0x2bb>
 						move_64(pixbuf, mem);
-    1302:	8b 45 b4             	mov    eax,DWORD PTR [ebp-0x4c]
-    1305:	8b 55 10             	mov    edx,DWORD PTR [ebp+0x10]
-    1308:	0f 6f 00             	movq   mm0,QWORD PTR [eax]
-    130b:	0f 7f 02             	movq   QWORD PTR [edx],mm0
+    14e7:	8b 45 b4             	mov    eax,DWORD PTR [ebp-0x4c]
+    14ea:	8b 55 10             	mov    edx,DWORD PTR [ebp+0x10]
+    14ed:	0f 6f 00             	movq   mm0,QWORD PTR [eax]
+    14f0:	0f 7f 02             	movq   QWORD PTR [edx],mm0
 						mem += 8; /* intentionally no bitc subtract */
-    130e:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-    1311:	83 c0 08             	add    eax,0x8
-    1314:	89 45 10             	mov    DWORD PTR [ebp+0x10],eax
+    14f3:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    14f6:	83 c0 08             	add    eax,0x8
+    14f9:	89 45 10             	mov    DWORD PTR [ebp+0x10],eax
 						}
 						break;
 				}
 
 				/* and don't advance as r = 0 is already handled (sth. remains) */
 				if (px_x) {
-    1317:	83 7d 14 00          	cmp    DWORD PTR [ebp+0x14],0x0
-    131b:	0f 84 82 00 00 00    	je     13a3 <render_text_scanline_32btpp+0x2e3>
-    1321:	eb 50                	jmp    1373 <render_text_scanline_32btpp+0x2b3>
+    14fc:	83 7d 14 00          	cmp    DWORD PTR [ebp+0x14],0x0
+    1500:	0f 84 80 00 00 00    	je     1586 <render_text_scanline_32btpp+0x339>
+    1506:	eb 4e                	jmp    1556 <render_text_scanline_32btpp+0x309>
 						if (bitc >= 32) {
-    1323:	83 7d f4 1f          	cmp    DWORD PTR [ebp-0xc],0x1f
-    1327:	7e 19                	jle    1342 <render_text_scanline_32btpp+0x282>
+    1508:	83 7d f4 1f          	cmp    DWORD PTR [ebp-0xc],0x1f
+    150c:	7e 19                	jle    1527 <render_text_scanline_32btpp+0x2da>
 								*(uint32_t*)mem = *(uint32_t*)pixbuf;
-    1329:	8b 55 b4             	mov    edx,DWORD PTR [ebp-0x4c]
-    132c:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-    132f:	8b 12                	mov    edx,DWORD PTR [edx]
-    1331:	89 10                	mov    DWORD PTR [eax],edx
+    150e:	8b 55 b4             	mov    edx,DWORD PTR [ebp-0x4c]
+    1511:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    1514:	8b 12                	mov    edx,DWORD PTR [edx]
+    1516:	89 10                	mov    DWORD PTR [eax],edx
 								mem += 4;
-    1333:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-    1336:	83 c0 04             	add    eax,0x4
-    1339:	89 45 10             	mov    DWORD PTR [ebp+0x10],eax
+    1518:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    151b:	83 c0 04             	add    eax,0x4
+    151e:	89 45 10             	mov    DWORD PTR [ebp+0x10],eax
 								bitc -= 32;
-    133c:	83 6d f4 20          	sub    DWORD PTR [ebp-0xc],0x20
+    1521:	83 6d f4 20          	sub    DWORD PTR [ebp-0xc],0x20
 						break;
-    1340:	eb 64                	jmp    13a6 <render_text_scanline_32btpp+0x2e6>
+    1525:	eb 62                	jmp    1589 <render_text_scanline_32btpp+0x33c>
 						} else if (bitc) {
-    1342:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
-    1346:	74 5e                	je     13a6 <render_text_scanline_32btpp+0x2e6>
+    1527:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
+    152b:	74 5c                	je     1589 <render_text_scanline_32btpp+0x33c>
 								die("cant happen with dword sized pixels!\n");
-    1348:	83 ec 08             	sub    esp,0x8
-    134b:	68 1c 01 00 00       	push   0x11c
-    1350:	6a 0c                	push   0xc
-    1352:	e8 fc ff ff ff       	call   1353 <render_text_scanline_32btpp+0x293>
-    1357:	83 c4 10             	add    esp,0x10
-    135a:	e8 fc ff ff ff       	call   135b <render_text_scanline_32btpp+0x29b>
-    135f:	83 ec 0c             	sub    esp,0xc
-    1362:	68 00 00 00 00       	push   0x0
-    1367:	e8 fc ff ff ff       	call   1368 <render_text_scanline_32btpp+0x2a8>
-    136c:	83 c4 10             	add    esp,0x10
-    136f:	fa                   	cli
-    1370:	f4                   	hlt
-    1371:	eb fd                	jmp    1370 <render_text_scanline_32btpp+0x2b0>
+    152d:	c7 44 24 04 1c 01 00 00 	mov    DWORD PTR [esp+0x4],0x11c
+    1535:	c7 04 24 0c 00 00 00 	mov    DWORD PTR [esp],0xc
+    153c:	e8 fc ff ff ff       	call   153d <render_text_scanline_32btpp+0x2f0>
+    1541:	e8 fc ff ff ff       	call   1542 <render_text_scanline_32btpp+0x2f5>
+    1546:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+    154d:	e8 fc ff ff ff       	call   154e <render_text_scanline_32btpp+0x301>
+    1552:	fa                   	cli
+    1553:	f4                   	hlt
+    1554:	eb fd                	jmp    1553 <render_text_scanline_32btpp+0x306>
 						px_x -= bitc / 32;
-    1373:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    1376:	8d 50 1f             	lea    edx,[eax+0x1f]
-    1379:	85 c0                	test   eax,eax
-    137b:	0f 48 c2             	cmovs  eax,edx
-    137e:	c1 f8 05             	sar    eax,0x5
-    1381:	f7 d8                	neg    eax
-    1383:	01 45 14             	add    DWORD PTR [ebp+0x14],eax
+    1556:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    1559:	8d 50 1f             	lea    edx,[eax+0x1f]
+    155c:	85 c0                	test   eax,eax
+    155e:	0f 48 c2             	cmovs  eax,edx
+    1561:	c1 f8 05             	sar    eax,0x5
+    1564:	f7 d8                	neg    eax
+    1566:	01 45 14             	add    DWORD PTR [ebp+0x14],eax
 						p0_x += bitc / 32; /* unneccessary as r does not change anymore */
-    1386:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    1389:	8d 50 1f             	lea    edx,[eax+0x1f]
-    138c:	85 c0                	test   eax,eax
-    138e:	0f 48 c2             	cmovs  eax,edx
-    1391:	c1 f8 05             	sar    eax,0x5
-    1394:	01 45 1c             	add    DWORD PTR [ebp+0x1c],eax
+    1569:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    156c:	8d 50 1f             	lea    edx,[eax+0x1f]
+    156f:	85 c0                	test   eax,eax
+    1571:	0f 48 c2             	cmovs  eax,edx
+    1574:	c1 f8 05             	sar    eax,0x5
+    1577:	01 45 1c             	add    DWORD PTR [ebp+0x1c],eax
 		while (px_x) {
-    1397:	83 7d 14 00          	cmp    DWORD PTR [ebp+0x14],0x0
-    139b:	0f 85 66 fe ff ff    	jne    1207 <render_text_scanline_32btpp+0x147>
+    157a:	83 7d 14 00          	cmp    DWORD PTR [ebp+0x14],0x0
+    157e:	0f 85 2e fe ff ff    	jne    13b2 <render_text_scanline_32btpp+0x165>
 				} else
 						break;
 		}
 }
-    13a1:	eb 04                	jmp    13a7 <render_text_scanline_32btpp+0x2e7>
+    1584:	eb 04                	jmp    158a <render_text_scanline_32btpp+0x33d>
 						break;
-    13a3:	90                   	nop
-    13a4:	eb 01                	jmp    13a7 <render_text_scanline_32btpp+0x2e7>
+    1586:	90                   	nop
+    1587:	eb 01                	jmp    158a <render_text_scanline_32btpp+0x33d>
 						break;
-    13a6:	90                   	nop
+    1589:	90                   	nop
 }
-    13a7:	90                   	nop
-    13a8:	c9                   	leave
-    13a9:	c3                   	ret
+    158a:	90                   	nop
+    158b:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
+    158e:	c9                   	leave
+    158f:	c3                   	ret
 
-000013aa <render_text_scanline_8btpp>:
+00001590 <render_text_scanline_8btpp>:
 
 /* ~32 times better performance than /w byte access in old method below */
 void render_text_scanline_8btpp(const char* font, char* str, void* mem,
 				ssize_t px_x, ssize_t cur_x, ssize_t p0_x)
 {
-    13aa:	55                   	push   ebp
-    13ab:	89 e5                	mov    ebp,esp
-    13ad:	53                   	push   ebx
-    13ae:	83 ec 54             	sub    esp,0x54
+    1590:	55                   	push   ebp
+    1591:	89 e5                	mov    ebp,esp
+    1593:	56                   	push   esi
+    1594:	53                   	push   ebx
+    1595:	83 ec 70             	sub    esp,0x70
 		uint8_t pxb[8 + 7]; /* for any stack alignment */
 		ssize_t misalign = ((size_t)mem % 8) ? (8 - (size_t)mem % 8) : 0;
-    13b1:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-    13b4:	83 e0 07             	and    eax,0x7
-    13b7:	85 c0                	test   eax,eax
-    13b9:	74 11                	je     13cc <render_text_scanline_8btpp+0x22>
-    13bb:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-    13be:	83 e0 07             	and    eax,0x7
-    13c1:	ba 08 00 00 00       	mov    edx,0x8
-    13c6:	29 c2                	sub    edx,eax
-    13c8:	89 d0                	mov    eax,edx
-    13ca:	eb 05                	jmp    13d1 <render_text_scanline_8btpp+0x27>
-    13cc:	b8 00 00 00 00       	mov    eax,0x0
-    13d1:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
+    1598:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    159b:	83 e0 07             	and    eax,0x7
+    159e:	85 c0                	test   eax,eax
+    15a0:	74 11                	je     15b3 <render_text_scanline_8btpp+0x23>
+    15a2:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    15a5:	83 e0 07             	and    eax,0x7
+    15a8:	ba 08 00 00 00       	mov    edx,0x8
+    15ad:	29 c2                	sub    edx,eax
+    15af:	89 d0                	mov    eax,edx
+    15b1:	eb 05                	jmp    15b8 <render_text_scanline_8btpp+0x28>
+    15b3:	b8 00 00 00 00       	mov    eax,0x0
+    15b8:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
 		ssize_t r = p0_x % 8;
-    13d4:	8b 55 1c             	mov    edx,DWORD PTR [ebp+0x1c]
-    13d7:	89 d0                	mov    eax,edx
-    13d9:	c1 f8 1f             	sar    eax,0x1f
-    13dc:	c1 e8 1d             	shr    eax,0x1d
-    13df:	01 c2                	add    edx,eax
-    13e1:	83 e2 07             	and    edx,0x7
-    13e4:	29 c2                	sub    edx,eax
-    13e6:	89 55 e4             	mov    DWORD PTR [ebp-0x1c],edx
+    15bb:	8b 55 1c             	mov    edx,DWORD PTR [ebp+0x1c]
+    15be:	89 d0                	mov    eax,edx
+    15c0:	c1 f8 1f             	sar    eax,0x1f
+    15c3:	c1 e8 1d             	shr    eax,0x1d
+    15c6:	01 c2                	add    edx,eax
+    15c8:	83 e2 07             	and    edx,0x7
+    15cb:	29 c2                	sub    edx,eax
+    15cd:	89 55 e4             	mov    DWORD PTR [ebp-0x1c],edx
 		uint8_t* pixbuf = pxb + (((size_t)pxb % 8) ? (8 - ((size_t)pxb % 8)) : 0);
-    13e9:	8d 45 b1             	lea    eax,[ebp-0x4f]
-    13ec:	83 e0 07             	and    eax,0x7
-    13ef:	85 c0                	test   eax,eax
-    13f1:	74 11                	je     1404 <render_text_scanline_8btpp+0x5a>
-    13f3:	8d 45 b1             	lea    eax,[ebp-0x4f]
-    13f6:	83 e0 07             	and    eax,0x7
-    13f9:	89 c2                	mov    edx,eax
-    13fb:	b8 08 00 00 00       	mov    eax,0x8
-    1400:	29 d0                	sub    eax,edx
-    1402:	eb 05                	jmp    1409 <render_text_scanline_8btpp+0x5f>
-    1404:	b8 00 00 00 00       	mov    eax,0x0
-    1409:	8d 55 b1             	lea    edx,[ebp-0x4f]
-    140c:	01 d0                	add    eax,edx
-    140e:	89 45 ac             	mov    DWORD PTR [ebp-0x54],eax
+    15d0:	8d 45 b1             	lea    eax,[ebp-0x4f]
+    15d3:	83 e0 07             	and    eax,0x7
+    15d6:	85 c0                	test   eax,eax
+    15d8:	74 11                	je     15eb <render_text_scanline_8btpp+0x5b>
+    15da:	8d 45 b1             	lea    eax,[ebp-0x4f]
+    15dd:	83 e0 07             	and    eax,0x7
+    15e0:	89 c2                	mov    edx,eax
+    15e2:	b8 08 00 00 00       	mov    eax,0x8
+    15e7:	29 d0                	sub    eax,edx
+    15e9:	eb 05                	jmp    15f0 <render_text_scanline_8btpp+0x60>
+    15eb:	b8 00 00 00 00       	mov    eax,0x0
+    15f0:	8d 55 b1             	lea    edx,[ebp-0x4f]
+    15f3:	01 d0                	add    eax,edx
+    15f5:	89 45 ac             	mov    DWORD PTR [ebp-0x54],eax
 		/* 64-bit aligned moves are enough */
 
 		if (misalign) { /* we first have to draw misalign pixels */
-    1411:	83 7d e8 00          	cmp    DWORD PTR [ebp-0x18],0x0
-    1415:	0f 84 05 03 00 00    	je     1720 <render_text_scanline_8btpp+0x376>
+    15f8:	83 7d e8 00          	cmp    DWORD PTR [ebp-0x18],0x0
+    15fc:	0f 84 77 03 00 00    	je     1979 <render_text_scanline_8btpp+0x3e9>
 				int col = p0_x / 8, inv = (col == cur_x);
-    141b:	8b 45 1c             	mov    eax,DWORD PTR [ebp+0x1c]
-    141e:	8d 50 07             	lea    edx,[eax+0x7]
-    1421:	85 c0                	test   eax,eax
-    1423:	0f 48 c2             	cmovs  eax,edx
-    1426:	c1 f8 03             	sar    eax,0x3
-    1429:	89 45 e0             	mov    DWORD PTR [ebp-0x20],eax
-    142c:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
-    142f:	3b 45 18             	cmp    eax,DWORD PTR [ebp+0x18]
-    1432:	0f 94 c0             	sete   al
-    1435:	0f b6 c0             	movzx  eax,al
-    1438:	89 45 dc             	mov    DWORD PTR [ebp-0x24],eax
+    1602:	8b 45 1c             	mov    eax,DWORD PTR [ebp+0x1c]
+    1605:	8d 50 07             	lea    edx,[eax+0x7]
+    1608:	85 c0                	test   eax,eax
+    160a:	0f 48 c2             	cmovs  eax,edx
+    160d:	c1 f8 03             	sar    eax,0x3
+    1610:	89 45 e0             	mov    DWORD PTR [ebp-0x20],eax
+    1613:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
+    1616:	3b 45 18             	cmp    eax,DWORD PTR [ebp+0x18]
+    1619:	0f 94 c0             	sete   al
+    161c:	0f b6 c0             	movzx  eax,al
+    161f:	89 45 dc             	mov    DWORD PTR [ebp-0x24],eax
 				ssize_t bc = min(misalign, px_x); /* r already set */
-    143b:	8b 55 14             	mov    edx,DWORD PTR [ebp+0x14]
-    143e:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
-    1441:	39 c2                	cmp    edx,eax
-    1443:	0f 4e c2             	cmovle eax,edx
-    1446:	89 45 d8             	mov    DWORD PTR [ebp-0x28],eax
+    1622:	8b 55 14             	mov    edx,DWORD PTR [ebp+0x14]
+    1625:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
+    1628:	39 c2                	cmp    edx,eax
+    162a:	0f 4e c2             	cmovle eax,edx
+    162d:	89 45 d8             	mov    DWORD PTR [ebp-0x28],eax
 				ssize_t rmax = min(8, r + bc), bc1 = rmax - r;
-    1449:	8b 55 e4             	mov    edx,DWORD PTR [ebp-0x1c]
-    144c:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-    144f:	01 d0                	add    eax,edx
-    1451:	ba 08 00 00 00       	mov    edx,0x8
-    1456:	39 d0                	cmp    eax,edx
-    1458:	0f 4f c2             	cmovg  eax,edx
-    145b:	89 45 d4             	mov    DWORD PTR [ebp-0x2c],eax
-    145e:	8b 45 d4             	mov    eax,DWORD PTR [ebp-0x2c]
-    1461:	2b 45 e4             	sub    eax,DWORD PTR [ebp-0x1c]
-    1464:	89 45 d0             	mov    DWORD PTR [ebp-0x30],eax
+    1630:	8b 55 e4             	mov    edx,DWORD PTR [ebp-0x1c]
+    1633:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+    1636:	01 d0                	add    eax,edx
+    1638:	ba 08 00 00 00       	mov    edx,0x8
+    163d:	39 d0                	cmp    eax,edx
+    163f:	0f 4f c2             	cmovg  eax,edx
+    1642:	89 45 d4             	mov    DWORD PTR [ebp-0x2c],eax
+    1645:	8b 45 d4             	mov    eax,DWORD PTR [ebp-0x2c]
+    1648:	2b 45 e4             	sub    eax,DWORD PTR [ebp-0x1c]
+    164b:	89 45 d0             	mov    DWORD PTR [ebp-0x30],eax
 
 				generate_char_colors(font, str[0], str[1], 8,
-    1467:	8b 4d ac             	mov    ecx,DWORD PTR [ebp-0x54]
-    146a:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    146d:	83 c0 01             	add    eax,0x1
-    1470:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-    1473:	0f be d0             	movsx  edx,al
-    1476:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    1479:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-    147c:	0f be c0             	movsx  eax,al
-    147f:	ff 75 dc             	push   DWORD PTR [ebp-0x24]
-    1482:	51                   	push   ecx
-    1483:	ff 75 d4             	push   DWORD PTR [ebp-0x2c]
-    1486:	ff 75 e4             	push   DWORD PTR [ebp-0x1c]
-    1489:	6a 08                	push   0x8
-    148b:	52                   	push   edx
-    148c:	50                   	push   eax
-    148d:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-    1490:	e8 fc ff ff ff       	call   1491 <render_text_scanline_8btpp+0xe7>
-    1495:	83 c4 20             	add    esp,0x20
+    164e:	8b 4d ac             	mov    ecx,DWORD PTR [ebp-0x54]
+    1651:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    1654:	83 c0 01             	add    eax,0x1
+    1657:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+    165a:	0f be d0             	movsx  edx,al
+    165d:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    1660:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+    1663:	0f be c0             	movsx  eax,al
+    1666:	8b 5d dc             	mov    ebx,DWORD PTR [ebp-0x24]
+    1669:	89 5c 24 1c          	mov    DWORD PTR [esp+0x1c],ebx
+    166d:	89 4c 24 18          	mov    DWORD PTR [esp+0x18],ecx
+    1671:	8b 4d d4             	mov    ecx,DWORD PTR [ebp-0x2c]
+    1674:	89 4c 24 14          	mov    DWORD PTR [esp+0x14],ecx
+    1678:	8b 4d e4             	mov    ecx,DWORD PTR [ebp-0x1c]
+    167b:	89 4c 24 10          	mov    DWORD PTR [esp+0x10],ecx
+    167f:	c7 44 24 0c 08 00 00 00 	mov    DWORD PTR [esp+0xc],0x8
+    1687:	89 54 24 08          	mov    DWORD PTR [esp+0x8],edx
+    168b:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    168f:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1692:	89 04 24             	mov    DWORD PTR [esp],eax
+    1695:	e8 fc ff ff ff       	call   1696 <render_text_scanline_8btpp+0x106>
 								r, rmax, pixbuf, inv);
 				if (rmax == 8)
-    1498:	83 7d d4 08          	cmp    DWORD PTR [ebp-0x2c],0x8
-    149c:	75 04                	jne    14a2 <render_text_scanline_8btpp+0xf8>
+    169a:	83 7d d4 08          	cmp    DWORD PTR [ebp-0x2c],0x8
+    169e:	75 04                	jne    16a4 <render_text_scanline_8btpp+0x114>
 						str += 2;
-    149e:	83 45 0c 02          	add    DWORD PTR [ebp+0xc],0x2
+    16a0:	83 45 0c 02          	add    DWORD PTR [ebp+0xc],0x2
 				if (bc > bc1) {
-    14a2:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-    14a5:	3b 45 d0             	cmp    eax,DWORD PTR [ebp-0x30]
-    14a8:	7e 4f                	jle    14f9 <render_text_scanline_8btpp+0x14f>
+    16a4:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+    16a7:	3b 45 d0             	cmp    eax,DWORD PTR [ebp-0x30]
+    16aa:	7e 6b                	jle    1717 <render_text_scanline_8btpp+0x187>
 						col++;
-    14aa:	83 45 e0 01          	add    DWORD PTR [ebp-0x20],0x1
+    16ac:	83 45 e0 01          	add    DWORD PTR [ebp-0x20],0x1
 						inv = (col == cur_x);
-    14ae:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
-    14b1:	3b 45 18             	cmp    eax,DWORD PTR [ebp+0x18]
-    14b4:	0f 94 c0             	sete   al
-    14b7:	0f b6 c0             	movzx  eax,al
-    14ba:	89 45 dc             	mov    DWORD PTR [ebp-0x24],eax
+    16b0:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
+    16b3:	3b 45 18             	cmp    eax,DWORD PTR [ebp+0x18]
+    16b6:	0f 94 c0             	sete   al
+    16b9:	0f b6 c0             	movzx  eax,al
+    16bc:	89 45 dc             	mov    DWORD PTR [ebp-0x24],eax
 						generate_char_colors(font, str[0], str[1], 8,
-    14bd:	8b 55 ac             	mov    edx,DWORD PTR [ebp-0x54]
-    14c0:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-    14c3:	8d 1c 02             	lea    ebx,[edx+eax*1]
-    14c6:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-    14c9:	2b 45 d0             	sub    eax,DWORD PTR [ebp-0x30]
-    14cc:	89 c1                	mov    ecx,eax
-    14ce:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    14d1:	83 c0 01             	add    eax,0x1
-    14d4:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-    14d7:	0f be d0             	movsx  edx,al
-    14da:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    14dd:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-    14e0:	0f be c0             	movsx  eax,al
-    14e3:	ff 75 dc             	push   DWORD PTR [ebp-0x24]
-    14e6:	53                   	push   ebx
-    14e7:	51                   	push   ecx
-    14e8:	6a 00                	push   0x0
-    14ea:	6a 08                	push   0x8
-    14ec:	52                   	push   edx
-    14ed:	50                   	push   eax
-    14ee:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-    14f1:	e8 fc ff ff ff       	call   14f2 <render_text_scanline_8btpp+0x148>
-    14f6:	83 c4 20             	add    esp,0x20
+    16bf:	8b 55 ac             	mov    edx,DWORD PTR [ebp-0x54]
+    16c2:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+    16c5:	8d 34 02             	lea    esi,[edx+eax*1]
+    16c8:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+    16cb:	2b 45 d0             	sub    eax,DWORD PTR [ebp-0x30]
+    16ce:	89 c1                	mov    ecx,eax
+    16d0:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    16d3:	83 c0 01             	add    eax,0x1
+    16d6:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+    16d9:	0f be d0             	movsx  edx,al
+    16dc:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    16df:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+    16e2:	0f be c0             	movsx  eax,al
+    16e5:	8b 5d dc             	mov    ebx,DWORD PTR [ebp-0x24]
+    16e8:	89 5c 24 1c          	mov    DWORD PTR [esp+0x1c],ebx
+    16ec:	89 74 24 18          	mov    DWORD PTR [esp+0x18],esi
+    16f0:	89 4c 24 14          	mov    DWORD PTR [esp+0x14],ecx
+    16f4:	c7 44 24 10 00 00 00 00 	mov    DWORD PTR [esp+0x10],0x0
+    16fc:	c7 44 24 0c 08 00 00 00 	mov    DWORD PTR [esp+0xc],0x8
+    1704:	89 54 24 08          	mov    DWORD PTR [esp+0x8],edx
+    1708:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    170c:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    170f:	89 04 24             	mov    DWORD PTR [esp],eax
+    1712:	e8 fc ff ff ff       	call   1713 <render_text_scanline_8btpp+0x183>
 										0, bc - bc1, pixbuf + bc1, inv);
 				}
 				memcpy(mem, pixbuf, bc);
-    14f9:	8b 4d d8             	mov    ecx,DWORD PTR [ebp-0x28]
-    14fc:	8b 55 ac             	mov    edx,DWORD PTR [ebp-0x54]
-    14ff:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-    1502:	83 ec 04             	sub    esp,0x4
-    1505:	51                   	push   ecx
-    1506:	52                   	push   edx
-    1507:	50                   	push   eax
-    1508:	e8 f3 ea ff ff       	call   0 <memcpy>
-    150d:	83 c4 10             	add    esp,0x10
+    1717:	8b 4d d8             	mov    ecx,DWORD PTR [ebp-0x28]
+    171a:	8b 55 ac             	mov    edx,DWORD PTR [ebp-0x54]
+    171d:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    1720:	89 4c 24 08          	mov    DWORD PTR [esp+0x8],ecx
+    1724:	89 54 24 04          	mov    DWORD PTR [esp+0x4],edx
+    1728:	89 04 24             	mov    DWORD PTR [esp],eax
+    172b:	e8 d0 e8 ff ff       	call   0 <memcpy>
 				px_x -= bc;
-    1510:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-    1513:	29 45 14             	sub    DWORD PTR [ebp+0x14],eax
+    1730:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+    1733:	29 45 14             	sub    DWORD PTR [ebp+0x14],eax
 				p0_x += bc;
-    1516:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-    1519:	01 45 1c             	add    DWORD PTR [ebp+0x1c],eax
+    1736:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+    1739:	01 45 1c             	add    DWORD PTR [ebp+0x1c],eax
 				mem += bc;
-    151c:	8b 55 10             	mov    edx,DWORD PTR [ebp+0x10]
-    151f:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-    1522:	01 d0                	add    eax,edx
-    1524:	89 45 10             	mov    DWORD PTR [ebp+0x10],eax
+    173c:	8b 55 10             	mov    edx,DWORD PTR [ebp+0x10]
+    173f:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+    1742:	01 d0                	add    eax,edx
+    1744:	89 45 10             	mov    DWORD PTR [ebp+0x10],eax
 		}
 
 		/* now we can draw 8 pixels each */
 		while (px_x) {
-    1527:	e9 f4 01 00 00       	jmp    1720 <render_text_scanline_8btpp+0x376>
+    1747:	e9 2d 02 00 00       	jmp    1979 <render_text_scanline_8btpp+0x3e9>
 				int col = p0_x / 8, inv = (col == cur_x);
-    152c:	8b 45 1c             	mov    eax,DWORD PTR [ebp+0x1c]
-    152f:	8d 50 07             	lea    edx,[eax+0x7]
-    1532:	85 c0                	test   eax,eax
-    1534:	0f 48 c2             	cmovs  eax,edx
-    1537:	c1 f8 03             	sar    eax,0x3
-    153a:	89 45 cc             	mov    DWORD PTR [ebp-0x34],eax
-    153d:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-    1540:	3b 45 18             	cmp    eax,DWORD PTR [ebp+0x18]
-    1543:	0f 94 c0             	sete   al
-    1546:	0f b6 c0             	movzx  eax,al
-    1549:	89 45 c8             	mov    DWORD PTR [ebp-0x38],eax
+    174c:	8b 45 1c             	mov    eax,DWORD PTR [ebp+0x1c]
+    174f:	8d 50 07             	lea    edx,[eax+0x7]
+    1752:	85 c0                	test   eax,eax
+    1754:	0f 48 c2             	cmovs  eax,edx
+    1757:	c1 f8 03             	sar    eax,0x3
+    175a:	89 45 cc             	mov    DWORD PTR [ebp-0x34],eax
+    175d:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    1760:	3b 45 18             	cmp    eax,DWORD PTR [ebp+0x18]
+    1763:	0f 94 c0             	sete   al
+    1766:	0f b6 c0             	movzx  eax,al
+    1769:	89 45 c8             	mov    DWORD PTR [ebp-0x38],eax
 				ssize_t rmax, bitc, btt = min(64, 8 * px_x), cc;
-    154c:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
-    154f:	c1 e0 03             	shl    eax,0x3
-    1552:	ba 40 00 00 00       	mov    edx,0x40
-    1557:	39 d0                	cmp    eax,edx
-    1559:	0f 4f c2             	cmovg  eax,edx
-    155c:	89 45 c4             	mov    DWORD PTR [ebp-0x3c],eax
+    176c:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
+    176f:	c1 e0 03             	shl    eax,0x3
+    1772:	ba 40 00 00 00       	mov    edx,0x40
+    1777:	39 d0                	cmp    eax,edx
+    1779:	0f 4f c2             	cmovg  eax,edx
+    177c:	89 45 c4             	mov    DWORD PTR [ebp-0x3c],eax
 				r = p0_x % 8;
-    155f:	8b 55 1c             	mov    edx,DWORD PTR [ebp+0x1c]
-    1562:	89 d0                	mov    eax,edx
-    1564:	c1 f8 1f             	sar    eax,0x1f
-    1567:	c1 e8 1d             	shr    eax,0x1d
-    156a:	01 c2                	add    edx,eax
-    156c:	83 e2 07             	and    edx,0x7
-    156f:	29 c2                	sub    edx,eax
-    1571:	89 55 e4             	mov    DWORD PTR [ebp-0x1c],edx
+    177f:	8b 55 1c             	mov    edx,DWORD PTR [ebp+0x1c]
+    1782:	89 d0                	mov    eax,edx
+    1784:	c1 f8 1f             	sar    eax,0x1f
+    1787:	c1 e8 1d             	shr    eax,0x1d
+    178a:	01 c2                	add    edx,eax
+    178c:	83 e2 07             	and    edx,0x7
+    178f:	29 c2                	sub    edx,eax
+    1791:	89 55 e4             	mov    DWORD PTR [ebp-0x1c],edx
 				rmax = min(8, r + px_x);
-    1574:	8b 55 e4             	mov    edx,DWORD PTR [ebp-0x1c]
-    1577:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
-    157a:	01 d0                	add    eax,edx
-    157c:	ba 08 00 00 00       	mov    edx,0x8
-    1581:	39 d0                	cmp    eax,edx
-    1583:	0f 4f c2             	cmovg  eax,edx
-    1586:	89 45 c0             	mov    DWORD PTR [ebp-0x40],eax
+    1794:	8b 55 e4             	mov    edx,DWORD PTR [ebp-0x1c]
+    1797:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
+    179a:	01 d0                	add    eax,edx
+    179c:	ba 08 00 00 00       	mov    edx,0x8
+    17a1:	39 d0                	cmp    eax,edx
+    17a3:	0f 4f c2             	cmovg  eax,edx
+    17a6:	89 45 c0             	mov    DWORD PTR [ebp-0x40],eax
 				/* get the remaining character pixels */
 				bitc = generate_char_colors(font, str[0], str[1], 8,
-    1589:	8b 4d ac             	mov    ecx,DWORD PTR [ebp-0x54]
-    158c:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    158f:	83 c0 01             	add    eax,0x1
-    1592:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-    1595:	0f be d0             	movsx  edx,al
-    1598:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    159b:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-    159e:	0f be c0             	movsx  eax,al
-    15a1:	ff 75 c8             	push   DWORD PTR [ebp-0x38]
-    15a4:	51                   	push   ecx
-    15a5:	ff 75 c0             	push   DWORD PTR [ebp-0x40]
-    15a8:	ff 75 e4             	push   DWORD PTR [ebp-0x1c]
-    15ab:	6a 08                	push   0x8
-    15ad:	52                   	push   edx
-    15ae:	50                   	push   eax
-    15af:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-    15b2:	e8 fc ff ff ff       	call   15b3 <render_text_scanline_8btpp+0x209>
-    15b7:	83 c4 20             	add    esp,0x20
-    15ba:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
+    17a9:	8b 4d ac             	mov    ecx,DWORD PTR [ebp-0x54]
+    17ac:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    17af:	83 c0 01             	add    eax,0x1
+    17b2:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+    17b5:	0f be d0             	movsx  edx,al
+    17b8:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    17bb:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+    17be:	0f be c0             	movsx  eax,al
+    17c1:	8b 5d c8             	mov    ebx,DWORD PTR [ebp-0x38]
+    17c4:	89 5c 24 1c          	mov    DWORD PTR [esp+0x1c],ebx
+    17c8:	89 4c 24 18          	mov    DWORD PTR [esp+0x18],ecx
+    17cc:	8b 4d c0             	mov    ecx,DWORD PTR [ebp-0x40]
+    17cf:	89 4c 24 14          	mov    DWORD PTR [esp+0x14],ecx
+    17d3:	8b 4d e4             	mov    ecx,DWORD PTR [ebp-0x1c]
+    17d6:	89 4c 24 10          	mov    DWORD PTR [esp+0x10],ecx
+    17da:	c7 44 24 0c 08 00 00 00 	mov    DWORD PTR [esp+0xc],0x8
+    17e2:	89 54 24 08          	mov    DWORD PTR [esp+0x8],edx
+    17e6:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    17ea:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    17ed:	89 04 24             	mov    DWORD PTR [esp],eax
+    17f0:	e8 fc ff ff ff       	call   17f1 <render_text_scanline_8btpp+0x261>
+    17f5:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
 								r, rmax, pixbuf, inv);
 				/* now advance */
 				str += 2;
-    15bd:	83 45 0c 02          	add    DWORD PTR [ebp+0xc],0x2
+    17f8:	83 45 0c 02          	add    DWORD PTR [ebp+0xc],0x2
 				cc = bitc / 8;
-    15c1:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    15c4:	8d 50 07             	lea    edx,[eax+0x7]
-    15c7:	85 c0                	test   eax,eax
-    15c9:	0f 48 c2             	cmovs  eax,edx
-    15cc:	c1 f8 03             	sar    eax,0x3
-    15cf:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
+    17fc:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    17ff:	8d 50 07             	lea    edx,[eax+0x7]
+    1802:	85 c0                	test   eax,eax
+    1804:	0f 48 c2             	cmovs  eax,edx
+    1807:	c1 f8 03             	sar    eax,0x3
+    180a:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
 				/* and fetch more pixels if needed (r=0) */
 				if (bitc < btt) {
-    15d2:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    15d5:	3b 45 c4             	cmp    eax,DWORD PTR [ebp-0x3c]
-    15d8:	7d 71                	jge    164b <render_text_scanline_8btpp+0x2a1>
+    180d:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    1810:	3b 45 c4             	cmp    eax,DWORD PTR [ebp-0x3c]
+    1813:	0f 8d 8d 00 00 00    	jge    18a6 <render_text_scanline_8btpp+0x316>
 						col++;
-    15da:	83 45 cc 01          	add    DWORD PTR [ebp-0x34],0x1
+    1819:	83 45 cc 01          	add    DWORD PTR [ebp-0x34],0x1
 						inv = (col == cur_x);
-    15de:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-    15e1:	3b 45 18             	cmp    eax,DWORD PTR [ebp+0x18]
-    15e4:	0f 94 c0             	sete   al
-    15e7:	0f b6 c0             	movzx  eax,al
-    15ea:	89 45 c8             	mov    DWORD PTR [ebp-0x38],eax
+    181d:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    1820:	3b 45 18             	cmp    eax,DWORD PTR [ebp+0x18]
+    1823:	0f 94 c0             	sete   al
+    1826:	0f b6 c0             	movzx  eax,al
+    1829:	89 45 c8             	mov    DWORD PTR [ebp-0x38],eax
 						bitc += generate_char_colors(font, str[0], str[1], 8,
-    15ed:	8b 55 ac             	mov    edx,DWORD PTR [ebp-0x54]
-    15f0:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-    15f3:	8d 1c 02             	lea    ebx,[edx+eax*1]
-    15f6:	83 7d 14 08          	cmp    DWORD PTR [ebp+0x14],0x8
-    15fa:	7e 0a                	jle    1606 <render_text_scanline_8btpp+0x25c>
-    15fc:	b8 08 00 00 00       	mov    eax,0x8
-    1601:	2b 45 f0             	sub    eax,DWORD PTR [ebp-0x10]
-    1604:	eb 06                	jmp    160c <render_text_scanline_8btpp+0x262>
-    1606:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
-    1609:	2b 45 f0             	sub    eax,DWORD PTR [ebp-0x10]
-    160c:	8b 55 0c             	mov    edx,DWORD PTR [ebp+0xc]
-    160f:	83 c2 01             	add    edx,0x1
-    1612:	0f b6 12             	movzx  edx,BYTE PTR [edx]
-    1615:	0f be ca             	movsx  ecx,dl
-    1618:	8b 55 0c             	mov    edx,DWORD PTR [ebp+0xc]
-    161b:	0f b6 12             	movzx  edx,BYTE PTR [edx]
-    161e:	0f be d2             	movsx  edx,dl
-    1621:	ff 75 c8             	push   DWORD PTR [ebp-0x38]
-    1624:	53                   	push   ebx
-    1625:	50                   	push   eax
-    1626:	6a 00                	push   0x0
-    1628:	6a 08                	push   0x8
-    162a:	51                   	push   ecx
-    162b:	52                   	push   edx
-    162c:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-    162f:	e8 fc ff ff ff       	call   1630 <render_text_scanline_8btpp+0x286>
-    1634:	83 c4 20             	add    esp,0x20
-    1637:	01 45 f4             	add    DWORD PTR [ebp-0xc],eax
+    182c:	8b 55 ac             	mov    edx,DWORD PTR [ebp-0x54]
+    182f:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+    1832:	8d 34 02             	lea    esi,[edx+eax*1]
+    1835:	83 7d 14 08          	cmp    DWORD PTR [ebp+0x14],0x8
+    1839:	7e 0a                	jle    1845 <render_text_scanline_8btpp+0x2b5>
+    183b:	b8 08 00 00 00       	mov    eax,0x8
+    1840:	2b 45 f0             	sub    eax,DWORD PTR [ebp-0x10]
+    1843:	eb 06                	jmp    184b <render_text_scanline_8btpp+0x2bb>
+    1845:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
+    1848:	2b 45 f0             	sub    eax,DWORD PTR [ebp-0x10]
+    184b:	8b 55 0c             	mov    edx,DWORD PTR [ebp+0xc]
+    184e:	83 c2 01             	add    edx,0x1
+    1851:	0f b6 12             	movzx  edx,BYTE PTR [edx]
+    1854:	0f be ca             	movsx  ecx,dl
+    1857:	8b 55 0c             	mov    edx,DWORD PTR [ebp+0xc]
+    185a:	0f b6 12             	movzx  edx,BYTE PTR [edx]
+    185d:	0f be d2             	movsx  edx,dl
+    1860:	8b 5d c8             	mov    ebx,DWORD PTR [ebp-0x38]
+    1863:	89 5c 24 1c          	mov    DWORD PTR [esp+0x1c],ebx
+    1867:	89 74 24 18          	mov    DWORD PTR [esp+0x18],esi
+    186b:	89 44 24 14          	mov    DWORD PTR [esp+0x14],eax
+    186f:	c7 44 24 10 00 00 00 00 	mov    DWORD PTR [esp+0x10],0x0
+    1877:	c7 44 24 0c 08 00 00 00 	mov    DWORD PTR [esp+0xc],0x8
+    187f:	89 4c 24 08          	mov    DWORD PTR [esp+0x8],ecx
+    1883:	89 54 24 04          	mov    DWORD PTR [esp+0x4],edx
+    1887:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    188a:	89 04 24             	mov    DWORD PTR [esp],eax
+    188d:	e8 fc ff ff ff       	call   188e <render_text_scanline_8btpp+0x2fe>
+    1892:	01 45 f4             	add    DWORD PTR [ebp-0xc],eax
 										0, min(8 - cc, px_x - cc), pixbuf + cc, inv);
 						cc = bitc / 8;
-    163a:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    163d:	8d 50 07             	lea    edx,[eax+0x7]
-    1640:	85 c0                	test   eax,eax
-    1642:	0f 48 c2             	cmovs  eax,edx
-    1645:	c1 f8 03             	sar    eax,0x3
-    1648:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
+    1895:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    1898:	8d 50 07             	lea    edx,[eax+0x7]
+    189b:	85 c0                	test   eax,eax
+    189d:	0f 48 c2             	cmovs  eax,edx
+    18a0:	c1 f8 03             	sar    eax,0x3
+    18a3:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
 				}
 				/* now transfer */
 				if (bitc >= 64) {
-    164b:	83 7d f4 3f          	cmp    DWORD PTR [ebp-0xc],0x3f
-    164f:	7e 24                	jle    1675 <render_text_scanline_8btpp+0x2cb>
+    18a6:	83 7d f4 3f          	cmp    DWORD PTR [ebp-0xc],0x3f
+    18aa:	7e 24                	jle    18d0 <render_text_scanline_8btpp+0x340>
 						move_64(pixbuf, mem);
-    1651:	8b 45 ac             	mov    eax,DWORD PTR [ebp-0x54]
-    1654:	8b 55 10             	mov    edx,DWORD PTR [ebp+0x10]
-    1657:	0f 6f 00             	movq   mm0,QWORD PTR [eax]
-    165a:	0f 7f 02             	movq   QWORD PTR [edx],mm0
+    18ac:	8b 45 ac             	mov    eax,DWORD PTR [ebp-0x54]
+    18af:	8b 55 10             	mov    edx,DWORD PTR [ebp+0x10]
+    18b2:	0f 6f 00             	movq   mm0,QWORD PTR [eax]
+    18b5:	0f 7f 02             	movq   QWORD PTR [edx],mm0
 						mem += 8; /* intentionally no bitc subtract */
-    165d:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-    1660:	83 c0 08             	add    eax,0x8
-    1663:	89 45 10             	mov    DWORD PTR [ebp+0x10],eax
+    18b8:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    18bb:	83 c0 08             	add    eax,0x8
+    18be:	89 45 10             	mov    DWORD PTR [ebp+0x10],eax
 						}
 						break;
 				}
 
 				/* and don't advance as r = 0 is already handled (sth. remains) */
 				if (px_x) {
-    1666:	83 7d 14 00          	cmp    DWORD PTR [ebp+0x14],0x0
-    166a:	0f 84 bc 00 00 00    	je     172c <render_text_scanline_8btpp+0x382>
-    1670:	e9 9f 00 00 00       	jmp    1714 <render_text_scanline_8btpp+0x36a>
+    18c1:	83 7d 14 00          	cmp    DWORD PTR [ebp+0x14],0x0
+    18c5:	0f 84 ba 00 00 00    	je     1985 <render_text_scanline_8btpp+0x3f5>
+    18cb:	e9 9d 00 00 00       	jmp    196d <render_text_scanline_8btpp+0x3dd>
 						uint8_t* pt = pixbuf;
-    1675:	8b 45 ac             	mov    eax,DWORD PTR [ebp-0x54]
-    1678:	89 45 ec             	mov    DWORD PTR [ebp-0x14],eax
+    18d0:	8b 45 ac             	mov    eax,DWORD PTR [ebp-0x54]
+    18d3:	89 45 ec             	mov    DWORD PTR [ebp-0x14],eax
 						if (bitc >= 32) {
-    167b:	83 7d f4 1f          	cmp    DWORD PTR [ebp-0xc],0x1f
-    167f:	7e 1b                	jle    169c <render_text_scanline_8btpp+0x2f2>
+    18d6:	83 7d f4 1f          	cmp    DWORD PTR [ebp-0xc],0x1f
+    18da:	7e 1b                	jle    18f7 <render_text_scanline_8btpp+0x367>
 								*(uint32_t*)mem = *(uint32_t*)pixbuf;
-    1681:	8b 55 ac             	mov    edx,DWORD PTR [ebp-0x54]
-    1684:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-    1687:	8b 12                	mov    edx,DWORD PTR [edx]
-    1689:	89 10                	mov    DWORD PTR [eax],edx
+    18dc:	8b 55 ac             	mov    edx,DWORD PTR [ebp-0x54]
+    18df:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    18e2:	8b 12                	mov    edx,DWORD PTR [edx]
+    18e4:	89 10                	mov    DWORD PTR [eax],edx
 								pt += 4;
-    168b:	83 45 ec 04          	add    DWORD PTR [ebp-0x14],0x4
+    18e6:	83 45 ec 04          	add    DWORD PTR [ebp-0x14],0x4
 								mem += 4;
-    168f:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-    1692:	83 c0 04             	add    eax,0x4
-    1695:	89 45 10             	mov    DWORD PTR [ebp+0x10],eax
+    18ea:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    18ed:	83 c0 04             	add    eax,0x4
+    18f0:	89 45 10             	mov    DWORD PTR [ebp+0x10],eax
 								bitc -= 32;
-    1698:	83 6d f4 20          	sub    DWORD PTR [ebp-0xc],0x20
+    18f3:	83 6d f4 20          	sub    DWORD PTR [ebp-0xc],0x20
 						if (bitc >= 16) {
-    169c:	83 7d f4 0f          	cmp    DWORD PTR [ebp-0xc],0xf
-    16a0:	7e 1d                	jle    16bf <render_text_scanline_8btpp+0x315>
+    18f7:	83 7d f4 0f          	cmp    DWORD PTR [ebp-0xc],0xf
+    18fb:	7e 1d                	jle    191a <render_text_scanline_8btpp+0x38a>
 								*(uint16_t*)mem = *(uint16_t*)pt;
-    16a2:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-    16a5:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
-    16a8:	0f b7 12             	movzx  edx,WORD PTR [edx]
-    16ab:	66 89 10             	mov    WORD PTR [eax],dx
+    18fd:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    1900:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
+    1903:	0f b7 12             	movzx  edx,WORD PTR [edx]
+    1906:	66 89 10             	mov    WORD PTR [eax],dx
 								pt += 2;
-    16ae:	83 45 ec 02          	add    DWORD PTR [ebp-0x14],0x2
+    1909:	83 45 ec 02          	add    DWORD PTR [ebp-0x14],0x2
 								mem += 2;
-    16b2:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-    16b5:	83 c0 02             	add    eax,0x2
-    16b8:	89 45 10             	mov    DWORD PTR [ebp+0x10],eax
+    190d:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    1910:	83 c0 02             	add    eax,0x2
+    1913:	89 45 10             	mov    DWORD PTR [ebp+0x10],eax
 								bitc -= 16;
-    16bb:	83 6d f4 10          	sub    DWORD PTR [ebp-0xc],0x10
+    1916:	83 6d f4 10          	sub    DWORD PTR [ebp-0xc],0x10
 						if (bitc >= 8) {
-    16bf:	83 7d f4 07          	cmp    DWORD PTR [ebp-0xc],0x7
-    16c3:	7e 1e                	jle    16e3 <render_text_scanline_8btpp+0x339>
+    191a:	83 7d f4 07          	cmp    DWORD PTR [ebp-0xc],0x7
+    191e:	7e 1e                	jle    193e <render_text_scanline_8btpp+0x3ae>
 								*(uint8_t*)mem = *(uint8_t*)pt;
-    16c5:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-    16c8:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
-    16cb:	0f b6 12             	movzx  edx,BYTE PTR [edx]
-    16ce:	88 10                	mov    BYTE PTR [eax],dl
+    1920:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    1923:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
+    1926:	0f b6 12             	movzx  edx,BYTE PTR [edx]
+    1929:	88 10                	mov    BYTE PTR [eax],dl
 								pt += 1;
-    16d0:	83 45 ec 01          	add    DWORD PTR [ebp-0x14],0x1
+    192b:	83 45 ec 01          	add    DWORD PTR [ebp-0x14],0x1
 								mem += 1;
-    16d4:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-    16d7:	83 c0 01             	add    eax,0x1
-    16da:	89 45 10             	mov    DWORD PTR [ebp+0x10],eax
+    192f:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    1932:	83 c0 01             	add    eax,0x1
+    1935:	89 45 10             	mov    DWORD PTR [ebp+0x10],eax
 								bitc -= 8;
-    16dd:	83 6d f4 08          	sub    DWORD PTR [ebp-0xc],0x8
+    1938:	83 6d f4 08          	sub    DWORD PTR [ebp-0xc],0x8
 						break;
-    16e1:	eb 4c                	jmp    172f <render_text_scanline_8btpp+0x385>
+    193c:	eb 4a                	jmp    1988 <render_text_scanline_8btpp+0x3f8>
 						} else if (bitc) {
-    16e3:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
-    16e7:	74 46                	je     172f <render_text_scanline_8btpp+0x385>
+    193e:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
+    1942:	74 44                	je     1988 <render_text_scanline_8btpp+0x3f8>
 								die("cant happen with byte sized pixels!\n");
-    16e9:	83 ec 08             	sub    esp,0x8
-    16ec:	68 94 01 00 00       	push   0x194
-    16f1:	6a 0c                	push   0xc
-    16f3:	e8 fc ff ff ff       	call   16f4 <render_text_scanline_8btpp+0x34a>
-    16f8:	83 c4 10             	add    esp,0x10
-    16fb:	e8 fc ff ff ff       	call   16fc <render_text_scanline_8btpp+0x352>
-    1700:	83 ec 0c             	sub    esp,0xc
-    1703:	68 00 00 00 00       	push   0x0
-    1708:	e8 fc ff ff ff       	call   1709 <render_text_scanline_8btpp+0x35f>
-    170d:	83 c4 10             	add    esp,0x10
-    1710:	fa                   	cli
-    1711:	f4                   	hlt
-    1712:	eb fd                	jmp    1711 <render_text_scanline_8btpp+0x367>
+    1944:	c7 44 24 04 94 01 00 00 	mov    DWORD PTR [esp+0x4],0x194
+    194c:	c7 04 24 0c 00 00 00 	mov    DWORD PTR [esp],0xc
+    1953:	e8 fc ff ff ff       	call   1954 <render_text_scanline_8btpp+0x3c4>
+    1958:	e8 fc ff ff ff       	call   1959 <render_text_scanline_8btpp+0x3c9>
+    195d:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+    1964:	e8 fc ff ff ff       	call   1965 <render_text_scanline_8btpp+0x3d5>
+    1969:	fa                   	cli
+    196a:	f4                   	hlt
+    196b:	eb fd                	jmp    196a <render_text_scanline_8btpp+0x3da>
 						px_x -= cc;
-    1714:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-    1717:	29 45 14             	sub    DWORD PTR [ebp+0x14],eax
+    196d:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+    1970:	29 45 14             	sub    DWORD PTR [ebp+0x14],eax
 						p0_x += cc; /* unneccessary as r does not change anymore */
-    171a:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-    171d:	01 45 1c             	add    DWORD PTR [ebp+0x1c],eax
+    1973:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+    1976:	01 45 1c             	add    DWORD PTR [ebp+0x1c],eax
 		while (px_x) {
-    1720:	83 7d 14 00          	cmp    DWORD PTR [ebp+0x14],0x0
-    1724:	0f 85 02 fe ff ff    	jne    152c <render_text_scanline_8btpp+0x182>
+    1979:	83 7d 14 00          	cmp    DWORD PTR [ebp+0x14],0x0
+    197d:	0f 85 c9 fd ff ff    	jne    174c <render_text_scanline_8btpp+0x1bc>
 				} else
 						break;
 		}
 }
-    172a:	eb 04                	jmp    1730 <render_text_scanline_8btpp+0x386>
+    1983:	eb 04                	jmp    1989 <render_text_scanline_8btpp+0x3f9>
 						break;
-    172c:	90                   	nop
-    172d:	eb 01                	jmp    1730 <render_text_scanline_8btpp+0x386>
+    1985:	90                   	nop
+    1986:	eb 01                	jmp    1989 <render_text_scanline_8btpp+0x3f9>
 						break;
-    172f:	90                   	nop
+    1988:	90                   	nop
 }
-    1730:	90                   	nop
-    1731:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
-    1734:	c9                   	leave
-    1735:	c3                   	ret
+    1989:	90                   	nop
+    198a:	83 c4 70             	add    esp,0x70
+    198d:	5b                   	pop    ebx
+    198e:	5e                   	pop    esi
+    198f:	5d                   	pop    ebp
+    1990:	c3                   	ret
 
-00001736 <render_text>:
+00001991 <render_text>:
 /* this function uses pixel addressing for width and height
  * making it possible to render half/overlapping characters.
  */
 void render_text(const char* font, char* str, void* mem, size_t text_stride, size_t mem_stride,
 		size_t btpp, ssize_t px_x, ssize_t px_y, int starts_half, int cur_x, int cur_y, ssize_t p0_x, ssize_t p0_y)
 {
-    1736:	55                   	push   ebp
-    1737:	89 e5                	mov    ebp,esp
-    1739:	83 ec 18             	sub    esp,0x18
+    1991:	55                   	push   ebp
+    1992:	89 e5                	mov    ebp,esp
+    1994:	83 ec 38             	sub    esp,0x38
 		(void)starts_half;
 //		char is_half = 0, ends_half = 0;
 		/* pixel offset is handled before calling the function */
 //		is_half = starts_half;
 //		ends_half = (px_x % 2) ? (!starts_half) : (starts_half);
 		for (ssize_t ln = p0_y; ln < px_y + p0_y; ln++) {
-    173c:	8b 45 38             	mov    eax,DWORD PTR [ebp+0x38]
-    173f:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
-    1742:	e9 a7 01 00 00       	jmp    18ee <render_text+0x1b8>
+    1997:	8b 45 38             	mov    eax,DWORD PTR [ebp+0x38]
+    199a:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
+    199d:	e9 fc 01 00 00       	jmp    1b9e <render_text+0x20d>
 				ssize_t l = ln % 16; ssize_t cur_xv;
-    1747:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-    174a:	89 d0                	mov    eax,edx
-    174c:	c1 f8 1f             	sar    eax,0x1f
-    174f:	c1 e8 1c             	shr    eax,0x1c
-    1752:	01 c2                	add    edx,eax
-    1754:	83 e2 0f             	and    edx,0xf
-    1757:	29 c2                	sub    edx,eax
-    1759:	89 55 ec             	mov    DWORD PTR [ebp-0x14],edx
+    19a2:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+    19a5:	89 d0                	mov    eax,edx
+    19a7:	c1 f8 1f             	sar    eax,0x1f
+    19aa:	c1 e8 1c             	shr    eax,0x1c
+    19ad:	01 c2                	add    edx,eax
+    19af:	83 e2 0f             	and    edx,0xf
+    19b2:	29 c2                	sub    edx,eax
+    19b4:	89 55 ec             	mov    DWORD PTR [ebp-0x14],edx
 
 				/* check cursor */
 				if (ln / 16 == cur_y)
-    175c:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    175f:	8d 50 0f             	lea    edx,[eax+0xf]
-    1762:	85 c0                	test   eax,eax
-    1764:	0f 48 c2             	cmovs  eax,edx
-    1767:	c1 f8 04             	sar    eax,0x4
-    176a:	39 45 30             	cmp    DWORD PTR [ebp+0x30],eax
-    176d:	75 08                	jne    1777 <render_text+0x41>
+    19b7:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    19ba:	8d 50 0f             	lea    edx,[eax+0xf]
+    19bd:	85 c0                	test   eax,eax
+    19bf:	0f 48 c2             	cmovs  eax,edx
+    19c2:	c1 f8 04             	sar    eax,0x4
+    19c5:	39 45 30             	cmp    DWORD PTR [ebp+0x30],eax
+    19c8:	75 08                	jne    19d2 <render_text+0x41>
 						cur_xv = cur_x;
-    176f:	8b 45 2c             	mov    eax,DWORD PTR [ebp+0x2c]
-    1772:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
-    1775:	eb 07                	jmp    177e <render_text+0x48>
+    19ca:	8b 45 2c             	mov    eax,DWORD PTR [ebp+0x2c]
+    19cd:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
+    19d0:	eb 07                	jmp    19d9 <render_text+0x48>
 				else
 						cur_xv = -1;
-    1777:	c7 45 f0 ff ff ff ff 	mov    DWORD PTR [ebp-0x10],0xffffffff
+    19d2:	c7 45 f0 ff ff ff ff 	mov    DWORD PTR [ebp-0x10],0xffffffff
 
 				/* invoke the scanline drawing routines */
 				switch (btpp) {
-    177e:	83 7d 1c 20          	cmp    DWORD PTR [ebp+0x1c],0x20
-    1782:	74 46                	je     17ca <render_text+0x94>
-    1784:	83 7d 1c 20          	cmp    DWORD PTR [ebp+0x1c],0x20
-    1788:	0f 87 1e 01 00 00    	ja     18ac <render_text+0x176>
-    178e:	83 7d 1c 18          	cmp    DWORD PTR [ebp+0x1c],0x18
-    1792:	0f 84 90 00 00 00    	je     1828 <render_text+0xf2>
-    1798:	83 7d 1c 18          	cmp    DWORD PTR [ebp+0x1c],0x18
-    179c:	0f 87 0a 01 00 00    	ja     18ac <render_text+0x176>
-    17a2:	83 7d 1c 08          	cmp    DWORD PTR [ebp+0x1c],0x8
-    17a6:	0f 84 db 00 00 00    	je     1887 <render_text+0x151>
-    17ac:	83 7d 1c 08          	cmp    DWORD PTR [ebp+0x1c],0x8
-    17b0:	0f 82 f6 00 00 00    	jb     18ac <render_text+0x176>
-    17b6:	8b 45 1c             	mov    eax,DWORD PTR [ebp+0x1c]
-    17b9:	83 e8 0f             	sub    eax,0xf
-    17bc:	83 f8 01             	cmp    eax,0x1
-    17bf:	0f 87 e7 00 00 00    	ja     18ac <render_text+0x176>
-    17c5:	e9 95 00 00 00       	jmp    185f <render_text+0x129>
+    19d9:	83 7d 1c 20          	cmp    DWORD PTR [ebp+0x1c],0x20
+    19dd:	74 46                	je     1a25 <render_text+0x94>
+    19df:	83 7d 1c 20          	cmp    DWORD PTR [ebp+0x1c],0x20
+    19e3:	0f 87 75 01 00 00    	ja     1b5e <render_text+0x1cd>
+    19e9:	83 7d 1c 18          	cmp    DWORD PTR [ebp+0x1c],0x18
+    19ed:	0f 84 b0 00 00 00    	je     1aa3 <render_text+0x112>
+    19f3:	83 7d 1c 18          	cmp    DWORD PTR [ebp+0x1c],0x18
+    19f7:	0f 87 61 01 00 00    	ja     1b5e <render_text+0x1cd>
+    19fd:	83 7d 1c 08          	cmp    DWORD PTR [ebp+0x1c],0x8
+    1a01:	0f 84 22 01 00 00    	je     1b29 <render_text+0x198>
+    1a07:	83 7d 1c 08          	cmp    DWORD PTR [ebp+0x1c],0x8
+    1a0b:	0f 82 4d 01 00 00    	jb     1b5e <render_text+0x1cd>
+    1a11:	8b 45 1c             	mov    eax,DWORD PTR [ebp+0x1c]
+    1a14:	83 e8 0f             	sub    eax,0xf
+    1a17:	83 f8 01             	cmp    eax,0x1
+    1a1a:	0f 87 3e 01 00 00    	ja     1b5e <render_text+0x1cd>
+    1a20:	e9 c8 00 00 00       	jmp    1aed <render_text+0x15c>
 						case 32:
 								if (cpu.has_sse)
-    17ca:	0f b6 05 5b 00 00 00 	movzx  eax,BYTE PTR ds:0x5b
-    17d1:	83 e0 02             	and    eax,0x2
-    17d4:	84 c0                	test   al,al
-    17d6:	74 28                	je     1800 <render_text+0xca>
+    1a25:	0f b6 05 5b 00 00 00 	movzx  eax,BYTE PTR ds:0x5b
+    1a2c:	83 e0 02             	and    eax,0x2
+    1a2f:	84 c0                	test   al,al
+    1a31:	74 38                	je     1a6b <render_text+0xda>
 										render_text_scanline_32btpp_sse(font + l, str,
-    17d8:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
-    17db:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    17de:	01 d0                	add    eax,edx
-    17e0:	83 ec 08             	sub    esp,0x8
-    17e3:	ff 75 34             	push   DWORD PTR [ebp+0x34]
-    17e6:	ff 75 f0             	push   DWORD PTR [ebp-0x10]
-    17e9:	ff 75 20             	push   DWORD PTR [ebp+0x20]
-    17ec:	ff 75 10             	push   DWORD PTR [ebp+0x10]
-    17ef:	ff 75 0c             	push   DWORD PTR [ebp+0xc]
-    17f2:	50                   	push   eax
-    17f3:	e8 fc ff ff ff       	call   17f4 <render_text+0xbe>
-    17f8:	83 c4 20             	add    esp,0x20
+    1a33:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
+    1a36:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1a39:	01 c2                	add    edx,eax
+    1a3b:	8b 45 34             	mov    eax,DWORD PTR [ebp+0x34]
+    1a3e:	89 44 24 14          	mov    DWORD PTR [esp+0x14],eax
+    1a42:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+    1a45:	89 44 24 10          	mov    DWORD PTR [esp+0x10],eax
+    1a49:	8b 45 20             	mov    eax,DWORD PTR [ebp+0x20]
+    1a4c:	89 44 24 0c          	mov    DWORD PTR [esp+0xc],eax
+    1a50:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    1a53:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    1a57:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    1a5a:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    1a5e:	89 14 24             	mov    DWORD PTR [esp],edx
+    1a61:	e8 fc ff ff ff       	call   1a62 <render_text+0xd1>
 												mem, px_x, cur_xv, p0_x);
 								else
 										render_text_scanline_32btpp(font + l, str,
 												mem, px_x, cur_xv, p0_x);
 								break;
-    17fb:	e9 d8 00 00 00       	jmp    18d8 <render_text+0x1a2>
+    1a66:	e9 1d 01 00 00       	jmp    1b88 <render_text+0x1f7>
 										render_text_scanline_32btpp(font + l, str,
-    1800:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
-    1803:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1806:	01 d0                	add    eax,edx
-    1808:	83 ec 08             	sub    esp,0x8
-    180b:	ff 75 34             	push   DWORD PTR [ebp+0x34]
-    180e:	ff 75 f0             	push   DWORD PTR [ebp-0x10]
-    1811:	ff 75 20             	push   DWORD PTR [ebp+0x20]
-    1814:	ff 75 10             	push   DWORD PTR [ebp+0x10]
-    1817:	ff 75 0c             	push   DWORD PTR [ebp+0xc]
-    181a:	50                   	push   eax
-    181b:	e8 fc ff ff ff       	call   181c <render_text+0xe6>
-    1820:	83 c4 20             	add    esp,0x20
+    1a6b:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
+    1a6e:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1a71:	01 c2                	add    edx,eax
+    1a73:	8b 45 34             	mov    eax,DWORD PTR [ebp+0x34]
+    1a76:	89 44 24 14          	mov    DWORD PTR [esp+0x14],eax
+    1a7a:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+    1a7d:	89 44 24 10          	mov    DWORD PTR [esp+0x10],eax
+    1a81:	8b 45 20             	mov    eax,DWORD PTR [ebp+0x20]
+    1a84:	89 44 24 0c          	mov    DWORD PTR [esp+0xc],eax
+    1a88:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    1a8b:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    1a8f:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    1a92:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    1a96:	89 14 24             	mov    DWORD PTR [esp],edx
+    1a99:	e8 fc ff ff ff       	call   1a9a <render_text+0x109>
 								break;
-    1823:	e9 b0 00 00 00       	jmp    18d8 <render_text+0x1a2>
+    1a9e:	e9 e5 00 00 00       	jmp    1b88 <render_text+0x1f7>
 						case 24: /* 16 bytes /w sse really needed */
 								if (cpu.has_sse)
-    1828:	0f b6 05 5b 00 00 00 	movzx  eax,BYTE PTR ds:0x5b
-    182f:	83 e0 02             	and    eax,0x2
-    1832:	84 c0                	test   al,al
-    1834:	0f 84 9d 00 00 00    	je     18d7 <render_text+0x1a1>
+    1aa3:	0f b6 05 5b 00 00 00 	movzx  eax,BYTE PTR ds:0x5b
+    1aaa:	83 e0 02             	and    eax,0x2
+    1aad:	84 c0                	test   al,al
+    1aaf:	0f 84 d2 00 00 00    	je     1b87 <render_text+0x1f6>
 										render_text_scanline_24btpp_sse(font + l, str,
-    183a:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
-    183d:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1840:	01 d0                	add    eax,edx
-    1842:	83 ec 08             	sub    esp,0x8
-    1845:	ff 75 34             	push   DWORD PTR [ebp+0x34]
-    1848:	ff 75 f0             	push   DWORD PTR [ebp-0x10]
-    184b:	ff 75 20             	push   DWORD PTR [ebp+0x20]
-    184e:	ff 75 10             	push   DWORD PTR [ebp+0x10]
-    1851:	ff 75 0c             	push   DWORD PTR [ebp+0xc]
-    1854:	50                   	push   eax
-    1855:	e8 fc ff ff ff       	call   1856 <render_text+0x120>
-    185a:	83 c4 20             	add    esp,0x20
+    1ab5:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
+    1ab8:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1abb:	01 c2                	add    edx,eax
+    1abd:	8b 45 34             	mov    eax,DWORD PTR [ebp+0x34]
+    1ac0:	89 44 24 14          	mov    DWORD PTR [esp+0x14],eax
+    1ac4:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+    1ac7:	89 44 24 10          	mov    DWORD PTR [esp+0x10],eax
+    1acb:	8b 45 20             	mov    eax,DWORD PTR [ebp+0x20]
+    1ace:	89 44 24 0c          	mov    DWORD PTR [esp+0xc],eax
+    1ad2:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    1ad5:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    1ad9:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    1adc:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    1ae0:	89 14 24             	mov    DWORD PTR [esp],edx
+    1ae3:	e8 fc ff ff ff       	call   1ae4 <render_text+0x153>
 												mem, px_x, cur_xv, p0_x);
 								//else
 								//		render_text_scanline_24btpp(font + l, str,
 								//				mem, px_x, cur_xv, p0_x);
 								break;
-    185d:	eb 78                	jmp    18d7 <render_text+0x1a1>
+    1ae8:	e9 9a 00 00 00       	jmp    1b87 <render_text+0x1f6>
 						case 15:
 						case 16:
 								render_text_scanline_16btpp(font + l, str,
-    185f:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
-    1862:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1865:	01 d0                	add    eax,edx
-    1867:	83 ec 04             	sub    esp,0x4
-    186a:	ff 75 1c             	push   DWORD PTR [ebp+0x1c]
-    186d:	ff 75 34             	push   DWORD PTR [ebp+0x34]
-    1870:	ff 75 f0             	push   DWORD PTR [ebp-0x10]
-    1873:	ff 75 20             	push   DWORD PTR [ebp+0x20]
-    1876:	ff 75 10             	push   DWORD PTR [ebp+0x10]
-    1879:	ff 75 0c             	push   DWORD PTR [ebp+0xc]
-    187c:	50                   	push   eax
-    187d:	e8 fc ff ff ff       	call   187e <render_text+0x148>
-    1882:	83 c4 20             	add    esp,0x20
+    1aed:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
+    1af0:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1af3:	01 c2                	add    edx,eax
+    1af5:	8b 45 1c             	mov    eax,DWORD PTR [ebp+0x1c]
+    1af8:	89 44 24 18          	mov    DWORD PTR [esp+0x18],eax
+    1afc:	8b 45 34             	mov    eax,DWORD PTR [ebp+0x34]
+    1aff:	89 44 24 14          	mov    DWORD PTR [esp+0x14],eax
+    1b03:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+    1b06:	89 44 24 10          	mov    DWORD PTR [esp+0x10],eax
+    1b0a:	8b 45 20             	mov    eax,DWORD PTR [ebp+0x20]
+    1b0d:	89 44 24 0c          	mov    DWORD PTR [esp+0xc],eax
+    1b11:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    1b14:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    1b18:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    1b1b:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    1b1f:	89 14 24             	mov    DWORD PTR [esp],edx
+    1b22:	e8 fc ff ff ff       	call   1b23 <render_text+0x192>
 												mem, px_x, cur_xv, p0_x, btpp);
 								break;
-    1885:	eb 51                	jmp    18d8 <render_text+0x1a2>
+    1b27:	eb 5f                	jmp    1b88 <render_text+0x1f7>
 						case 8:
 								render_text_scanline_8btpp(font + l, str,
-    1887:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
-    188a:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    188d:	01 d0                	add    eax,edx
-    188f:	83 ec 08             	sub    esp,0x8
-    1892:	ff 75 34             	push   DWORD PTR [ebp+0x34]
-    1895:	ff 75 f0             	push   DWORD PTR [ebp-0x10]
-    1898:	ff 75 20             	push   DWORD PTR [ebp+0x20]
-    189b:	ff 75 10             	push   DWORD PTR [ebp+0x10]
-    189e:	ff 75 0c             	push   DWORD PTR [ebp+0xc]
-    18a1:	50                   	push   eax
-    18a2:	e8 fc ff ff ff       	call   18a3 <render_text+0x16d>
-    18a7:	83 c4 20             	add    esp,0x20
+    1b29:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
+    1b2c:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1b2f:	01 c2                	add    edx,eax
+    1b31:	8b 45 34             	mov    eax,DWORD PTR [ebp+0x34]
+    1b34:	89 44 24 14          	mov    DWORD PTR [esp+0x14],eax
+    1b38:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+    1b3b:	89 44 24 10          	mov    DWORD PTR [esp+0x10],eax
+    1b3f:	8b 45 20             	mov    eax,DWORD PTR [ebp+0x20]
+    1b42:	89 44 24 0c          	mov    DWORD PTR [esp+0xc],eax
+    1b46:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    1b49:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    1b4d:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    1b50:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    1b54:	89 14 24             	mov    DWORD PTR [esp],edx
+    1b57:	e8 fc ff ff ff       	call   1b58 <render_text+0x1c7>
 												mem, px_x, cur_xv, p0_x);
 								break;
-    18aa:	eb 2c                	jmp    18d8 <render_text+0x1a2>
+    1b5c:	eb 2a                	jmp    1b88 <render_text+0x1f7>
 						default:
 /*								render_text_scanline_xbtpp(font + l, str, btpp,
 												mem, px_x, cur_xv, p0_x);*/
 								die("not impl\n");
-    18ac:	83 ec 08             	sub    esp,0x8
-    18af:	68 b9 01 00 00       	push   0x1b9
-    18b4:	6a 0c                	push   0xc
-    18b6:	e8 fc ff ff ff       	call   18b7 <render_text+0x181>
-    18bb:	83 c4 10             	add    esp,0x10
-    18be:	e8 fc ff ff ff       	call   18bf <render_text+0x189>
-    18c3:	83 ec 0c             	sub    esp,0xc
-    18c6:	68 00 00 00 00       	push   0x0
-    18cb:	e8 fc ff ff ff       	call   18cc <render_text+0x196>
-    18d0:	83 c4 10             	add    esp,0x10
-    18d3:	fa                   	cli
-    18d4:	f4                   	hlt
-    18d5:	eb fd                	jmp    18d4 <render_text+0x19e>
+    1b5e:	c7 44 24 04 b9 01 00 00 	mov    DWORD PTR [esp+0x4],0x1b9
+    1b66:	c7 04 24 0c 00 00 00 	mov    DWORD PTR [esp],0xc
+    1b6d:	e8 fc ff ff ff       	call   1b6e <render_text+0x1dd>
+    1b72:	e8 fc ff ff ff       	call   1b73 <render_text+0x1e2>
+    1b77:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+    1b7e:	e8 fc ff ff ff       	call   1b7f <render_text+0x1ee>
+    1b83:	fa                   	cli
+    1b84:	f4                   	hlt
+    1b85:	eb fd                	jmp    1b84 <render_text+0x1f3>
 								break;
-    18d7:	90                   	nop
+    1b87:	90                   	nop
 								break;
 				}
 
 				/* advance */
 				if (l == 15) {
-    18d8:	83 7d ec 0f          	cmp    DWORD PTR [ebp-0x14],0xf
-    18dc:	75 06                	jne    18e4 <render_text+0x1ae>
+    1b88:	83 7d ec 0f          	cmp    DWORD PTR [ebp-0x14],0xf
+    1b8c:	75 06                	jne    1b94 <render_text+0x203>
 						str += text_stride;
-    18de:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
-    18e1:	01 45 0c             	add    DWORD PTR [ebp+0xc],eax
+    1b8e:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
+    1b91:	01 45 0c             	add    DWORD PTR [ebp+0xc],eax
 				}
 				mem += mem_stride;
-    18e4:	8b 45 18             	mov    eax,DWORD PTR [ebp+0x18]
-    18e7:	01 45 10             	add    DWORD PTR [ebp+0x10],eax
+    1b94:	8b 45 18             	mov    eax,DWORD PTR [ebp+0x18]
+    1b97:	01 45 10             	add    DWORD PTR [ebp+0x10],eax
 		for (ssize_t ln = p0_y; ln < px_y + p0_y; ln++) {
-    18ea:	83 45 f4 01          	add    DWORD PTR [ebp-0xc],0x1
-    18ee:	8b 55 24             	mov    edx,DWORD PTR [ebp+0x24]
-    18f1:	8b 45 38             	mov    eax,DWORD PTR [ebp+0x38]
-    18f4:	01 d0                	add    eax,edx
-    18f6:	39 45 f4             	cmp    DWORD PTR [ebp-0xc],eax
-    18f9:	0f 8c 48 fe ff ff    	jl     1747 <render_text+0x11>
+    1b9a:	83 45 f4 01          	add    DWORD PTR [ebp-0xc],0x1
+    1b9e:	8b 55 24             	mov    edx,DWORD PTR [ebp+0x24]
+    1ba1:	8b 45 38             	mov    eax,DWORD PTR [ebp+0x38]
+    1ba4:	01 d0                	add    eax,edx
+    1ba6:	39 45 f4             	cmp    DWORD PTR [ebp-0xc],eax
+    1ba9:	0f 8c f3 fd ff ff    	jl     19a2 <render_text+0x11>
 		}
 }
-    18ff:	90                   	nop
-    1900:	90                   	nop
-    1901:	c9                   	leave
-    1902:	c3                   	ret
+    1baf:	90                   	nop
+    1bb0:	90                   	nop
+    1bb1:	c9                   	leave
+    1bb2:	c3                   	ret
 
-00001903 <add_stride>:
+00001bb3 <add_stride>:
 		ssize_t x1, x2;
 };
 
 /* adds stride and returns 1 if new element was needed */
 int add_stride(struct stride* sb, size_t num, struct stride* s)
 {
-    1903:	55                   	push   ebp
-    1904:	89 e5                	mov    ebp,esp
-    1906:	53                   	push   ebx
-    1907:	83 ec 14             	sub    esp,0x14
+    1bb3:	55                   	push   ebp
+    1bb4:	89 e5                	mov    ebp,esp
+    1bb6:	53                   	push   ebx
+    1bb7:	83 ec 24             	sub    esp,0x24
 		/* assume sortedness (our insertions are sorted) */
 		for (size_t i = 0; i < num; i++) {
-    190a:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
-    1911:	eb 7c                	jmp    198f <add_stride+0x8c>
+    1bba:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
+    1bc1:	eb 7c                	jmp    1c3f <add_stride+0x8c>
 				if (sb[i].x1 == s->x2) { /* extend below */
-    1913:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    1916:	8d 14 c5 00 00 00 00 	lea    edx,[eax*8+0x0]
-    191d:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1920:	01 d0                	add    eax,edx
-    1922:	8b 10                	mov    edx,DWORD PTR [eax]
-    1924:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-    1927:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    192a:	39 c2                	cmp    edx,eax
-    192c:	75 20                	jne    194e <add_stride+0x4b>
+    1bc3:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    1bc6:	8d 14 c5 00 00 00 00 	lea    edx,[eax*8+0x0]
+    1bcd:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1bd0:	01 d0                	add    eax,edx
+    1bd2:	8b 10                	mov    edx,DWORD PTR [eax]
+    1bd4:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    1bd7:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    1bda:	39 c2                	cmp    edx,eax
+    1bdc:	75 20                	jne    1bfe <add_stride+0x4b>
 						sb[i].x1 = s->x1;
-    192e:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    1931:	8d 14 c5 00 00 00 00 	lea    edx,[eax*8+0x0]
-    1938:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    193b:	01 c2                	add    edx,eax
-    193d:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-    1940:	8b 00                	mov    eax,DWORD PTR [eax]
-    1942:	89 02                	mov    DWORD PTR [edx],eax
+    1bde:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    1be1:	8d 14 c5 00 00 00 00 	lea    edx,[eax*8+0x0]
+    1be8:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1beb:	01 c2                	add    edx,eax
+    1bed:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    1bf0:	8b 00                	mov    eax,DWORD PTR [eax]
+    1bf2:	89 02                	mov    DWORD PTR [edx],eax
 						return 0;
-    1944:	b8 00 00 00 00       	mov    eax,0x0
-    1949:	e9 03 01 00 00       	jmp    1a51 <add_stride+0x14e>
+    1bf4:	b8 00 00 00 00       	mov    eax,0x0
+    1bf9:	e9 08 01 00 00       	jmp    1d06 <add_stride+0x153>
 				} else if (sb[i].x2 == s->x1) { /* extend above */
-    194e:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    1951:	8d 14 c5 00 00 00 00 	lea    edx,[eax*8+0x0]
-    1958:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    195b:	01 d0                	add    eax,edx
-    195d:	8b 50 04             	mov    edx,DWORD PTR [eax+0x4]
-    1960:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-    1963:	8b 00                	mov    eax,DWORD PTR [eax]
-    1965:	39 c2                	cmp    edx,eax
-    1967:	75 22                	jne    198b <add_stride+0x88>
+    1bfe:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    1c01:	8d 14 c5 00 00 00 00 	lea    edx,[eax*8+0x0]
+    1c08:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1c0b:	01 d0                	add    eax,edx
+    1c0d:	8b 50 04             	mov    edx,DWORD PTR [eax+0x4]
+    1c10:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    1c13:	8b 00                	mov    eax,DWORD PTR [eax]
+    1c15:	39 c2                	cmp    edx,eax
+    1c17:	75 22                	jne    1c3b <add_stride+0x88>
 						sb[i].x2 = s->x2;
-    1969:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    196c:	8d 14 c5 00 00 00 00 	lea    edx,[eax*8+0x0]
-    1973:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1976:	01 c2                	add    edx,eax
-    1978:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-    197b:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    197e:	89 42 04             	mov    DWORD PTR [edx+0x4],eax
+    1c19:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    1c1c:	8d 14 c5 00 00 00 00 	lea    edx,[eax*8+0x0]
+    1c23:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1c26:	01 c2                	add    edx,eax
+    1c28:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    1c2b:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    1c2e:	89 42 04             	mov    DWORD PTR [edx+0x4],eax
 						return 0;
-    1981:	b8 00 00 00 00       	mov    eax,0x0
-    1986:	e9 c6 00 00 00       	jmp    1a51 <add_stride+0x14e>
+    1c31:	b8 00 00 00 00       	mov    eax,0x0
+    1c36:	e9 cb 00 00 00       	jmp    1d06 <add_stride+0x153>
 		for (size_t i = 0; i < num; i++) {
-    198b:	83 45 f4 01          	add    DWORD PTR [ebp-0xc],0x1
-    198f:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    1992:	3b 45 0c             	cmp    eax,DWORD PTR [ebp+0xc]
-    1995:	0f 82 78 ff ff ff    	jb     1913 <add_stride+0x10>
+    1c3b:	83 45 f4 01          	add    DWORD PTR [ebp-0xc],0x1
+    1c3f:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    1c42:	3b 45 0c             	cmp    eax,DWORD PTR [ebp+0xc]
+    1c45:	0f 82 78 ff ff ff    	jb     1bc3 <add_stride+0x10>
 				}
 		}
 		/* insert sorted */
 		for (size_t i = 0; i < num; i++)
-    199b:	c7 45 f0 00 00 00 00 	mov    DWORD PTR [ebp-0x10],0x0
-    19a2:	eb 7f                	jmp    1a23 <add_stride+0x120>
+    1c4b:	c7 45 f0 00 00 00 00 	mov    DWORD PTR [ebp-0x10],0x0
+    1c52:	e9 81 00 00 00       	jmp    1cd8 <add_stride+0x125>
 				if (sb[i].x1 < s->x2) {
-    19a4:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-    19a7:	8d 14 c5 00 00 00 00 	lea    edx,[eax*8+0x0]
-    19ae:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    19b1:	01 d0                	add    eax,edx
-    19b3:	8b 10                	mov    edx,DWORD PTR [eax]
-    19b5:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-    19b8:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    19bb:	39 c2                	cmp    edx,eax
-    19bd:	7d 60                	jge    1a1f <add_stride+0x11c>
+    1c57:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+    1c5a:	8d 14 c5 00 00 00 00 	lea    edx,[eax*8+0x0]
+    1c61:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1c64:	01 d0                	add    eax,edx
+    1c66:	8b 10                	mov    edx,DWORD PTR [eax]
+    1c68:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    1c6b:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    1c6e:	39 c2                	cmp    edx,eax
+    1c70:	7d 62                	jge    1cd4 <add_stride+0x121>
 						memmove(sb + i + 1, sb + i, (num - i) * sizeof(*s));
-    19bf:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    19c2:	2b 45 f0             	sub    eax,DWORD PTR [ebp-0x10]
-    19c5:	8d 0c c5 00 00 00 00 	lea    ecx,[eax*8+0x0]
-    19cc:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-    19cf:	8d 14 c5 00 00 00 00 	lea    edx,[eax*8+0x0]
-    19d6:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    19d9:	01 c2                	add    edx,eax
-    19db:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-    19de:	83 c0 01             	add    eax,0x1
-    19e1:	8d 1c c5 00 00 00 00 	lea    ebx,[eax*8+0x0]
-    19e8:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    19eb:	01 d8                	add    eax,ebx
-    19ed:	83 ec 04             	sub    esp,0x4
-    19f0:	51                   	push   ecx
-    19f1:	52                   	push   edx
-    19f2:	50                   	push   eax
-    19f3:	e8 fc ff ff ff       	call   19f4 <add_stride+0xf1>
-    19f8:	83 c4 10             	add    esp,0x10
+    1c72:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    1c75:	2b 45 f0             	sub    eax,DWORD PTR [ebp-0x10]
+    1c78:	8d 0c c5 00 00 00 00 	lea    ecx,[eax*8+0x0]
+    1c7f:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+    1c82:	8d 14 c5 00 00 00 00 	lea    edx,[eax*8+0x0]
+    1c89:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1c8c:	01 c2                	add    edx,eax
+    1c8e:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+    1c91:	83 c0 01             	add    eax,0x1
+    1c94:	8d 1c c5 00 00 00 00 	lea    ebx,[eax*8+0x0]
+    1c9b:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1c9e:	01 d8                	add    eax,ebx
+    1ca0:	89 4c 24 08          	mov    DWORD PTR [esp+0x8],ecx
+    1ca4:	89 54 24 04          	mov    DWORD PTR [esp+0x4],edx
+    1ca8:	89 04 24             	mov    DWORD PTR [esp],eax
+    1cab:	e8 fc ff ff ff       	call   1cac <add_stride+0xf9>
 						sb[i] = *s;
-    19fb:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-    19fe:	8d 14 c5 00 00 00 00 	lea    edx,[eax*8+0x0]
-    1a05:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1a08:	8d 0c 02             	lea    ecx,[edx+eax*1]
-    1a0b:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-    1a0e:	8b 50 04             	mov    edx,DWORD PTR [eax+0x4]
-    1a11:	8b 00                	mov    eax,DWORD PTR [eax]
-    1a13:	89 01                	mov    DWORD PTR [ecx],eax
-    1a15:	89 51 04             	mov    DWORD PTR [ecx+0x4],edx
+    1cb0:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+    1cb3:	8d 14 c5 00 00 00 00 	lea    edx,[eax*8+0x0]
+    1cba:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1cbd:	8d 0c 02             	lea    ecx,[edx+eax*1]
+    1cc0:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    1cc3:	8b 50 04             	mov    edx,DWORD PTR [eax+0x4]
+    1cc6:	8b 00                	mov    eax,DWORD PTR [eax]
+    1cc8:	89 01                	mov    DWORD PTR [ecx],eax
+    1cca:	89 51 04             	mov    DWORD PTR [ecx+0x4],edx
 						return 1;
-    1a18:	b8 01 00 00 00       	mov    eax,0x1
-    1a1d:	eb 32                	jmp    1a51 <add_stride+0x14e>
+    1ccd:	b8 01 00 00 00       	mov    eax,0x1
+    1cd2:	eb 32                	jmp    1d06 <add_stride+0x153>
 		for (size_t i = 0; i < num; i++)
-    1a1f:	83 45 f0 01          	add    DWORD PTR [ebp-0x10],0x1
-    1a23:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-    1a26:	3b 45 0c             	cmp    eax,DWORD PTR [ebp+0xc]
-    1a29:	0f 82 75 ff ff ff    	jb     19a4 <add_stride+0xa1>
+    1cd4:	83 45 f0 01          	add    DWORD PTR [ebp-0x10],0x1
+    1cd8:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+    1cdb:	3b 45 0c             	cmp    eax,DWORD PTR [ebp+0xc]
+    1cde:	0f 82 73 ff ff ff    	jb     1c57 <add_stride+0xa4>
 				}
 		/* element is last */
 		sb[num] = *s;
-    1a2f:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    1a32:	8d 14 c5 00 00 00 00 	lea    edx,[eax*8+0x0]
-    1a39:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1a3c:	8d 0c 02             	lea    ecx,[edx+eax*1]
-    1a3f:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-    1a42:	8b 50 04             	mov    edx,DWORD PTR [eax+0x4]
-    1a45:	8b 00                	mov    eax,DWORD PTR [eax]
-    1a47:	89 01                	mov    DWORD PTR [ecx],eax
-    1a49:	89 51 04             	mov    DWORD PTR [ecx+0x4],edx
+    1ce4:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    1ce7:	8d 14 c5 00 00 00 00 	lea    edx,[eax*8+0x0]
+    1cee:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1cf1:	8d 0c 02             	lea    ecx,[edx+eax*1]
+    1cf4:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    1cf7:	8b 50 04             	mov    edx,DWORD PTR [eax+0x4]
+    1cfa:	8b 00                	mov    eax,DWORD PTR [eax]
+    1cfc:	89 01                	mov    DWORD PTR [ecx],eax
+    1cfe:	89 51 04             	mov    DWORD PTR [ecx+0x4],edx
 		return 1;
-    1a4c:	b8 01 00 00 00       	mov    eax,0x1
+    1d01:	b8 01 00 00 00       	mov    eax,0x1
 }
-    1a51:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
-    1a54:	c9                   	leave
-    1a55:	c3                   	ret
+    1d06:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
+    1d09:	c9                   	leave
+    1d0a:	c3                   	ret
 
-00001a56 <framebuffer_redraw>:
+00001d0b <framebuffer_redraw>:
 
 uint64_t fb_rdt = 0;
 /* redraws the complete screen */
 void framebuffer_redraw_region(struct framebuffer* fb, struct kio_region* r);
 void framebuffer_redraw(struct framebuffer* fb)
 {
-    1a56:	55                   	push   ebp
-    1a57:	89 e5                	mov    ebp,esp
-    1a59:	83 ec 28             	sub    esp,0x28
+    1d0b:	55                   	push   ebp
+    1d0c:	89 e5                	mov    ebp,esp
+    1d0e:	83 ec 38             	sub    esp,0x38
 		struct kio_region r = {0}; /* sse alignment */
-    1a5c:	c7 45 e4 00 00 00 00 	mov    DWORD PTR [ebp-0x1c],0x0
-    1a63:	c7 45 e8 00 00 00 00 	mov    DWORD PTR [ebp-0x18],0x0
-    1a6a:	c7 45 ec 00 00 00 00 	mov    DWORD PTR [ebp-0x14],0x0
-    1a71:	c7 45 f0 00 00 00 00 	mov    DWORD PTR [ebp-0x10],0x0
-    1a78:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
+    1d11:	c7 45 e4 00 00 00 00 	mov    DWORD PTR [ebp-0x1c],0x0
+    1d18:	c7 45 e8 00 00 00 00 	mov    DWORD PTR [ebp-0x18],0x0
+    1d1f:	c7 45 ec 00 00 00 00 	mov    DWORD PTR [ebp-0x14],0x0
+    1d26:	c7 45 f0 00 00 00 00 	mov    DWORD PTR [ebp-0x10],0x0
+    1d2d:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
 		r.lx = fb->chw_x; r.ly = fb->chw_y;
-    1a7f:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1a82:	8b 40 2c             	mov    eax,DWORD PTR [eax+0x2c]
-    1a85:	66 89 45 e8          	mov    WORD PTR [ebp-0x18],ax
-    1a89:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1a8c:	8b 40 30             	mov    eax,DWORD PTR [eax+0x30]
-    1a8f:	66 89 45 ea          	mov    WORD PTR [ebp-0x16],ax
+    1d34:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1d37:	8b 40 2c             	mov    eax,DWORD PTR [eax+0x2c]
+    1d3a:	66 89 45 e8          	mov    WORD PTR [ebp-0x18],ax
+    1d3e:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1d41:	8b 40 30             	mov    eax,DWORD PTR [eax+0x30]
+    1d44:	66 89 45 ea          	mov    WORD PTR [ebp-0x16],ax
 		r.x = fb->cho_x; r.y = fb->cho_y;
-    1a93:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1a96:	8b 40 24             	mov    eax,DWORD PTR [eax+0x24]
-    1a99:	66 89 45 e4          	mov    WORD PTR [ebp-0x1c],ax
-    1a9d:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1aa0:	8b 40 28             	mov    eax,DWORD PTR [eax+0x28]
-    1aa3:	66 89 45 e6          	mov    WORD PTR [ebp-0x1a],ax
+    1d48:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1d4b:	8b 40 24             	mov    eax,DWORD PTR [eax+0x24]
+    1d4e:	66 89 45 e4          	mov    WORD PTR [ebp-0x1c],ax
+    1d52:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1d55:	8b 40 28             	mov    eax,DWORD PTR [eax+0x28]
+    1d58:	66 89 45 e6          	mov    WORD PTR [ebp-0x1a],ax
 		framebuffer_redraw_region(fb, &r);
-    1aa7:	83 ec 08             	sub    esp,0x8
-    1aaa:	8d 45 e4             	lea    eax,[ebp-0x1c]
-    1aad:	50                   	push   eax
-    1aae:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-    1ab1:	e8 fc ff ff ff       	call   1ab2 <framebuffer_redraw+0x5c>
-    1ab6:	83 c4 10             	add    esp,0x10
+    1d5c:	8d 45 e4             	lea    eax,[ebp-0x1c]
+    1d5f:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    1d63:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1d66:	89 04 24             	mov    DWORD PTR [esp],eax
+    1d69:	e8 fc ff ff ff       	call   1d6a <framebuffer_redraw+0x5f>
 }
-    1ab9:	90                   	nop
-    1aba:	c9                   	leave
-    1abb:	c3                   	ret
+    1d6e:	90                   	nop
+    1d6f:	c9                   	leave
+    1d70:	c3                   	ret
 
-00001abc <framebuffer_redraw_region>:
+00001d71 <framebuffer_redraw_region>:
 
 /* redraws a defined region (screen relative, not buffer, internal) */
 void framebuffer_redraw_region(struct framebuffer* fb, struct kio_region* r)
 {
-    1abc:	55                   	push   ebp
-    1abd:	89 e5                	mov    ebp,esp
-    1abf:	57                   	push   edi
-    1ac0:	56                   	push   esi
-    1ac1:	53                   	push   ebx
-    1ac2:	81 ec 9c 01 00 00    	sub    esp,0x19c
+    1d71:	55                   	push   ebp
+    1d72:	89 e5                	mov    ebp,esp
+    1d74:	57                   	push   edi
+    1d75:	56                   	push   esi
+    1d76:	53                   	push   ebx
+    1d77:	81 ec dc 01 00 00    	sub    esp,0x1dc
 		if (vga_mem_ptr == fb->text_mem)
-    1ac8:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1acb:	8b 10                	mov    edx,DWORD PTR [eax]
-    1acd:	a1 00 00 00 00       	mov    eax,ds:0x0
-    1ad2:	39 c2                	cmp    edx,eax
-    1ad4:	0f 84 a0 0b 00 00    	je     267a <framebuffer_redraw_region+0xbbe>
+    1d7d:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1d80:	8b 10                	mov    edx,DWORD PTR [eax]
+    1d82:	a1 00 00 00 00       	mov    eax,ds:0x0
+    1d87:	39 c2                	cmp    edx,eax
+    1d89:	0f 84 42 0c 00 00    	je     29d1 <framebuffer_redraw_region+0xc60>
 				return; /* don't do anything if we're directly on video memory */
 		else if (video_mode.is_textmode) {
-    1ada:	0f b6 05 00 00 00 00 	movzx  eax,BYTE PTR ds:0x0
-    1ae1:	84 c0                	test   al,al
-    1ae3:	0f 84 6a 03 00 00    	je     1e53 <framebuffer_redraw_region+0x397>
+    1d8f:	0f b6 05 00 00 00 00 	movzx  eax,BYTE PTR ds:0x0
+    1d96:	84 c0                	test   al,al
+    1d98:	0f 84 74 03 00 00    	je     2112 <framebuffer_redraw_region+0x3a1>
 				if (video_mode.width == fb->width && fb->chw_x == fb->width
-    1ae9:	8b 15 04 00 00 00    	mov    edx,DWORD PTR ds:0x4
-    1aef:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1af2:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    1af5:	39 c2                	cmp    edx,eax
-    1af7:	0f 85 5d 01 00 00    	jne    1c5a <framebuffer_redraw_region+0x19e>
-    1afd:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1b00:	8b 50 2c             	mov    edx,DWORD PTR [eax+0x2c]
-    1b03:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1b06:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    1b09:	39 c2                	cmp    edx,eax
-    1b0b:	0f 85 49 01 00 00    	jne    1c5a <framebuffer_redraw_region+0x19e>
+    1d9e:	8b 15 04 00 00 00    	mov    edx,DWORD PTR ds:0x4
+    1da4:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1da7:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    1daa:	39 c2                	cmp    edx,eax
+    1dac:	0f 85 61 01 00 00    	jne    1f13 <framebuffer_redraw_region+0x1a2>
+    1db2:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1db5:	8b 50 2c             	mov    edx,DWORD PTR [eax+0x2c]
+    1db8:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1dbb:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    1dbe:	39 c2                	cmp    edx,eax
+    1dc0:	0f 85 4d 01 00 00    	jne    1f13 <framebuffer_redraw_region+0x1a2>
 							   && r->lx == fb->width && !fb->pix_x) {
-    1b11:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    1b14:	0f b7 40 04          	movzx  eax,WORD PTR [eax+0x4]
-    1b18:	0f bf d0             	movsx  edx,ax
-    1b1b:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1b1e:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    1b21:	39 c2                	cmp    edx,eax
-    1b23:	0f 85 31 01 00 00    	jne    1c5a <framebuffer_redraw_region+0x19e>
-    1b29:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1b2c:	8b 40 1c             	mov    eax,DWORD PTR [eax+0x1c]
-    1b2f:	85 c0                	test   eax,eax
-    1b31:	0f 85 23 01 00 00    	jne    1c5a <framebuffer_redraw_region+0x19e>
+    1dc6:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    1dc9:	0f b7 40 04          	movzx  eax,WORD PTR [eax+0x4]
+    1dcd:	0f bf d0             	movsx  edx,ax
+    1dd0:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1dd3:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    1dd6:	39 c2                	cmp    edx,eax
+    1dd8:	0f 85 35 01 00 00    	jne    1f13 <framebuffer_redraw_region+0x1a2>
+    1dde:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1de1:	8b 40 1c             	mov    eax,DWORD PTR [eax+0x1c]
+    1de4:	85 c0                	test   eax,eax
+    1de6:	0f 85 27 01 00 00    	jne    1f13 <framebuffer_redraw_region+0x1a2>
 						ssize_t nl;
 						/* super easy memory transfer */
 						fb->cho_x = 0;
-    1b37:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1b3a:	c7 40 24 00 00 00 00 	mov    DWORD PTR [eax+0x24],0x0
+    1dec:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1def:	c7 40 24 00 00 00 00 	mov    DWORD PTR [eax+0x24],0x0
 						nl = min(min(video_mode.height - fb->pix_y, fb->chw_y),
-    1b41:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    1b44:	0f b7 40 06          	movzx  eax,WORD PTR [eax+0x6]
-    1b48:	0f bf d0             	movsx  edx,ax
-    1b4b:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1b4e:	8b 58 08             	mov    ebx,DWORD PTR [eax+0x8]
-    1b51:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1b54:	8b 48 28             	mov    ecx,DWORD PTR [eax+0x28]
-    1b57:	89 d8                	mov    eax,ebx
-    1b59:	29 c8                	sub    eax,ecx
-    1b5b:	39 c2                	cmp    edx,eax
-    1b5d:	0f 4f d0             	cmovg  edx,eax
-    1b60:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1b63:	8b 48 30             	mov    ecx,DWORD PTR [eax+0x30]
-    1b66:	8b 35 08 00 00 00    	mov    esi,DWORD PTR ds:0x8
-    1b6c:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1b6f:	8b 58 20             	mov    ebx,DWORD PTR [eax+0x20]
-    1b72:	89 f0                	mov    eax,esi
-    1b74:	29 d8                	sub    eax,ebx
-    1b76:	39 c1                	cmp    ecx,eax
-    1b78:	0f 4e c1             	cmovle eax,ecx
-    1b7b:	39 c2                	cmp    edx,eax
-    1b7d:	0f 4e c2             	cmovle eax,edx
-    1b80:	89 45 90             	mov    DWORD PTR [ebp-0x70],eax
+    1df6:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    1df9:	0f b7 40 06          	movzx  eax,WORD PTR [eax+0x6]
+    1dfd:	0f bf d0             	movsx  edx,ax
+    1e00:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1e03:	8b 58 08             	mov    ebx,DWORD PTR [eax+0x8]
+    1e06:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1e09:	8b 48 28             	mov    ecx,DWORD PTR [eax+0x28]
+    1e0c:	89 d8                	mov    eax,ebx
+    1e0e:	29 c8                	sub    eax,ecx
+    1e10:	39 c2                	cmp    edx,eax
+    1e12:	0f 4f d0             	cmovg  edx,eax
+    1e15:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1e18:	8b 48 30             	mov    ecx,DWORD PTR [eax+0x30]
+    1e1b:	8b 35 08 00 00 00    	mov    esi,DWORD PTR ds:0x8
+    1e21:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1e24:	8b 58 20             	mov    ebx,DWORD PTR [eax+0x20]
+    1e27:	89 f0                	mov    eax,esi
+    1e29:	29 d8                	sub    eax,ebx
+    1e2b:	39 c1                	cmp    ecx,eax
+    1e2d:	0f 4e c1             	cmovle eax,ecx
+    1e30:	39 c2                	cmp    edx,eax
+    1e32:	0f 4e c2             	cmovle eax,edx
+    1e35:	89 45 90             	mov    DWORD PTR [ebp-0x70],eax
 										min(fb->height - fb->cho_y, r->ly));
 						memcpy(vga_mem_ptr + (fb->pix_y + r->y) * 2 * video_mode.width,
 										fb->text_mem + (fb->cho_y + r->y) * 2
 										* fb->width, nl * 2 * fb->width);
-    1b83:	8b 45 90             	mov    eax,DWORD PTR [ebp-0x70]
-    1b86:	8d 14 00             	lea    edx,[eax+eax*1]
-    1b89:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1b8c:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    1b8f:	0f af c2             	imul   eax,edx
+    1e38:	8b 45 90             	mov    eax,DWORD PTR [ebp-0x70]
+    1e3b:	8d 14 00             	lea    edx,[eax+eax*1]
+    1e3e:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1e41:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    1e44:	0f af c2             	imul   eax,edx
 						memcpy(vga_mem_ptr + (fb->pix_y + r->y) * 2 * video_mode.width,
-    1b92:	89 c6                	mov    esi,eax
+    1e47:	89 c6                	mov    esi,eax
 										fb->text_mem + (fb->cho_y + r->y) * 2
-    1b94:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1b97:	8b 10                	mov    edx,DWORD PTR [eax]
-    1b99:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1b9c:	8b 48 28             	mov    ecx,DWORD PTR [eax+0x28]
-    1b9f:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    1ba2:	0f b7 40 02          	movzx  eax,WORD PTR [eax+0x2]
-    1ba6:	98                   	cwde
-    1ba7:	01 c8                	add    eax,ecx
-    1ba9:	8d 0c 00             	lea    ecx,[eax+eax*1]
+    1e49:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1e4c:	8b 10                	mov    edx,DWORD PTR [eax]
+    1e4e:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1e51:	8b 48 28             	mov    ecx,DWORD PTR [eax+0x28]
+    1e54:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    1e57:	0f b7 40 02          	movzx  eax,WORD PTR [eax+0x2]
+    1e5b:	98                   	cwde
+    1e5c:	01 c8                	add    eax,ecx
+    1e5e:	8d 0c 00             	lea    ecx,[eax+eax*1]
 										* fb->width, nl * 2 * fb->width);
-    1bac:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1baf:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    1bb2:	0f af c1             	imul   eax,ecx
+    1e61:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1e64:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    1e67:	0f af c1             	imul   eax,ecx
 										fb->text_mem + (fb->cho_y + r->y) * 2
-    1bb5:	01 c2                	add    edx,eax
+    1e6a:	01 c2                	add    edx,eax
 						memcpy(vga_mem_ptr + (fb->pix_y + r->y) * 2 * video_mode.width,
-    1bb7:	8b 0d 00 00 00 00    	mov    ecx,DWORD PTR ds:0x0
-    1bbd:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1bc0:	8b 58 20             	mov    ebx,DWORD PTR [eax+0x20]
-    1bc3:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    1bc6:	0f b7 40 02          	movzx  eax,WORD PTR [eax+0x2]
-    1bca:	98                   	cwde
-    1bcb:	01 d8                	add    eax,ebx
-    1bcd:	8d 1c 00             	lea    ebx,[eax+eax*1]
-    1bd0:	a1 04 00 00 00       	mov    eax,ds:0x4
-    1bd5:	0f af c3             	imul   eax,ebx
-    1bd8:	01 c8                	add    eax,ecx
-    1bda:	56                   	push   esi
-    1bdb:	52                   	push   edx
-    1bdc:	50                   	push   eax
-    1bdd:	e8 1e e4 ff ff       	call   0 <memcpy>
-    1be2:	83 c4 0c             	add    esp,0xc
+    1e6c:	8b 0d 00 00 00 00    	mov    ecx,DWORD PTR ds:0x0
+    1e72:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1e75:	8b 58 20             	mov    ebx,DWORD PTR [eax+0x20]
+    1e78:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    1e7b:	0f b7 40 02          	movzx  eax,WORD PTR [eax+0x2]
+    1e7f:	98                   	cwde
+    1e80:	01 d8                	add    eax,ebx
+    1e82:	8d 1c 00             	lea    ebx,[eax+eax*1]
+    1e85:	a1 04 00 00 00       	mov    eax,ds:0x4
+    1e8a:	0f af c3             	imul   eax,ebx
+    1e8d:	01 c8                	add    eax,ecx
+    1e8f:	89 74 24 08          	mov    DWORD PTR [esp+0x8],esi
+    1e93:	89 54 24 04          	mov    DWORD PTR [esp+0x4],edx
+    1e97:	89 04 24             	mov    DWORD PTR [esp],eax
+    1e9a:	e8 61 e1 ff ff       	call   0 <memcpy>
 						/* show we're outside of buffer (for large cho_y) */
 						if (nl < fb->chw_y)
-    1be5:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1be8:	8b 40 30             	mov    eax,DWORD PTR [eax+0x30]
-    1beb:	39 45 90             	cmp    DWORD PTR [ebp-0x70],eax
-    1bee:	0f 8d 59 02 00 00    	jge    1e4d <framebuffer_redraw_region+0x391>
+    1e9f:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1ea2:	8b 40 30             	mov    eax,DWORD PTR [eax+0x30]
+    1ea5:	39 45 90             	cmp    DWORD PTR [ebp-0x70],eax
+    1ea8:	0f 8d 5e 02 00 00    	jge    210c <framebuffer_redraw_region+0x39b>
 								bzero(vga_mem_ptr + (fb->pix_y + r->y + nl) * 2 * fb->width,
 										(min(fb->chw_y, video_mode.height - fb->pix_y)
-    1bf4:	8b 15 08 00 00 00    	mov    edx,DWORD PTR ds:0x8
-    1bfa:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1bfd:	8b 40 20             	mov    eax,DWORD PTR [eax+0x20]
-    1c00:	29 c2                	sub    edx,eax
-    1c02:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1c05:	8b 40 30             	mov    eax,DWORD PTR [eax+0x30]
-    1c08:	39 c2                	cmp    edx,eax
-    1c0a:	0f 4e c2             	cmovle eax,edx
+    1eae:	8b 15 08 00 00 00    	mov    edx,DWORD PTR ds:0x8
+    1eb4:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1eb7:	8b 40 20             	mov    eax,DWORD PTR [eax+0x20]
+    1eba:	29 c2                	sub    edx,eax
+    1ebc:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1ebf:	8b 40 30             	mov    eax,DWORD PTR [eax+0x30]
+    1ec2:	39 c2                	cmp    edx,eax
+    1ec4:	0f 4e c2             	cmovle eax,edx
 										 - nl) * fb->width * 2);
-    1c0d:	2b 45 90             	sub    eax,DWORD PTR [ebp-0x70]
-    1c10:	89 c2                	mov    edx,eax
-    1c12:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1c15:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    1c18:	0f af c2             	imul   eax,edx
-    1c1b:	01 c0                	add    eax,eax
+    1ec7:	2b 45 90             	sub    eax,DWORD PTR [ebp-0x70]
+    1eca:	89 c2                	mov    edx,eax
+    1ecc:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1ecf:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    1ed2:	0f af c2             	imul   eax,edx
+    1ed5:	01 c0                	add    eax,eax
 								bzero(vga_mem_ptr + (fb->pix_y + r->y + nl) * 2 * fb->width,
-    1c1d:	89 c3                	mov    ebx,eax
-    1c1f:	8b 15 00 00 00 00    	mov    edx,DWORD PTR ds:0x0
-    1c25:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1c28:	8b 48 20             	mov    ecx,DWORD PTR [eax+0x20]
-    1c2b:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    1c2e:	0f b7 40 02          	movzx  eax,WORD PTR [eax+0x2]
-    1c32:	98                   	cwde
-    1c33:	01 c1                	add    ecx,eax
-    1c35:	8b 45 90             	mov    eax,DWORD PTR [ebp-0x70]
-    1c38:	01 c8                	add    eax,ecx
-    1c3a:	8d 0c 00             	lea    ecx,[eax+eax*1]
-    1c3d:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1c40:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    1c43:	0f af c1             	imul   eax,ecx
-    1c46:	01 d0                	add    eax,edx
-    1c48:	83 ec 08             	sub    esp,0x8
-    1c4b:	53                   	push   ebx
-    1c4c:	50                   	push   eax
-    1c4d:	e8 fc ff ff ff       	call   1c4e <framebuffer_redraw_region+0x192>
-    1c52:	83 c4 10             	add    esp,0x10
+    1ed7:	89 c3                	mov    ebx,eax
+    1ed9:	8b 15 00 00 00 00    	mov    edx,DWORD PTR ds:0x0
+    1edf:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1ee2:	8b 48 20             	mov    ecx,DWORD PTR [eax+0x20]
+    1ee5:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    1ee8:	0f b7 40 02          	movzx  eax,WORD PTR [eax+0x2]
+    1eec:	98                   	cwde
+    1eed:	01 c1                	add    ecx,eax
+    1eef:	8b 45 90             	mov    eax,DWORD PTR [ebp-0x70]
+    1ef2:	01 c8                	add    eax,ecx
+    1ef4:	8d 0c 00             	lea    ecx,[eax+eax*1]
+    1ef7:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1efa:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    1efd:	0f af c1             	imul   eax,ecx
+    1f00:	01 d0                	add    eax,edx
+    1f02:	89 5c 24 04          	mov    DWORD PTR [esp+0x4],ebx
+    1f06:	89 04 24             	mov    DWORD PTR [esp],eax
+    1f09:	e8 fc ff ff ff       	call   1f0a <framebuffer_redraw_region+0x199>
 							   && r->lx == fb->width && !fb->pix_x) {
-    1c55:	e9 f3 01 00 00       	jmp    1e4d <framebuffer_redraw_region+0x391>
+    1f0e:	e9 f9 01 00 00       	jmp    210c <framebuffer_redraw_region+0x39b>
 				} else {
 						ssize_t nl, nc; void *src, *dst;
 						/* copy linewise */
 						nl = min(min(video_mode.height - fb->pix_y, fb->chw_y),
-    1c5a:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    1c5d:	0f b7 40 06          	movzx  eax,WORD PTR [eax+0x6]
-    1c61:	0f bf d0             	movsx  edx,ax
-    1c64:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1c67:	8b 58 08             	mov    ebx,DWORD PTR [eax+0x8]
-    1c6a:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1c6d:	8b 48 28             	mov    ecx,DWORD PTR [eax+0x28]
-    1c70:	89 d8                	mov    eax,ebx
-    1c72:	29 c8                	sub    eax,ecx
-    1c74:	39 c2                	cmp    edx,eax
-    1c76:	0f 4f d0             	cmovg  edx,eax
-    1c79:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1c7c:	8b 48 30             	mov    ecx,DWORD PTR [eax+0x30]
-    1c7f:	8b 35 08 00 00 00    	mov    esi,DWORD PTR ds:0x8
-    1c85:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1c88:	8b 58 20             	mov    ebx,DWORD PTR [eax+0x20]
-    1c8b:	89 f0                	mov    eax,esi
-    1c8d:	29 d8                	sub    eax,ebx
-    1c8f:	39 c1                	cmp    ecx,eax
-    1c91:	0f 4e c1             	cmovle eax,ecx
-    1c94:	39 c2                	cmp    edx,eax
-    1c96:	0f 4e c2             	cmovle eax,edx
-    1c99:	89 45 8c             	mov    DWORD PTR [ebp-0x74],eax
+    1f13:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    1f16:	0f b7 40 06          	movzx  eax,WORD PTR [eax+0x6]
+    1f1a:	0f bf d0             	movsx  edx,ax
+    1f1d:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1f20:	8b 58 08             	mov    ebx,DWORD PTR [eax+0x8]
+    1f23:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1f26:	8b 48 28             	mov    ecx,DWORD PTR [eax+0x28]
+    1f29:	89 d8                	mov    eax,ebx
+    1f2b:	29 c8                	sub    eax,ecx
+    1f2d:	39 c2                	cmp    edx,eax
+    1f2f:	0f 4f d0             	cmovg  edx,eax
+    1f32:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1f35:	8b 48 30             	mov    ecx,DWORD PTR [eax+0x30]
+    1f38:	8b 35 08 00 00 00    	mov    esi,DWORD PTR ds:0x8
+    1f3e:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1f41:	8b 58 20             	mov    ebx,DWORD PTR [eax+0x20]
+    1f44:	89 f0                	mov    eax,esi
+    1f46:	29 d8                	sub    eax,ebx
+    1f48:	39 c1                	cmp    ecx,eax
+    1f4a:	0f 4e c1             	cmovle eax,ecx
+    1f4d:	39 c2                	cmp    edx,eax
+    1f4f:	0f 4e c2             	cmovle eax,edx
+    1f52:	89 45 8c             	mov    DWORD PTR [ebp-0x74],eax
 									   	min(fb->height - fb->cho_y, r->ly));
 						nc = min(min(video_mode.width - fb->pix_x, fb->chw_x),
-    1c9c:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    1c9f:	0f b7 40 04          	movzx  eax,WORD PTR [eax+0x4]
-    1ca3:	0f bf d0             	movsx  edx,ax
-    1ca6:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1ca9:	8b 58 04             	mov    ebx,DWORD PTR [eax+0x4]
-    1cac:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1caf:	8b 48 24             	mov    ecx,DWORD PTR [eax+0x24]
-    1cb2:	89 d8                	mov    eax,ebx
-    1cb4:	29 c8                	sub    eax,ecx
-    1cb6:	39 c2                	cmp    edx,eax
-    1cb8:	0f 4f d0             	cmovg  edx,eax
-    1cbb:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1cbe:	8b 48 2c             	mov    ecx,DWORD PTR [eax+0x2c]
-    1cc1:	8b 35 04 00 00 00    	mov    esi,DWORD PTR ds:0x4
-    1cc7:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1cca:	8b 58 1c             	mov    ebx,DWORD PTR [eax+0x1c]
-    1ccd:	89 f0                	mov    eax,esi
-    1ccf:	29 d8                	sub    eax,ebx
-    1cd1:	39 c1                	cmp    ecx,eax
-    1cd3:	0f 4e c1             	cmovle eax,ecx
-    1cd6:	39 c2                	cmp    edx,eax
-    1cd8:	0f 4e c2             	cmovle eax,edx
-    1cdb:	89 45 88             	mov    DWORD PTR [ebp-0x78],eax
+    1f55:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    1f58:	0f b7 40 04          	movzx  eax,WORD PTR [eax+0x4]
+    1f5c:	0f bf d0             	movsx  edx,ax
+    1f5f:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1f62:	8b 58 04             	mov    ebx,DWORD PTR [eax+0x4]
+    1f65:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1f68:	8b 48 24             	mov    ecx,DWORD PTR [eax+0x24]
+    1f6b:	89 d8                	mov    eax,ebx
+    1f6d:	29 c8                	sub    eax,ecx
+    1f6f:	39 c2                	cmp    edx,eax
+    1f71:	0f 4f d0             	cmovg  edx,eax
+    1f74:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1f77:	8b 48 2c             	mov    ecx,DWORD PTR [eax+0x2c]
+    1f7a:	8b 35 04 00 00 00    	mov    esi,DWORD PTR ds:0x4
+    1f80:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1f83:	8b 58 1c             	mov    ebx,DWORD PTR [eax+0x1c]
+    1f86:	89 f0                	mov    eax,esi
+    1f88:	29 d8                	sub    eax,ebx
+    1f8a:	39 c1                	cmp    ecx,eax
+    1f8c:	0f 4e c1             	cmovle eax,ecx
+    1f8f:	39 c2                	cmp    edx,eax
+    1f91:	0f 4e c2             	cmovle eax,edx
+    1f94:	89 45 88             	mov    DWORD PTR [ebp-0x78],eax
 										min(fb->width - fb->cho_x, r->lx));
 						src = fb->text_mem + (fb->cho_y + r->y) * 2 * fb->width + 2 * (fb->cho_x + r->y);
-    1cde:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1ce1:	8b 10                	mov    edx,DWORD PTR [eax]
-    1ce3:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1ce6:	8b 48 28             	mov    ecx,DWORD PTR [eax+0x28]
-    1ce9:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    1cec:	0f b7 40 02          	movzx  eax,WORD PTR [eax+0x2]
-    1cf0:	98                   	cwde
-    1cf1:	01 c8                	add    eax,ecx
-    1cf3:	8d 0c 00             	lea    ecx,[eax+eax*1]
-    1cf6:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1cf9:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    1cfc:	0f af c1             	imul   eax,ecx
-    1cff:	89 c3                	mov    ebx,eax
-    1d01:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1d04:	8b 48 24             	mov    ecx,DWORD PTR [eax+0x24]
-    1d07:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    1d0a:	0f b7 40 02          	movzx  eax,WORD PTR [eax+0x2]
-    1d0e:	98                   	cwde
-    1d0f:	01 c8                	add    eax,ecx
-    1d11:	01 c0                	add    eax,eax
-    1d13:	01 d8                	add    eax,ebx
-    1d15:	01 d0                	add    eax,edx
-    1d17:	89 45 e4             	mov    DWORD PTR [ebp-0x1c],eax
+    1f97:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1f9a:	8b 10                	mov    edx,DWORD PTR [eax]
+    1f9c:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1f9f:	8b 48 28             	mov    ecx,DWORD PTR [eax+0x28]
+    1fa2:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    1fa5:	0f b7 40 02          	movzx  eax,WORD PTR [eax+0x2]
+    1fa9:	98                   	cwde
+    1faa:	01 c8                	add    eax,ecx
+    1fac:	8d 0c 00             	lea    ecx,[eax+eax*1]
+    1faf:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1fb2:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    1fb5:	0f af c1             	imul   eax,ecx
+    1fb8:	89 c3                	mov    ebx,eax
+    1fba:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1fbd:	8b 48 24             	mov    ecx,DWORD PTR [eax+0x24]
+    1fc0:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    1fc3:	0f b7 40 02          	movzx  eax,WORD PTR [eax+0x2]
+    1fc7:	98                   	cwde
+    1fc8:	01 c8                	add    eax,ecx
+    1fca:	01 c0                	add    eax,eax
+    1fcc:	01 d8                	add    eax,ebx
+    1fce:	01 d0                	add    eax,edx
+    1fd0:	89 45 e4             	mov    DWORD PTR [ebp-0x1c],eax
 						dst = vga_mem_ptr + (fb->pix_y + r->y) * 2 * video_mode.width + 2 * (fb->pix_x + r->y);
-    1d1a:	8b 15 00 00 00 00    	mov    edx,DWORD PTR ds:0x0
-    1d20:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1d23:	8b 48 20             	mov    ecx,DWORD PTR [eax+0x20]
-    1d26:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    1d29:	0f b7 40 02          	movzx  eax,WORD PTR [eax+0x2]
-    1d2d:	98                   	cwde
-    1d2e:	01 c8                	add    eax,ecx
-    1d30:	8d 0c 00             	lea    ecx,[eax+eax*1]
-    1d33:	a1 04 00 00 00       	mov    eax,ds:0x4
-    1d38:	0f af c1             	imul   eax,ecx
-    1d3b:	89 c3                	mov    ebx,eax
-    1d3d:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1d40:	8b 48 1c             	mov    ecx,DWORD PTR [eax+0x1c]
-    1d43:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    1d46:	0f b7 40 02          	movzx  eax,WORD PTR [eax+0x2]
-    1d4a:	98                   	cwde
-    1d4b:	01 c8                	add    eax,ecx
-    1d4d:	01 c0                	add    eax,eax
-    1d4f:	01 d8                	add    eax,ebx
-    1d51:	01 d0                	add    eax,edx
-    1d53:	89 45 e0             	mov    DWORD PTR [ebp-0x20],eax
+    1fd3:	8b 15 00 00 00 00    	mov    edx,DWORD PTR ds:0x0
+    1fd9:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1fdc:	8b 48 20             	mov    ecx,DWORD PTR [eax+0x20]
+    1fdf:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    1fe2:	0f b7 40 02          	movzx  eax,WORD PTR [eax+0x2]
+    1fe6:	98                   	cwde
+    1fe7:	01 c8                	add    eax,ecx
+    1fe9:	8d 0c 00             	lea    ecx,[eax+eax*1]
+    1fec:	a1 04 00 00 00       	mov    eax,ds:0x4
+    1ff1:	0f af c1             	imul   eax,ecx
+    1ff4:	89 c3                	mov    ebx,eax
+    1ff6:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1ff9:	8b 48 1c             	mov    ecx,DWORD PTR [eax+0x1c]
+    1ffc:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    1fff:	0f b7 40 02          	movzx  eax,WORD PTR [eax+0x2]
+    2003:	98                   	cwde
+    2004:	01 c8                	add    eax,ecx
+    2006:	01 c0                	add    eax,eax
+    2008:	01 d8                	add    eax,ebx
+    200a:	01 d0                	add    eax,edx
+    200c:	89 45 e0             	mov    DWORD PTR [ebp-0x20],eax
 						while (nl) {
-    1d56:	eb 7d                	jmp    1dd5 <framebuffer_redraw_region+0x319>
+    200f:	e9 80 00 00 00       	jmp    2094 <framebuffer_redraw_region+0x323>
 								memcpy(dst, src, 2 * nc);
-    1d58:	8b 45 88             	mov    eax,DWORD PTR [ebp-0x78]
-    1d5b:	01 c0                	add    eax,eax
-    1d5d:	83 ec 04             	sub    esp,0x4
-    1d60:	50                   	push   eax
-    1d61:	ff 75 e4             	push   DWORD PTR [ebp-0x1c]
-    1d64:	ff 75 e0             	push   DWORD PTR [ebp-0x20]
-    1d67:	e8 94 e2 ff ff       	call   0 <memcpy>
-    1d6c:	83 c4 10             	add    esp,0x10
+    2014:	8b 45 88             	mov    eax,DWORD PTR [ebp-0x78]
+    2017:	01 c0                	add    eax,eax
+    2019:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    201d:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
+    2020:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    2024:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
+    2027:	89 04 24             	mov    DWORD PTR [esp],eax
+    202a:	e8 d1 df ff ff       	call   0 <memcpy>
 								if (nc < min(fb->chw_x, r->lx))
-    1d6f:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    1d72:	0f b7 40 04          	movzx  eax,WORD PTR [eax+0x4]
-    1d76:	0f bf d0             	movsx  edx,ax
-    1d79:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1d7c:	8b 40 2c             	mov    eax,DWORD PTR [eax+0x2c]
-    1d7f:	39 c2                	cmp    edx,eax
-    1d81:	0f 4e c2             	cmovle eax,edx
-    1d84:	39 45 88             	cmp    DWORD PTR [ebp-0x78],eax
-    1d87:	7d 37                	jge    1dc0 <framebuffer_redraw_region+0x304>
+    202f:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    2032:	0f b7 40 04          	movzx  eax,WORD PTR [eax+0x4]
+    2036:	0f bf d0             	movsx  edx,ax
+    2039:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    203c:	8b 40 2c             	mov    eax,DWORD PTR [eax+0x2c]
+    203f:	39 c2                	cmp    edx,eax
+    2041:	0f 4e c2             	cmovle eax,edx
+    2044:	39 45 88             	cmp    DWORD PTR [ebp-0x78],eax
+    2047:	7d 36                	jge    207f <framebuffer_redraw_region+0x30e>
 										bzero(dst + 2 * nc, min(fb->chw_x,
-    1d89:	8b 15 04 00 00 00    	mov    edx,DWORD PTR ds:0x4
-    1d8f:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1d92:	8b 40 1c             	mov    eax,DWORD PTR [eax+0x1c]
-    1d95:	29 c2                	sub    edx,eax
-    1d97:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1d9a:	8b 40 2c             	mov    eax,DWORD PTR [eax+0x2c]
-    1d9d:	39 c2                	cmp    edx,eax
-    1d9f:	0f 4e c2             	cmovle eax,edx
+    2049:	8b 15 04 00 00 00    	mov    edx,DWORD PTR ds:0x4
+    204f:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    2052:	8b 40 1c             	mov    eax,DWORD PTR [eax+0x1c]
+    2055:	29 c2                	sub    edx,eax
+    2057:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    205a:	8b 40 2c             	mov    eax,DWORD PTR [eax+0x2c]
+    205d:	39 c2                	cmp    edx,eax
+    205f:	0f 4e c2             	cmovle eax,edx
 											  video_mode.width - fb->pix_x) - nc);
-    1da2:	2b 45 88             	sub    eax,DWORD PTR [ebp-0x78]
+    2062:	2b 45 88             	sub    eax,DWORD PTR [ebp-0x78]
 										bzero(dst + 2 * nc, min(fb->chw_x,
-    1da5:	89 c2                	mov    edx,eax
-    1da7:	8b 45 88             	mov    eax,DWORD PTR [ebp-0x78]
-    1daa:	01 c0                	add    eax,eax
-    1dac:	89 c1                	mov    ecx,eax
-    1dae:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
-    1db1:	01 c8                	add    eax,ecx
-    1db3:	83 ec 08             	sub    esp,0x8
-    1db6:	52                   	push   edx
-    1db7:	50                   	push   eax
-    1db8:	e8 fc ff ff ff       	call   1db9 <framebuffer_redraw_region+0x2fd>
-    1dbd:	83 c4 10             	add    esp,0x10
+    2065:	89 c2                	mov    edx,eax
+    2067:	8b 45 88             	mov    eax,DWORD PTR [ebp-0x78]
+    206a:	01 c0                	add    eax,eax
+    206c:	89 c1                	mov    ecx,eax
+    206e:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
+    2071:	01 c8                	add    eax,ecx
+    2073:	89 54 24 04          	mov    DWORD PTR [esp+0x4],edx
+    2077:	89 04 24             	mov    DWORD PTR [esp],eax
+    207a:	e8 fc ff ff ff       	call   207b <framebuffer_redraw_region+0x30a>
 								dst += video_mode.width * 2;
-    1dc0:	a1 04 00 00 00       	mov    eax,ds:0x4
-    1dc5:	01 c0                	add    eax,eax
-    1dc7:	01 45 e0             	add    DWORD PTR [ebp-0x20],eax
+    207f:	a1 04 00 00 00       	mov    eax,ds:0x4
+    2084:	01 c0                	add    eax,eax
+    2086:	01 45 e0             	add    DWORD PTR [ebp-0x20],eax
 								src += fb->width * 2;
-    1dca:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1dcd:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    1dd0:	01 c0                	add    eax,eax
-    1dd2:	01 45 e4             	add    DWORD PTR [ebp-0x1c],eax
+    2089:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    208c:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    208f:	01 c0                	add    eax,eax
+    2091:	01 45 e4             	add    DWORD PTR [ebp-0x1c],eax
 						while (nl) {
-    1dd5:	83 7d 8c 00          	cmp    DWORD PTR [ebp-0x74],0x0
-    1dd9:	0f 85 79 ff ff ff    	jne    1d58 <framebuffer_redraw_region+0x29c>
+    2094:	83 7d 8c 00          	cmp    DWORD PTR [ebp-0x74],0x0
+    2098:	0f 85 76 ff ff ff    	jne    2014 <framebuffer_redraw_region+0x2a3>
 						}
 						/* show we're outside (large cho_...) */
 						nc = min(min(fb->chw_x, r->lx), video_mode.width - fb->pix_x);
-    1ddf:	8b 15 04 00 00 00    	mov    edx,DWORD PTR ds:0x4
-    1de5:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1de8:	8b 40 1c             	mov    eax,DWORD PTR [eax+0x1c]
-    1deb:	89 d1                	mov    ecx,edx
-    1ded:	29 c1                	sub    ecx,eax
-    1def:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    1df2:	0f b7 40 04          	movzx  eax,WORD PTR [eax+0x4]
-    1df6:	0f bf d0             	movsx  edx,ax
-    1df9:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1dfc:	8b 40 2c             	mov    eax,DWORD PTR [eax+0x2c]
-    1dff:	39 c2                	cmp    edx,eax
-    1e01:	0f 4e c2             	cmovle eax,edx
-    1e04:	39 c1                	cmp    ecx,eax
-    1e06:	0f 4e c1             	cmovle eax,ecx
-    1e09:	89 45 88             	mov    DWORD PTR [ebp-0x78],eax
+    209e:	8b 15 04 00 00 00    	mov    edx,DWORD PTR ds:0x4
+    20a4:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    20a7:	8b 40 1c             	mov    eax,DWORD PTR [eax+0x1c]
+    20aa:	89 d1                	mov    ecx,edx
+    20ac:	29 c1                	sub    ecx,eax
+    20ae:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    20b1:	0f b7 40 04          	movzx  eax,WORD PTR [eax+0x4]
+    20b5:	0f bf d0             	movsx  edx,ax
+    20b8:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    20bb:	8b 40 2c             	mov    eax,DWORD PTR [eax+0x2c]
+    20be:	39 c2                	cmp    edx,eax
+    20c0:	0f 4e c2             	cmovle eax,edx
+    20c3:	39 c1                	cmp    ecx,eax
+    20c5:	0f 4e c1             	cmovle eax,ecx
+    20c8:	89 45 88             	mov    DWORD PTR [ebp-0x78],eax
 						if (nl < min(fb->chw_y, r->ly)) {
-    1e0c:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    1e0f:	0f b7 40 06          	movzx  eax,WORD PTR [eax+0x6]
-    1e13:	0f bf d0             	movsx  edx,ax
-    1e16:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1e19:	8b 40 30             	mov    eax,DWORD PTR [eax+0x30]
-    1e1c:	39 c2                	cmp    edx,eax
-    1e1e:	0f 4e c2             	cmovle eax,edx
-    1e21:	39 45 8c             	cmp    DWORD PTR [ebp-0x74],eax
-    1e24:	0f 8d 53 08 00 00    	jge    267d <framebuffer_redraw_region+0xbc1>
+    20cb:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    20ce:	0f b7 40 06          	movzx  eax,WORD PTR [eax+0x6]
+    20d2:	0f bf d0             	movsx  edx,ax
+    20d5:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    20d8:	8b 40 30             	mov    eax,DWORD PTR [eax+0x30]
+    20db:	39 c2                	cmp    edx,eax
+    20dd:	0f 4e c2             	cmovle eax,edx
+    20e0:	39 45 8c             	cmp    DWORD PTR [ebp-0x74],eax
+    20e3:	0f 8d eb 08 00 00    	jge    29d4 <framebuffer_redraw_region+0xc63>
 								bzero(dst, 2 * nc);
-    1e2a:	8b 45 88             	mov    eax,DWORD PTR [ebp-0x78]
-    1e2d:	01 c0                	add    eax,eax
-    1e2f:	83 ec 08             	sub    esp,0x8
-    1e32:	50                   	push   eax
-    1e33:	ff 75 e0             	push   DWORD PTR [ebp-0x20]
-    1e36:	e8 fc ff ff ff       	call   1e37 <framebuffer_redraw_region+0x37b>
-    1e3b:	83 c4 10             	add    esp,0x10
+    20e9:	8b 45 88             	mov    eax,DWORD PTR [ebp-0x78]
+    20ec:	01 c0                	add    eax,eax
+    20ee:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    20f2:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
+    20f5:	89 04 24             	mov    DWORD PTR [esp],eax
+    20f8:	e8 fc ff ff ff       	call   20f9 <framebuffer_redraw_region+0x388>
 								dst += video_mode.width * 2;
-    1e3e:	a1 04 00 00 00       	mov    eax,ds:0x4
-    1e43:	01 c0                	add    eax,eax
-    1e45:	01 45 e0             	add    DWORD PTR [ebp-0x20],eax
+    20fd:	a1 04 00 00 00       	mov    eax,ds:0x4
+    2102:	01 c0                	add    eax,eax
+    2104:	01 45 e0             	add    DWORD PTR [ebp-0x20],eax
 						}
 				}
 				return;
-    1e48:	e9 30 08 00 00       	jmp    267d <framebuffer_redraw_region+0xbc1>
+    2107:	e9 c8 08 00 00       	jmp    29d4 <framebuffer_redraw_region+0xc63>
 							   && r->lx == fb->width && !fb->pix_x) {
-    1e4d:	90                   	nop
+    210c:	90                   	nop
 				return;
-    1e4e:	e9 2a 08 00 00       	jmp    267d <framebuffer_redraw_region+0xbc1>
+    210d:	e9 c2 08 00 00       	jmp    29d4 <framebuffer_redraw_region+0xc63>
 		} else {
 				int shf = 0;
-    1e53:	c7 45 dc 00 00 00 00 	mov    DWORD PTR [ebp-0x24],0x0
+    2112:	c7 45 dc 00 00 00 00 	mov    DWORD PTR [ebp-0x24],0x0
 				void* mem = vga_mem_ptr; char* str = fb->text_mem;
-    1e5a:	a1 00 00 00 00       	mov    eax,ds:0x0
-    1e5f:	89 45 d8             	mov    DWORD PTR [ebp-0x28],eax
-    1e62:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1e65:	8b 00                	mov    eax,DWORD PTR [eax]
-    1e67:	89 45 d4             	mov    DWORD PTR [ebp-0x2c],eax
+    2119:	a1 00 00 00 00       	mov    eax,ds:0x0
+    211e:	89 45 d8             	mov    DWORD PTR [ebp-0x28],eax
+    2121:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    2124:	8b 00                	mov    eax,DWORD PTR [eax]
+    2126:	89 45 d4             	mov    DWORD PTR [ebp-0x2c],eax
 				ssize_t px_x, px_y, o_x, o_y;
 
 				/* calculate the pixel offsets */
 				o_x = fb->pix_x + r->x * 8;
-    1e6a:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1e6d:	8b 50 1c             	mov    edx,DWORD PTR [eax+0x1c]
-    1e70:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    1e73:	0f b7 00             	movzx  eax,WORD PTR [eax]
-    1e76:	98                   	cwde
-    1e77:	c1 e0 03             	shl    eax,0x3
-    1e7a:	01 d0                	add    eax,edx
-    1e7c:	89 45 a8             	mov    DWORD PTR [ebp-0x58],eax
+    2129:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    212c:	8b 50 1c             	mov    edx,DWORD PTR [eax+0x1c]
+    212f:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    2132:	0f b7 00             	movzx  eax,WORD PTR [eax]
+    2135:	98                   	cwde
+    2136:	c1 e0 03             	shl    eax,0x3
+    2139:	01 d0                	add    eax,edx
+    213b:	89 45 a8             	mov    DWORD PTR [ebp-0x58],eax
 				o_y = fb->pix_y + r->y * 16;
-    1e7f:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1e82:	8b 50 20             	mov    edx,DWORD PTR [eax+0x20]
-    1e85:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    1e88:	0f b7 40 02          	movzx  eax,WORD PTR [eax+0x2]
-    1e8c:	98                   	cwde
-    1e8d:	c1 e0 04             	shl    eax,0x4
-    1e90:	01 d0                	add    eax,edx
-    1e92:	89 45 a4             	mov    DWORD PTR [ebp-0x5c],eax
+    213e:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    2141:	8b 50 20             	mov    edx,DWORD PTR [eax+0x20]
+    2144:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    2147:	0f b7 40 02          	movzx  eax,WORD PTR [eax+0x2]
+    214b:	98                   	cwde
+    214c:	c1 e0 04             	shl    eax,0x4
+    214f:	01 d0                	add    eax,edx
+    2151:	89 45 a4             	mov    DWORD PTR [ebp-0x5c],eax
 				px_x = r->lx * 8;
-    1e95:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    1e98:	0f b7 40 04          	movzx  eax,WORD PTR [eax+0x4]
-    1e9c:	98                   	cwde
-    1e9d:	c1 e0 03             	shl    eax,0x3
-    1ea0:	89 45 a0             	mov    DWORD PTR [ebp-0x60],eax
+    2154:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    2157:	0f b7 40 04          	movzx  eax,WORD PTR [eax+0x4]
+    215b:	98                   	cwde
+    215c:	c1 e0 03             	shl    eax,0x3
+    215f:	89 45 a0             	mov    DWORD PTR [ebp-0x60],eax
 				px_y = r->ly * 16;
-    1ea3:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    1ea6:	0f b7 40 06          	movzx  eax,WORD PTR [eax+0x6]
-    1eaa:	98                   	cwde
-    1eab:	c1 e0 04             	shl    eax,0x4
-    1eae:	89 45 9c             	mov    DWORD PTR [ebp-0x64],eax
+    2162:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    2165:	0f b7 40 06          	movzx  eax,WORD PTR [eax+0x6]
+    2169:	98                   	cwde
+    216a:	c1 e0 04             	shl    eax,0x4
+    216d:	89 45 9c             	mov    DWORD PTR [ebp-0x64],eax
 				/* and ensure the bounds */
 				if (o_x >= video_mode.width || o_y >= video_mode.height)
-    1eb1:	a1 04 00 00 00       	mov    eax,ds:0x4
-    1eb6:	39 45 a8             	cmp    DWORD PTR [ebp-0x58],eax
-    1eb9:	0f 8d c1 07 00 00    	jge    2680 <framebuffer_redraw_region+0xbc4>
-    1ebf:	a1 08 00 00 00       	mov    eax,ds:0x8
-    1ec4:	39 45 a4             	cmp    DWORD PTR [ebp-0x5c],eax
-    1ec7:	0f 8d b3 07 00 00    	jge    2680 <framebuffer_redraw_region+0xbc4>
+    2170:	a1 04 00 00 00       	mov    eax,ds:0x4
+    2175:	39 45 a8             	cmp    DWORD PTR [ebp-0x58],eax
+    2178:	0f 8d 59 08 00 00    	jge    29d7 <framebuffer_redraw_region+0xc66>
+    217e:	a1 08 00 00 00       	mov    eax,ds:0x8
+    2183:	39 45 a4             	cmp    DWORD PTR [ebp-0x5c],eax
+    2186:	0f 8d 4b 08 00 00    	jge    29d7 <framebuffer_redraw_region+0xc66>
 					return;
 				/* from the text buffer */
 				px_x = min(px_x, 8 * min(fb->width - fb->cho_x - r->x, fb->chw_x - r->x));
-    1ecd:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1ed0:	8b 50 04             	mov    edx,DWORD PTR [eax+0x4]
-    1ed3:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1ed6:	8b 40 24             	mov    eax,DWORD PTR [eax+0x24]
-    1ed9:	29 c2                	sub    edx,eax
-    1edb:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1ede:	8b 40 2c             	mov    eax,DWORD PTR [eax+0x2c]
-    1ee1:	39 c2                	cmp    edx,eax
-    1ee3:	7d 20                	jge    1f05 <framebuffer_redraw_region+0x449>
-    1ee5:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1ee8:	8b 50 04             	mov    edx,DWORD PTR [eax+0x4]
-    1eeb:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1eee:	8b 40 24             	mov    eax,DWORD PTR [eax+0x24]
-    1ef1:	29 c2                	sub    edx,eax
-    1ef3:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    1ef6:	0f b7 00             	movzx  eax,WORD PTR [eax]
-    1ef9:	98                   	cwde
-    1efa:	29 c2                	sub    edx,eax
-    1efc:	8d 04 d5 00 00 00 00 	lea    eax,[edx*8+0x0]
-    1f03:	eb 16                	jmp    1f1b <framebuffer_redraw_region+0x45f>
-    1f05:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1f08:	8b 50 2c             	mov    edx,DWORD PTR [eax+0x2c]
-    1f0b:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    1f0e:	0f b7 00             	movzx  eax,WORD PTR [eax]
-    1f11:	98                   	cwde
-    1f12:	29 c2                	sub    edx,eax
-    1f14:	8d 04 d5 00 00 00 00 	lea    eax,[edx*8+0x0]
-    1f1b:	8b 55 a0             	mov    edx,DWORD PTR [ebp-0x60]
-    1f1e:	39 c2                	cmp    edx,eax
-    1f20:	0f 4e c2             	cmovle eax,edx
-    1f23:	89 45 a0             	mov    DWORD PTR [ebp-0x60],eax
+    218c:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    218f:	8b 50 04             	mov    edx,DWORD PTR [eax+0x4]
+    2192:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    2195:	8b 40 24             	mov    eax,DWORD PTR [eax+0x24]
+    2198:	29 c2                	sub    edx,eax
+    219a:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    219d:	8b 40 2c             	mov    eax,DWORD PTR [eax+0x2c]
+    21a0:	39 c2                	cmp    edx,eax
+    21a2:	7d 20                	jge    21c4 <framebuffer_redraw_region+0x453>
+    21a4:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    21a7:	8b 50 04             	mov    edx,DWORD PTR [eax+0x4]
+    21aa:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    21ad:	8b 40 24             	mov    eax,DWORD PTR [eax+0x24]
+    21b0:	29 c2                	sub    edx,eax
+    21b2:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    21b5:	0f b7 00             	movzx  eax,WORD PTR [eax]
+    21b8:	98                   	cwde
+    21b9:	29 c2                	sub    edx,eax
+    21bb:	8d 04 d5 00 00 00 00 	lea    eax,[edx*8+0x0]
+    21c2:	eb 16                	jmp    21da <framebuffer_redraw_region+0x469>
+    21c4:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    21c7:	8b 50 2c             	mov    edx,DWORD PTR [eax+0x2c]
+    21ca:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    21cd:	0f b7 00             	movzx  eax,WORD PTR [eax]
+    21d0:	98                   	cwde
+    21d1:	29 c2                	sub    edx,eax
+    21d3:	8d 04 d5 00 00 00 00 	lea    eax,[edx*8+0x0]
+    21da:	8b 55 a0             	mov    edx,DWORD PTR [ebp-0x60]
+    21dd:	39 c2                	cmp    edx,eax
+    21df:	0f 4e c2             	cmovle eax,edx
+    21e2:	89 45 a0             	mov    DWORD PTR [ebp-0x60],eax
 				px_y = min(px_y, 16 * min(fb->height - fb->cho_y - r->y, fb->chw_y - r->y));
-    1f26:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1f29:	8b 50 08             	mov    edx,DWORD PTR [eax+0x8]
-    1f2c:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1f2f:	8b 40 28             	mov    eax,DWORD PTR [eax+0x28]
-    1f32:	29 c2                	sub    edx,eax
-    1f34:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1f37:	8b 40 30             	mov    eax,DWORD PTR [eax+0x30]
-    1f3a:	39 c2                	cmp    edx,eax
-    1f3c:	7d 1f                	jge    1f5d <framebuffer_redraw_region+0x4a1>
-    1f3e:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1f41:	8b 50 08             	mov    edx,DWORD PTR [eax+0x8]
-    1f44:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1f47:	8b 40 28             	mov    eax,DWORD PTR [eax+0x28]
-    1f4a:	29 c2                	sub    edx,eax
-    1f4c:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    1f4f:	0f b7 40 02          	movzx  eax,WORD PTR [eax+0x2]
-    1f53:	98                   	cwde
-    1f54:	29 c2                	sub    edx,eax
-    1f56:	89 d0                	mov    eax,edx
-    1f58:	c1 e0 04             	shl    eax,0x4
-    1f5b:	eb 15                	jmp    1f72 <framebuffer_redraw_region+0x4b6>
-    1f5d:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1f60:	8b 50 30             	mov    edx,DWORD PTR [eax+0x30]
-    1f63:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    1f66:	0f b7 40 02          	movzx  eax,WORD PTR [eax+0x2]
-    1f6a:	98                   	cwde
-    1f6b:	29 c2                	sub    edx,eax
-    1f6d:	89 d0                	mov    eax,edx
-    1f6f:	c1 e0 04             	shl    eax,0x4
-    1f72:	8b 55 9c             	mov    edx,DWORD PTR [ebp-0x64]
-    1f75:	39 c2                	cmp    edx,eax
-    1f77:	0f 4e c2             	cmovle eax,edx
-    1f7a:	89 45 9c             	mov    DWORD PTR [ebp-0x64],eax
+    21e5:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    21e8:	8b 50 08             	mov    edx,DWORD PTR [eax+0x8]
+    21eb:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    21ee:	8b 40 28             	mov    eax,DWORD PTR [eax+0x28]
+    21f1:	29 c2                	sub    edx,eax
+    21f3:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    21f6:	8b 40 30             	mov    eax,DWORD PTR [eax+0x30]
+    21f9:	39 c2                	cmp    edx,eax
+    21fb:	7d 1f                	jge    221c <framebuffer_redraw_region+0x4ab>
+    21fd:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    2200:	8b 50 08             	mov    edx,DWORD PTR [eax+0x8]
+    2203:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    2206:	8b 40 28             	mov    eax,DWORD PTR [eax+0x28]
+    2209:	29 c2                	sub    edx,eax
+    220b:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    220e:	0f b7 40 02          	movzx  eax,WORD PTR [eax+0x2]
+    2212:	98                   	cwde
+    2213:	29 c2                	sub    edx,eax
+    2215:	89 d0                	mov    eax,edx
+    2217:	c1 e0 04             	shl    eax,0x4
+    221a:	eb 15                	jmp    2231 <framebuffer_redraw_region+0x4c0>
+    221c:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    221f:	8b 50 30             	mov    edx,DWORD PTR [eax+0x30]
+    2222:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    2225:	0f b7 40 02          	movzx  eax,WORD PTR [eax+0x2]
+    2229:	98                   	cwde
+    222a:	29 c2                	sub    edx,eax
+    222c:	89 d0                	mov    eax,edx
+    222e:	c1 e0 04             	shl    eax,0x4
+    2231:	8b 55 9c             	mov    edx,DWORD PTR [ebp-0x64]
+    2234:	39 c2                	cmp    edx,eax
+    2236:	0f 4e c2             	cmovle eax,edx
+    2239:	89 45 9c             	mov    DWORD PTR [ebp-0x64],eax
 				/* and from video memory */
 				px_x = min(px_x, video_mode.width - o_x);
-    1f7d:	a1 04 00 00 00       	mov    eax,ds:0x4
-    1f82:	2b 45 a8             	sub    eax,DWORD PTR [ebp-0x58]
-    1f85:	8b 55 a0             	mov    edx,DWORD PTR [ebp-0x60]
-    1f88:	39 c2                	cmp    edx,eax
-    1f8a:	0f 4e c2             	cmovle eax,edx
-    1f8d:	89 45 a0             	mov    DWORD PTR [ebp-0x60],eax
+    223c:	a1 04 00 00 00       	mov    eax,ds:0x4
+    2241:	2b 45 a8             	sub    eax,DWORD PTR [ebp-0x58]
+    2244:	8b 55 a0             	mov    edx,DWORD PTR [ebp-0x60]
+    2247:	39 c2                	cmp    edx,eax
+    2249:	0f 4e c2             	cmovle eax,edx
+    224c:	89 45 a0             	mov    DWORD PTR [ebp-0x60],eax
 				px_y = min(px_y, video_mode.height - o_y);
-    1f90:	a1 08 00 00 00       	mov    eax,ds:0x8
-    1f95:	2b 45 a4             	sub    eax,DWORD PTR [ebp-0x5c]
-    1f98:	8b 55 9c             	mov    edx,DWORD PTR [ebp-0x64]
-    1f9b:	39 c2                	cmp    edx,eax
-    1f9d:	0f 4e c2             	cmovle eax,edx
-    1fa0:	89 45 9c             	mov    DWORD PTR [ebp-0x64],eax
+    224f:	a1 08 00 00 00       	mov    eax,ds:0x8
+    2254:	2b 45 a4             	sub    eax,DWORD PTR [ebp-0x5c]
+    2257:	8b 55 9c             	mov    edx,DWORD PTR [ebp-0x64]
+    225a:	39 c2                	cmp    edx,eax
+    225c:	0f 4e c2             	cmovle eax,edx
+    225f:	89 45 9c             	mov    DWORD PTR [ebp-0x64],eax
 				if (px_x < 0 || px_y < 0)
-    1fa3:	83 7d a0 00          	cmp    DWORD PTR [ebp-0x60],0x0
-    1fa7:	0f 88 d6 06 00 00    	js     2683 <framebuffer_redraw_region+0xbc7>
-    1fad:	83 7d 9c 00          	cmp    DWORD PTR [ebp-0x64],0x0
-    1fb1:	0f 88 cc 06 00 00    	js     2683 <framebuffer_redraw_region+0xbc7>
+    2262:	83 7d a0 00          	cmp    DWORD PTR [ebp-0x60],0x0
+    2266:	0f 88 6e 07 00 00    	js     29da <framebuffer_redraw_region+0xc69>
+    226c:	83 7d 9c 00          	cmp    DWORD PTR [ebp-0x64],0x0
+    2270:	0f 88 64 07 00 00    	js     29da <framebuffer_redraw_region+0xc69>
 					return;
 				
 				if (video_mode.gm_bts == 4)
-    1fb7:	0f b6 05 01 00 00 00 	movzx  eax,BYTE PTR ds:0x1
-    1fbe:	3c 04                	cmp    al,0x4
-    1fc0:	75 20                	jne    1fe2 <framebuffer_redraw_region+0x526>
+    2276:	0f b6 05 01 00 00 00 	movzx  eax,BYTE PTR ds:0x1
+    227d:	3c 04                	cmp    al,0x4
+    227f:	75 20                	jne    22a1 <framebuffer_redraw_region+0x530>
 					shf = ((o_x % 2) == 1);
-    1fc2:	8b 55 a8             	mov    edx,DWORD PTR [ebp-0x58]
-    1fc5:	89 d0                	mov    eax,edx
-    1fc7:	c1 f8 1f             	sar    eax,0x1f
-    1fca:	c1 e8 1f             	shr    eax,0x1f
-    1fcd:	01 c2                	add    edx,eax
-    1fcf:	83 e2 01             	and    edx,0x1
-    1fd2:	29 c2                	sub    edx,eax
-    1fd4:	89 d0                	mov    eax,edx
-    1fd6:	83 f8 01             	cmp    eax,0x1
-    1fd9:	0f 94 c0             	sete   al
-    1fdc:	0f b6 c0             	movzx  eax,al
-    1fdf:	89 45 dc             	mov    DWORD PTR [ebp-0x24],eax
+    2281:	8b 55 a8             	mov    edx,DWORD PTR [ebp-0x58]
+    2284:	89 d0                	mov    eax,edx
+    2286:	c1 f8 1f             	sar    eax,0x1f
+    2289:	c1 e8 1f             	shr    eax,0x1f
+    228c:	01 c2                	add    edx,eax
+    228e:	83 e2 01             	and    edx,0x1
+    2291:	29 c2                	sub    edx,eax
+    2293:	89 d0                	mov    eax,edx
+    2295:	83 f8 01             	cmp    eax,0x1
+    2298:	0f 94 c0             	sete   al
+    229b:	0f b6 c0             	movzx  eax,al
+    229e:	89 45 dc             	mov    DWORD PTR [ebp-0x24],eax
 				
 				/* set the memory references */
 				mem += o_y * video_mode.bpsl + o_x * video_mode.btpp;
-    1fe2:	8b 15 0c 00 00 00    	mov    edx,DWORD PTR ds:0xc
-    1fe8:	8b 45 a4             	mov    eax,DWORD PTR [ebp-0x5c]
-    1feb:	0f af d0             	imul   edx,eax
-    1fee:	0f b6 05 02 00 00 00 	movzx  eax,BYTE PTR ds:0x2
-    1ff5:	0f be c0             	movsx  eax,al
-    1ff8:	0f af 45 a8          	imul   eax,DWORD PTR [ebp-0x58]
-    1ffc:	01 d0                	add    eax,edx
-    1ffe:	01 45 d8             	add    DWORD PTR [ebp-0x28],eax
+    22a1:	8b 15 0c 00 00 00    	mov    edx,DWORD PTR ds:0xc
+    22a7:	8b 45 a4             	mov    eax,DWORD PTR [ebp-0x5c]
+    22aa:	0f af d0             	imul   edx,eax
+    22ad:	0f b6 05 02 00 00 00 	movzx  eax,BYTE PTR ds:0x2
+    22b4:	0f be c0             	movsx  eax,al
+    22b7:	0f af 45 a8          	imul   eax,DWORD PTR [ebp-0x58]
+    22bb:	01 d0                	add    eax,edx
+    22bd:	01 45 d8             	add    DWORD PTR [ebp-0x28],eax
 				str += (fb->cho_y + r->y) * 2 * fb->width + (fb->cho_x + r->x) * 2;
-    2001:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2004:	8b 50 28             	mov    edx,DWORD PTR [eax+0x28]
-    2007:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    200a:	0f b7 40 02          	movzx  eax,WORD PTR [eax+0x2]
-    200e:	98                   	cwde
-    200f:	01 d0                	add    eax,edx
-    2011:	8d 14 00             	lea    edx,[eax+eax*1]
-    2014:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2017:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    201a:	0f af d0             	imul   edx,eax
-    201d:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2020:	8b 48 24             	mov    ecx,DWORD PTR [eax+0x24]
-    2023:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    2026:	0f b7 00             	movzx  eax,WORD PTR [eax]
-    2029:	98                   	cwde
-    202a:	01 c8                	add    eax,ecx
-    202c:	01 c0                	add    eax,eax
-    202e:	01 d0                	add    eax,edx
-    2030:	01 45 d4             	add    DWORD PTR [ebp-0x2c],eax
+    22c0:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    22c3:	8b 50 28             	mov    edx,DWORD PTR [eax+0x28]
+    22c6:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    22c9:	0f b7 40 02          	movzx  eax,WORD PTR [eax+0x2]
+    22cd:	98                   	cwde
+    22ce:	01 d0                	add    eax,edx
+    22d0:	8d 14 00             	lea    edx,[eax+eax*1]
+    22d3:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    22d6:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    22d9:	0f af d0             	imul   edx,eax
+    22dc:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    22df:	8b 48 24             	mov    ecx,DWORD PTR [eax+0x24]
+    22e2:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    22e5:	0f b7 00             	movzx  eax,WORD PTR [eax]
+    22e8:	98                   	cwde
+    22e9:	01 c8                	add    eax,ecx
+    22eb:	01 c0                	add    eax,eax
+    22ed:	01 d0                	add    eax,edx
+    22ef:	01 45 d4             	add    DWORD PTR [ebp-0x2c],eax
 
 				/* check for excluding rects */
 				if (fb->r_excl) {
-    2033:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2036:	8b 40 38             	mov    eax,DWORD PTR [eax+0x38]
-    2039:	85 c0                	test   eax,eax
-    203b:	0f 84 d0 05 00 00    	je     2611 <framebuffer_redraw_region+0xb55>
+    22f2:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    22f5:	8b 40 38             	mov    eax,DWORD PTR [eax+0x38]
+    22f8:	85 c0                	test   eax,eax
+    22fa:	0f 84 3d 06 00 00    	je     293d <framebuffer_redraw_region+0xbcc>
 						/* use y and x stride marks */
 						size_t ns_y = 0, ns_x = 0;
-    2041:	c7 45 d0 00 00 00 00 	mov    DWORD PTR [ebp-0x30],0x0
-    2048:	c7 45 cc 00 00 00 00 	mov    DWORD PTR [ebp-0x34],0x0
+    2300:	c7 45 d0 00 00 00 00 	mov    DWORD PTR [ebp-0x30],0x0
+    2307:	c7 45 cc 00 00 00 00 	mov    DWORD PTR [ebp-0x34],0x0
 						struct stride /* exclude range:  y is key */
 								stride_y[10], stride_x[20];
 						struct exclude_rect* pe = fb->r_excl;
-    204f:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2052:	8b 40 38             	mov    eax,DWORD PTR [eax+0x38]
-    2055:	89 45 c8             	mov    DWORD PTR [ebp-0x38],eax
+    230e:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    2311:	8b 40 38             	mov    eax,DWORD PTR [eax+0x38]
+    2314:	89 45 c8             	mov    DWORD PTR [ebp-0x38],eax
 						while (pe) {
-    2058:	e9 c3 01 00 00       	jmp    2220 <framebuffer_redraw_region+0x764>
+    2317:	e9 c7 01 00 00       	jmp    24e3 <framebuffer_redraw_region+0x772>
 								struct exclude_rect er = {0};
-    205d:	c7 85 74 ff ff ff 00 00 00 00 	mov    DWORD PTR [ebp-0x8c],0x0
-    2067:	c7 85 78 ff ff ff 00 00 00 00 	mov    DWORD PTR [ebp-0x88],0x0
-    2071:	c7 85 7c ff ff ff 00 00 00 00 	mov    DWORD PTR [ebp-0x84],0x0
-    207b:	c7 45 80 00 00 00 00 	mov    DWORD PTR [ebp-0x80],0x0
-    2082:	c7 45 84 00 00 00 00 	mov    DWORD PTR [ebp-0x7c],0x0
+    231c:	c7 85 74 ff ff ff 00 00 00 00 	mov    DWORD PTR [ebp-0x8c],0x0
+    2326:	c7 85 78 ff ff ff 00 00 00 00 	mov    DWORD PTR [ebp-0x88],0x0
+    2330:	c7 85 7c ff ff ff 00 00 00 00 	mov    DWORD PTR [ebp-0x84],0x0
+    233a:	c7 45 80 00 00 00 00 	mov    DWORD PTR [ebp-0x80],0x0
+    2341:	c7 45 84 00 00 00 00 	mov    DWORD PTR [ebp-0x7c],0x0
 								er = *pe;
-    2089:	8b 45 c8             	mov    eax,DWORD PTR [ebp-0x38]
-    208c:	8b 10                	mov    edx,DWORD PTR [eax]
-    208e:	89 95 74 ff ff ff    	mov    DWORD PTR [ebp-0x8c],edx
-    2094:	8b 50 04             	mov    edx,DWORD PTR [eax+0x4]
-    2097:	89 95 78 ff ff ff    	mov    DWORD PTR [ebp-0x88],edx
-    209d:	8b 50 08             	mov    edx,DWORD PTR [eax+0x8]
-    20a0:	89 95 7c ff ff ff    	mov    DWORD PTR [ebp-0x84],edx
-    20a6:	8b 50 0c             	mov    edx,DWORD PTR [eax+0xc]
-    20a9:	89 55 80             	mov    DWORD PTR [ebp-0x80],edx
-    20ac:	8b 40 10             	mov    eax,DWORD PTR [eax+0x10]
-    20af:	89 45 84             	mov    DWORD PTR [ebp-0x7c],eax
+    2348:	8b 45 c8             	mov    eax,DWORD PTR [ebp-0x38]
+    234b:	8b 10                	mov    edx,DWORD PTR [eax]
+    234d:	89 95 74 ff ff ff    	mov    DWORD PTR [ebp-0x8c],edx
+    2353:	8b 50 04             	mov    edx,DWORD PTR [eax+0x4]
+    2356:	89 95 78 ff ff ff    	mov    DWORD PTR [ebp-0x88],edx
+    235c:	8b 50 08             	mov    edx,DWORD PTR [eax+0x8]
+    235f:	89 95 7c ff ff ff    	mov    DWORD PTR [ebp-0x84],edx
+    2365:	8b 50 0c             	mov    edx,DWORD PTR [eax+0xc]
+    2368:	89 55 80             	mov    DWORD PTR [ebp-0x80],edx
+    236b:	8b 40 10             	mov    eax,DWORD PTR [eax+0x10]
+    236e:	89 45 84             	mov    DWORD PTR [ebp-0x7c],eax
 								er.x -= fb->pix_x;
-    20b2:	8b 95 74 ff ff ff    	mov    edx,DWORD PTR [ebp-0x8c]
-    20b8:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    20bb:	8b 40 1c             	mov    eax,DWORD PTR [eax+0x1c]
-    20be:	29 c2                	sub    edx,eax
-    20c0:	89 95 74 ff ff ff    	mov    DWORD PTR [ebp-0x8c],edx
+    2371:	8b 95 74 ff ff ff    	mov    edx,DWORD PTR [ebp-0x8c]
+    2377:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    237a:	8b 40 1c             	mov    eax,DWORD PTR [eax+0x1c]
+    237d:	29 c2                	sub    edx,eax
+    237f:	89 95 74 ff ff ff    	mov    DWORD PTR [ebp-0x8c],edx
 								er.y -= fb->pix_y;
-    20c6:	8b 95 78 ff ff ff    	mov    edx,DWORD PTR [ebp-0x88]
-    20cc:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    20cf:	8b 40 20             	mov    eax,DWORD PTR [eax+0x20]
-    20d2:	29 c2                	sub    edx,eax
-    20d4:	89 95 78 ff ff ff    	mov    DWORD PTR [ebp-0x88],edx
+    2385:	8b 95 78 ff ff ff    	mov    edx,DWORD PTR [ebp-0x88]
+    238b:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    238e:	8b 40 20             	mov    eax,DWORD PTR [eax+0x20]
+    2391:	29 c2                	sub    edx,eax
+    2393:	89 95 78 ff ff ff    	mov    DWORD PTR [ebp-0x88],edx
 								if (er.x + er.lx > o_x && er.y + er.ly > o_y) {
-    20da:	8b 95 74 ff ff ff    	mov    edx,DWORD PTR [ebp-0x8c]
-    20e0:	8b 85 7c ff ff ff    	mov    eax,DWORD PTR [ebp-0x84]
-    20e6:	01 d0                	add    eax,edx
-    20e8:	39 45 a8             	cmp    DWORD PTR [ebp-0x58],eax
-    20eb:	0f 8d 26 01 00 00    	jge    2217 <framebuffer_redraw_region+0x75b>
-    20f1:	8b 95 78 ff ff ff    	mov    edx,DWORD PTR [ebp-0x88]
-    20f7:	8b 45 80             	mov    eax,DWORD PTR [ebp-0x80]
-    20fa:	01 d0                	add    eax,edx
-    20fc:	39 45 a4             	cmp    DWORD PTR [ebp-0x5c],eax
-    20ff:	0f 8d 12 01 00 00    	jge    2217 <framebuffer_redraw_region+0x75b>
+    2399:	8b 95 74 ff ff ff    	mov    edx,DWORD PTR [ebp-0x8c]
+    239f:	8b 85 7c ff ff ff    	mov    eax,DWORD PTR [ebp-0x84]
+    23a5:	01 d0                	add    eax,edx
+    23a7:	39 45 a8             	cmp    DWORD PTR [ebp-0x58],eax
+    23aa:	0f 8d 2a 01 00 00    	jge    24da <framebuffer_redraw_region+0x769>
+    23b0:	8b 95 78 ff ff ff    	mov    edx,DWORD PTR [ebp-0x88]
+    23b6:	8b 45 80             	mov    eax,DWORD PTR [ebp-0x80]
+    23b9:	01 d0                	add    eax,edx
+    23bb:	39 45 a4             	cmp    DWORD PTR [ebp-0x5c],eax
+    23be:	0f 8d 16 01 00 00    	jge    24da <framebuffer_redraw_region+0x769>
 										if (o_x + px_x > er.x && o_y + px_y > er.y) {
-    2105:	8b 55 a8             	mov    edx,DWORD PTR [ebp-0x58]
-    2108:	8b 45 a0             	mov    eax,DWORD PTR [ebp-0x60]
-    210b:	01 c2                	add    edx,eax
-    210d:	8b 85 74 ff ff ff    	mov    eax,DWORD PTR [ebp-0x8c]
-    2113:	39 c2                	cmp    edx,eax
-    2115:	0f 8e fc 00 00 00    	jle    2217 <framebuffer_redraw_region+0x75b>
-    211b:	8b 55 a4             	mov    edx,DWORD PTR [ebp-0x5c]
-    211e:	8b 45 9c             	mov    eax,DWORD PTR [ebp-0x64]
-    2121:	01 c2                	add    edx,eax
-    2123:	8b 85 78 ff ff ff    	mov    eax,DWORD PTR [ebp-0x88]
-    2129:	39 c2                	cmp    edx,eax
-    212b:	0f 8e e6 00 00 00    	jle    2217 <framebuffer_redraw_region+0x75b>
+    23c4:	8b 55 a8             	mov    edx,DWORD PTR [ebp-0x58]
+    23c7:	8b 45 a0             	mov    eax,DWORD PTR [ebp-0x60]
+    23ca:	01 c2                	add    edx,eax
+    23cc:	8b 85 74 ff ff ff    	mov    eax,DWORD PTR [ebp-0x8c]
+    23d2:	39 c2                	cmp    edx,eax
+    23d4:	0f 8e 00 01 00 00    	jle    24da <framebuffer_redraw_region+0x769>
+    23da:	8b 55 a4             	mov    edx,DWORD PTR [ebp-0x5c]
+    23dd:	8b 45 9c             	mov    eax,DWORD PTR [ebp-0x64]
+    23e0:	01 c2                	add    edx,eax
+    23e2:	8b 85 78 ff ff ff    	mov    eax,DWORD PTR [ebp-0x88]
+    23e8:	39 c2                	cmp    edx,eax
+    23ea:	0f 8e ea 00 00 00    	jle    24da <framebuffer_redraw_region+0x769>
 												struct stride sx, sy;
 												/* overlap y */
 												if (ns_y == 10 || ns_x == 20) /* we could draw parts */
-    2131:	83 7d d0 0a          	cmp    DWORD PTR [ebp-0x30],0xa
-    2135:	74 06                	je     213d <framebuffer_redraw_region+0x681>
-    2137:	83 7d cc 14          	cmp    DWORD PTR [ebp-0x34],0x14
-    213b:	75 2b                	jne    2168 <framebuffer_redraw_region+0x6ac>
+    23f0:	83 7d d0 0a          	cmp    DWORD PTR [ebp-0x30],0xa
+    23f4:	74 06                	je     23fc <framebuffer_redraw_region+0x68b>
+    23f6:	83 7d cc 14          	cmp    DWORD PTR [ebp-0x34],0x14
+    23fa:	75 29                	jne    2425 <framebuffer_redraw_region+0x6b4>
 														die("use bigger fb stride buffers\n");
-    213d:	83 ec 08             	sub    esp,0x8
-    2140:	68 c3 01 00 00       	push   0x1c3
-    2145:	6a 0c                	push   0xc
-    2147:	e8 fc ff ff ff       	call   2148 <framebuffer_redraw_region+0x68c>
-    214c:	83 c4 10             	add    esp,0x10
-    214f:	e8 fc ff ff ff       	call   2150 <framebuffer_redraw_region+0x694>
-    2154:	83 ec 0c             	sub    esp,0xc
-    2157:	68 00 00 00 00       	push   0x0
-    215c:	e8 fc ff ff ff       	call   215d <framebuffer_redraw_region+0x6a1>
-    2161:	83 c4 10             	add    esp,0x10
-    2164:	fa                   	cli
-    2165:	f4                   	hlt
-    2166:	eb fd                	jmp    2165 <framebuffer_redraw_region+0x6a9>
+    23fc:	c7 44 24 04 c3 01 00 00 	mov    DWORD PTR [esp+0x4],0x1c3
+    2404:	c7 04 24 0c 00 00 00 	mov    DWORD PTR [esp],0xc
+    240b:	e8 fc ff ff ff       	call   240c <framebuffer_redraw_region+0x69b>
+    2410:	e8 fc ff ff ff       	call   2411 <framebuffer_redraw_region+0x6a0>
+    2415:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+    241c:	e8 fc ff ff ff       	call   241d <framebuffer_redraw_region+0x6ac>
+    2421:	fa                   	cli
+    2422:	f4                   	hlt
+    2423:	eb fd                	jmp    2422 <framebuffer_redraw_region+0x6b1>
 												/* crop the rect and insert two strides */
 												sx.x1 = max(o_x, er.x);
-    2168:	8b 95 74 ff ff ff    	mov    edx,DWORD PTR [ebp-0x8c]
-    216e:	8b 45 a8             	mov    eax,DWORD PTR [ebp-0x58]
-    2171:	39 c2                	cmp    edx,eax
-    2173:	0f 4d c2             	cmovge eax,edx
-    2176:	89 85 6c ff ff ff    	mov    DWORD PTR [ebp-0x94],eax
+    2425:	8b 95 74 ff ff ff    	mov    edx,DWORD PTR [ebp-0x8c]
+    242b:	8b 45 a8             	mov    eax,DWORD PTR [ebp-0x58]
+    242e:	39 c2                	cmp    edx,eax
+    2430:	0f 4d c2             	cmovge eax,edx
+    2433:	89 85 6c ff ff ff    	mov    DWORD PTR [ebp-0x94],eax
 												sx.x2 = min(er.x + er.lx, o_x + px_x);
-    217c:	8b 55 a8             	mov    edx,DWORD PTR [ebp-0x58]
-    217f:	8b 45 a0             	mov    eax,DWORD PTR [ebp-0x60]
-    2182:	01 c2                	add    edx,eax
-    2184:	8b 8d 74 ff ff ff    	mov    ecx,DWORD PTR [ebp-0x8c]
-    218a:	8b 85 7c ff ff ff    	mov    eax,DWORD PTR [ebp-0x84]
-    2190:	01 c8                	add    eax,ecx
-    2192:	39 c2                	cmp    edx,eax
-    2194:	0f 4e c2             	cmovle eax,edx
-    2197:	89 85 70 ff ff ff    	mov    DWORD PTR [ebp-0x90],eax
+    2439:	8b 55 a8             	mov    edx,DWORD PTR [ebp-0x58]
+    243c:	8b 45 a0             	mov    eax,DWORD PTR [ebp-0x60]
+    243f:	01 c2                	add    edx,eax
+    2441:	8b 8d 74 ff ff ff    	mov    ecx,DWORD PTR [ebp-0x8c]
+    2447:	8b 85 7c ff ff ff    	mov    eax,DWORD PTR [ebp-0x84]
+    244d:	01 c8                	add    eax,ecx
+    244f:	39 c2                	cmp    edx,eax
+    2451:	0f 4e c2             	cmovle eax,edx
+    2454:	89 85 70 ff ff ff    	mov    DWORD PTR [ebp-0x90],eax
 												sy.x1 = max(o_y, er.y);
-    219d:	8b 95 78 ff ff ff    	mov    edx,DWORD PTR [ebp-0x88]
-    21a3:	8b 45 a4             	mov    eax,DWORD PTR [ebp-0x5c]
-    21a6:	39 c2                	cmp    edx,eax
-    21a8:	0f 4d c2             	cmovge eax,edx
-    21ab:	89 85 64 ff ff ff    	mov    DWORD PTR [ebp-0x9c],eax
+    245a:	8b 95 78 ff ff ff    	mov    edx,DWORD PTR [ebp-0x88]
+    2460:	8b 45 a4             	mov    eax,DWORD PTR [ebp-0x5c]
+    2463:	39 c2                	cmp    edx,eax
+    2465:	0f 4d c2             	cmovge eax,edx
+    2468:	89 85 64 ff ff ff    	mov    DWORD PTR [ebp-0x9c],eax
 												sy.x2 = min(er.y + er.ly, o_y + px_y);
-    21b1:	8b 55 a4             	mov    edx,DWORD PTR [ebp-0x5c]
-    21b4:	8b 45 9c             	mov    eax,DWORD PTR [ebp-0x64]
-    21b7:	01 c2                	add    edx,eax
-    21b9:	8b 8d 78 ff ff ff    	mov    ecx,DWORD PTR [ebp-0x88]
-    21bf:	8b 45 80             	mov    eax,DWORD PTR [ebp-0x80]
-    21c2:	01 c8                	add    eax,ecx
-    21c4:	39 c2                	cmp    edx,eax
-    21c6:	0f 4e c2             	cmovle eax,edx
-    21c9:	89 85 68 ff ff ff    	mov    DWORD PTR [ebp-0x98],eax
+    246e:	8b 55 a4             	mov    edx,DWORD PTR [ebp-0x5c]
+    2471:	8b 45 9c             	mov    eax,DWORD PTR [ebp-0x64]
+    2474:	01 c2                	add    edx,eax
+    2476:	8b 8d 78 ff ff ff    	mov    ecx,DWORD PTR [ebp-0x88]
+    247c:	8b 45 80             	mov    eax,DWORD PTR [ebp-0x80]
+    247f:	01 c8                	add    eax,ecx
+    2481:	39 c2                	cmp    edx,eax
+    2483:	0f 4e c2             	cmovle eax,edx
+    2486:	89 85 68 ff ff ff    	mov    DWORD PTR [ebp-0x98],eax
 												if(add_stride(stride_y, ns_y, &sy))
-    21cf:	83 ec 04             	sub    esp,0x4
-    21d2:	8d 85 64 ff ff ff    	lea    eax,[ebp-0x9c]
-    21d8:	50                   	push   eax
-    21d9:	ff 75 d0             	push   DWORD PTR [ebp-0x30]
-    21dc:	8d 85 74 fe ff ff    	lea    eax,[ebp-0x18c]
-    21e2:	50                   	push   eax
-    21e3:	e8 fc ff ff ff       	call   21e4 <framebuffer_redraw_region+0x728>
-    21e8:	83 c4 10             	add    esp,0x10
-    21eb:	85 c0                	test   eax,eax
-    21ed:	74 04                	je     21f3 <framebuffer_redraw_region+0x737>
+    248c:	8d 85 64 ff ff ff    	lea    eax,[ebp-0x9c]
+    2492:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    2496:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+    2499:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    249d:	8d 85 74 fe ff ff    	lea    eax,[ebp-0x18c]
+    24a3:	89 04 24             	mov    DWORD PTR [esp],eax
+    24a6:	e8 fc ff ff ff       	call   24a7 <framebuffer_redraw_region+0x736>
+    24ab:	85 c0                	test   eax,eax
+    24ad:	74 04                	je     24b3 <framebuffer_redraw_region+0x742>
 														ns_y++;
-    21ef:	83 45 d0 01          	add    DWORD PTR [ebp-0x30],0x1
+    24af:	83 45 d0 01          	add    DWORD PTR [ebp-0x30],0x1
 												if (add_stride(stride_x, ns_x, &sx))
-    21f3:	83 ec 04             	sub    esp,0x4
-    21f6:	8d 85 6c ff ff ff    	lea    eax,[ebp-0x94]
-    21fc:	50                   	push   eax
-    21fd:	ff 75 cc             	push   DWORD PTR [ebp-0x34]
-    2200:	8d 85 c4 fe ff ff    	lea    eax,[ebp-0x13c]
-    2206:	50                   	push   eax
-    2207:	e8 fc ff ff ff       	call   2208 <framebuffer_redraw_region+0x74c>
-    220c:	83 c4 10             	add    esp,0x10
-    220f:	85 c0                	test   eax,eax
-    2211:	74 04                	je     2217 <framebuffer_redraw_region+0x75b>
+    24b3:	8d 85 6c ff ff ff    	lea    eax,[ebp-0x94]
+    24b9:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    24bd:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    24c0:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    24c4:	8d 85 c4 fe ff ff    	lea    eax,[ebp-0x13c]
+    24ca:	89 04 24             	mov    DWORD PTR [esp],eax
+    24cd:	e8 fc ff ff ff       	call   24ce <framebuffer_redraw_region+0x75d>
+    24d2:	85 c0                	test   eax,eax
+    24d4:	74 04                	je     24da <framebuffer_redraw_region+0x769>
 														ns_x++;
-    2213:	83 45 cc 01          	add    DWORD PTR [ebp-0x34],0x1
+    24d6:	83 45 cc 01          	add    DWORD PTR [ebp-0x34],0x1
 										}
 								}
 								pe = pe->next;
-    2217:	8b 45 c8             	mov    eax,DWORD PTR [ebp-0x38]
-    221a:	8b 40 10             	mov    eax,DWORD PTR [eax+0x10]
-    221d:	89 45 c8             	mov    DWORD PTR [ebp-0x38],eax
+    24da:	8b 45 c8             	mov    eax,DWORD PTR [ebp-0x38]
+    24dd:	8b 40 10             	mov    eax,DWORD PTR [eax+0x10]
+    24e0:	89 45 c8             	mov    DWORD PTR [ebp-0x38],eax
 						while (pe) {
-    2220:	83 7d c8 00          	cmp    DWORD PTR [ebp-0x38],0x0
-    2224:	0f 85 33 fe ff ff    	jne    205d <framebuffer_redraw_region+0x5a1>
+    24e3:	83 7d c8 00          	cmp    DWORD PTR [ebp-0x38],0x0
+    24e7:	0f 85 2f fe ff ff    	jne    231c <framebuffer_redraw_region+0x5ab>
 						}
 						/* add the dummy entries (so we don't have to check at +x) */
 						stride_y[ns_y].x1 = o_y + px_y;
-    222a:	8b 55 a4             	mov    edx,DWORD PTR [ebp-0x5c]
-    222d:	8b 45 9c             	mov    eax,DWORD PTR [ebp-0x64]
-    2230:	01 c2                	add    edx,eax
-    2232:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-    2235:	89 94 c5 74 fe ff ff 	mov    DWORD PTR [ebp+eax*8-0x18c],edx
+    24ed:	8b 55 a4             	mov    edx,DWORD PTR [ebp-0x5c]
+    24f0:	8b 45 9c             	mov    eax,DWORD PTR [ebp-0x64]
+    24f3:	01 c2                	add    edx,eax
+    24f5:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+    24f8:	89 94 c5 74 fe ff ff 	mov    DWORD PTR [ebp+eax*8-0x18c],edx
 						stride_y[ns_y++].x2 = o_y + px_y;
-    223c:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-    223f:	8d 50 01             	lea    edx,[eax+0x1]
-    2242:	89 55 d0             	mov    DWORD PTR [ebp-0x30],edx
-    2245:	8b 4d a4             	mov    ecx,DWORD PTR [ebp-0x5c]
-    2248:	8b 55 9c             	mov    edx,DWORD PTR [ebp-0x64]
-    224b:	01 ca                	add    edx,ecx
-    224d:	89 94 c5 78 fe ff ff 	mov    DWORD PTR [ebp+eax*8-0x188],edx
+    24ff:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+    2502:	8d 50 01             	lea    edx,[eax+0x1]
+    2505:	89 55 d0             	mov    DWORD PTR [ebp-0x30],edx
+    2508:	8b 4d a4             	mov    ecx,DWORD PTR [ebp-0x5c]
+    250b:	8b 55 9c             	mov    edx,DWORD PTR [ebp-0x64]
+    250e:	01 ca                	add    edx,ecx
+    2510:	89 94 c5 78 fe ff ff 	mov    DWORD PTR [ebp+eax*8-0x188],edx
 						stride_x[ns_x].x1 = o_x + px_x;
-    2254:	8b 55 a8             	mov    edx,DWORD PTR [ebp-0x58]
-    2257:	8b 45 a0             	mov    eax,DWORD PTR [ebp-0x60]
-    225a:	01 c2                	add    edx,eax
-    225c:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-    225f:	89 94 c5 c4 fe ff ff 	mov    DWORD PTR [ebp+eax*8-0x13c],edx
+    2517:	8b 55 a8             	mov    edx,DWORD PTR [ebp-0x58]
+    251a:	8b 45 a0             	mov    eax,DWORD PTR [ebp-0x60]
+    251d:	01 c2                	add    edx,eax
+    251f:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    2522:	89 94 c5 c4 fe ff ff 	mov    DWORD PTR [ebp+eax*8-0x13c],edx
 						stride_x[ns_x++].x2 = o_x + px_x;
-    2266:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-    2269:	8d 50 01             	lea    edx,[eax+0x1]
-    226c:	89 55 cc             	mov    DWORD PTR [ebp-0x34],edx
-    226f:	8b 4d a8             	mov    ecx,DWORD PTR [ebp-0x58]
-    2272:	8b 55 a0             	mov    edx,DWORD PTR [ebp-0x60]
-    2275:	01 ca                	add    edx,ecx
-    2277:	89 94 c5 c8 fe ff ff 	mov    DWORD PTR [ebp+eax*8-0x138],edx
+    2529:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    252c:	8d 50 01             	lea    edx,[eax+0x1]
+    252f:	89 55 cc             	mov    DWORD PTR [ebp-0x34],edx
+    2532:	8b 4d a8             	mov    ecx,DWORD PTR [ebp-0x58]
+    2535:	8b 55 a0             	mov    edx,DWORD PTR [ebp-0x60]
+    2538:	01 ca                	add    edx,ecx
+    253a:	89 94 c5 c8 fe ff ff 	mov    DWORD PTR [ebp+eax*8-0x138],edx
 						if (ns_y > 1 && ns_x > 1) {
-    227e:	83 7d d0 01          	cmp    DWORD PTR [ebp-0x30],0x1
-    2282:	0f 86 89 03 00 00    	jbe    2611 <framebuffer_redraw_region+0xb55>
-    2288:	83 7d cc 01          	cmp    DWORD PTR [ebp-0x34],0x1
-    228c:	0f 86 7f 03 00 00    	jbe    2611 <framebuffer_redraw_region+0xb55>
+    2541:	83 7d d0 01          	cmp    DWORD PTR [ebp-0x30],0x1
+    2545:	0f 86 f2 03 00 00    	jbe    293d <framebuffer_redraw_region+0xbcc>
+    254b:	83 7d cc 01          	cmp    DWORD PTR [ebp-0x34],0x1
+    254f:	0f 86 e8 03 00 00    	jbe    293d <framebuffer_redraw_region+0xbcc>
 								ssize_t lpx_x, lpx_y, lo_x = o_x, lo_y = o_y;
-    2292:	8b 45 a8             	mov    eax,DWORD PTR [ebp-0x58]
-    2295:	89 45 c4             	mov    DWORD PTR [ebp-0x3c],eax
-    2298:	8b 45 a4             	mov    eax,DWORD PTR [ebp-0x5c]
-    229b:	89 45 c0             	mov    DWORD PTR [ebp-0x40],eax
+    2555:	8b 45 a8             	mov    eax,DWORD PTR [ebp-0x58]
+    2558:	89 45 c4             	mov    DWORD PTR [ebp-0x3c],eax
+    255b:	8b 45 a4             	mov    eax,DWORD PTR [ebp-0x5c]
+    255e:	89 45 c0             	mov    DWORD PTR [ebp-0x40],eax
 								char* str2 = str; int shf2 = shf; void* mem2;
-    229e:	8b 45 d4             	mov    eax,DWORD PTR [ebp-0x2c]
-    22a1:	89 45 bc             	mov    DWORD PTR [ebp-0x44],eax
-    22a4:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    22a7:	89 45 b8             	mov    DWORD PTR [ebp-0x48],eax
+    2561:	8b 45 d4             	mov    eax,DWORD PTR [ebp-0x2c]
+    2564:	89 45 bc             	mov    DWORD PTR [ebp-0x44],eax
+    2567:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    256a:	89 45 b8             	mov    DWORD PTR [ebp-0x48],eax
 								/* now we have a field of strides */
 								for (size_t i = 0; i < ns_y; i++) {
-    22aa:	c7 45 b0 00 00 00 00 	mov    DWORD PTR [ebp-0x50],0x0
-    22b1:	e9 4d 03 00 00       	jmp    2603 <framebuffer_redraw_region+0xb47>
+    256d:	c7 45 b0 00 00 00 00 	mov    DWORD PTR [ebp-0x50],0x0
+    2574:	e9 b3 03 00 00       	jmp    292c <framebuffer_redraw_region+0xbbb>
 										/* draw full lines before the stride */
 										if (stride_y[i].x1 > lo_y) {
-    22b6:	8b 45 b0             	mov    eax,DWORD PTR [ebp-0x50]
-    22b9:	8b 84 c5 74 fe ff ff 	mov    eax,DWORD PTR [ebp+eax*8-0x18c]
-    22c0:	39 45 c0             	cmp    DWORD PTR [ebp-0x40],eax
-    22c3:	0f 8d d7 00 00 00    	jge    23a0 <framebuffer_redraw_region+0x8e4>
+    2579:	8b 45 b0             	mov    eax,DWORD PTR [ebp-0x50]
+    257c:	8b 84 c5 74 fe ff ff 	mov    eax,DWORD PTR [ebp+eax*8-0x18c]
+    2583:	39 45 c0             	cmp    DWORD PTR [ebp-0x40],eax
+    2586:	0f 8d 0a 01 00 00    	jge    2696 <framebuffer_redraw_region+0x925>
 												lpx_x = px_x;
-    22c9:	8b 45 a0             	mov    eax,DWORD PTR [ebp-0x60]
-    22cc:	89 45 98             	mov    DWORD PTR [ebp-0x68],eax
+    258c:	8b 45 a0             	mov    eax,DWORD PTR [ebp-0x60]
+    258f:	89 45 98             	mov    DWORD PTR [ebp-0x68],eax
 												lo_x = o_x;
-    22cf:	8b 45 a8             	mov    eax,DWORD PTR [ebp-0x58]
-    22d2:	89 45 c4             	mov    DWORD PTR [ebp-0x3c],eax
+    2592:	8b 45 a8             	mov    eax,DWORD PTR [ebp-0x58]
+    2595:	89 45 c4             	mov    DWORD PTR [ebp-0x3c],eax
 												shf2 = shf;
-    22d5:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    22d8:	89 45 b8             	mov    DWORD PTR [ebp-0x48],eax
+    2598:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    259b:	89 45 b8             	mov    DWORD PTR [ebp-0x48],eax
 												lpx_y = min(stride_y[i].x1 - lo_y, o_y + px_y - lo_y);
-    22db:	8b 45 b0             	mov    eax,DWORD PTR [ebp-0x50]
-    22de:	8b 94 c5 74 fe ff ff 	mov    edx,DWORD PTR [ebp+eax*8-0x18c]
-    22e5:	8b 4d a4             	mov    ecx,DWORD PTR [ebp-0x5c]
-    22e8:	8b 45 9c             	mov    eax,DWORD PTR [ebp-0x64]
-    22eb:	01 c8                	add    eax,ecx
-    22ed:	39 c2                	cmp    edx,eax
-    22ef:	7d 0f                	jge    2300 <framebuffer_redraw_region+0x844>
-    22f1:	8b 45 b0             	mov    eax,DWORD PTR [ebp-0x50]
-    22f4:	8b 84 c5 74 fe ff ff 	mov    eax,DWORD PTR [ebp+eax*8-0x18c]
-    22fb:	2b 45 c0             	sub    eax,DWORD PTR [ebp-0x40]
-    22fe:	eb 0b                	jmp    230b <framebuffer_redraw_region+0x84f>
-    2300:	8b 55 a4             	mov    edx,DWORD PTR [ebp-0x5c]
-    2303:	8b 45 9c             	mov    eax,DWORD PTR [ebp-0x64]
-    2306:	01 d0                	add    eax,edx
-    2308:	2b 45 c0             	sub    eax,DWORD PTR [ebp-0x40]
-    230b:	89 45 94             	mov    DWORD PTR [ebp-0x6c],eax
+    259e:	8b 45 b0             	mov    eax,DWORD PTR [ebp-0x50]
+    25a1:	8b 94 c5 74 fe ff ff 	mov    edx,DWORD PTR [ebp+eax*8-0x18c]
+    25a8:	8b 4d a4             	mov    ecx,DWORD PTR [ebp-0x5c]
+    25ab:	8b 45 9c             	mov    eax,DWORD PTR [ebp-0x64]
+    25ae:	01 c8                	add    eax,ecx
+    25b0:	39 c2                	cmp    edx,eax
+    25b2:	7d 0f                	jge    25c3 <framebuffer_redraw_region+0x852>
+    25b4:	8b 45 b0             	mov    eax,DWORD PTR [ebp-0x50]
+    25b7:	8b 84 c5 74 fe ff ff 	mov    eax,DWORD PTR [ebp+eax*8-0x18c]
+    25be:	2b 45 c0             	sub    eax,DWORD PTR [ebp-0x40]
+    25c1:	eb 0b                	jmp    25ce <framebuffer_redraw_region+0x85d>
+    25c3:	8b 55 a4             	mov    edx,DWORD PTR [ebp-0x5c]
+    25c6:	8b 45 9c             	mov    eax,DWORD PTR [ebp-0x64]
+    25c9:	01 d0                	add    eax,edx
+    25cb:	2b 45 c0             	sub    eax,DWORD PTR [ebp-0x40]
+    25ce:	89 45 94             	mov    DWORD PTR [ebp-0x6c],eax
 												if (lpx_y) /* skip empty dummy */
-    230e:	83 7d 94 00          	cmp    DWORD PTR [ebp-0x6c],0x0
-    2312:	0f 84 88 00 00 00    	je     23a0 <framebuffer_redraw_region+0x8e4>
+    25d1:	83 7d 94 00          	cmp    DWORD PTR [ebp-0x6c],0x0
+    25d5:	0f 84 bb 00 00 00    	je     2696 <framebuffer_redraw_region+0x925>
 													render_text(fb->font, str2, mem, 2 * fb->width,
 														video_mode.bpsl, video_mode.gm_bts, lpx_x,
 														lpx_y, shf2, fb->cur_x - r->x, fb->cur_y - r->y,
 														0, (lo_y - o_y) % 16);
-    2318:	8b 45 c0             	mov    eax,DWORD PTR [ebp-0x40]
-    231b:	2b 45 a4             	sub    eax,DWORD PTR [ebp-0x5c]
-    231e:	89 c2                	mov    edx,eax
+    25db:	8b 45 c0             	mov    eax,DWORD PTR [ebp-0x40]
+    25de:	2b 45 a4             	sub    eax,DWORD PTR [ebp-0x5c]
+    25e1:	89 c2                	mov    edx,eax
 													render_text(fb->font, str2, mem, 2 * fb->width,
-    2320:	89 d0                	mov    eax,edx
-    2322:	c1 f8 1f             	sar    eax,0x1f
-    2325:	c1 e8 1c             	shr    eax,0x1c
-    2328:	01 c2                	add    edx,eax
-    232a:	83 e2 0f             	and    edx,0xf
-    232d:	29 c2                	sub    edx,eax
-    232f:	89 95 64 fe ff ff    	mov    DWORD PTR [ebp-0x19c],edx
+    25e3:	89 d0                	mov    eax,edx
+    25e5:	c1 f8 1f             	sar    eax,0x1f
+    25e8:	c1 e8 1c             	shr    eax,0x1c
+    25eb:	01 c2                	add    edx,eax
+    25ed:	83 e2 0f             	and    edx,0xf
+    25f0:	29 c2                	sub    edx,eax
+    25f2:	89 95 64 fe ff ff    	mov    DWORD PTR [ebp-0x19c],edx
 														lpx_y, shf2, fb->cur_x - r->x, fb->cur_y - r->y,
-    2335:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2338:	8b 50 18             	mov    edx,DWORD PTR [eax+0x18]
-    233b:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    233e:	0f b7 40 02          	movzx  eax,WORD PTR [eax+0x2]
-    2342:	98                   	cwde
+    25f8:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    25fb:	8b 50 18             	mov    edx,DWORD PTR [eax+0x18]
+    25fe:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    2601:	0f b7 40 02          	movzx  eax,WORD PTR [eax+0x2]
+    2605:	98                   	cwde
 													render_text(fb->font, str2, mem, 2 * fb->width,
-    2343:	89 d6                	mov    esi,edx
-    2345:	29 c6                	sub    esi,eax
+    2606:	89 d7                	mov    edi,edx
+    2608:	29 c7                	sub    edi,eax
 														lpx_y, shf2, fb->cur_x - r->x, fb->cur_y - r->y,
-    2347:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    234a:	8b 50 14             	mov    edx,DWORD PTR [eax+0x14]
-    234d:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    2350:	0f b7 00             	movzx  eax,WORD PTR [eax]
-    2353:	98                   	cwde
+    260a:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    260d:	8b 50 14             	mov    edx,DWORD PTR [eax+0x14]
+    2610:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    2613:	0f b7 00             	movzx  eax,WORD PTR [eax]
+    2616:	98                   	cwde
 													render_text(fb->font, str2, mem, 2 * fb->width,
-    2354:	89 d3                	mov    ebx,edx
-    2356:	29 c3                	sub    ebx,eax
+    2617:	89 d6                	mov    esi,edx
+    2619:	29 c6                	sub    esi,eax
 														video_mode.bpsl, video_mode.gm_bts, lpx_x,
-    2358:	0f b6 05 01 00 00 00 	movzx  eax,BYTE PTR ds:0x1
+    261b:	0f b6 05 01 00 00 00 	movzx  eax,BYTE PTR ds:0x1
 													render_text(fb->font, str2, mem, 2 * fb->width,
-    235f:	0f be c8             	movsx  ecx,al
+    2622:	0f be d8             	movsx  ebx,al
 														video_mode.bpsl, video_mode.gm_bts, lpx_x,
-    2362:	8b 15 0c 00 00 00    	mov    edx,DWORD PTR ds:0xc
+    2625:	8b 0d 0c 00 00 00    	mov    ecx,DWORD PTR ds:0xc
 													render_text(fb->font, str2, mem, 2 * fb->width,
-    2368:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    236b:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    236e:	01 c0                	add    eax,eax
-    2370:	89 c7                	mov    edi,eax
-    2372:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2375:	8b 40 0c             	mov    eax,DWORD PTR [eax+0xc]
-    2378:	83 ec 0c             	sub    esp,0xc
-    237b:	ff b5 64 fe ff ff    	push   DWORD PTR [ebp-0x19c]
-    2381:	6a 00                	push   0x0
-    2383:	56                   	push   esi
-    2384:	53                   	push   ebx
-    2385:	ff 75 b8             	push   DWORD PTR [ebp-0x48]
-    2388:	ff 75 94             	push   DWORD PTR [ebp-0x6c]
-    238b:	ff 75 98             	push   DWORD PTR [ebp-0x68]
-    238e:	51                   	push   ecx
-    238f:	52                   	push   edx
-    2390:	57                   	push   edi
-    2391:	ff 75 d8             	push   DWORD PTR [ebp-0x28]
-    2394:	ff 75 bc             	push   DWORD PTR [ebp-0x44]
-    2397:	50                   	push   eax
-    2398:	e8 fc ff ff ff       	call   2399 <framebuffer_redraw_region+0x8dd>
-    239d:	83 c4 40             	add    esp,0x40
+    262b:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    262e:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    2631:	01 c0                	add    eax,eax
+    2633:	89 85 60 fe ff ff    	mov    DWORD PTR [ebp-0x1a0],eax
+    2639:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    263c:	8b 50 0c             	mov    edx,DWORD PTR [eax+0xc]
+    263f:	8b 85 64 fe ff ff    	mov    eax,DWORD PTR [ebp-0x19c]
+    2645:	89 44 24 30          	mov    DWORD PTR [esp+0x30],eax
+    2649:	c7 44 24 2c 00 00 00 00 	mov    DWORD PTR [esp+0x2c],0x0
+    2651:	89 7c 24 28          	mov    DWORD PTR [esp+0x28],edi
+    2655:	89 74 24 24          	mov    DWORD PTR [esp+0x24],esi
+    2659:	8b 45 b8             	mov    eax,DWORD PTR [ebp-0x48]
+    265c:	89 44 24 20          	mov    DWORD PTR [esp+0x20],eax
+    2660:	8b 45 94             	mov    eax,DWORD PTR [ebp-0x6c]
+    2663:	89 44 24 1c          	mov    DWORD PTR [esp+0x1c],eax
+    2667:	8b 45 98             	mov    eax,DWORD PTR [ebp-0x68]
+    266a:	89 44 24 18          	mov    DWORD PTR [esp+0x18],eax
+    266e:	89 5c 24 14          	mov    DWORD PTR [esp+0x14],ebx
+    2672:	89 4c 24 10          	mov    DWORD PTR [esp+0x10],ecx
+    2676:	8b 85 60 fe ff ff    	mov    eax,DWORD PTR [ebp-0x1a0]
+    267c:	89 44 24 0c          	mov    DWORD PTR [esp+0xc],eax
+    2680:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+    2683:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    2687:	8b 45 bc             	mov    eax,DWORD PTR [ebp-0x44]
+    268a:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    268e:	89 14 24             	mov    DWORD PTR [esp],edx
+    2691:	e8 fc ff ff ff       	call   2692 <framebuffer_redraw_region+0x921>
 										}
 										/* we are inside the stride */
 										/* update the references */
 										mem += (stride_y[i].x1 - lo_y) * video_mode.bpsl;
-    23a0:	8b 45 b0             	mov    eax,DWORD PTR [ebp-0x50]
-    23a3:	8b 84 c5 74 fe ff ff 	mov    eax,DWORD PTR [ebp+eax*8-0x18c]
-    23aa:	2b 45 c0             	sub    eax,DWORD PTR [ebp-0x40]
-    23ad:	89 c2                	mov    edx,eax
-    23af:	a1 0c 00 00 00       	mov    eax,ds:0xc
-    23b4:	0f af c2             	imul   eax,edx
-    23b7:	01 45 d8             	add    DWORD PTR [ebp-0x28],eax
+    2696:	8b 45 b0             	mov    eax,DWORD PTR [ebp-0x50]
+    2699:	8b 84 c5 74 fe ff ff 	mov    eax,DWORD PTR [ebp+eax*8-0x18c]
+    26a0:	2b 45 c0             	sub    eax,DWORD PTR [ebp-0x40]
+    26a3:	89 c2                	mov    edx,eax
+    26a5:	a1 0c 00 00 00       	mov    eax,ds:0xc
+    26aa:	0f af c2             	imul   eax,edx
+    26ad:	01 45 d8             	add    DWORD PTR [ebp-0x28],eax
 										str += ((stride_y[i].x1 - lo_y) / 16) * 2 * fb->width;
-    23ba:	8b 45 b0             	mov    eax,DWORD PTR [ebp-0x50]
-    23bd:	8b 84 c5 74 fe ff ff 	mov    eax,DWORD PTR [ebp+eax*8-0x18c]
-    23c4:	2b 45 c0             	sub    eax,DWORD PTR [ebp-0x40]
-    23c7:	8d 50 0f             	lea    edx,[eax+0xf]
-    23ca:	85 c0                	test   eax,eax
-    23cc:	0f 48 c2             	cmovs  eax,edx
-    23cf:	c1 f8 04             	sar    eax,0x4
-    23d2:	8d 14 00             	lea    edx,[eax+eax*1]
-    23d5:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    23d8:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    23db:	0f af c2             	imul   eax,edx
-    23de:	01 45 d4             	add    DWORD PTR [ebp-0x2c],eax
+    26b0:	8b 45 b0             	mov    eax,DWORD PTR [ebp-0x50]
+    26b3:	8b 84 c5 74 fe ff ff 	mov    eax,DWORD PTR [ebp+eax*8-0x18c]
+    26ba:	2b 45 c0             	sub    eax,DWORD PTR [ebp-0x40]
+    26bd:	8d 50 0f             	lea    edx,[eax+0xf]
+    26c0:	85 c0                	test   eax,eax
+    26c2:	0f 48 c2             	cmovs  eax,edx
+    26c5:	c1 f8 04             	sar    eax,0x4
+    26c8:	8d 14 00             	lea    edx,[eax+eax*1]
+    26cb:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    26ce:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    26d1:	0f af c2             	imul   eax,edx
+    26d4:	01 45 d4             	add    DWORD PTR [ebp-0x2c],eax
 										str2 = str;
-    23e1:	8b 45 d4             	mov    eax,DWORD PTR [ebp-0x2c]
-    23e4:	89 45 bc             	mov    DWORD PTR [ebp-0x44],eax
+    26d7:	8b 45 d4             	mov    eax,DWORD PTR [ebp-0x2c]
+    26da:	89 45 bc             	mov    DWORD PTR [ebp-0x44],eax
 										lo_y = stride_y[i].x1;
-    23e7:	8b 45 b0             	mov    eax,DWORD PTR [ebp-0x50]
-    23ea:	8b 84 c5 74 fe ff ff 	mov    eax,DWORD PTR [ebp+eax*8-0x18c]
-    23f1:	89 45 c0             	mov    DWORD PTR [ebp-0x40],eax
+    26dd:	8b 45 b0             	mov    eax,DWORD PTR [ebp-0x50]
+    26e0:	8b 84 c5 74 fe ff ff 	mov    eax,DWORD PTR [ebp+eax*8-0x18c]
+    26e7:	89 45 c0             	mov    DWORD PTR [ebp-0x40],eax
 										lpx_y = min(o_y + px_y, stride_y[i].x2) - stride_y[i].x1;
-    23f4:	8b 45 b0             	mov    eax,DWORD PTR [ebp-0x50]
-    23f7:	8b 94 c5 78 fe ff ff 	mov    edx,DWORD PTR [ebp+eax*8-0x188]
-    23fe:	8b 4d a4             	mov    ecx,DWORD PTR [ebp-0x5c]
-    2401:	8b 45 9c             	mov    eax,DWORD PTR [ebp-0x64]
-    2404:	01 c8                	add    eax,ecx
-    2406:	39 c2                	cmp    edx,eax
-    2408:	0f 4f d0             	cmovg  edx,eax
-    240b:	8b 45 b0             	mov    eax,DWORD PTR [ebp-0x50]
-    240e:	8b 84 c5 74 fe ff ff 	mov    eax,DWORD PTR [ebp+eax*8-0x18c]
-    2415:	29 c2                	sub    edx,eax
-    2417:	89 55 94             	mov    DWORD PTR [ebp-0x6c],edx
+    26ea:	8b 45 b0             	mov    eax,DWORD PTR [ebp-0x50]
+    26ed:	8b 94 c5 78 fe ff ff 	mov    edx,DWORD PTR [ebp+eax*8-0x188]
+    26f4:	8b 4d a4             	mov    ecx,DWORD PTR [ebp-0x5c]
+    26f7:	8b 45 9c             	mov    eax,DWORD PTR [ebp-0x64]
+    26fa:	01 c8                	add    eax,ecx
+    26fc:	39 c2                	cmp    edx,eax
+    26fe:	0f 4f d0             	cmovg  edx,eax
+    2701:	8b 45 b0             	mov    eax,DWORD PTR [ebp-0x50]
+    2704:	8b 84 c5 74 fe ff ff 	mov    eax,DWORD PTR [ebp+eax*8-0x18c]
+    270b:	29 c2                	sub    edx,eax
+    270d:	89 55 94             	mov    DWORD PTR [ebp-0x6c],edx
 										if (!lpx_y) /* break after zero stride */
-    241a:	83 7d 94 00          	cmp    DWORD PTR [ebp-0x6c],0x0
-    241e:	0f 84 62 02 00 00    	je     2686 <framebuffer_redraw_region+0xbca>
+    2710:	83 7d 94 00          	cmp    DWORD PTR [ebp-0x6c],0x0
+    2714:	0f 84 c3 02 00 00    	je     29dd <framebuffer_redraw_region+0xc6c>
 												break;
 										lo_x = o_x;
-    2424:	8b 45 a8             	mov    eax,DWORD PTR [ebp-0x58]
-    2427:	89 45 c4             	mov    DWORD PTR [ebp-0x3c],eax
+    271a:	8b 45 a8             	mov    eax,DWORD PTR [ebp-0x58]
+    271d:	89 45 c4             	mov    DWORD PTR [ebp-0x3c],eax
 										shf2 = shf;
-    242a:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    242d:	89 45 b8             	mov    DWORD PTR [ebp-0x48],eax
+    2720:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    2723:	89 45 b8             	mov    DWORD PTR [ebp-0x48],eax
 										mem2 = mem;
-    2430:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-    2433:	89 45 b4             	mov    DWORD PTR [ebp-0x4c],eax
+    2726:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+    2729:	89 45 b4             	mov    DWORD PTR [ebp-0x4c],eax
 										/* now draw the x strides */
 										for (size_t j = 0; j < ns_x; j++) {
-    2436:	c7 45 ac 00 00 00 00 	mov    DWORD PTR [ebp-0x54],0x0
-    243d:	e9 67 01 00 00       	jmp    25a9 <framebuffer_redraw_region+0xaed>
+    272c:	c7 45 ac 00 00 00 00 	mov    DWORD PTR [ebp-0x54],0x0
+    2733:	e9 9a 01 00 00       	jmp    28d2 <framebuffer_redraw_region+0xb61>
 												/* draw to x before */
 												if (stride_x[j].x1 > lo_x) {
-    2442:	8b 45 ac             	mov    eax,DWORD PTR [ebp-0x54]
-    2445:	8b 84 c5 c4 fe ff ff 	mov    eax,DWORD PTR [ebp+eax*8-0x13c]
-    244c:	39 45 c4             	cmp    DWORD PTR [ebp-0x3c],eax
-    244f:	0f 8d dc 00 00 00    	jge    2531 <framebuffer_redraw_region+0xa75>
+    2738:	8b 45 ac             	mov    eax,DWORD PTR [ebp-0x54]
+    273b:	8b 84 c5 c4 fe ff ff 	mov    eax,DWORD PTR [ebp+eax*8-0x13c]
+    2742:	39 45 c4             	cmp    DWORD PTR [ebp-0x3c],eax
+    2745:	0f 8d 0f 01 00 00    	jge    285a <framebuffer_redraw_region+0xae9>
 														lpx_x = min(o_x + px_x - lo_x, stride_x[j].x1 - lo_x);
-    2455:	8b 55 a8             	mov    edx,DWORD PTR [ebp-0x58]
-    2458:	8b 45 a0             	mov    eax,DWORD PTR [ebp-0x60]
-    245b:	01 c2                	add    edx,eax
-    245d:	8b 45 ac             	mov    eax,DWORD PTR [ebp-0x54]
-    2460:	8b 84 c5 c4 fe ff ff 	mov    eax,DWORD PTR [ebp+eax*8-0x13c]
-    2467:	39 c2                	cmp    edx,eax
-    2469:	7d 0d                	jge    2478 <framebuffer_redraw_region+0x9bc>
-    246b:	8b 55 a8             	mov    edx,DWORD PTR [ebp-0x58]
-    246e:	8b 45 a0             	mov    eax,DWORD PTR [ebp-0x60]
-    2471:	01 d0                	add    eax,edx
-    2473:	2b 45 c4             	sub    eax,DWORD PTR [ebp-0x3c]
-    2476:	eb 0d                	jmp    2485 <framebuffer_redraw_region+0x9c9>
-    2478:	8b 45 ac             	mov    eax,DWORD PTR [ebp-0x54]
-    247b:	8b 84 c5 c4 fe ff ff 	mov    eax,DWORD PTR [ebp+eax*8-0x13c]
-    2482:	2b 45 c4             	sub    eax,DWORD PTR [ebp-0x3c]
-    2485:	89 45 98             	mov    DWORD PTR [ebp-0x68],eax
+    274b:	8b 55 a8             	mov    edx,DWORD PTR [ebp-0x58]
+    274e:	8b 45 a0             	mov    eax,DWORD PTR [ebp-0x60]
+    2751:	01 c2                	add    edx,eax
+    2753:	8b 45 ac             	mov    eax,DWORD PTR [ebp-0x54]
+    2756:	8b 84 c5 c4 fe ff ff 	mov    eax,DWORD PTR [ebp+eax*8-0x13c]
+    275d:	39 c2                	cmp    edx,eax
+    275f:	7d 0d                	jge    276e <framebuffer_redraw_region+0x9fd>
+    2761:	8b 55 a8             	mov    edx,DWORD PTR [ebp-0x58]
+    2764:	8b 45 a0             	mov    eax,DWORD PTR [ebp-0x60]
+    2767:	01 d0                	add    eax,edx
+    2769:	2b 45 c4             	sub    eax,DWORD PTR [ebp-0x3c]
+    276c:	eb 0d                	jmp    277b <framebuffer_redraw_region+0xa0a>
+    276e:	8b 45 ac             	mov    eax,DWORD PTR [ebp-0x54]
+    2771:	8b 84 c5 c4 fe ff ff 	mov    eax,DWORD PTR [ebp+eax*8-0x13c]
+    2778:	2b 45 c4             	sub    eax,DWORD PTR [ebp-0x3c]
+    277b:	89 45 98             	mov    DWORD PTR [ebp-0x68],eax
 														render_text(fb->font, str2, mem2, 2 * fb->width,
 																video_mode.bpsl, video_mode.gm_bts, lpx_x,
 																lpx_y, shf2, fb->cur_x - r->x, fb->cur_y - r->y,
 																(lo_x - o_x) % 8, (lo_y - o_y) % 16);
-    2488:	8b 45 c0             	mov    eax,DWORD PTR [ebp-0x40]
-    248b:	2b 45 a4             	sub    eax,DWORD PTR [ebp-0x5c]
-    248e:	89 c2                	mov    edx,eax
+    277e:	8b 45 c0             	mov    eax,DWORD PTR [ebp-0x40]
+    2781:	2b 45 a4             	sub    eax,DWORD PTR [ebp-0x5c]
+    2784:	89 c2                	mov    edx,eax
 														render_text(fb->font, str2, mem2, 2 * fb->width,
-    2490:	89 d0                	mov    eax,edx
-    2492:	c1 f8 1f             	sar    eax,0x1f
-    2495:	c1 e8 1c             	shr    eax,0x1c
-    2498:	01 c2                	add    edx,eax
-    249a:	83 e2 0f             	and    edx,0xf
-    249d:	29 c2                	sub    edx,eax
-    249f:	89 95 64 fe ff ff    	mov    DWORD PTR [ebp-0x19c],edx
+    2786:	89 d0                	mov    eax,edx
+    2788:	c1 f8 1f             	sar    eax,0x1f
+    278b:	c1 e8 1c             	shr    eax,0x1c
+    278e:	01 c2                	add    edx,eax
+    2790:	83 e2 0f             	and    edx,0xf
+    2793:	29 c2                	sub    edx,eax
+    2795:	89 95 64 fe ff ff    	mov    DWORD PTR [ebp-0x19c],edx
 																(lo_x - o_x) % 8, (lo_y - o_y) % 16);
-    24a5:	8b 45 c4             	mov    eax,DWORD PTR [ebp-0x3c]
-    24a8:	2b 45 a8             	sub    eax,DWORD PTR [ebp-0x58]
-    24ab:	89 c2                	mov    edx,eax
+    279b:	8b 45 c4             	mov    eax,DWORD PTR [ebp-0x3c]
+    279e:	2b 45 a8             	sub    eax,DWORD PTR [ebp-0x58]
+    27a1:	89 c2                	mov    edx,eax
 														render_text(fb->font, str2, mem2, 2 * fb->width,
-    24ad:	89 d0                	mov    eax,edx
-    24af:	c1 f8 1f             	sar    eax,0x1f
-    24b2:	c1 e8 1d             	shr    eax,0x1d
-    24b5:	01 c2                	add    edx,eax
-    24b7:	83 e2 07             	and    edx,0x7
-    24ba:	29 c2                	sub    edx,eax
-    24bc:	89 95 60 fe ff ff    	mov    DWORD PTR [ebp-0x1a0],edx
+    27a3:	89 d0                	mov    eax,edx
+    27a5:	c1 f8 1f             	sar    eax,0x1f
+    27a8:	c1 e8 1d             	shr    eax,0x1d
+    27ab:	01 c2                	add    edx,eax
+    27ad:	83 e2 07             	and    edx,0x7
+    27b0:	29 c2                	sub    edx,eax
+    27b2:	89 95 60 fe ff ff    	mov    DWORD PTR [ebp-0x1a0],edx
 																lpx_y, shf2, fb->cur_x - r->x, fb->cur_y - r->y,
-    24c2:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    24c5:	8b 50 18             	mov    edx,DWORD PTR [eax+0x18]
-    24c8:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    24cb:	0f b7 40 02          	movzx  eax,WORD PTR [eax+0x2]
-    24cf:	98                   	cwde
+    27b8:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    27bb:	8b 50 18             	mov    edx,DWORD PTR [eax+0x18]
+    27be:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    27c1:	0f b7 40 02          	movzx  eax,WORD PTR [eax+0x2]
+    27c5:	98                   	cwde
 														render_text(fb->font, str2, mem2, 2 * fb->width,
-    24d0:	89 d7                	mov    edi,edx
-    24d2:	29 c7                	sub    edi,eax
+    27c6:	89 d7                	mov    edi,edx
+    27c8:	29 c7                	sub    edi,eax
+    27ca:	89 bd 5c fe ff ff    	mov    DWORD PTR [ebp-0x1a4],edi
 																lpx_y, shf2, fb->cur_x - r->x, fb->cur_y - r->y,
-    24d4:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    24d7:	8b 50 14             	mov    edx,DWORD PTR [eax+0x14]
-    24da:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    24dd:	0f b7 00             	movzx  eax,WORD PTR [eax]
-    24e0:	98                   	cwde
+    27d0:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    27d3:	8b 50 14             	mov    edx,DWORD PTR [eax+0x14]
+    27d6:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    27d9:	0f b7 00             	movzx  eax,WORD PTR [eax]
+    27dc:	98                   	cwde
 														render_text(fb->font, str2, mem2, 2 * fb->width,
-    24e1:	89 d6                	mov    esi,edx
-    24e3:	29 c6                	sub    esi,eax
+    27dd:	89 d7                	mov    edi,edx
+    27df:	29 c7                	sub    edi,eax
 																video_mode.bpsl, video_mode.gm_bts, lpx_x,
-    24e5:	0f b6 05 01 00 00 00 	movzx  eax,BYTE PTR ds:0x1
+    27e1:	0f b6 05 01 00 00 00 	movzx  eax,BYTE PTR ds:0x1
 														render_text(fb->font, str2, mem2, 2 * fb->width,
-    24ec:	0f be c8             	movsx  ecx,al
+    27e8:	0f be f0             	movsx  esi,al
 																video_mode.bpsl, video_mode.gm_bts, lpx_x,
-    24ef:	8b 15 0c 00 00 00    	mov    edx,DWORD PTR ds:0xc
+    27eb:	8b 1d 0c 00 00 00    	mov    ebx,DWORD PTR ds:0xc
 														render_text(fb->font, str2, mem2, 2 * fb->width,
-    24f5:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    24f8:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    24fb:	01 c0                	add    eax,eax
-    24fd:	89 c3                	mov    ebx,eax
-    24ff:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2502:	8b 40 0c             	mov    eax,DWORD PTR [eax+0xc]
-    2505:	83 ec 0c             	sub    esp,0xc
-    2508:	ff b5 64 fe ff ff    	push   DWORD PTR [ebp-0x19c]
-    250e:	ff b5 60 fe ff ff    	push   DWORD PTR [ebp-0x1a0]
-    2514:	57                   	push   edi
-    2515:	56                   	push   esi
-    2516:	ff 75 b8             	push   DWORD PTR [ebp-0x48]
-    2519:	ff 75 94             	push   DWORD PTR [ebp-0x6c]
-    251c:	ff 75 98             	push   DWORD PTR [ebp-0x68]
-    251f:	51                   	push   ecx
-    2520:	52                   	push   edx
-    2521:	53                   	push   ebx
-    2522:	ff 75 b4             	push   DWORD PTR [ebp-0x4c]
-    2525:	ff 75 bc             	push   DWORD PTR [ebp-0x44]
-    2528:	50                   	push   eax
-    2529:	e8 fc ff ff ff       	call   252a <framebuffer_redraw_region+0xa6e>
-    252e:	83 c4 40             	add    esp,0x40
+    27f1:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    27f4:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    27f7:	01 c0                	add    eax,eax
+    27f9:	89 c1                	mov    ecx,eax
+    27fb:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    27fe:	8b 50 0c             	mov    edx,DWORD PTR [eax+0xc]
+    2801:	8b 85 64 fe ff ff    	mov    eax,DWORD PTR [ebp-0x19c]
+    2807:	89 44 24 30          	mov    DWORD PTR [esp+0x30],eax
+    280b:	8b 85 60 fe ff ff    	mov    eax,DWORD PTR [ebp-0x1a0]
+    2811:	89 44 24 2c          	mov    DWORD PTR [esp+0x2c],eax
+    2815:	8b 85 5c fe ff ff    	mov    eax,DWORD PTR [ebp-0x1a4]
+    281b:	89 44 24 28          	mov    DWORD PTR [esp+0x28],eax
+    281f:	89 7c 24 24          	mov    DWORD PTR [esp+0x24],edi
+    2823:	8b 45 b8             	mov    eax,DWORD PTR [ebp-0x48]
+    2826:	89 44 24 20          	mov    DWORD PTR [esp+0x20],eax
+    282a:	8b 45 94             	mov    eax,DWORD PTR [ebp-0x6c]
+    282d:	89 44 24 1c          	mov    DWORD PTR [esp+0x1c],eax
+    2831:	8b 45 98             	mov    eax,DWORD PTR [ebp-0x68]
+    2834:	89 44 24 18          	mov    DWORD PTR [esp+0x18],eax
+    2838:	89 74 24 14          	mov    DWORD PTR [esp+0x14],esi
+    283c:	89 5c 24 10          	mov    DWORD PTR [esp+0x10],ebx
+    2840:	89 4c 24 0c          	mov    DWORD PTR [esp+0xc],ecx
+    2844:	8b 45 b4             	mov    eax,DWORD PTR [ebp-0x4c]
+    2847:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    284b:	8b 45 bc             	mov    eax,DWORD PTR [ebp-0x44]
+    284e:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    2852:	89 14 24             	mov    DWORD PTR [esp],edx
+    2855:	e8 fc ff ff ff       	call   2856 <framebuffer_redraw_region+0xae5>
 												}
 												/* draw nothing as x,y are inside */
 												lo_x = stride_x[j].x2;
-    2531:	8b 45 ac             	mov    eax,DWORD PTR [ebp-0x54]
-    2534:	8b 84 c5 c8 fe ff ff 	mov    eax,DWORD PTR [ebp+eax*8-0x138]
-    253b:	89 45 c4             	mov    DWORD PTR [ebp-0x3c],eax
+    285a:	8b 45 ac             	mov    eax,DWORD PTR [ebp-0x54]
+    285d:	8b 84 c5 c8 fe ff ff 	mov    eax,DWORD PTR [ebp+eax*8-0x138]
+    2864:	89 45 c4             	mov    DWORD PTR [ebp-0x3c],eax
 												str2 = str + ((lo_x - o_x) / 8) * 2;
-    253e:	8b 45 c4             	mov    eax,DWORD PTR [ebp-0x3c]
-    2541:	2b 45 a8             	sub    eax,DWORD PTR [ebp-0x58]
-    2544:	8d 50 07             	lea    edx,[eax+0x7]
-    2547:	85 c0                	test   eax,eax
-    2549:	0f 48 c2             	cmovs  eax,edx
-    254c:	c1 f8 03             	sar    eax,0x3
-    254f:	01 c0                	add    eax,eax
-    2551:	89 c2                	mov    edx,eax
-    2553:	8b 45 d4             	mov    eax,DWORD PTR [ebp-0x2c]
-    2556:	01 d0                	add    eax,edx
-    2558:	89 45 bc             	mov    DWORD PTR [ebp-0x44],eax
+    2867:	8b 45 c4             	mov    eax,DWORD PTR [ebp-0x3c]
+    286a:	2b 45 a8             	sub    eax,DWORD PTR [ebp-0x58]
+    286d:	8d 50 07             	lea    edx,[eax+0x7]
+    2870:	85 c0                	test   eax,eax
+    2872:	0f 48 c2             	cmovs  eax,edx
+    2875:	c1 f8 03             	sar    eax,0x3
+    2878:	01 c0                	add    eax,eax
+    287a:	89 c2                	mov    edx,eax
+    287c:	8b 45 d4             	mov    eax,DWORD PTR [ebp-0x2c]
+    287f:	01 d0                	add    eax,edx
+    2881:	89 45 bc             	mov    DWORD PTR [ebp-0x44],eax
 												mem2 = mem + (lo_x - o_x) * video_mode.btpp;
-    255b:	8b 45 c4             	mov    eax,DWORD PTR [ebp-0x3c]
-    255e:	2b 45 a8             	sub    eax,DWORD PTR [ebp-0x58]
-    2561:	89 c2                	mov    edx,eax
-    2563:	0f b6 05 02 00 00 00 	movzx  eax,BYTE PTR ds:0x2
-    256a:	0f be c0             	movsx  eax,al
-    256d:	0f af c2             	imul   eax,edx
-    2570:	89 c2                	mov    edx,eax
-    2572:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-    2575:	01 d0                	add    eax,edx
-    2577:	89 45 b4             	mov    DWORD PTR [ebp-0x4c],eax
+    2884:	8b 45 c4             	mov    eax,DWORD PTR [ebp-0x3c]
+    2887:	2b 45 a8             	sub    eax,DWORD PTR [ebp-0x58]
+    288a:	89 c2                	mov    edx,eax
+    288c:	0f b6 05 02 00 00 00 	movzx  eax,BYTE PTR ds:0x2
+    2893:	0f be c0             	movsx  eax,al
+    2896:	0f af c2             	imul   eax,edx
+    2899:	89 c2                	mov    edx,eax
+    289b:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+    289e:	01 d0                	add    eax,edx
+    28a0:	89 45 b4             	mov    DWORD PTR [ebp-0x4c],eax
 												if (video_mode.gm_bts == 4)
-    257a:	0f b6 05 01 00 00 00 	movzx  eax,BYTE PTR ds:0x1
-    2581:	3c 04                	cmp    al,0x4
-    2583:	75 20                	jne    25a5 <framebuffer_redraw_region+0xae9>
+    28a3:	0f b6 05 01 00 00 00 	movzx  eax,BYTE PTR ds:0x1
+    28aa:	3c 04                	cmp    al,0x4
+    28ac:	75 20                	jne    28ce <framebuffer_redraw_region+0xb5d>
 														shf2 = ((lo_x % 2) == 1);
-    2585:	8b 55 c4             	mov    edx,DWORD PTR [ebp-0x3c]
-    2588:	89 d0                	mov    eax,edx
-    258a:	c1 f8 1f             	sar    eax,0x1f
-    258d:	c1 e8 1f             	shr    eax,0x1f
-    2590:	01 c2                	add    edx,eax
-    2592:	83 e2 01             	and    edx,0x1
-    2595:	29 c2                	sub    edx,eax
-    2597:	89 d0                	mov    eax,edx
-    2599:	83 f8 01             	cmp    eax,0x1
-    259c:	0f 94 c0             	sete   al
-    259f:	0f b6 c0             	movzx  eax,al
-    25a2:	89 45 b8             	mov    DWORD PTR [ebp-0x48],eax
+    28ae:	8b 55 c4             	mov    edx,DWORD PTR [ebp-0x3c]
+    28b1:	89 d0                	mov    eax,edx
+    28b3:	c1 f8 1f             	sar    eax,0x1f
+    28b6:	c1 e8 1f             	shr    eax,0x1f
+    28b9:	01 c2                	add    edx,eax
+    28bb:	83 e2 01             	and    edx,0x1
+    28be:	29 c2                	sub    edx,eax
+    28c0:	89 d0                	mov    eax,edx
+    28c2:	83 f8 01             	cmp    eax,0x1
+    28c5:	0f 94 c0             	sete   al
+    28c8:	0f b6 c0             	movzx  eax,al
+    28cb:	89 45 b8             	mov    DWORD PTR [ebp-0x48],eax
 										for (size_t j = 0; j < ns_x; j++) {
-    25a5:	83 45 ac 01          	add    DWORD PTR [ebp-0x54],0x1
-    25a9:	8b 45 ac             	mov    eax,DWORD PTR [ebp-0x54]
-    25ac:	3b 45 cc             	cmp    eax,DWORD PTR [ebp-0x34]
-    25af:	0f 82 8d fe ff ff    	jb     2442 <framebuffer_redraw_region+0x986>
+    28ce:	83 45 ac 01          	add    DWORD PTR [ebp-0x54],0x1
+    28d2:	8b 45 ac             	mov    eax,DWORD PTR [ebp-0x54]
+    28d5:	3b 45 cc             	cmp    eax,DWORD PTR [ebp-0x34]
+    28d8:	0f 82 5a fe ff ff    	jb     2738 <framebuffer_redraw_region+0x9c7>
 										}
 										/* and set the memory */
 										mem += lpx_y * video_mode.bpsl;
-    25b5:	8b 15 0c 00 00 00    	mov    edx,DWORD PTR ds:0xc
-    25bb:	8b 45 94             	mov    eax,DWORD PTR [ebp-0x6c]
-    25be:	0f af c2             	imul   eax,edx
-    25c1:	01 45 d8             	add    DWORD PTR [ebp-0x28],eax
+    28de:	8b 15 0c 00 00 00    	mov    edx,DWORD PTR ds:0xc
+    28e4:	8b 45 94             	mov    eax,DWORD PTR [ebp-0x6c]
+    28e7:	0f af c2             	imul   eax,edx
+    28ea:	01 45 d8             	add    DWORD PTR [ebp-0x28],eax
 										str2 = str + ((stride_y[i].x2 - lo_y) / 16) * 2 * fb->width;
-    25c4:	8b 45 b0             	mov    eax,DWORD PTR [ebp-0x50]
-    25c7:	8b 84 c5 78 fe ff ff 	mov    eax,DWORD PTR [ebp+eax*8-0x188]
-    25ce:	2b 45 c0             	sub    eax,DWORD PTR [ebp-0x40]
-    25d1:	8d 50 0f             	lea    edx,[eax+0xf]
-    25d4:	85 c0                	test   eax,eax
-    25d6:	0f 48 c2             	cmovs  eax,edx
-    25d9:	c1 f8 04             	sar    eax,0x4
-    25dc:	8d 14 00             	lea    edx,[eax+eax*1]
-    25df:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    25e2:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    25e5:	0f af c2             	imul   eax,edx
-    25e8:	89 c2                	mov    edx,eax
-    25ea:	8b 45 d4             	mov    eax,DWORD PTR [ebp-0x2c]
-    25ed:	01 d0                	add    eax,edx
-    25ef:	89 45 bc             	mov    DWORD PTR [ebp-0x44],eax
+    28ed:	8b 45 b0             	mov    eax,DWORD PTR [ebp-0x50]
+    28f0:	8b 84 c5 78 fe ff ff 	mov    eax,DWORD PTR [ebp+eax*8-0x188]
+    28f7:	2b 45 c0             	sub    eax,DWORD PTR [ebp-0x40]
+    28fa:	8d 50 0f             	lea    edx,[eax+0xf]
+    28fd:	85 c0                	test   eax,eax
+    28ff:	0f 48 c2             	cmovs  eax,edx
+    2902:	c1 f8 04             	sar    eax,0x4
+    2905:	8d 14 00             	lea    edx,[eax+eax*1]
+    2908:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    290b:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    290e:	0f af c2             	imul   eax,edx
+    2911:	89 c2                	mov    edx,eax
+    2913:	8b 45 d4             	mov    eax,DWORD PTR [ebp-0x2c]
+    2916:	01 d0                	add    eax,edx
+    2918:	89 45 bc             	mov    DWORD PTR [ebp-0x44],eax
 										lo_y = stride_y[i].x2;
-    25f2:	8b 45 b0             	mov    eax,DWORD PTR [ebp-0x50]
-    25f5:	8b 84 c5 78 fe ff ff 	mov    eax,DWORD PTR [ebp+eax*8-0x188]
-    25fc:	89 45 c0             	mov    DWORD PTR [ebp-0x40],eax
+    291b:	8b 45 b0             	mov    eax,DWORD PTR [ebp-0x50]
+    291e:	8b 84 c5 78 fe ff ff 	mov    eax,DWORD PTR [ebp+eax*8-0x188]
+    2925:	89 45 c0             	mov    DWORD PTR [ebp-0x40],eax
 								for (size_t i = 0; i < ns_y; i++) {
-    25ff:	83 45 b0 01          	add    DWORD PTR [ebp-0x50],0x1
-    2603:	8b 45 b0             	mov    eax,DWORD PTR [ebp-0x50]
-    2606:	3b 45 d0             	cmp    eax,DWORD PTR [ebp-0x30]
-    2609:	0f 82 a7 fc ff ff    	jb     22b6 <framebuffer_redraw_region+0x7fa>
+    2928:	83 45 b0 01          	add    DWORD PTR [ebp-0x50],0x1
+    292c:	8b 45 b0             	mov    eax,DWORD PTR [ebp-0x50]
+    292f:	3b 45 d0             	cmp    eax,DWORD PTR [ebp-0x30]
+    2932:	0f 82 41 fc ff ff    	jb     2579 <framebuffer_redraw_region+0x808>
 								}
 								return;
-    260f:	eb 76                	jmp    2687 <framebuffer_redraw_region+0xbcb>
+    2938:	e9 a1 00 00 00       	jmp    29de <framebuffer_redraw_region+0xc6d>
 				}
 
 				/* and draw the text */
 				render_text(fb->font, str, mem, 2 * fb->width, video_mode.bpsl,
 						video_mode.gm_bts, px_x, px_y, shf, fb->cur_x - r->x,
 						fb->cur_y - r->y, 0, 0);
-    2611:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2614:	8b 50 18             	mov    edx,DWORD PTR [eax+0x18]
-    2617:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    261a:	0f b7 40 02          	movzx  eax,WORD PTR [eax+0x2]
-    261e:	98                   	cwde
+    293d:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    2940:	8b 50 18             	mov    edx,DWORD PTR [eax+0x18]
+    2943:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    2946:	0f b7 40 02          	movzx  eax,WORD PTR [eax+0x2]
+    294a:	98                   	cwde
 				render_text(fb->font, str, mem, 2 * fb->width, video_mode.bpsl,
-    261f:	89 d6                	mov    esi,edx
-    2621:	29 c6                	sub    esi,eax
+    294b:	89 d6                	mov    esi,edx
+    294d:	29 c6                	sub    esi,eax
 						video_mode.gm_bts, px_x, px_y, shf, fb->cur_x - r->x,
-    2623:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2626:	8b 50 14             	mov    edx,DWORD PTR [eax+0x14]
-    2629:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    262c:	0f b7 00             	movzx  eax,WORD PTR [eax]
-    262f:	98                   	cwde
+    294f:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    2952:	8b 50 14             	mov    edx,DWORD PTR [eax+0x14]
+    2955:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    2958:	0f b7 00             	movzx  eax,WORD PTR [eax]
+    295b:	98                   	cwde
 				render_text(fb->font, str, mem, 2 * fb->width, video_mode.bpsl,
-    2630:	89 d3                	mov    ebx,edx
-    2632:	29 c3                	sub    ebx,eax
+    295c:	89 d3                	mov    ebx,edx
+    295e:	29 c3                	sub    ebx,eax
 						video_mode.gm_bts, px_x, px_y, shf, fb->cur_x - r->x,
-    2634:	0f b6 05 01 00 00 00 	movzx  eax,BYTE PTR ds:0x1
+    2960:	0f b6 05 01 00 00 00 	movzx  eax,BYTE PTR ds:0x1
 				render_text(fb->font, str, mem, 2 * fb->width, video_mode.bpsl,
-    263b:	0f be c8             	movsx  ecx,al
-    263e:	8b 15 0c 00 00 00    	mov    edx,DWORD PTR ds:0xc
-    2644:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2647:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    264a:	01 c0                	add    eax,eax
-    264c:	89 c7                	mov    edi,eax
-    264e:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2651:	8b 40 0c             	mov    eax,DWORD PTR [eax+0xc]
-    2654:	83 ec 0c             	sub    esp,0xc
-    2657:	6a 00                	push   0x0
-    2659:	6a 00                	push   0x0
-    265b:	56                   	push   esi
-    265c:	53                   	push   ebx
-    265d:	ff 75 dc             	push   DWORD PTR [ebp-0x24]
-    2660:	ff 75 9c             	push   DWORD PTR [ebp-0x64]
-    2663:	ff 75 a0             	push   DWORD PTR [ebp-0x60]
-    2666:	51                   	push   ecx
-    2667:	52                   	push   edx
-    2668:	57                   	push   edi
-    2669:	ff 75 d8             	push   DWORD PTR [ebp-0x28]
-    266c:	ff 75 d4             	push   DWORD PTR [ebp-0x2c]
-    266f:	50                   	push   eax
-    2670:	e8 fc ff ff ff       	call   2671 <framebuffer_redraw_region+0xbb5>
-    2675:	83 c4 40             	add    esp,0x40
-    2678:	eb 0d                	jmp    2687 <framebuffer_redraw_region+0xbcb>
+    2967:	0f be c8             	movsx  ecx,al
+    296a:	8b 15 0c 00 00 00    	mov    edx,DWORD PTR ds:0xc
+    2970:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    2973:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    2976:	01 c0                	add    eax,eax
+    2978:	89 c7                	mov    edi,eax
+    297a:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    297d:	8b 40 0c             	mov    eax,DWORD PTR [eax+0xc]
+    2980:	c7 44 24 30 00 00 00 00 	mov    DWORD PTR [esp+0x30],0x0
+    2988:	c7 44 24 2c 00 00 00 00 	mov    DWORD PTR [esp+0x2c],0x0
+    2990:	89 74 24 28          	mov    DWORD PTR [esp+0x28],esi
+    2994:	89 5c 24 24          	mov    DWORD PTR [esp+0x24],ebx
+    2998:	8b 5d dc             	mov    ebx,DWORD PTR [ebp-0x24]
+    299b:	89 5c 24 20          	mov    DWORD PTR [esp+0x20],ebx
+    299f:	8b 5d 9c             	mov    ebx,DWORD PTR [ebp-0x64]
+    29a2:	89 5c 24 1c          	mov    DWORD PTR [esp+0x1c],ebx
+    29a6:	8b 5d a0             	mov    ebx,DWORD PTR [ebp-0x60]
+    29a9:	89 5c 24 18          	mov    DWORD PTR [esp+0x18],ebx
+    29ad:	89 4c 24 14          	mov    DWORD PTR [esp+0x14],ecx
+    29b1:	89 54 24 10          	mov    DWORD PTR [esp+0x10],edx
+    29b5:	89 7c 24 0c          	mov    DWORD PTR [esp+0xc],edi
+    29b9:	8b 55 d8             	mov    edx,DWORD PTR [ebp-0x28]
+    29bc:	89 54 24 08          	mov    DWORD PTR [esp+0x8],edx
+    29c0:	8b 55 d4             	mov    edx,DWORD PTR [ebp-0x2c]
+    29c3:	89 54 24 04          	mov    DWORD PTR [esp+0x4],edx
+    29c7:	89 04 24             	mov    DWORD PTR [esp],eax
+    29ca:	e8 fc ff ff ff       	call   29cb <framebuffer_redraw_region+0xc5a>
+    29cf:	eb 0d                	jmp    29de <framebuffer_redraw_region+0xc6d>
 				return; /* don't do anything if we're directly on video memory */
-    267a:	90                   	nop
-    267b:	eb 0a                	jmp    2687 <framebuffer_redraw_region+0xbcb>
+    29d1:	90                   	nop
+    29d2:	eb 0a                	jmp    29de <framebuffer_redraw_region+0xc6d>
 				return;
-    267d:	90                   	nop
-    267e:	eb 07                	jmp    2687 <framebuffer_redraw_region+0xbcb>
+    29d4:	90                   	nop
+    29d5:	eb 07                	jmp    29de <framebuffer_redraw_region+0xc6d>
 					return;
-    2680:	90                   	nop
-    2681:	eb 04                	jmp    2687 <framebuffer_redraw_region+0xbcb>
+    29d7:	90                   	nop
+    29d8:	eb 04                	jmp    29de <framebuffer_redraw_region+0xc6d>
 					return;
-    2683:	90                   	nop
-    2684:	eb 01                	jmp    2687 <framebuffer_redraw_region+0xbcb>
+    29da:	90                   	nop
+    29db:	eb 01                	jmp    29de <framebuffer_redraw_region+0xc6d>
 												break;
-    2686:	90                   	nop
+    29dd:	90                   	nop
 		}
 }
-    2687:	8d 65 f4             	lea    esp,[ebp-0xc]
-    268a:	5b                   	pop    ebx
-    268b:	5e                   	pop    esi
-    268c:	5f                   	pop    edi
-    268d:	5d                   	pop    ebp
-    268e:	c3                   	ret
+    29de:	81 c4 dc 01 00 00    	add    esp,0x1dc
+    29e4:	5b                   	pop    ebx
+    29e5:	5e                   	pop    esi
+    29e6:	5f                   	pop    edi
+    29e7:	5d                   	pop    ebp
+    29e8:	c3                   	ret
 
-0000268f <framebuffer_redraw_updates>:
+000029e9 <framebuffer_redraw_updates>:
 
 void framebuffer_redraw_updates(struct framebuffer* fb)
 {
-    268f:	55                   	push   ebp
-    2690:	89 e5                	mov    ebp,esp
-    2692:	53                   	push   ebx
-    2693:	83 ec 24             	sub    esp,0x24
+    29e9:	55                   	push   ebp
+    29ea:	89 e5                	mov    ebp,esp
+    29ec:	53                   	push   ebx
+    29ed:	83 ec 34             	sub    esp,0x34
 		uint64_t tm;
 		struct rct *rc, **prc;
 Pos1:
 		rc = fb->r_ud; prc = &fb->r_ud;
-    2696:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2699:	8b 40 34             	mov    eax,DWORD PTR [eax+0x34]
-    269c:	89 45 ec             	mov    DWORD PTR [ebp-0x14],eax
-    269f:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    26a2:	83 c0 34             	add    eax,0x34
-    26a5:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
+    29f0:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    29f3:	8b 40 34             	mov    eax,DWORD PTR [eax+0x34]
+    29f6:	89 45 ec             	mov    DWORD PTR [ebp-0x14],eax
+    29f9:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    29fc:	83 c0 34             	add    eax,0x34
+    29ff:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
 		if (!rc)
-    26a8:	83 7d ec 00          	cmp    DWORD PTR [ebp-0x14],0x0
-    26ac:	0f 84 19 01 00 00    	je     27cb <framebuffer_redraw_updates+0x13c>
+    2a02:	83 7d ec 00          	cmp    DWORD PTR [ebp-0x14],0x0
+    2a06:	0f 84 19 01 00 00    	je     2b25 <framebuffer_redraw_updates+0x13c>
 				return;
 		if (cpu.has_tsc)
-    26b2:	0f b6 05 58 00 00 00 	movzx  eax,BYTE PTR ds:0x58
-    26b9:	83 e0 10             	and    eax,0x10
-    26bc:	84 c0                	test   al,al
-    26be:	74 08                	je     26c8 <framebuffer_redraw_updates+0x39>
+    2a0c:	0f b6 05 58 00 00 00 	movzx  eax,BYTE PTR ds:0x58
+    2a13:	83 e0 10             	and    eax,0x10
+    2a16:	84 c0                	test   al,al
+    2a18:	74 08                	je     2a22 <framebuffer_redraw_updates+0x39>
 				asm volatile ("rdtsc" : "=A" (tm));
-    26c0:	0f 31                	rdtsc
-    26c2:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
-    26c5:	89 55 f4             	mov    DWORD PTR [ebp-0xc],edx
+    2a1a:	0f 31                	rdtsc
+    2a1c:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
+    2a1f:	89 55 f4             	mov    DWORD PTR [ebp-0xc],edx
 		do {
 				if (rc->r_ct) {
-    26c8:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    26cb:	8b 80 84 02 00 00    	mov    eax,DWORD PTR [eax+0x284]
-    26d1:	85 c0                	test   eax,eax
-    26d3:	0f 84 98 00 00 00    	je     2771 <framebuffer_redraw_updates+0xe2>
+    2a22:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    2a25:	8b 80 84 02 00 00    	mov    eax,DWORD PTR [eax+0x284]
+    2a2b:	85 c0                	test   eax,eax
+    2a2d:	0f 84 98 00 00 00    	je     2acb <framebuffer_redraw_updates+0xe2>
 						/* take element temorary out of list */
 						if (__sync_bool_compare_and_swap(prc, rc, rc->next)) {
-    26d9:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    26dc:	8b 80 80 02 00 00    	mov    eax,DWORD PTR [eax+0x280]
-    26e2:	89 c1                	mov    ecx,eax
-    26e4:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    26e7:	8b 55 e8             	mov    edx,DWORD PTR [ebp-0x18]
-    26ea:	f0 0f b1 0a          	lock cmpxchg DWORD PTR [edx],ecx
-    26ee:	0f 94 c0             	sete   al
-    26f1:	84 c0                	test   al,al
-    26f3:	74 a1                	je     2696 <framebuffer_redraw_updates+0x7>
+    2a33:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    2a36:	8b 80 80 02 00 00    	mov    eax,DWORD PTR [eax+0x280]
+    2a3c:	89 c1                	mov    ecx,eax
+    2a3e:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    2a41:	8b 55 e8             	mov    edx,DWORD PTR [ebp-0x18]
+    2a44:	f0 0f b1 0a          	lock cmpxchg DWORD PTR [edx],ecx
+    2a48:	0f 94 c0             	sete   al
+    2a4b:	84 c0                	test   al,al
+    2a4d:	74 a1                	je     29f0 <framebuffer_redraw_updates+0x7>
 								/* success */
 								for (size_t i = 0; i < rc->r_ct; i++)
-    26f5:	c7 45 e4 00 00 00 00 	mov    DWORD PTR [ebp-0x1c],0x0
-    26fc:	eb 25                	jmp    2723 <framebuffer_redraw_updates+0x94>
+    2a4f:	c7 45 e4 00 00 00 00 	mov    DWORD PTR [ebp-0x1c],0x0
+    2a56:	eb 25                	jmp    2a7d <framebuffer_redraw_updates+0x94>
 										framebuffer_redraw_region(fb, rc->r + i);
-    26fe:	8b 4d ec             	mov    ecx,DWORD PTR [ebp-0x14]
-    2701:	8b 55 e4             	mov    edx,DWORD PTR [ebp-0x1c]
-    2704:	89 d0                	mov    eax,edx
-    2706:	c1 e0 02             	shl    eax,0x2
-    2709:	01 d0                	add    eax,edx
-    270b:	c1 e0 02             	shl    eax,0x2
-    270e:	01 c8                	add    eax,ecx
-    2710:	83 ec 08             	sub    esp,0x8
-    2713:	50                   	push   eax
-    2714:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-    2717:	e8 fc ff ff ff       	call   2718 <framebuffer_redraw_updates+0x89>
-    271c:	83 c4 10             	add    esp,0x10
+    2a58:	8b 4d ec             	mov    ecx,DWORD PTR [ebp-0x14]
+    2a5b:	8b 55 e4             	mov    edx,DWORD PTR [ebp-0x1c]
+    2a5e:	89 d0                	mov    eax,edx
+    2a60:	c1 e0 02             	shl    eax,0x2
+    2a63:	01 d0                	add    eax,edx
+    2a65:	c1 e0 02             	shl    eax,0x2
+    2a68:	01 c8                	add    eax,ecx
+    2a6a:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    2a6e:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    2a71:	89 04 24             	mov    DWORD PTR [esp],eax
+    2a74:	e8 fc ff ff ff       	call   2a75 <framebuffer_redraw_updates+0x8c>
 								for (size_t i = 0; i < rc->r_ct; i++)
-    271f:	83 45 e4 01          	add    DWORD PTR [ebp-0x1c],0x1
-    2723:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    2726:	8b 80 84 02 00 00    	mov    eax,DWORD PTR [eax+0x284]
-    272c:	39 45 e4             	cmp    DWORD PTR [ebp-0x1c],eax
-    272f:	72 cd                	jb     26fe <framebuffer_redraw_updates+0x6f>
+    2a79:	83 45 e4 01          	add    DWORD PTR [ebp-0x1c],0x1
+    2a7d:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    2a80:	8b 80 84 02 00 00    	mov    eax,DWORD PTR [eax+0x284]
+    2a86:	39 45 e4             	cmp    DWORD PTR [ebp-0x1c],eax
+    2a89:	72 cd                	jb     2a58 <framebuffer_redraw_updates+0x6f>
 								rc->r_ct = 0;
-    2731:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    2734:	c7 80 84 02 00 00 00 00 00 00 	mov    DWORD PTR [eax+0x284],0x0
+    2a8b:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    2a8e:	c7 80 84 02 00 00 00 00 00 00 	mov    DWORD PTR [eax+0x284],0x0
 								/* now put the buffer back at the front */
 								do {
 										rc->next = fb->r_ud;
-    273e:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2741:	8b 50 34             	mov    edx,DWORD PTR [eax+0x34]
-    2744:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    2747:	89 90 80 02 00 00    	mov    DWORD PTR [eax+0x280],edx
+    2a98:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    2a9b:	8b 50 34             	mov    edx,DWORD PTR [eax+0x34]
+    2a9e:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    2aa1:	89 90 80 02 00 00    	mov    DWORD PTR [eax+0x280],edx
 								} while (!__sync_bool_compare_and_swap(&fb->r_ud, rc->next, rc));
-    274d:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
-    2750:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    2753:	8b 80 80 02 00 00    	mov    eax,DWORD PTR [eax+0x280]
-    2759:	89 c3                	mov    ebx,eax
-    275b:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    275e:	8d 48 34             	lea    ecx,[eax+0x34]
-    2761:	89 d8                	mov    eax,ebx
-    2763:	f0 0f b1 11          	lock cmpxchg DWORD PTR [ecx],edx
-    2767:	0f 94 c0             	sete   al
-    276a:	83 f0 01             	xor    eax,0x1
-    276d:	84 c0                	test   al,al
-    276f:	75 cd                	jne    273e <framebuffer_redraw_updates+0xaf>
+    2aa7:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
+    2aaa:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    2aad:	8b 80 80 02 00 00    	mov    eax,DWORD PTR [eax+0x280]
+    2ab3:	89 c3                	mov    ebx,eax
+    2ab5:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    2ab8:	8d 48 34             	lea    ecx,[eax+0x34]
+    2abb:	89 d8                	mov    eax,ebx
+    2abd:	f0 0f b1 11          	lock cmpxchg DWORD PTR [ecx],edx
+    2ac1:	0f 94 c0             	sete   al
+    2ac4:	83 f0 01             	xor    eax,0x1
+    2ac7:	84 c0                	test   al,al
+    2ac9:	75 cd                	jne    2a98 <framebuffer_redraw_updates+0xaf>
 						} else
 								goto Pos1;
 				}
 				prc = &rc->next;
-    2771:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    2774:	05 80 02 00 00       	add    eax,0x280
-    2779:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
+    2acb:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    2ace:	05 80 02 00 00       	add    eax,0x280
+    2ad3:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
 		} while ((rc = rc->next));
-    277c:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    277f:	8b 80 80 02 00 00    	mov    eax,DWORD PTR [eax+0x280]
-    2785:	89 45 ec             	mov    DWORD PTR [ebp-0x14],eax
-    2788:	83 7d ec 00          	cmp    DWORD PTR [ebp-0x14],0x0
-    278c:	0f 85 36 ff ff ff    	jne    26c8 <framebuffer_redraw_updates+0x39>
+    2ad6:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    2ad9:	8b 80 80 02 00 00    	mov    eax,DWORD PTR [eax+0x280]
+    2adf:	89 45 ec             	mov    DWORD PTR [ebp-0x14],eax
+    2ae2:	83 7d ec 00          	cmp    DWORD PTR [ebp-0x14],0x0
+    2ae6:	0f 85 36 ff ff ff    	jne    2a22 <framebuffer_redraw_updates+0x39>
 		if (cpu.has_tsc) {
-    2792:	0f b6 05 58 00 00 00 	movzx  eax,BYTE PTR ds:0x58
-    2799:	83 e0 10             	and    eax,0x10
-    279c:	84 c0                	test   al,al
-    279e:	74 2c                	je     27cc <framebuffer_redraw_updates+0x13d>
+    2aec:	0f b6 05 58 00 00 00 	movzx  eax,BYTE PTR ds:0x58
+    2af3:	83 e0 10             	and    eax,0x10
+    2af6:	84 c0                	test   al,al
+    2af8:	74 2c                	je     2b26 <framebuffer_redraw_updates+0x13d>
 				asm volatile ("rdtsc" : "=A" (fb_rdt));
-    27a0:	0f 31                	rdtsc
-    27a2:	a3 00 00 00 00       	mov    ds:0x0,eax
-    27a7:	89 15 04 00 00 00    	mov    DWORD PTR ds:0x4,edx
+    2afa:	0f 31                	rdtsc
+    2afc:	a3 00 00 00 00       	mov    ds:0x0,eax
+    2b01:	89 15 04 00 00 00    	mov    DWORD PTR ds:0x4,edx
 				fb_rdt -= tm;
-    27ad:	a1 00 00 00 00       	mov    eax,ds:0x0
-    27b2:	8b 15 04 00 00 00    	mov    edx,DWORD PTR ds:0x4
-    27b8:	2b 45 f0             	sub    eax,DWORD PTR [ebp-0x10]
-    27bb:	1b 55 f4             	sbb    edx,DWORD PTR [ebp-0xc]
-    27be:	a3 00 00 00 00       	mov    ds:0x0,eax
-    27c3:	89 15 04 00 00 00    	mov    DWORD PTR ds:0x4,edx
-    27c9:	eb 01                	jmp    27cc <framebuffer_redraw_updates+0x13d>
+    2b07:	a1 00 00 00 00       	mov    eax,ds:0x0
+    2b0c:	8b 15 04 00 00 00    	mov    edx,DWORD PTR ds:0x4
+    2b12:	2b 45 f0             	sub    eax,DWORD PTR [ebp-0x10]
+    2b15:	1b 55 f4             	sbb    edx,DWORD PTR [ebp-0xc]
+    2b18:	a3 00 00 00 00       	mov    ds:0x0,eax
+    2b1d:	89 15 04 00 00 00    	mov    DWORD PTR ds:0x4,edx
+    2b23:	eb 01                	jmp    2b26 <framebuffer_redraw_updates+0x13d>
 				return;
-    27cb:	90                   	nop
+    2b25:	90                   	nop
 		}
 }
-    27cc:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
-    27cf:	c9                   	leave
-    27d0:	c3                   	ret
+    2b26:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
+    2b29:	c9                   	leave
+    2b2a:	c3                   	ret
 
-000027d1 <framebuffer_update_region>:
+00002b2b <framebuffer_update_region>:
 
 void framebuffer_update_region(struct framebuffer* fb, struct kio_region* r)
 {
-    27d1:	55                   	push   ebp
-    27d2:	89 e5                	mov    ebp,esp
-    27d4:	53                   	push   ebx
-    27d5:	83 ec 34             	sub    esp,0x34
+    2b2b:	55                   	push   ebp
+    2b2c:	89 e5                	mov    ebp,esp
+    2b2e:	53                   	push   ebx
+    2b2f:	83 ec 44             	sub    esp,0x44
 		struct kio_region r2;
 		struct rct* ptr = fb->r_ud;
-    27d8:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    27db:	8b 40 34             	mov    eax,DWORD PTR [eax+0x34]
-    27de:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
+    2b32:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    2b35:	8b 40 34             	mov    eax,DWORD PTR [eax+0x34]
+    2b38:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
 		size_t idx;
 		if (fb->text_mem == vga_mem_ptr)
-    27e1:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    27e4:	8b 10                	mov    edx,DWORD PTR [eax]
-    27e6:	a1 00 00 00 00       	mov    eax,ds:0x0
-    27eb:	39 c2                	cmp    edx,eax
-    27ed:	0f 84 49 04 00 00    	je     2c3c <framebuffer_update_region+0x46b>
+    2b3b:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    2b3e:	8b 10                	mov    edx,DWORD PTR [eax]
+    2b40:	a1 00 00 00 00       	mov    eax,ds:0x0
+    2b45:	39 c2                	cmp    edx,eax
+    2b47:	0f 84 38 04 00 00    	je     2f85 <framebuffer_update_region+0x45a>
 				return;
 
 		/* for now update on every call */
 		r2.x = max(0, r->x - fb->cho_x);
-    27f3:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    27f6:	0f b7 00             	movzx  eax,WORD PTR [eax]
-    27f9:	0f bf c8             	movsx  ecx,ax
-    27fc:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    27ff:	8b 50 24             	mov    edx,DWORD PTR [eax+0x24]
-    2802:	89 c8                	mov    eax,ecx
-    2804:	29 d0                	sub    eax,edx
-    2806:	ba 00 00 00 00       	mov    edx,0x0
-    280b:	85 c0                	test   eax,eax
-    280d:	0f 48 c2             	cmovs  eax,edx
-    2810:	66 89 45 cc          	mov    WORD PTR [ebp-0x34],ax
+    2b4d:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    2b50:	0f b7 00             	movzx  eax,WORD PTR [eax]
+    2b53:	0f bf c8             	movsx  ecx,ax
+    2b56:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    2b59:	8b 50 24             	mov    edx,DWORD PTR [eax+0x24]
+    2b5c:	89 c8                	mov    eax,ecx
+    2b5e:	29 d0                	sub    eax,edx
+    2b60:	ba 00 00 00 00       	mov    edx,0x0
+    2b65:	85 c0                	test   eax,eax
+    2b67:	0f 48 c2             	cmovs  eax,edx
+    2b6a:	66 89 45 cc          	mov    WORD PTR [ebp-0x34],ax
 		r2.y = max(0, r->y - fb->cho_y);
-    2814:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    2817:	0f b7 40 02          	movzx  eax,WORD PTR [eax+0x2]
-    281b:	0f bf c8             	movsx  ecx,ax
-    281e:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2821:	8b 50 28             	mov    edx,DWORD PTR [eax+0x28]
-    2824:	89 c8                	mov    eax,ecx
-    2826:	29 d0                	sub    eax,edx
-    2828:	ba 00 00 00 00       	mov    edx,0x0
-    282d:	85 c0                	test   eax,eax
-    282f:	0f 48 c2             	cmovs  eax,edx
-    2832:	66 89 45 ce          	mov    WORD PTR [ebp-0x32],ax
+    2b6e:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    2b71:	0f b7 40 02          	movzx  eax,WORD PTR [eax+0x2]
+    2b75:	0f bf c8             	movsx  ecx,ax
+    2b78:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    2b7b:	8b 50 28             	mov    edx,DWORD PTR [eax+0x28]
+    2b7e:	89 c8                	mov    eax,ecx
+    2b80:	29 d0                	sub    eax,edx
+    2b82:	ba 00 00 00 00       	mov    edx,0x0
+    2b87:	85 c0                	test   eax,eax
+    2b89:	0f 48 c2             	cmovs  eax,edx
+    2b8c:	66 89 45 ce          	mov    WORD PTR [ebp-0x32],ax
 		r2.fmt = r->fmt;
-    2836:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    2839:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
-    283d:	88 45 d8             	mov    BYTE PTR [ebp-0x28],al
+    2b90:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    2b93:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
+    2b97:	88 45 d8             	mov    BYTE PTR [ebp-0x28],al
 		r2.lx = min(fb->chw_x - r2.x, r->lx);
-    2840:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    2843:	0f b7 40 04          	movzx  eax,WORD PTR [eax+0x4]
-    2847:	0f bf d0             	movsx  edx,ax
-    284a:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    284d:	8b 40 2c             	mov    eax,DWORD PTR [eax+0x2c]
-    2850:	0f b7 4d cc          	movzx  ecx,WORD PTR [ebp-0x34]
-    2854:	0f bf c9             	movsx  ecx,cx
-    2857:	29 c8                	sub    eax,ecx
-    2859:	39 c2                	cmp    edx,eax
-    285b:	0f 4e c2             	cmovle eax,edx
-    285e:	66 89 45 d0          	mov    WORD PTR [ebp-0x30],ax
+    2b9a:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    2b9d:	0f b7 40 04          	movzx  eax,WORD PTR [eax+0x4]
+    2ba1:	0f bf d0             	movsx  edx,ax
+    2ba4:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    2ba7:	8b 40 2c             	mov    eax,DWORD PTR [eax+0x2c]
+    2baa:	0f b7 4d cc          	movzx  ecx,WORD PTR [ebp-0x34]
+    2bae:	0f bf c9             	movsx  ecx,cx
+    2bb1:	29 c8                	sub    eax,ecx
+    2bb3:	39 c2                	cmp    edx,eax
+    2bb5:	0f 4e c2             	cmovle eax,edx
+    2bb8:	66 89 45 d0          	mov    WORD PTR [ebp-0x30],ax
 		r2.ly = min(fb->chw_y - r2.y, r->ly);
-    2862:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    2865:	0f b7 40 06          	movzx  eax,WORD PTR [eax+0x6]
-    2869:	0f bf d0             	movsx  edx,ax
-    286c:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    286f:	8b 40 30             	mov    eax,DWORD PTR [eax+0x30]
-    2872:	0f b7 4d ce          	movzx  ecx,WORD PTR [ebp-0x32]
-    2876:	0f bf c9             	movsx  ecx,cx
-    2879:	29 c8                	sub    eax,ecx
-    287b:	39 c2                	cmp    edx,eax
-    287d:	0f 4e c2             	cmovle eax,edx
-    2880:	66 89 45 d2          	mov    WORD PTR [ebp-0x2e],ax
+    2bbc:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    2bbf:	0f b7 40 06          	movzx  eax,WORD PTR [eax+0x6]
+    2bc3:	0f bf d0             	movsx  edx,ax
+    2bc6:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    2bc9:	8b 40 30             	mov    eax,DWORD PTR [eax+0x30]
+    2bcc:	0f b7 4d ce          	movzx  ecx,WORD PTR [ebp-0x32]
+    2bd0:	0f bf c9             	movsx  ecx,cx
+    2bd3:	29 c8                	sub    eax,ecx
+    2bd5:	39 c2                	cmp    edx,eax
+    2bd7:	0f 4e c2             	cmovle eax,edx
+    2bda:	66 89 45 d2          	mov    WORD PTR [ebp-0x2e],ax
 		/* check for visibility */
 		if (r2.x >= fb->chw_x || r2.y >= fb->chw_y ||
-    2884:	0f b7 45 cc          	movzx  eax,WORD PTR [ebp-0x34]
-    2888:	0f bf d0             	movsx  edx,ax
-    288b:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    288e:	8b 40 2c             	mov    eax,DWORD PTR [eax+0x2c]
-    2891:	39 c2                	cmp    edx,eax
-    2893:	0f 8d a6 03 00 00    	jge    2c3f <framebuffer_update_region+0x46e>
-    2899:	0f b7 45 ce          	movzx  eax,WORD PTR [ebp-0x32]
-    289d:	0f bf d0             	movsx  edx,ax
-    28a0:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    28a3:	8b 40 30             	mov    eax,DWORD PTR [eax+0x30]
-    28a6:	39 c2                	cmp    edx,eax
-    28a8:	0f 8d 91 03 00 00    	jge    2c3f <framebuffer_update_region+0x46e>
+    2bde:	0f b7 45 cc          	movzx  eax,WORD PTR [ebp-0x34]
+    2be2:	0f bf d0             	movsx  edx,ax
+    2be5:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    2be8:	8b 40 2c             	mov    eax,DWORD PTR [eax+0x2c]
+    2beb:	39 c2                	cmp    edx,eax
+    2bed:	0f 8d 95 03 00 00    	jge    2f88 <framebuffer_update_region+0x45d>
+    2bf3:	0f b7 45 ce          	movzx  eax,WORD PTR [ebp-0x32]
+    2bf7:	0f bf d0             	movsx  edx,ax
+    2bfa:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    2bfd:	8b 40 30             	mov    eax,DWORD PTR [eax+0x30]
+    2c00:	39 c2                	cmp    edx,eax
+    2c02:	0f 8d 80 03 00 00    	jge    2f88 <framebuffer_update_region+0x45d>
 			r2.x + r2.lx < fb->cho_x || r2.y + r2.ly < fb->cho_y)
-    28ae:	0f b7 45 cc          	movzx  eax,WORD PTR [ebp-0x34]
-    28b2:	0f bf d0             	movsx  edx,ax
-    28b5:	0f b7 45 d0          	movzx  eax,WORD PTR [ebp-0x30]
-    28b9:	98                   	cwde
-    28ba:	01 c2                	add    edx,eax
-    28bc:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    28bf:	8b 40 24             	mov    eax,DWORD PTR [eax+0x24]
+    2c08:	0f b7 45 cc          	movzx  eax,WORD PTR [ebp-0x34]
+    2c0c:	0f bf d0             	movsx  edx,ax
+    2c0f:	0f b7 45 d0          	movzx  eax,WORD PTR [ebp-0x30]
+    2c13:	98                   	cwde
+    2c14:	01 c2                	add    edx,eax
+    2c16:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    2c19:	8b 40 24             	mov    eax,DWORD PTR [eax+0x24]
 		if (r2.x >= fb->chw_x || r2.y >= fb->chw_y ||
-    28c2:	39 c2                	cmp    edx,eax
-    28c4:	0f 8c 75 03 00 00    	jl     2c3f <framebuffer_update_region+0x46e>
+    2c1c:	39 c2                	cmp    edx,eax
+    2c1e:	0f 8c 64 03 00 00    	jl     2f88 <framebuffer_update_region+0x45d>
 			r2.x + r2.lx < fb->cho_x || r2.y + r2.ly < fb->cho_y)
-    28ca:	0f b7 45 ce          	movzx  eax,WORD PTR [ebp-0x32]
-    28ce:	0f bf d0             	movsx  edx,ax
-    28d1:	0f b7 45 d2          	movzx  eax,WORD PTR [ebp-0x2e]
-    28d5:	98                   	cwde
-    28d6:	01 c2                	add    edx,eax
-    28d8:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    28db:	8b 40 28             	mov    eax,DWORD PTR [eax+0x28]
-    28de:	39 c2                	cmp    edx,eax
-    28e0:	0f 8c 59 03 00 00    	jl     2c3f <framebuffer_update_region+0x46e>
+    2c24:	0f b7 45 ce          	movzx  eax,WORD PTR [ebp-0x32]
+    2c28:	0f bf d0             	movsx  edx,ax
+    2c2b:	0f b7 45 d2          	movzx  eax,WORD PTR [ebp-0x2e]
+    2c2f:	98                   	cwde
+    2c30:	01 c2                	add    edx,eax
+    2c32:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    2c35:	8b 40 28             	mov    eax,DWORD PTR [eax+0x28]
+    2c38:	39 c2                	cmp    edx,eax
+    2c3a:	0f 8c 48 03 00 00    	jl     2f88 <framebuffer_update_region+0x45d>
 				return;
 		/* check for pending updates */
 Pos1:
-    28e6:	90                   	nop
+    2c40:	90                   	nop
 		ptr = fb->r_ud;
-    28e7:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    28ea:	8b 40 34             	mov    eax,DWORD PTR [eax+0x34]
-    28ed:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
+    2c41:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    2c44:	8b 40 34             	mov    eax,DWORD PTR [eax+0x34]
+    2c47:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
 		while (ptr) { /* TODO: overhaul this -> leads to freezes */
-    28f0:	e9 98 02 00 00       	jmp    2b8d <framebuffer_update_region+0x3bc>
+    2c4a:	e9 91 02 00 00       	jmp    2ee0 <framebuffer_update_region+0x3b5>
 				size_t i;
 				for (i = 0; i < ptr->r_ct; i++) {
-    28f5:	c7 45 f0 00 00 00 00 	mov    DWORD PTR [ebp-0x10],0x0
-    28fc:	e9 79 01 00 00       	jmp    2a7a <framebuffer_update_region+0x2a9>
+    2c4f:	c7 45 f0 00 00 00 00 	mov    DWORD PTR [ebp-0x10],0x0
+    2c56:	e9 79 01 00 00       	jmp    2dd4 <framebuffer_update_region+0x2a9>
 						/* check for extending horizontally */
 						if (ptr->r[i].y == r2.y && ptr->r[i].ly == r2.ly) {
-    2901:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
-    2904:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
-    2907:	89 d0                	mov    eax,edx
-    2909:	c1 e0 02             	shl    eax,0x2
-    290c:	01 d0                	add    eax,edx
-    290e:	c1 e0 02             	shl    eax,0x2
-    2911:	01 c8                	add    eax,ecx
-    2913:	83 c0 02             	add    eax,0x2
-    2916:	0f b7 10             	movzx  edx,WORD PTR [eax]
-    2919:	0f b7 45 ce          	movzx  eax,WORD PTR [ebp-0x32]
-    291d:	66 39 c2             	cmp    dx,ax
-    2920:	0f 85 cb 00 00 00    	jne    29f1 <framebuffer_update_region+0x220>
-    2926:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
-    2929:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
-    292c:	89 d0                	mov    eax,edx
-    292e:	c1 e0 02             	shl    eax,0x2
-    2931:	01 d0                	add    eax,edx
-    2933:	c1 e0 02             	shl    eax,0x2
-    2936:	01 c8                	add    eax,ecx
-    2938:	83 c0 06             	add    eax,0x6
-    293b:	0f b7 10             	movzx  edx,WORD PTR [eax]
-    293e:	0f b7 45 d2          	movzx  eax,WORD PTR [ebp-0x2e]
-    2942:	66 39 c2             	cmp    dx,ax
-    2945:	0f 85 a6 00 00 00    	jne    29f1 <framebuffer_update_region+0x220>
+    2c5b:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
+    2c5e:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
+    2c61:	89 d0                	mov    eax,edx
+    2c63:	c1 e0 02             	shl    eax,0x2
+    2c66:	01 d0                	add    eax,edx
+    2c68:	c1 e0 02             	shl    eax,0x2
+    2c6b:	01 c8                	add    eax,ecx
+    2c6d:	83 c0 02             	add    eax,0x2
+    2c70:	0f b7 10             	movzx  edx,WORD PTR [eax]
+    2c73:	0f b7 45 ce          	movzx  eax,WORD PTR [ebp-0x32]
+    2c77:	66 39 c2             	cmp    dx,ax
+    2c7a:	0f 85 cb 00 00 00    	jne    2d4b <framebuffer_update_region+0x220>
+    2c80:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
+    2c83:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
+    2c86:	89 d0                	mov    eax,edx
+    2c88:	c1 e0 02             	shl    eax,0x2
+    2c8b:	01 d0                	add    eax,edx
+    2c8d:	c1 e0 02             	shl    eax,0x2
+    2c90:	01 c8                	add    eax,ecx
+    2c92:	83 c0 06             	add    eax,0x6
+    2c95:	0f b7 10             	movzx  edx,WORD PTR [eax]
+    2c98:	0f b7 45 d2          	movzx  eax,WORD PTR [ebp-0x2e]
+    2c9c:	66 39 c2             	cmp    dx,ax
+    2c9f:	0f 85 a6 00 00 00    	jne    2d4b <framebuffer_update_region+0x220>
 								short new_lx, old_lx = ptr->r[i].lx;
-    294b:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
-    294e:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
-    2951:	89 d0                	mov    eax,edx
-    2953:	c1 e0 02             	shl    eax,0x2
-    2956:	01 d0                	add    eax,edx
-    2958:	c1 e0 02             	shl    eax,0x2
-    295b:	01 c8                	add    eax,ecx
-    295d:	83 c0 04             	add    eax,0x4
-    2960:	0f b7 00             	movzx  eax,WORD PTR [eax]
-    2963:	66 89 45 e6          	mov    WORD PTR [ebp-0x1a],ax
+    2ca5:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
+    2ca8:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
+    2cab:	89 d0                	mov    eax,edx
+    2cad:	c1 e0 02             	shl    eax,0x2
+    2cb0:	01 d0                	add    eax,edx
+    2cb2:	c1 e0 02             	shl    eax,0x2
+    2cb5:	01 c8                	add    eax,ecx
+    2cb7:	83 c0 04             	add    eax,0x4
+    2cba:	0f b7 00             	movzx  eax,WORD PTR [eax]
+    2cbd:	66 89 45 e6          	mov    WORD PTR [ebp-0x1a],ax
 								if (ptr->r[i].x + ptr->r[i].lx == r2.x) {
-    2967:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
-    296a:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
-    296d:	89 d0                	mov    eax,edx
-    296f:	c1 e0 02             	shl    eax,0x2
-    2972:	01 d0                	add    eax,edx
-    2974:	c1 e0 02             	shl    eax,0x2
-    2977:	01 c8                	add    eax,ecx
-    2979:	0f b7 00             	movzx  eax,WORD PTR [eax]
-    297c:	0f bf c8             	movsx  ecx,ax
-    297f:	8b 5d f4             	mov    ebx,DWORD PTR [ebp-0xc]
-    2982:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
-    2985:	89 d0                	mov    eax,edx
-    2987:	c1 e0 02             	shl    eax,0x2
-    298a:	01 d0                	add    eax,edx
-    298c:	c1 e0 02             	shl    eax,0x2
-    298f:	01 d8                	add    eax,ebx
-    2991:	83 c0 04             	add    eax,0x4
-    2994:	0f b7 00             	movzx  eax,WORD PTR [eax]
-    2997:	98                   	cwde
-    2998:	8d 14 01             	lea    edx,[ecx+eax*1]
-    299b:	0f b7 45 cc          	movzx  eax,WORD PTR [ebp-0x34]
-    299f:	98                   	cwde
-    29a0:	39 c2                	cmp    edx,eax
-    29a2:	75 4d                	jne    29f1 <framebuffer_update_region+0x220>
+    2cc1:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
+    2cc4:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
+    2cc7:	89 d0                	mov    eax,edx
+    2cc9:	c1 e0 02             	shl    eax,0x2
+    2ccc:	01 d0                	add    eax,edx
+    2cce:	c1 e0 02             	shl    eax,0x2
+    2cd1:	01 c8                	add    eax,ecx
+    2cd3:	0f b7 00             	movzx  eax,WORD PTR [eax]
+    2cd6:	0f bf c8             	movsx  ecx,ax
+    2cd9:	8b 5d f4             	mov    ebx,DWORD PTR [ebp-0xc]
+    2cdc:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
+    2cdf:	89 d0                	mov    eax,edx
+    2ce1:	c1 e0 02             	shl    eax,0x2
+    2ce4:	01 d0                	add    eax,edx
+    2ce6:	c1 e0 02             	shl    eax,0x2
+    2ce9:	01 d8                	add    eax,ebx
+    2ceb:	83 c0 04             	add    eax,0x4
+    2cee:	0f b7 00             	movzx  eax,WORD PTR [eax]
+    2cf1:	98                   	cwde
+    2cf2:	8d 14 01             	lea    edx,[ecx+eax*1]
+    2cf5:	0f b7 45 cc          	movzx  eax,WORD PTR [ebp-0x34]
+    2cf9:	98                   	cwde
+    2cfa:	39 c2                	cmp    edx,eax
+    2cfc:	75 4d                	jne    2d4b <framebuffer_update_region+0x220>
 										new_lx = old_lx + r2.lx;
-    29a4:	0f b7 45 d0          	movzx  eax,WORD PTR [ebp-0x30]
-    29a8:	89 c2                	mov    edx,eax
-    29aa:	0f b7 45 e6          	movzx  eax,WORD PTR [ebp-0x1a]
-    29ae:	01 d0                	add    eax,edx
-    29b0:	66 89 45 e4          	mov    WORD PTR [ebp-0x1c],ax
+    2cfe:	0f b7 45 d0          	movzx  eax,WORD PTR [ebp-0x30]
+    2d02:	89 c2                	mov    edx,eax
+    2d04:	0f b7 45 e6          	movzx  eax,WORD PTR [ebp-0x1a]
+    2d08:	01 d0                	add    eax,edx
+    2d0a:	66 89 45 e4          	mov    WORD PTR [ebp-0x1c],ax
 										/* try to combine */
 										if (!__sync_bool_compare_and_swap(&ptr->r[i].lx, old_lx, new_lx))
-    29b4:	0f b7 45 e4          	movzx  eax,WORD PTR [ebp-0x1c]
-    29b8:	0f b7 d8             	movzx  ebx,ax
-    29bb:	0f b7 45 e6          	movzx  eax,WORD PTR [ebp-0x1a]
-    29bf:	0f b7 c8             	movzx  ecx,ax
-    29c2:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
-    29c5:	89 d0                	mov    eax,edx
-    29c7:	c1 e0 02             	shl    eax,0x2
-    29ca:	01 d0                	add    eax,edx
-    29cc:	c1 e0 02             	shl    eax,0x2
-    29cf:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-    29d2:	01 d0                	add    eax,edx
-    29d4:	8d 50 04             	lea    edx,[eax+0x4]
-    29d7:	89 c8                	mov    eax,ecx
-    29d9:	66 f0 0f b1 1a       	lock cmpxchg WORD PTR [edx],bx
-    29de:	0f 94 c0             	sete   al
-    29e1:	83 f0 01             	xor    eax,0x1
-    29e4:	84 c0                	test   al,al
-    29e6:	0f 84 56 02 00 00    	je     2c42 <framebuffer_update_region+0x471>
+    2d0e:	0f b7 45 e4          	movzx  eax,WORD PTR [ebp-0x1c]
+    2d12:	0f b7 d8             	movzx  ebx,ax
+    2d15:	0f b7 45 e6          	movzx  eax,WORD PTR [ebp-0x1a]
+    2d19:	0f b7 c8             	movzx  ecx,ax
+    2d1c:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
+    2d1f:	89 d0                	mov    eax,edx
+    2d21:	c1 e0 02             	shl    eax,0x2
+    2d24:	01 d0                	add    eax,edx
+    2d26:	c1 e0 02             	shl    eax,0x2
+    2d29:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+    2d2c:	01 d0                	add    eax,edx
+    2d2e:	8d 50 04             	lea    edx,[eax+0x4]
+    2d31:	89 c8                	mov    eax,ecx
+    2d33:	66 f0 0f b1 1a       	lock cmpxchg WORD PTR [edx],bx
+    2d38:	0f 94 c0             	sete   al
+    2d3b:	83 f0 01             	xor    eax,0x1
+    2d3e:	84 c0                	test   al,al
+    2d40:	0f 84 45 02 00 00    	je     2f8b <framebuffer_update_region+0x460>
 												goto Pos1;
-    29ec:	e9 f6 fe ff ff       	jmp    28e7 <framebuffer_update_region+0x116>
+    2d46:	e9 f6 fe ff ff       	jmp    2c41 <framebuffer_update_region+0x116>
 //										}
 //										return;
 //								}
 //						}
 						/* also check for duplicates */
 						if (ptr->r[i].x == r2.x && ptr->r[i].y == r2.y
-    29f1:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
-    29f4:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
-    29f7:	89 d0                	mov    eax,edx
-    29f9:	c1 e0 02             	shl    eax,0x2
-    29fc:	01 d0                	add    eax,edx
-    29fe:	c1 e0 02             	shl    eax,0x2
-    2a01:	01 c8                	add    eax,ecx
-    2a03:	0f b7 10             	movzx  edx,WORD PTR [eax]
-    2a06:	0f b7 45 cc          	movzx  eax,WORD PTR [ebp-0x34]
-    2a0a:	66 39 c2             	cmp    dx,ax
-    2a0d:	75 67                	jne    2a76 <framebuffer_update_region+0x2a5>
-    2a0f:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
-    2a12:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
-    2a15:	89 d0                	mov    eax,edx
-    2a17:	c1 e0 02             	shl    eax,0x2
-    2a1a:	01 d0                	add    eax,edx
-    2a1c:	c1 e0 02             	shl    eax,0x2
-    2a1f:	01 c8                	add    eax,ecx
-    2a21:	83 c0 02             	add    eax,0x2
-    2a24:	0f b7 10             	movzx  edx,WORD PTR [eax]
-    2a27:	0f b7 45 ce          	movzx  eax,WORD PTR [ebp-0x32]
-    2a2b:	66 39 c2             	cmp    dx,ax
-    2a2e:	75 46                	jne    2a76 <framebuffer_update_region+0x2a5>
+    2d4b:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
+    2d4e:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
+    2d51:	89 d0                	mov    eax,edx
+    2d53:	c1 e0 02             	shl    eax,0x2
+    2d56:	01 d0                	add    eax,edx
+    2d58:	c1 e0 02             	shl    eax,0x2
+    2d5b:	01 c8                	add    eax,ecx
+    2d5d:	0f b7 10             	movzx  edx,WORD PTR [eax]
+    2d60:	0f b7 45 cc          	movzx  eax,WORD PTR [ebp-0x34]
+    2d64:	66 39 c2             	cmp    dx,ax
+    2d67:	75 67                	jne    2dd0 <framebuffer_update_region+0x2a5>
+    2d69:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
+    2d6c:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
+    2d6f:	89 d0                	mov    eax,edx
+    2d71:	c1 e0 02             	shl    eax,0x2
+    2d74:	01 d0                	add    eax,edx
+    2d76:	c1 e0 02             	shl    eax,0x2
+    2d79:	01 c8                	add    eax,ecx
+    2d7b:	83 c0 02             	add    eax,0x2
+    2d7e:	0f b7 10             	movzx  edx,WORD PTR [eax]
+    2d81:	0f b7 45 ce          	movzx  eax,WORD PTR [ebp-0x32]
+    2d85:	66 39 c2             	cmp    dx,ax
+    2d88:	75 46                	jne    2dd0 <framebuffer_update_region+0x2a5>
 							&& ptr->r[i].lx == r2.lx && ptr->r[i].ly == r2.ly)
-    2a30:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
-    2a33:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
-    2a36:	89 d0                	mov    eax,edx
-    2a38:	c1 e0 02             	shl    eax,0x2
-    2a3b:	01 d0                	add    eax,edx
-    2a3d:	c1 e0 02             	shl    eax,0x2
-    2a40:	01 c8                	add    eax,ecx
-    2a42:	83 c0 04             	add    eax,0x4
-    2a45:	0f b7 10             	movzx  edx,WORD PTR [eax]
-    2a48:	0f b7 45 d0          	movzx  eax,WORD PTR [ebp-0x30]
-    2a4c:	66 39 c2             	cmp    dx,ax
-    2a4f:	75 25                	jne    2a76 <framebuffer_update_region+0x2a5>
-    2a51:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
-    2a54:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
-    2a57:	89 d0                	mov    eax,edx
-    2a59:	c1 e0 02             	shl    eax,0x2
-    2a5c:	01 d0                	add    eax,edx
-    2a5e:	c1 e0 02             	shl    eax,0x2
-    2a61:	01 c8                	add    eax,ecx
-    2a63:	83 c0 06             	add    eax,0x6
-    2a66:	0f b7 10             	movzx  edx,WORD PTR [eax]
-    2a69:	0f b7 45 d2          	movzx  eax,WORD PTR [ebp-0x2e]
-    2a6d:	66 39 c2             	cmp    dx,ax
-    2a70:	0f 84 cf 01 00 00    	je     2c45 <framebuffer_update_region+0x474>
+    2d8a:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
+    2d8d:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
+    2d90:	89 d0                	mov    eax,edx
+    2d92:	c1 e0 02             	shl    eax,0x2
+    2d95:	01 d0                	add    eax,edx
+    2d97:	c1 e0 02             	shl    eax,0x2
+    2d9a:	01 c8                	add    eax,ecx
+    2d9c:	83 c0 04             	add    eax,0x4
+    2d9f:	0f b7 10             	movzx  edx,WORD PTR [eax]
+    2da2:	0f b7 45 d0          	movzx  eax,WORD PTR [ebp-0x30]
+    2da6:	66 39 c2             	cmp    dx,ax
+    2da9:	75 25                	jne    2dd0 <framebuffer_update_region+0x2a5>
+    2dab:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
+    2dae:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
+    2db1:	89 d0                	mov    eax,edx
+    2db3:	c1 e0 02             	shl    eax,0x2
+    2db6:	01 d0                	add    eax,edx
+    2db8:	c1 e0 02             	shl    eax,0x2
+    2dbb:	01 c8                	add    eax,ecx
+    2dbd:	83 c0 06             	add    eax,0x6
+    2dc0:	0f b7 10             	movzx  edx,WORD PTR [eax]
+    2dc3:	0f b7 45 d2          	movzx  eax,WORD PTR [ebp-0x2e]
+    2dc7:	66 39 c2             	cmp    dx,ax
+    2dca:	0f 84 be 01 00 00    	je     2f8e <framebuffer_update_region+0x463>
 				for (i = 0; i < ptr->r_ct; i++) {
-    2a76:	83 45 f0 01          	add    DWORD PTR [ebp-0x10],0x1
-    2a7a:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    2a7d:	8b 80 84 02 00 00    	mov    eax,DWORD PTR [eax+0x284]
-    2a83:	39 45 f0             	cmp    DWORD PTR [ebp-0x10],eax
-    2a86:	0f 82 75 fe ff ff    	jb     2901 <framebuffer_update_region+0x130>
+    2dd0:	83 45 f0 01          	add    DWORD PTR [ebp-0x10],0x1
+    2dd4:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    2dd7:	8b 80 84 02 00 00    	mov    eax,DWORD PTR [eax+0x284]
+    2ddd:	39 45 f0             	cmp    DWORD PTR [ebp-0x10],eax
+    2de0:	0f 82 75 fe ff ff    	jb     2c5b <framebuffer_update_region+0x130>
 								return;
 				}
 				/* add inbetween */
 				if ((idx = __sync_fetch_and_add(&ptr->r_ct, 1)) < 32) {
-    2a8c:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    2a8f:	05 84 02 00 00       	add    eax,0x284
-    2a94:	ba 01 00 00 00       	mov    edx,0x1
-    2a99:	f0 0f c1 10          	lock xadd DWORD PTR [eax],edx
-    2a9d:	89 55 ec             	mov    DWORD PTR [ebp-0x14],edx
-    2aa0:	83 7d ec 1f          	cmp    DWORD PTR [ebp-0x14],0x1f
-    2aa4:	77 34                	ja     2ada <framebuffer_update_region+0x309>
+    2de6:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    2de9:	05 84 02 00 00       	add    eax,0x284
+    2dee:	ba 01 00 00 00       	mov    edx,0x1
+    2df3:	f0 0f c1 10          	lock xadd DWORD PTR [eax],edx
+    2df7:	89 55 ec             	mov    DWORD PTR [ebp-0x14],edx
+    2dfa:	83 7d ec 1f          	cmp    DWORD PTR [ebp-0x14],0x1f
+    2dfe:	77 34                	ja     2e34 <framebuffer_update_region+0x309>
 						ptr->r[idx] = r2;
-    2aa6:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
-    2aa9:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
-    2aac:	89 d0                	mov    eax,edx
-    2aae:	c1 e0 02             	shl    eax,0x2
-    2ab1:	01 d0                	add    eax,edx
-    2ab3:	c1 e0 02             	shl    eax,0x2
-    2ab6:	01 c8                	add    eax,ecx
-    2ab8:	8b 55 cc             	mov    edx,DWORD PTR [ebp-0x34]
-    2abb:	89 10                	mov    DWORD PTR [eax],edx
-    2abd:	8b 55 d0             	mov    edx,DWORD PTR [ebp-0x30]
-    2ac0:	89 50 04             	mov    DWORD PTR [eax+0x4],edx
-    2ac3:	8b 55 d4             	mov    edx,DWORD PTR [ebp-0x2c]
-    2ac6:	89 50 08             	mov    DWORD PTR [eax+0x8],edx
-    2ac9:	8b 55 d8             	mov    edx,DWORD PTR [ebp-0x28]
-    2acc:	89 50 0c             	mov    DWORD PTR [eax+0xc],edx
-    2acf:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
-    2ad2:	89 50 10             	mov    DWORD PTR [eax+0x10],edx
+    2e00:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
+    2e03:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
+    2e06:	89 d0                	mov    eax,edx
+    2e08:	c1 e0 02             	shl    eax,0x2
+    2e0b:	01 d0                	add    eax,edx
+    2e0d:	c1 e0 02             	shl    eax,0x2
+    2e10:	01 c8                	add    eax,ecx
+    2e12:	8b 55 cc             	mov    edx,DWORD PTR [ebp-0x34]
+    2e15:	89 10                	mov    DWORD PTR [eax],edx
+    2e17:	8b 55 d0             	mov    edx,DWORD PTR [ebp-0x30]
+    2e1a:	89 50 04             	mov    DWORD PTR [eax+0x4],edx
+    2e1d:	8b 55 d4             	mov    edx,DWORD PTR [ebp-0x2c]
+    2e20:	89 50 08             	mov    DWORD PTR [eax+0x8],edx
+    2e23:	8b 55 d8             	mov    edx,DWORD PTR [ebp-0x28]
+    2e26:	89 50 0c             	mov    DWORD PTR [eax+0xc],edx
+    2e29:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
+    2e2c:	89 50 10             	mov    DWORD PTR [eax+0x10],edx
 						break;
-    2ad5:	e9 c0 00 00 00       	jmp    2b9a <framebuffer_update_region+0x3c9>
+    2e2f:	e9 b9 00 00 00       	jmp    2eed <framebuffer_update_region+0x3c2>
 				} else
 						__sync_fetch_and_sub(&ptr->r_ct, 1);
-    2ada:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    2add:	05 84 02 00 00       	add    eax,0x284
-    2ae2:	f0 83 28 01          	lock sub DWORD PTR [eax],0x1
+    2e34:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    2e37:	05 84 02 00 00       	add    eax,0x284
+    2e3c:	f0 83 28 01          	lock sub DWORD PTR [eax],0x1
 				/* we need a new container */
 				if (!ptr->next) {
-    2ae6:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    2ae9:	8b 80 80 02 00 00    	mov    eax,DWORD PTR [eax+0x280]
-    2aef:	85 c0                	test   eax,eax
-    2af1:	0f 85 8a 00 00 00    	jne    2b81 <framebuffer_update_region+0x3b0>
+    2e40:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    2e43:	8b 80 80 02 00 00    	mov    eax,DWORD PTR [eax+0x280]
+    2e49:	85 c0                	test   eax,eax
+    2e4b:	0f 85 83 00 00 00    	jne    2ed4 <framebuffer_update_region+0x3a9>
 						while (fb_no_malloc);
-    2af7:	90                   	nop
-    2af8:	a1 00 00 00 00       	mov    eax,ds:0x0
-    2afd:	85 c0                	test   eax,eax
-    2aff:	75 f7                	jne    2af8 <framebuffer_update_region+0x327>
+    2e51:	90                   	nop
+    2e52:	a1 00 00 00 00       	mov    eax,ds:0x0
+    2e57:	85 c0                	test   eax,eax
+    2e59:	75 f7                	jne    2e52 <framebuffer_update_region+0x327>
 						struct rct* rn = kmalloc(sizeof(struct rct));
-    2b01:	83 ec 0c             	sub    esp,0xc
-    2b04:	68 88 02 00 00       	push   0x288
-    2b09:	e8 fc ff ff ff       	call   2b0a <framebuffer_update_region+0x339>
-    2b0e:	83 c4 10             	add    esp,0x10
-    2b11:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
+    2e5b:	c7 04 24 88 02 00 00 	mov    DWORD PTR [esp],0x288
+    2e62:	e8 fc ff ff ff       	call   2e63 <framebuffer_update_region+0x338>
+    2e67:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
 						rn->r_ct = 1;
-    2b14:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
-    2b17:	c7 80 84 02 00 00 01 00 00 00 	mov    DWORD PTR [eax+0x284],0x1
+    2e6a:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
+    2e6d:	c7 80 84 02 00 00 01 00 00 00 	mov    DWORD PTR [eax+0x284],0x1
 						rn->r[0] = r2;
-    2b21:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
-    2b24:	8b 55 cc             	mov    edx,DWORD PTR [ebp-0x34]
-    2b27:	89 10                	mov    DWORD PTR [eax],edx
-    2b29:	8b 55 d0             	mov    edx,DWORD PTR [ebp-0x30]
-    2b2c:	89 50 04             	mov    DWORD PTR [eax+0x4],edx
-    2b2f:	8b 55 d4             	mov    edx,DWORD PTR [ebp-0x2c]
-    2b32:	89 50 08             	mov    DWORD PTR [eax+0x8],edx
-    2b35:	8b 55 d8             	mov    edx,DWORD PTR [ebp-0x28]
-    2b38:	89 50 0c             	mov    DWORD PTR [eax+0xc],edx
-    2b3b:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
-    2b3e:	89 50 10             	mov    DWORD PTR [eax+0x10],edx
+    2e77:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
+    2e7a:	8b 55 cc             	mov    edx,DWORD PTR [ebp-0x34]
+    2e7d:	89 10                	mov    DWORD PTR [eax],edx
+    2e7f:	8b 55 d0             	mov    edx,DWORD PTR [ebp-0x30]
+    2e82:	89 50 04             	mov    DWORD PTR [eax+0x4],edx
+    2e85:	8b 55 d4             	mov    edx,DWORD PTR [ebp-0x2c]
+    2e88:	89 50 08             	mov    DWORD PTR [eax+0x8],edx
+    2e8b:	8b 55 d8             	mov    edx,DWORD PTR [ebp-0x28]
+    2e8e:	89 50 0c             	mov    DWORD PTR [eax+0xc],edx
+    2e91:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
+    2e94:	89 50 10             	mov    DWORD PTR [eax+0x10],edx
 						rn->next = NULL;
-    2b41:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
-    2b44:	c7 80 80 02 00 00 00 00 00 00 	mov    DWORD PTR [eax+0x280],0x0
+    2e97:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
+    2e9a:	c7 80 80 02 00 00 00 00 00 00 	mov    DWORD PTR [eax+0x280],0x0
 						if (__sync_bool_compare_and_swap(&ptr->next, NULL, rn))
-    2b4e:	8b 55 e8             	mov    edx,DWORD PTR [ebp-0x18]
-    2b51:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    2b54:	8d 88 80 02 00 00    	lea    ecx,[eax+0x280]
-    2b5a:	b8 00 00 00 00       	mov    eax,0x0
-    2b5f:	f0 0f b1 11          	lock cmpxchg DWORD PTR [ecx],edx
-    2b63:	0f 94 c0             	sete   al
-    2b66:	84 c0                	test   al,al
-    2b68:	75 2f                	jne    2b99 <framebuffer_update_region+0x3c8>
+    2ea4:	8b 55 e8             	mov    edx,DWORD PTR [ebp-0x18]
+    2ea7:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    2eaa:	8d 88 80 02 00 00    	lea    ecx,[eax+0x280]
+    2eb0:	b8 00 00 00 00       	mov    eax,0x0
+    2eb5:	f0 0f b1 11          	lock cmpxchg DWORD PTR [ecx],edx
+    2eb9:	0f 94 c0             	sete   al
+    2ebc:	84 c0                	test   al,al
+    2ebe:	75 2c                	jne    2eec <framebuffer_update_region+0x3c1>
 								break;
 						else if (!fb_no_malloc) { /* someone was faster */
-    2b6a:	a1 00 00 00 00       	mov    eax,ds:0x0
-    2b6f:	85 c0                	test   eax,eax
-    2b71:	75 0e                	jne    2b81 <framebuffer_update_region+0x3b0>
+    2ec0:	a1 00 00 00 00       	mov    eax,ds:0x0
+    2ec5:	85 c0                	test   eax,eax
+    2ec7:	75 0b                	jne    2ed4 <framebuffer_update_region+0x3a9>
 								kfree(rn);
-    2b73:	83 ec 0c             	sub    esp,0xc
-    2b76:	ff 75 e8             	push   DWORD PTR [ebp-0x18]
-    2b79:	e8 fc ff ff ff       	call   2b7a <framebuffer_update_region+0x3a9>
-    2b7e:	83 c4 10             	add    esp,0x10
+    2ec9:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
+    2ecc:	89 04 24             	mov    DWORD PTR [esp],eax
+    2ecf:	e8 fc ff ff ff       	call   2ed0 <framebuffer_update_region+0x3a5>
 								//goto Pos1; ptr=next
 						}
 				}
 				ptr = ptr->next;
-    2b81:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    2b84:	8b 80 80 02 00 00    	mov    eax,DWORD PTR [eax+0x280]
-    2b8a:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
+    2ed4:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    2ed7:	8b 80 80 02 00 00    	mov    eax,DWORD PTR [eax+0x280]
+    2edd:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
 		while (ptr) { /* TODO: overhaul this -> leads to freezes */
-    2b8d:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
-    2b91:	0f 85 5e fd ff ff    	jne    28f5 <framebuffer_update_region+0x124>
-    2b97:	eb 01                	jmp    2b9a <framebuffer_update_region+0x3c9>
+    2ee0:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
+    2ee4:	0f 85 65 fd ff ff    	jne    2c4f <framebuffer_update_region+0x124>
+    2eea:	eb 01                	jmp    2eed <framebuffer_update_region+0x3c2>
 								break;
-    2b99:	90                   	nop
+    2eec:	90                   	nop
 		}
 		/* else extend the list */
 		if (!fb->r_ud) 
-    2b9a:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2b9d:	8b 40 34             	mov    eax,DWORD PTR [eax+0x34]
-    2ba0:	85 c0                	test   eax,eax
-    2ba2:	0f 85 9e 00 00 00    	jne    2c46 <framebuffer_update_region+0x475>
+    2eed:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    2ef0:	8b 40 34             	mov    eax,DWORD PTR [eax+0x34]
+    2ef3:	85 c0                	test   eax,eax
+    2ef5:	0f 85 94 00 00 00    	jne    2f8f <framebuffer_update_region+0x464>
 				if (fb_no_malloc) {
-    2ba8:	a1 00 00 00 00       	mov    eax,ds:0x0
-    2bad:	85 c0                	test   eax,eax
-    2baf:	74 0f                	je     2bc0 <framebuffer_update_region+0x3ef>
+    2efb:	a1 00 00 00 00       	mov    eax,ds:0x0
+    2f00:	85 c0                	test   eax,eax
+    2f02:	74 0c                	je     2f10 <framebuffer_update_region+0x3e5>
 					fb->r_ud = &rc_initial;
-    2bb1:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2bb4:	c7 40 34 00 00 00 00 	mov    DWORD PTR [eax+0x34],0x0
-    2bbb:	e9 86 00 00 00       	jmp    2c46 <framebuffer_update_region+0x475>
+    2f04:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    2f07:	c7 40 34 00 00 00 00 	mov    DWORD PTR [eax+0x34],0x0
+    2f0e:	eb 7f                	jmp    2f8f <framebuffer_update_region+0x464>
 				} else {
 						struct rct* rn = kmalloc(sizeof(struct rct));
-    2bc0:	83 ec 0c             	sub    esp,0xc
-    2bc3:	68 88 02 00 00       	push   0x288
-    2bc8:	e8 fc ff ff ff       	call   2bc9 <framebuffer_update_region+0x3f8>
-    2bcd:	83 c4 10             	add    esp,0x10
-    2bd0:	89 45 e0             	mov    DWORD PTR [ebp-0x20],eax
+    2f10:	c7 04 24 88 02 00 00 	mov    DWORD PTR [esp],0x288
+    2f17:	e8 fc ff ff ff       	call   2f18 <framebuffer_update_region+0x3ed>
+    2f1c:	89 45 e0             	mov    DWORD PTR [ebp-0x20],eax
 						rn->r_ct = 1;
-    2bd3:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
-    2bd6:	c7 80 84 02 00 00 01 00 00 00 	mov    DWORD PTR [eax+0x284],0x1
+    2f1f:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
+    2f22:	c7 80 84 02 00 00 01 00 00 00 	mov    DWORD PTR [eax+0x284],0x1
 						rn->r[0] = r2;
-    2be0:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
-    2be3:	8b 55 cc             	mov    edx,DWORD PTR [ebp-0x34]
-    2be6:	89 10                	mov    DWORD PTR [eax],edx
-    2be8:	8b 55 d0             	mov    edx,DWORD PTR [ebp-0x30]
-    2beb:	89 50 04             	mov    DWORD PTR [eax+0x4],edx
-    2bee:	8b 55 d4             	mov    edx,DWORD PTR [ebp-0x2c]
-    2bf1:	89 50 08             	mov    DWORD PTR [eax+0x8],edx
-    2bf4:	8b 55 d8             	mov    edx,DWORD PTR [ebp-0x28]
-    2bf7:	89 50 0c             	mov    DWORD PTR [eax+0xc],edx
-    2bfa:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
-    2bfd:	89 50 10             	mov    DWORD PTR [eax+0x10],edx
+    2f2c:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
+    2f2f:	8b 55 cc             	mov    edx,DWORD PTR [ebp-0x34]
+    2f32:	89 10                	mov    DWORD PTR [eax],edx
+    2f34:	8b 55 d0             	mov    edx,DWORD PTR [ebp-0x30]
+    2f37:	89 50 04             	mov    DWORD PTR [eax+0x4],edx
+    2f3a:	8b 55 d4             	mov    edx,DWORD PTR [ebp-0x2c]
+    2f3d:	89 50 08             	mov    DWORD PTR [eax+0x8],edx
+    2f40:	8b 55 d8             	mov    edx,DWORD PTR [ebp-0x28]
+    2f43:	89 50 0c             	mov    DWORD PTR [eax+0xc],edx
+    2f46:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
+    2f49:	89 50 10             	mov    DWORD PTR [eax+0x10],edx
 						rn->next = NULL;
-    2c00:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
-    2c03:	c7 80 80 02 00 00 00 00 00 00 	mov    DWORD PTR [eax+0x280],0x0
+    2f4c:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
+    2f4f:	c7 80 80 02 00 00 00 00 00 00 	mov    DWORD PTR [eax+0x280],0x0
 						if (!__sync_bool_compare_and_swap(&fb->r_ud, NULL, rn)) {
-    2c0d:	8b 55 e0             	mov    edx,DWORD PTR [ebp-0x20]
-    2c10:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2c13:	8d 48 34             	lea    ecx,[eax+0x34]
-    2c16:	b8 00 00 00 00       	mov    eax,0x0
-    2c1b:	f0 0f b1 11          	lock cmpxchg DWORD PTR [ecx],edx
-    2c1f:	0f 94 c0             	sete   al
-    2c22:	83 f0 01             	xor    eax,0x1
-    2c25:	84 c0                	test   al,al
-    2c27:	74 1d                	je     2c46 <framebuffer_update_region+0x475>
+    2f59:	8b 55 e0             	mov    edx,DWORD PTR [ebp-0x20]
+    2f5c:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    2f5f:	8d 48 34             	lea    ecx,[eax+0x34]
+    2f62:	b8 00 00 00 00       	mov    eax,0x0
+    2f67:	f0 0f b1 11          	lock cmpxchg DWORD PTR [ecx],edx
+    2f6b:	0f 94 c0             	sete   al
+    2f6e:	83 f0 01             	xor    eax,0x1
+    2f71:	84 c0                	test   al,al
+    2f73:	74 1a                	je     2f8f <framebuffer_update_region+0x464>
 								/* someone was faster */
 								kfree(rn);
-    2c29:	83 ec 0c             	sub    esp,0xc
-    2c2c:	ff 75 e0             	push   DWORD PTR [ebp-0x20]
-    2c2f:	e8 fc ff ff ff       	call   2c30 <framebuffer_update_region+0x45f>
-    2c34:	83 c4 10             	add    esp,0x10
+    2f75:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
+    2f78:	89 04 24             	mov    DWORD PTR [esp],eax
+    2f7b:	e8 fc ff ff ff       	call   2f7c <framebuffer_update_region+0x451>
 								goto Pos1;
-    2c37:	e9 ab fc ff ff       	jmp    28e7 <framebuffer_update_region+0x116>
+    2f80:	e9 bc fc ff ff       	jmp    2c41 <framebuffer_update_region+0x116>
 				return;
-    2c3c:	90                   	nop
-    2c3d:	eb 07                	jmp    2c46 <framebuffer_update_region+0x475>
+    2f85:	90                   	nop
+    2f86:	eb 07                	jmp    2f8f <framebuffer_update_region+0x464>
 				return;
-    2c3f:	90                   	nop
-    2c40:	eb 04                	jmp    2c46 <framebuffer_update_region+0x475>
+    2f88:	90                   	nop
+    2f89:	eb 04                	jmp    2f8f <framebuffer_update_region+0x464>
 										return;
-    2c42:	90                   	nop
-    2c43:	eb 01                	jmp    2c46 <framebuffer_update_region+0x475>
+    2f8b:	90                   	nop
+    2f8c:	eb 01                	jmp    2f8f <framebuffer_update_region+0x464>
 								return;
-    2c45:	90                   	nop
+    2f8e:	90                   	nop
 						}	
 		}
 }
-    2c46:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
-    2c49:	c9                   	leave
-    2c4a:	c3                   	ret
+    2f8f:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
+    2f92:	c9                   	leave
+    2f93:	c3                   	ret
 
-00002c4b <framebuffer_scroll>:
+00002f94 <framebuffer_scroll>:
 
 /* we have to redraw everything */
 void framebuffer_scroll(struct framebuffer* fb, ssize_t nly, ssize_t nlx)
 {
-    2c4b:	55                   	push   ebp
-    2c4c:	89 e5                	mov    ebp,esp
-    2c4e:	83 ec 08             	sub    esp,0x8
+    2f94:	55                   	push   ebp
+    2f95:	89 e5                	mov    ebp,esp
+    2f97:	83 ec 18             	sub    esp,0x18
 		if (nly != 1 || nlx)
-    2c51:	83 7d 0c 01          	cmp    DWORD PTR [ebp+0xc],0x1
-    2c55:	75 08                	jne    2c5f <framebuffer_scroll+0x14>
-    2c57:	83 7d 10 00          	cmp    DWORD PTR [ebp+0x10],0x0
-    2c5b:	75 02                	jne    2c5f <framebuffer_scroll+0x14>
-    2c5d:	eb 02                	jmp    2c61 <framebuffer_scroll+0x16>
+    2f9a:	83 7d 0c 01          	cmp    DWORD PTR [ebp+0xc],0x1
+    2f9e:	75 08                	jne    2fa8 <framebuffer_scroll+0x14>
+    2fa0:	83 7d 10 00          	cmp    DWORD PTR [ebp+0x10],0x0
+    2fa4:	75 02                	jne    2fa8 <framebuffer_scroll+0x14>
+    2fa6:	eb 02                	jmp    2faa <framebuffer_scroll+0x16>
 				while (1); /* only lines for now */
-    2c5f:	eb fe                	jmp    2c5f <framebuffer_scroll+0x14>
+    2fa8:	eb fe                	jmp    2fa8 <framebuffer_scroll+0x14>
 		memmove(fb->text_mem, fb->text_mem + fb->width * 2,
 					   	2 * fb->width * (fb->height - 1));
-    2c61:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2c64:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    2c67:	8d 14 00             	lea    edx,[eax+eax*1]
-    2c6a:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2c6d:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
-    2c70:	83 e8 01             	sub    eax,0x1
-    2c73:	0f af c2             	imul   eax,edx
+    2faa:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    2fad:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    2fb0:	8d 14 00             	lea    edx,[eax+eax*1]
+    2fb3:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    2fb6:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
+    2fb9:	83 e8 01             	sub    eax,0x1
+    2fbc:	0f af c2             	imul   eax,edx
 		memmove(fb->text_mem, fb->text_mem + fb->width * 2,
-    2c76:	89 c1                	mov    ecx,eax
-    2c78:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2c7b:	8b 10                	mov    edx,DWORD PTR [eax]
-    2c7d:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2c80:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    2c83:	01 c0                	add    eax,eax
-    2c85:	01 c2                	add    edx,eax
-    2c87:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2c8a:	8b 00                	mov    eax,DWORD PTR [eax]
-    2c8c:	83 ec 04             	sub    esp,0x4
-    2c8f:	51                   	push   ecx
-    2c90:	52                   	push   edx
-    2c91:	50                   	push   eax
-    2c92:	e8 fc ff ff ff       	call   2c93 <framebuffer_scroll+0x48>
-    2c97:	83 c4 10             	add    esp,0x10
+    2fbf:	89 c1                	mov    ecx,eax
+    2fc1:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    2fc4:	8b 10                	mov    edx,DWORD PTR [eax]
+    2fc6:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    2fc9:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    2fcc:	01 c0                	add    eax,eax
+    2fce:	01 c2                	add    edx,eax
+    2fd0:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    2fd3:	8b 00                	mov    eax,DWORD PTR [eax]
+    2fd5:	89 4c 24 08          	mov    DWORD PTR [esp+0x8],ecx
+    2fd9:	89 54 24 04          	mov    DWORD PTR [esp+0x4],edx
+    2fdd:	89 04 24             	mov    DWORD PTR [esp],eax
+    2fe0:	e8 fc ff ff ff       	call   2fe1 <framebuffer_scroll+0x4d>
 		//framebuffer_redraw(fb);
 }
-    2c9a:	90                   	nop
-    2c9b:	c9                   	leave
-    2c9c:	c3                   	ret
+    2fe5:	90                   	nop
+    2fe6:	c9                   	leave
+    2fe7:	c3                   	ret
 
-00002c9d <framebuffer_scroll_region>:
+00002fe8 <framebuffer_scroll_region>:
 
 void framebuffer_scroll_region(struct framebuffer* fb,
 				struct kio_region* r, ssize_t nx, ssize_t ny)
 {
-    2c9d:	55                   	push   ebp
-    2c9e:	89 e5                	mov    ebp,esp
-    2ca0:	53                   	push   ebx
-    2ca1:	83 ec 14             	sub    esp,0x14
+    2fe8:	55                   	push   ebp
+    2fe9:	89 e5                	mov    ebp,esp
+    2feb:	53                   	push   ebx
+    2fec:	83 ec 24             	sub    esp,0x24
 		ssize_t i; char* src = NULL;
-    2ca4:	c7 45 f0 00 00 00 00 	mov    DWORD PTR [ebp-0x10],0x0
+    2fef:	c7 45 f0 00 00 00 00 	mov    DWORD PTR [ebp-0x10],0x0
 		if (ny != 1 || nx)
-    2cab:	83 7d 14 01          	cmp    DWORD PTR [ebp+0x14],0x1
-    2caf:	75 08                	jne    2cb9 <framebuffer_scroll_region+0x1c>
-    2cb1:	83 7d 10 00          	cmp    DWORD PTR [ebp+0x10],0x0
-    2cb5:	75 02                	jne    2cb9 <framebuffer_scroll_region+0x1c>
-    2cb7:	eb 02                	jmp    2cbb <framebuffer_scroll_region+0x1e>
+    2ff6:	83 7d 14 01          	cmp    DWORD PTR [ebp+0x14],0x1
+    2ffa:	75 08                	jne    3004 <framebuffer_scroll_region+0x1c>
+    2ffc:	83 7d 10 00          	cmp    DWORD PTR [ebp+0x10],0x0
+    3000:	75 02                	jne    3004 <framebuffer_scroll_region+0x1c>
+    3002:	eb 02                	jmp    3006 <framebuffer_scroll_region+0x1e>
 				while (1); /* only lines for now */
-    2cb9:	eb fe                	jmp    2cb9 <framebuffer_scroll_region+0x1c>
+    3004:	eb fe                	jmp    3004 <framebuffer_scroll_region+0x1c>
 		/* sanity check */
 		if (r->x + r->lx > fb->width)
-    2cbb:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    2cbe:	0f b7 00             	movzx  eax,WORD PTR [eax]
-    2cc1:	0f bf d0             	movsx  edx,ax
-    2cc4:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    2cc7:	0f b7 40 04          	movzx  eax,WORD PTR [eax+0x4]
-    2ccb:	98                   	cwde
-    2ccc:	01 c2                	add    edx,eax
-    2cce:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2cd1:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    2cd4:	39 c2                	cmp    edx,eax
-    2cd6:	0f 8f 08 01 00 00    	jg     2de4 <framebuffer_scroll_region+0x147>
+    3006:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    3009:	0f b7 00             	movzx  eax,WORD PTR [eax]
+    300c:	0f bf d0             	movsx  edx,ax
+    300f:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    3012:	0f b7 40 04          	movzx  eax,WORD PTR [eax+0x4]
+    3016:	98                   	cwde
+    3017:	01 c2                	add    edx,eax
+    3019:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    301c:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    301f:	39 c2                	cmp    edx,eax
+    3021:	0f 8f 0f 01 00 00    	jg     3136 <framebuffer_scroll_region+0x14e>
 				return;
 		if (r->y + r->ly > fb->height)
-    2cdc:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    2cdf:	0f b7 40 02          	movzx  eax,WORD PTR [eax+0x2]
-    2ce3:	0f bf d0             	movsx  edx,ax
-    2ce6:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    2ce9:	0f b7 40 06          	movzx  eax,WORD PTR [eax+0x6]
-    2ced:	98                   	cwde
-    2cee:	01 c2                	add    edx,eax
-    2cf0:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2cf3:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
-    2cf6:	39 c2                	cmp    edx,eax
-    2cf8:	0f 8f e9 00 00 00    	jg     2de7 <framebuffer_scroll_region+0x14a>
+    3027:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    302a:	0f b7 40 02          	movzx  eax,WORD PTR [eax+0x2]
+    302e:	0f bf d0             	movsx  edx,ax
+    3031:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    3034:	0f b7 40 06          	movzx  eax,WORD PTR [eax+0x6]
+    3038:	98                   	cwde
+    3039:	01 c2                	add    edx,eax
+    303b:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    303e:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
+    3041:	39 c2                	cmp    edx,eax
+    3043:	0f 8f f0 00 00 00    	jg     3139 <framebuffer_scroll_region+0x151>
 				return;
 		/* by moving possibly strided memory */
 		for (i = r->y; i < r->y + r->ly - 1; i++)
-    2cfe:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    2d01:	0f b7 40 02          	movzx  eax,WORD PTR [eax+0x2]
-    2d05:	98                   	cwde
-    2d06:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
-    2d09:	eb 65                	jmp    2d70 <framebuffer_scroll_region+0xd3>
+    3049:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    304c:	0f b7 40 02          	movzx  eax,WORD PTR [eax+0x2]
+    3050:	98                   	cwde
+    3051:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
+    3054:	eb 6b                	jmp    30c1 <framebuffer_scroll_region+0xd9>
 				memcpy(fb->text_mem + i * fb->width * 2 + r->x * 2,
 					   (src = fb->text_mem + (i + 1) * fb->width * 2 + r->x * 2),
 					   r->lx * 2);
-    2d0b:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    2d0e:	0f b7 40 04          	movzx  eax,WORD PTR [eax+0x4]
-    2d12:	98                   	cwde
-    2d13:	01 c0                	add    eax,eax
+    3056:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    3059:	0f b7 40 04          	movzx  eax,WORD PTR [eax+0x4]
+    305d:	98                   	cwde
+    305e:	01 c0                	add    eax,eax
 				memcpy(fb->text_mem + i * fb->width * 2 + r->x * 2,
-    2d15:	89 c3                	mov    ebx,eax
+    3060:	89 c3                	mov    ebx,eax
 					   (src = fb->text_mem + (i + 1) * fb->width * 2 + r->x * 2),
-    2d17:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2d1a:	8b 10                	mov    edx,DWORD PTR [eax]
-    2d1c:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    2d1f:	8d 48 01             	lea    ecx,[eax+0x1]
-    2d22:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2d25:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    2d28:	0f af c1             	imul   eax,ecx
-    2d2b:	01 c0                	add    eax,eax
-    2d2d:	89 c1                	mov    ecx,eax
-    2d2f:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    2d32:	0f b7 00             	movzx  eax,WORD PTR [eax]
-    2d35:	98                   	cwde
-    2d36:	01 c0                	add    eax,eax
-    2d38:	01 c8                	add    eax,ecx
-    2d3a:	01 d0                	add    eax,edx
-    2d3c:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
+    3062:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    3065:	8b 10                	mov    edx,DWORD PTR [eax]
+    3067:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    306a:	8d 48 01             	lea    ecx,[eax+0x1]
+    306d:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    3070:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    3073:	0f af c1             	imul   eax,ecx
+    3076:	01 c0                	add    eax,eax
+    3078:	89 c1                	mov    ecx,eax
+    307a:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    307d:	0f b7 00             	movzx  eax,WORD PTR [eax]
+    3080:	98                   	cwde
+    3081:	01 c0                	add    eax,eax
+    3083:	01 c8                	add    eax,ecx
+    3085:	01 d0                	add    eax,edx
+    3087:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
 				memcpy(fb->text_mem + i * fb->width * 2 + r->x * 2,
-    2d3f:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2d42:	8b 10                	mov    edx,DWORD PTR [eax]
-    2d44:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2d47:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    2d4a:	0f af 45 f4          	imul   eax,DWORD PTR [ebp-0xc]
-    2d4e:	01 c0                	add    eax,eax
-    2d50:	89 c1                	mov    ecx,eax
-    2d52:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    2d55:	0f b7 00             	movzx  eax,WORD PTR [eax]
-    2d58:	98                   	cwde
-    2d59:	01 c0                	add    eax,eax
-    2d5b:	01 c8                	add    eax,ecx
-    2d5d:	01 d0                	add    eax,edx
-    2d5f:	53                   	push   ebx
-    2d60:	ff 75 f0             	push   DWORD PTR [ebp-0x10]
-    2d63:	50                   	push   eax
-    2d64:	e8 97 d2 ff ff       	call   0 <memcpy>
-    2d69:	83 c4 0c             	add    esp,0xc
+    308a:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    308d:	8b 10                	mov    edx,DWORD PTR [eax]
+    308f:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    3092:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    3095:	0f af 45 f4          	imul   eax,DWORD PTR [ebp-0xc]
+    3099:	01 c0                	add    eax,eax
+    309b:	89 c1                	mov    ecx,eax
+    309d:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    30a0:	0f b7 00             	movzx  eax,WORD PTR [eax]
+    30a3:	98                   	cwde
+    30a4:	01 c0                	add    eax,eax
+    30a6:	01 c8                	add    eax,ecx
+    30a8:	01 c2                	add    edx,eax
+    30aa:	89 5c 24 08          	mov    DWORD PTR [esp+0x8],ebx
+    30ae:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+    30b1:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    30b5:	89 14 24             	mov    DWORD PTR [esp],edx
+    30b8:	e8 43 cf ff ff       	call   0 <memcpy>
 		for (i = r->y; i < r->y + r->ly - 1; i++)
-    2d6c:	83 45 f4 01          	add    DWORD PTR [ebp-0xc],0x1
-    2d70:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    2d73:	0f b7 40 02          	movzx  eax,WORD PTR [eax+0x2]
-    2d77:	0f bf d0             	movsx  edx,ax
-    2d7a:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    2d7d:	0f b7 40 06          	movzx  eax,WORD PTR [eax+0x6]
-    2d81:	98                   	cwde
-    2d82:	01 d0                	add    eax,edx
-    2d84:	83 e8 01             	sub    eax,0x1
-    2d87:	39 45 f4             	cmp    DWORD PTR [ebp-0xc],eax
-    2d8a:	0f 8c 7b ff ff ff    	jl     2d0b <framebuffer_scroll_region+0x6e>
+    30bd:	83 45 f4 01          	add    DWORD PTR [ebp-0xc],0x1
+    30c1:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    30c4:	0f b7 40 02          	movzx  eax,WORD PTR [eax+0x2]
+    30c8:	0f bf d0             	movsx  edx,ax
+    30cb:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    30ce:	0f b7 40 06          	movzx  eax,WORD PTR [eax+0x6]
+    30d2:	98                   	cwde
+    30d3:	01 d0                	add    eax,edx
+    30d5:	83 e8 01             	sub    eax,0x1
+    30d8:	39 45 f4             	cmp    DWORD PTR [ebp-0xc],eax
+    30db:	0f 8c 75 ff ff ff    	jl     3056 <framebuffer_scroll_region+0x6e>
 		if (!src)
-    2d90:	83 7d f0 00          	cmp    DWORD PTR [ebp-0x10],0x0
-    2d94:	74 54                	je     2dea <framebuffer_scroll_region+0x14d>
+    30e1:	83 7d f0 00          	cmp    DWORD PTR [ebp-0x10],0x0
+    30e5:	74 55                	je     313c <framebuffer_scroll_region+0x154>
 				return;
 		for (i = 0; i < 2 * r->lx; i += 2) {
-    2d96:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
-    2d9d:	eb 23                	jmp    2dc2 <framebuffer_scroll_region+0x125>
+    30e7:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
+    30ee:	eb 23                	jmp    3113 <framebuffer_scroll_region+0x12b>
 				src[i] = '\0';
-    2d9f:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-    2da2:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-    2da5:	01 d0                	add    eax,edx
-    2da7:	c6 00 00             	mov    BYTE PTR [eax],0x0
+    30f0:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+    30f3:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+    30f6:	01 d0                	add    eax,edx
+    30f8:	c6 00 00             	mov    BYTE PTR [eax],0x0
 				src[i + 1] = r->fmt;
-    2daa:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    2dad:	8d 50 01             	lea    edx,[eax+0x1]
-    2db0:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-    2db3:	01 c2                	add    edx,eax
-    2db5:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    2db8:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
-    2dbc:	88 02                	mov    BYTE PTR [edx],al
+    30fb:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    30fe:	8d 50 01             	lea    edx,[eax+0x1]
+    3101:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+    3104:	01 c2                	add    edx,eax
+    3106:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    3109:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
+    310d:	88 02                	mov    BYTE PTR [edx],al
 		for (i = 0; i < 2 * r->lx; i += 2) {
-    2dbe:	83 45 f4 02          	add    DWORD PTR [ebp-0xc],0x2
-    2dc2:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    2dc5:	0f b7 40 04          	movzx  eax,WORD PTR [eax+0x4]
-    2dc9:	98                   	cwde
-    2dca:	01 c0                	add    eax,eax
-    2dcc:	39 45 f4             	cmp    DWORD PTR [ebp-0xc],eax
-    2dcf:	7c ce                	jl     2d9f <framebuffer_scroll_region+0x102>
+    310f:	83 45 f4 02          	add    DWORD PTR [ebp-0xc],0x2
+    3113:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    3116:	0f b7 40 04          	movzx  eax,WORD PTR [eax+0x4]
+    311a:	98                   	cwde
+    311b:	01 c0                	add    eax,eax
+    311d:	39 45 f4             	cmp    DWORD PTR [ebp-0xc],eax
+    3120:	7c ce                	jl     30f0 <framebuffer_scroll_region+0x108>
 		} /* TODO other scrolls */
 		/*bzero(fb->text_mem + i * fb->width * 2 + r->x * 2, r->lx * 2);*/
 		framebuffer_update_region(fb, r);
-    2dd1:	83 ec 08             	sub    esp,0x8
-    2dd4:	ff 75 0c             	push   DWORD PTR [ebp+0xc]
-    2dd7:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-    2dda:	e8 fc ff ff ff       	call   2ddb <framebuffer_scroll_region+0x13e>
-    2ddf:	83 c4 10             	add    esp,0x10
-    2de2:	eb 07                	jmp    2deb <framebuffer_scroll_region+0x14e>
+    3122:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    3125:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    3129:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    312c:	89 04 24             	mov    DWORD PTR [esp],eax
+    312f:	e8 fc ff ff ff       	call   3130 <framebuffer_scroll_region+0x148>
+    3134:	eb 07                	jmp    313d <framebuffer_scroll_region+0x155>
 				return;
-    2de4:	90                   	nop
-    2de5:	eb 04                	jmp    2deb <framebuffer_scroll_region+0x14e>
+    3136:	90                   	nop
+    3137:	eb 04                	jmp    313d <framebuffer_scroll_region+0x155>
 				return;
-    2de7:	90                   	nop
-    2de8:	eb 01                	jmp    2deb <framebuffer_scroll_region+0x14e>
+    3139:	90                   	nop
+    313a:	eb 01                	jmp    313d <framebuffer_scroll_region+0x155>
 				return;
-    2dea:	90                   	nop
+    313c:	90                   	nop
 }
-    2deb:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
-    2dee:	c9                   	leave
-    2def:	c3                   	ret
+    313d:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
+    3140:	c9                   	leave
+    3141:	c3                   	ret
 
-00002df0 <framebuffer_clear_region>:
+00003142 <framebuffer_clear_region>:
 
 void framebuffer_clear_region(struct framebuffer* fb, struct kio_region* r)
 {
-    2df0:	55                   	push   ebp
-    2df1:	89 e5                	mov    ebp,esp
-    2df3:	83 ec 18             	sub    esp,0x18
+    3142:	55                   	push   ebp
+    3143:	89 e5                	mov    ebp,esp
+    3145:	83 ec 28             	sub    esp,0x28
 		char* p;
 		if (r->x + r->lx > fb->width)
-    2df6:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    2df9:	0f b7 00             	movzx  eax,WORD PTR [eax]
-    2dfc:	0f bf d0             	movsx  edx,ax
-    2dff:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    2e02:	0f b7 40 04          	movzx  eax,WORD PTR [eax+0x4]
-    2e06:	98                   	cwde
-    2e07:	01 c2                	add    edx,eax
-    2e09:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2e0c:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    2e0f:	39 c2                	cmp    edx,eax
-    2e11:	0f 8f db 00 00 00    	jg     2ef2 <framebuffer_clear_region+0x102>
+    3148:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    314b:	0f b7 00             	movzx  eax,WORD PTR [eax]
+    314e:	0f bf d0             	movsx  edx,ax
+    3151:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    3154:	0f b7 40 04          	movzx  eax,WORD PTR [eax+0x4]
+    3158:	98                   	cwde
+    3159:	01 c2                	add    edx,eax
+    315b:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    315e:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    3161:	39 c2                	cmp    edx,eax
+    3163:	0f 8f dc 00 00 00    	jg     3245 <framebuffer_clear_region+0x103>
 				return;
 		if (r->y + r->ly > fb->height)
-    2e17:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    2e1a:	0f b7 40 02          	movzx  eax,WORD PTR [eax+0x2]
-    2e1e:	0f bf d0             	movsx  edx,ax
-    2e21:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    2e24:	0f b7 40 06          	movzx  eax,WORD PTR [eax+0x6]
-    2e28:	98                   	cwde
-    2e29:	01 c2                	add    edx,eax
-    2e2b:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2e2e:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
-    2e31:	39 c2                	cmp    edx,eax
-    2e33:	0f 8f bc 00 00 00    	jg     2ef5 <framebuffer_clear_region+0x105>
+    3169:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    316c:	0f b7 40 02          	movzx  eax,WORD PTR [eax+0x2]
+    3170:	0f bf d0             	movsx  edx,ax
+    3173:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    3176:	0f b7 40 06          	movzx  eax,WORD PTR [eax+0x6]
+    317a:	98                   	cwde
+    317b:	01 c2                	add    edx,eax
+    317d:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    3180:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
+    3183:	39 c2                	cmp    edx,eax
+    3185:	0f 8f bd 00 00 00    	jg     3248 <framebuffer_clear_region+0x106>
 				return;
 		p = (char*)fb->text_mem + 2 * r->y * fb->width + 2 * r->x;
-    2e39:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2e3c:	8b 10                	mov    edx,DWORD PTR [eax]
-    2e3e:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    2e41:	0f b7 40 02          	movzx  eax,WORD PTR [eax+0x2]
-    2e45:	98                   	cwde
-    2e46:	8d 0c 00             	lea    ecx,[eax+eax*1]
-    2e49:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2e4c:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    2e4f:	0f af c1             	imul   eax,ecx
-    2e52:	89 c1                	mov    ecx,eax
-    2e54:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    2e57:	0f b7 00             	movzx  eax,WORD PTR [eax]
-    2e5a:	98                   	cwde
-    2e5b:	01 c0                	add    eax,eax
-    2e5d:	01 c8                	add    eax,ecx
-    2e5f:	01 d0                	add    eax,edx
-    2e61:	89 45 ec             	mov    DWORD PTR [ebp-0x14],eax
+    318b:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    318e:	8b 10                	mov    edx,DWORD PTR [eax]
+    3190:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    3193:	0f b7 40 02          	movzx  eax,WORD PTR [eax+0x2]
+    3197:	98                   	cwde
+    3198:	8d 0c 00             	lea    ecx,[eax+eax*1]
+    319b:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    319e:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    31a1:	0f af c1             	imul   eax,ecx
+    31a4:	89 c1                	mov    ecx,eax
+    31a6:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    31a9:	0f b7 00             	movzx  eax,WORD PTR [eax]
+    31ac:	98                   	cwde
+    31ad:	01 c0                	add    eax,eax
+    31af:	01 c8                	add    eax,ecx
+    31b1:	01 d0                	add    eax,edx
+    31b3:	89 45 ec             	mov    DWORD PTR [ebp-0x14],eax
 		for (ssize_t l = 0; l < r->ly; l++)
-    2e64:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
-    2e6b:	eb 65                	jmp    2ed2 <framebuffer_clear_region+0xe2>
+    31b6:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
+    31bd:	eb 65                	jmp    3224 <framebuffer_clear_region+0xe2>
 				for (ssize_t c = 0; c < r->lx; c++) {
-    2e6d:	c7 45 f0 00 00 00 00 	mov    DWORD PTR [ebp-0x10],0x0
-    2e74:	eb 4b                	jmp    2ec1 <framebuffer_clear_region+0xd1>
+    31bf:	c7 45 f0 00 00 00 00 	mov    DWORD PTR [ebp-0x10],0x0
+    31c6:	eb 4b                	jmp    3213 <framebuffer_clear_region+0xd1>
 						p[l * 2 * fb->width + 2 * c] = '\0';
-    2e76:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    2e79:	8d 14 00             	lea    edx,[eax+eax*1]
-    2e7c:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2e7f:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    2e82:	0f af c2             	imul   eax,edx
-    2e85:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
-    2e88:	01 d2                	add    edx,edx
-    2e8a:	01 d0                	add    eax,edx
-    2e8c:	89 c2                	mov    edx,eax
-    2e8e:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    2e91:	01 d0                	add    eax,edx
-    2e93:	c6 00 00             	mov    BYTE PTR [eax],0x0
+    31c8:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    31cb:	8d 14 00             	lea    edx,[eax+eax*1]
+    31ce:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    31d1:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    31d4:	0f af c2             	imul   eax,edx
+    31d7:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
+    31da:	01 d2                	add    edx,edx
+    31dc:	01 d0                	add    eax,edx
+    31de:	89 c2                	mov    edx,eax
+    31e0:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    31e3:	01 d0                	add    eax,edx
+    31e5:	c6 00 00             	mov    BYTE PTR [eax],0x0
 						p[l * 2 * fb->width + 2 * c + 1] = r->fmt;
-    2e96:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    2e99:	8d 14 00             	lea    edx,[eax+eax*1]
-    2e9c:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2e9f:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    2ea2:	0f af c2             	imul   eax,edx
-    2ea5:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
-    2ea8:	01 d2                	add    edx,edx
-    2eaa:	01 d0                	add    eax,edx
-    2eac:	8d 50 01             	lea    edx,[eax+0x1]
-    2eaf:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    2eb2:	01 c2                	add    edx,eax
-    2eb4:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    2eb7:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
-    2ebb:	88 02                	mov    BYTE PTR [edx],al
+    31e8:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    31eb:	8d 14 00             	lea    edx,[eax+eax*1]
+    31ee:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    31f1:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    31f4:	0f af c2             	imul   eax,edx
+    31f7:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
+    31fa:	01 d2                	add    edx,edx
+    31fc:	01 d0                	add    eax,edx
+    31fe:	8d 50 01             	lea    edx,[eax+0x1]
+    3201:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    3204:	01 c2                	add    edx,eax
+    3206:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    3209:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
+    320d:	88 02                	mov    BYTE PTR [edx],al
 				for (ssize_t c = 0; c < r->lx; c++) {
-    2ebd:	83 45 f0 01          	add    DWORD PTR [ebp-0x10],0x1
-    2ec1:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    2ec4:	0f b7 40 04          	movzx  eax,WORD PTR [eax+0x4]
-    2ec8:	98                   	cwde
-    2ec9:	39 45 f0             	cmp    DWORD PTR [ebp-0x10],eax
-    2ecc:	7c a8                	jl     2e76 <framebuffer_clear_region+0x86>
+    320f:	83 45 f0 01          	add    DWORD PTR [ebp-0x10],0x1
+    3213:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    3216:	0f b7 40 04          	movzx  eax,WORD PTR [eax+0x4]
+    321a:	98                   	cwde
+    321b:	39 45 f0             	cmp    DWORD PTR [ebp-0x10],eax
+    321e:	7c a8                	jl     31c8 <framebuffer_clear_region+0x86>
 		for (ssize_t l = 0; l < r->ly; l++)
-    2ece:	83 45 f4 01          	add    DWORD PTR [ebp-0xc],0x1
-    2ed2:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    2ed5:	0f b7 40 06          	movzx  eax,WORD PTR [eax+0x6]
-    2ed9:	98                   	cwde
-    2eda:	39 45 f4             	cmp    DWORD PTR [ebp-0xc],eax
-    2edd:	7c 8e                	jl     2e6d <framebuffer_clear_region+0x7d>
+    3220:	83 45 f4 01          	add    DWORD PTR [ebp-0xc],0x1
+    3224:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    3227:	0f b7 40 06          	movzx  eax,WORD PTR [eax+0x6]
+    322b:	98                   	cwde
+    322c:	39 45 f4             	cmp    DWORD PTR [ebp-0xc],eax
+    322f:	7c 8e                	jl     31bf <framebuffer_clear_region+0x7d>
 				}
 		framebuffer_update_region(fb, r);
-    2edf:	83 ec 08             	sub    esp,0x8
-    2ee2:	ff 75 0c             	push   DWORD PTR [ebp+0xc]
-    2ee5:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-    2ee8:	e8 fc ff ff ff       	call   2ee9 <framebuffer_clear_region+0xf9>
-    2eed:	83 c4 10             	add    esp,0x10
-    2ef0:	eb 04                	jmp    2ef6 <framebuffer_clear_region+0x106>
+    3231:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    3234:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    3238:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    323b:	89 04 24             	mov    DWORD PTR [esp],eax
+    323e:	e8 fc ff ff ff       	call   323f <framebuffer_clear_region+0xfd>
+    3243:	eb 04                	jmp    3249 <framebuffer_clear_region+0x107>
 				return;
-    2ef2:	90                   	nop
-    2ef3:	eb 01                	jmp    2ef6 <framebuffer_clear_region+0x106>
+    3245:	90                   	nop
+    3246:	eb 01                	jmp    3249 <framebuffer_clear_region+0x107>
 				return;
-    2ef5:	90                   	nop
+    3248:	90                   	nop
 }
-    2ef6:	c9                   	leave
-    2ef7:	c3                   	ret
+    3249:	c9                   	leave
+    324a:	c3                   	ret
 
-00002ef8 <framebuffer_set_cursor>:
+0000324b <framebuffer_set_cursor>:
 
 /* has to flush the previous character and the new one and also pending updates */
 void framebuffer_set_cursor(struct framebuffer* fb, ssize_t x, ssize_t y)
 {
-    2ef8:	55                   	push   ebp
-    2ef9:	89 e5                	mov    ebp,esp
-    2efb:	83 ec 28             	sub    esp,0x28
+    324b:	55                   	push   ebp
+    324c:	89 e5                	mov    ebp,esp
+    324e:	83 ec 38             	sub    esp,0x38
 		struct kio_region r;
 		if (fb->cur_x > 0 && fb->cur_y > 0
-    2efe:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2f01:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
-    2f04:	85 c0                	test   eax,eax
-    2f06:	0f 8e 84 00 00 00    	jle    2f90 <framebuffer_set_cursor+0x98>
-    2f0c:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2f0f:	8b 40 18             	mov    eax,DWORD PTR [eax+0x18]
-    2f12:	85 c0                	test   eax,eax
-    2f14:	7e 7a                	jle    2f90 <framebuffer_set_cursor+0x98>
+    3251:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    3254:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
+    3257:	85 c0                	test   eax,eax
+    3259:	0f 8e 84 00 00 00    	jle    32e3 <framebuffer_set_cursor+0x98>
+    325f:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    3262:	8b 40 18             	mov    eax,DWORD PTR [eax+0x18]
+    3265:	85 c0                	test   eax,eax
+    3267:	7e 7a                	jle    32e3 <framebuffer_set_cursor+0x98>
 			&& fb->cur_x < fb->chw_x
-    2f16:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2f19:	8b 50 14             	mov    edx,DWORD PTR [eax+0x14]
-    2f1c:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2f1f:	8b 40 2c             	mov    eax,DWORD PTR [eax+0x2c]
-    2f22:	39 c2                	cmp    edx,eax
-    2f24:	7d 6a                	jge    2f90 <framebuffer_set_cursor+0x98>
+    3269:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    326c:	8b 50 14             	mov    edx,DWORD PTR [eax+0x14]
+    326f:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    3272:	8b 40 2c             	mov    eax,DWORD PTR [eax+0x2c]
+    3275:	39 c2                	cmp    edx,eax
+    3277:	7d 6a                	jge    32e3 <framebuffer_set_cursor+0x98>
 			&& fb->cur_y < fb->chw_y) {
-    2f26:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2f29:	8b 50 18             	mov    edx,DWORD PTR [eax+0x18]
-    2f2c:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2f2f:	8b 40 30             	mov    eax,DWORD PTR [eax+0x30]
-    2f32:	39 c2                	cmp    edx,eax
-    2f34:	7d 5a                	jge    2f90 <framebuffer_set_cursor+0x98>
+    3279:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    327c:	8b 50 18             	mov    edx,DWORD PTR [eax+0x18]
+    327f:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    3282:	8b 40 30             	mov    eax,DWORD PTR [eax+0x30]
+    3285:	39 c2                	cmp    edx,eax
+    3287:	7d 5a                	jge    32e3 <framebuffer_set_cursor+0x98>
 				r.x = fb->cur_x + fb->cho_y;
-    2f36:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2f39:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
-    2f3c:	89 c2                	mov    edx,eax
-    2f3e:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2f41:	8b 40 28             	mov    eax,DWORD PTR [eax+0x28]
-    2f44:	01 d0                	add    eax,edx
-    2f46:	66 89 45 e4          	mov    WORD PTR [ebp-0x1c],ax
+    3289:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    328c:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
+    328f:	89 c2                	mov    edx,eax
+    3291:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    3294:	8b 40 28             	mov    eax,DWORD PTR [eax+0x28]
+    3297:	01 d0                	add    eax,edx
+    3299:	66 89 45 e4          	mov    WORD PTR [ebp-0x1c],ax
 				r.lx = 1;
-    2f4a:	66 c7 45 e8 01 00    	mov    WORD PTR [ebp-0x18],0x1
+    329d:	66 c7 45 e8 01 00    	mov    WORD PTR [ebp-0x18],0x1
 				r.y = fb->cur_y + fb->cho_y;
-    2f50:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2f53:	8b 40 18             	mov    eax,DWORD PTR [eax+0x18]
-    2f56:	89 c2                	mov    edx,eax
-    2f58:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2f5b:	8b 40 28             	mov    eax,DWORD PTR [eax+0x28]
-    2f5e:	01 d0                	add    eax,edx
-    2f60:	66 89 45 e6          	mov    WORD PTR [ebp-0x1a],ax
+    32a3:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    32a6:	8b 40 18             	mov    eax,DWORD PTR [eax+0x18]
+    32a9:	89 c2                	mov    edx,eax
+    32ab:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    32ae:	8b 40 28             	mov    eax,DWORD PTR [eax+0x28]
+    32b1:	01 d0                	add    eax,edx
+    32b3:	66 89 45 e6          	mov    WORD PTR [ebp-0x1a],ax
 				r.ly = 1;
-    2f64:	66 c7 45 ea 01 00    	mov    WORD PTR [ebp-0x16],0x1
+    32b7:	66 c7 45 ea 01 00    	mov    WORD PTR [ebp-0x16],0x1
 				fb->cur_x = x;
-    2f6a:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2f6d:	8b 55 0c             	mov    edx,DWORD PTR [ebp+0xc]
-    2f70:	89 50 14             	mov    DWORD PTR [eax+0x14],edx
+    32bd:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    32c0:	8b 55 0c             	mov    edx,DWORD PTR [ebp+0xc]
+    32c3:	89 50 14             	mov    DWORD PTR [eax+0x14],edx
 				fb->cur_y = y;
-    2f73:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2f76:	8b 55 10             	mov    edx,DWORD PTR [ebp+0x10]
-    2f79:	89 50 18             	mov    DWORD PTR [eax+0x18],edx
+    32c6:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    32c9:	8b 55 10             	mov    edx,DWORD PTR [ebp+0x10]
+    32cc:	89 50 18             	mov    DWORD PTR [eax+0x18],edx
 				framebuffer_update_region(fb, &r);
-    2f7c:	83 ec 08             	sub    esp,0x8
-    2f7f:	8d 45 e4             	lea    eax,[ebp-0x1c]
-    2f82:	50                   	push   eax
-    2f83:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-    2f86:	e8 fc ff ff ff       	call   2f87 <framebuffer_set_cursor+0x8f>
-    2f8b:	83 c4 10             	add    esp,0x10
-    2f8e:	eb 12                	jmp    2fa2 <framebuffer_set_cursor+0xaa>
+    32cf:	8d 45 e4             	lea    eax,[ebp-0x1c]
+    32d2:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    32d6:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    32d9:	89 04 24             	mov    DWORD PTR [esp],eax
+    32dc:	e8 fc ff ff ff       	call   32dd <framebuffer_set_cursor+0x92>
+    32e1:	eb 12                	jmp    32f5 <framebuffer_set_cursor+0xaa>
 		} else {
 				fb->cur_x = x;
-    2f90:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2f93:	8b 55 0c             	mov    edx,DWORD PTR [ebp+0xc]
-    2f96:	89 50 14             	mov    DWORD PTR [eax+0x14],edx
+    32e3:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    32e6:	8b 55 0c             	mov    edx,DWORD PTR [ebp+0xc]
+    32e9:	89 50 14             	mov    DWORD PTR [eax+0x14],edx
 				fb->cur_y = y;
-    2f99:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2f9c:	8b 55 10             	mov    edx,DWORD PTR [ebp+0x10]
-    2f9f:	89 50 18             	mov    DWORD PTR [eax+0x18],edx
+    32ec:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    32ef:	8b 55 10             	mov    edx,DWORD PTR [ebp+0x10]
+    32f2:	89 50 18             	mov    DWORD PTR [eax+0x18],edx
 		}
 		r.x = fb->cur_x + fb->cho_x;
-    2fa2:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2fa5:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
-    2fa8:	89 c2                	mov    edx,eax
-    2faa:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2fad:	8b 40 24             	mov    eax,DWORD PTR [eax+0x24]
-    2fb0:	01 d0                	add    eax,edx
-    2fb2:	66 89 45 e4          	mov    WORD PTR [ebp-0x1c],ax
+    32f5:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    32f8:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
+    32fb:	89 c2                	mov    edx,eax
+    32fd:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    3300:	8b 40 24             	mov    eax,DWORD PTR [eax+0x24]
+    3303:	01 d0                	add    eax,edx
+    3305:	66 89 45 e4          	mov    WORD PTR [ebp-0x1c],ax
 		r.y = fb->cur_y + fb->cho_y;
-    2fb6:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2fb9:	8b 40 18             	mov    eax,DWORD PTR [eax+0x18]
-    2fbc:	89 c2                	mov    edx,eax
-    2fbe:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2fc1:	8b 40 28             	mov    eax,DWORD PTR [eax+0x28]
-    2fc4:	01 d0                	add    eax,edx
-    2fc6:	66 89 45 e6          	mov    WORD PTR [ebp-0x1a],ax
+    3309:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    330c:	8b 40 18             	mov    eax,DWORD PTR [eax+0x18]
+    330f:	89 c2                	mov    edx,eax
+    3311:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    3314:	8b 40 28             	mov    eax,DWORD PTR [eax+0x28]
+    3317:	01 d0                	add    eax,edx
+    3319:	66 89 45 e6          	mov    WORD PTR [ebp-0x1a],ax
 		r.lx = r.ly = 1;
-    2fca:	66 c7 45 ea 01 00    	mov    WORD PTR [ebp-0x16],0x1
-    2fd0:	0f b7 45 ea          	movzx  eax,WORD PTR [ebp-0x16]
-    2fd4:	66 89 45 e8          	mov    WORD PTR [ebp-0x18],ax
+    331d:	66 c7 45 ea 01 00    	mov    WORD PTR [ebp-0x16],0x1
+    3323:	0f b7 45 ea          	movzx  eax,WORD PTR [ebp-0x16]
+    3327:	66 89 45 e8          	mov    WORD PTR [ebp-0x18],ax
 		framebuffer_update_region(fb, &r);
-    2fd8:	83 ec 08             	sub    esp,0x8
-    2fdb:	8d 45 e4             	lea    eax,[ebp-0x1c]
-    2fde:	50                   	push   eax
-    2fdf:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-    2fe2:	e8 fc ff ff ff       	call   2fe3 <framebuffer_set_cursor+0xeb>
-    2fe7:	83 c4 10             	add    esp,0x10
+    332b:	8d 45 e4             	lea    eax,[ebp-0x1c]
+    332e:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    3332:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    3335:	89 04 24             	mov    DWORD PTR [esp],eax
+    3338:	e8 fc ff ff ff       	call   3339 <framebuffer_set_cursor+0xee>
 		//framebuffer_redraw(fb);
 }
-    2fea:	90                   	nop
-    2feb:	c9                   	leave
-    2fec:	c3                   	ret
+    333d:	90                   	nop
+    333e:	c9                   	leave
+    333f:	c3                   	ret
 
-00002fed <framebuffer_resize>:
+00003340 <framebuffer_resize>:
 
 /* works on character cells */
 void framebuffer_resize(struct framebuffer* fb, ssize_t new_lx, ssize_t new_ly)
 {
-    2fed:	55                   	push   ebp
-    2fee:	89 e5                	mov    ebp,esp
+    3340:	55                   	push   ebp
+    3341:	89 e5                	mov    ebp,esp
 		(void)fb; (void)new_lx; (void)new_ly;
 }
-    2ff0:	90                   	nop
-    2ff1:	5d                   	pop    ebp
-    2ff2:	c3                   	ret
+    3343:	90                   	nop
+    3344:	5d                   	pop    ebp
+    3345:	c3                   	ret

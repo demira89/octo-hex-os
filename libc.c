@@ -413,10 +413,10 @@ struct tm* localtime(const time_t* timep)
 		return localtime_r(timep, &lts);
 }
 
-double difftime(time_t end, time_t beg)
-{
-		return (double)(end - beg); /* our time_t is in seconds */
-}
+//double difftime(time_t end, time_t beg)
+//{
+//		return (double)(end - beg); /* our time_t is in seconds */
+//}
 
 typedef int SItype __attribute__ ((mode (SI)));
 typedef unsigned int USItype __attribute__ ((mode (SI)));
@@ -538,3 +538,24 @@ __divdi3 (DWtype u, DWtype v)
 		return w;
 }
 
+/*typedef float SFtype __attribute__ ((mode (SF)));
+
+SFtype
+__mulsf3 (SFtype a, SFtype b)
+{
+  FP_DECL_EX;
+  FP_DECL_S (A);
+  FP_DECL_S (B);
+  FP_DECL_S (R);
+  SFtype r;
+
+  FP_INIT_ROUNDMODE;
+  FP_UNPACK_S (A, a);
+  FP_UNPACK_S (B, b);
+  FP_MUL_S (R, A, B);
+  FP_PACK_S (r, R);
+  FP_HANDLE_EXCEPTIONS;
+
+  return r;
+}
+*/

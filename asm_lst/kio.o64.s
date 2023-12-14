@@ -5,27 +5,27 @@ kio.o64:     file format elf64-x86-64
 Disassembly of section .text:
 
 0000000000000000 <memcpy>:
-				unsigned int bt = (arg & 0x80000000);
-				rv++;
-				if (bt) {
-						nonz = 1;
-						ctx->putchar(ctx, '1');
 				} else if (nonz)
+						ctx->putchar(ctx, '0');
+				else if ((32 - i) <= prec) /* has precedence over with */
+						ctx->putchar(ctx, '0');
+				else if ((32 - i) <= width)
+						ctx->putchar(ctx, flags & KFL_ZERO_PREFIX ? '0' : ' ');
        0:	55                   	push   rbp
        1:	48 89 e5             	mov    rbp,rsp
        4:	48 83 ec 28          	sub    rsp,0x28
        8:	48 89 7d e8          	mov    QWORD PTR [rbp-0x18],rdi
        c:	48 89 75 e0          	mov    QWORD PTR [rbp-0x20],rsi
       10:	48 89 55 d8          	mov    QWORD PTR [rbp-0x28],rdx
-						ctx->putchar(ctx, '0');
+				else if (i == 31 && prec >= 0) /* only print 0 for nonneg prec */
       14:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
       18:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
-				else if ((32 - i) <= prec) /* has precedence over with */
+						ctx->putchar(ctx, '0');
       1c:	48 8b 45 e0          	mov    rax,QWORD PTR [rbp-0x20]
       20:	48 89 45 f0          	mov    QWORD PTR [rbp-0x10],rax
-						ctx->putchar(ctx, '0');
+				else
       24:	eb 1d                	jmp    43 <memcpy+0x43>
-				else if ((32 - i) <= width)
+						rv--;
       26:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
       2a:	48 8d 42 01          	lea    rax,[rdx+0x1]
       2e:	48 89 45 f0          	mov    QWORD PTR [rbp-0x10],rax
@@ -34,13 +34,13 @@ Disassembly of section .text:
       3a:	48 89 4d f8          	mov    QWORD PTR [rbp-0x8],rcx
       3e:	0f b6 12             	movzx  edx,BYTE PTR [rdx]
       41:	88 10                	mov    BYTE PTR [rax],dl
-						ctx->putchar(ctx, '0');
+				else
       43:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
       47:	48 8d 50 ff          	lea    rdx,[rax-0x1]
       4b:	48 89 55 d8          	mov    QWORD PTR [rbp-0x28],rdx
       4f:	48 85 c0             	test   rax,rax
       52:	75 d2                	jne    26 <memcpy+0x26>
-						ctx->putchar(ctx, flags & KFL_ZERO_PREFIX ? '0' : ' ');
+				arg <<= 1;
       54:	90                   	nop
       55:	90                   	nop
       56:	c9                   	leave
@@ -207,20 +207,20 @@ Disassembly of section .text:
      21e:	88 10                	mov    BYTE PTR [rax],dl
 						r.x = x;
      220:	0f b7 45 c0          	movzx  eax,WORD PTR [rbp-0x40]
-     224:	66 89 45 d0          	mov    WORD PTR [rbp-0x30],ax
+     224:	66 89 45 dc          	mov    WORD PTR [rbp-0x24],ax
 						r.y = y;
      228:	0f b7 45 bc          	movzx  eax,WORD PTR [rbp-0x44]
-     22c:	66 89 45 d2          	mov    WORD PTR [rbp-0x2e],ax
+     22c:	66 89 45 de          	mov    WORD PTR [rbp-0x22],ax
 						r.lx = 1;
-     230:	66 c7 45 d4 01 00    	mov    WORD PTR [rbp-0x2c],0x1
+     230:	66 c7 45 e0 01 00    	mov    WORD PTR [rbp-0x20],0x1
 						r.ly = 1;
-     236:	66 c7 45 d6 01 00    	mov    WORD PTR [rbp-0x2a],0x1
+     236:	66 c7 45 e2 01 00    	mov    WORD PTR [rbp-0x1e],0x1
 						r.fmt = cr->fmt;
      23c:	48 8b 45 c8          	mov    rax,QWORD PTR [rbp-0x38]
      240:	0f b6 40 0c          	movzx  eax,BYTE PTR [rax+0xc]
-     244:	88 45 dc             	mov    BYTE PTR [rbp-0x24],al
+     244:	88 45 e8             	mov    BYTE PTR [rbp-0x18],al
 						framebuffer_update_region(&fb_initial, &r);
-     247:	48 8d 45 d0          	lea    rax,[rbp-0x30]
+     247:	48 8d 45 dc          	lea    rax,[rbp-0x24]
      24b:	48 89 c6             	mov    rsi,rax
      24e:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
      255:	e8 00 00 00 00       	call   25a <putc_pr+0x13f>
@@ -334,17 +334,17 @@ Disassembly of section .text:
      34c:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
      350:	0f b7 40 10          	movzx  eax,WORD PTR [rax+0x10]
      354:	01 d0                	add    eax,edx
-     356:	66 89 45 e2          	mov    WORD PTR [rbp-0x1e],ax
+     356:	66 89 45 ee          	mov    WORD PTR [rbp-0x12],ax
 		r.x = cr->x;
      35a:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
      35e:	0f b7 00             	movzx  eax,WORD PTR [rax]
-     361:	66 89 45 e0          	mov    WORD PTR [rbp-0x20],ax
+     361:	66 89 45 ec          	mov    WORD PTR [rbp-0x14],ax
 		r.ly = 1;
-     365:	66 c7 45 e6 01 00    	mov    WORD PTR [rbp-0x1a],0x1
+     365:	66 c7 45 f2 01 00    	mov    WORD PTR [rbp-0xe],0x1
 		r.lx = cr->lx;
      36b:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
      36f:	0f b7 40 04          	movzx  eax,WORD PTR [rax+0x4]
-     373:	66 89 45 e4          	mov    WORD PTR [rbp-0x1c],ax
+     373:	66 89 45 f0          	mov    WORD PTR [rbp-0x10],ax
 						(cr->lx - 1) * 2);
      377:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
      37b:	0f b7 40 04          	movzx  eax,WORD PTR [rax+0x4]
@@ -355,13 +355,13 @@ Disassembly of section .text:
      385:	48 98                	cdqe
 						(char*)fb_initial.text_mem + r.y * fb_initial.width * 2 + r.x * 2 + 2,
      387:	48 8b 35 00 00 00 00 	mov    rsi,QWORD PTR [rip+0x0]        # 38e <scroll_left+0x58>
-     38e:	0f b7 55 e2          	movzx  edx,WORD PTR [rbp-0x1e]
+     38e:	0f b7 55 ee          	movzx  edx,WORD PTR [rbp-0x12]
      392:	0f bf ca             	movsx  ecx,dx
      395:	8b 15 00 00 00 00    	mov    edx,DWORD PTR [rip+0x0]        # 39b <scroll_left+0x65>
      39b:	0f af d1             	imul   edx,ecx
      39e:	01 d2                	add    edx,edx
      3a0:	48 63 ca             	movsxd rcx,edx
-     3a3:	0f b7 55 e0          	movzx  edx,WORD PTR [rbp-0x20]
+     3a3:	0f b7 55 ec          	movzx  edx,WORD PTR [rbp-0x14]
      3a7:	0f bf d2             	movsx  edx,dx
      3aa:	01 d2                	add    edx,edx
      3ac:	48 63 d2             	movsxd rdx,edx
@@ -370,13 +370,13 @@ Disassembly of section .text:
 		memcpy((char*)fb_initial.text_mem + r.y * fb_initial.width * 2 + r.x * 2,
      3b6:	48 01 d6             	add    rsi,rdx
      3b9:	48 8b 3d 00 00 00 00 	mov    rdi,QWORD PTR [rip+0x0]        # 3c0 <scroll_left+0x8a>
-     3c0:	0f b7 55 e2          	movzx  edx,WORD PTR [rbp-0x1e]
+     3c0:	0f b7 55 ee          	movzx  edx,WORD PTR [rbp-0x12]
      3c4:	0f bf ca             	movsx  ecx,dx
      3c7:	8b 15 00 00 00 00    	mov    edx,DWORD PTR [rip+0x0]        # 3cd <scroll_left+0x97>
      3cd:	0f af d1             	imul   edx,ecx
      3d0:	01 d2                	add    edx,edx
      3d2:	48 63 ca             	movsxd rcx,edx
-     3d5:	0f b7 55 e0          	movzx  edx,WORD PTR [rbp-0x20]
+     3d5:	0f b7 55 ec          	movzx  edx,WORD PTR [rbp-0x14]
      3d9:	0f bf d2             	movsx  edx,dx
      3dc:	01 d2                	add    edx,edx
      3de:	48 63 d2             	movsxd rdx,edx
@@ -386,7 +386,7 @@ Disassembly of section .text:
      3eb:	48 89 cf             	mov    rdi,rcx
      3ee:	e8 0d fc ff ff       	call   0 <memcpy>
 		framebuffer_update_region(&fb_initial, &r);
-     3f3:	48 8d 45 e0          	lea    rax,[rbp-0x20]
+     3f3:	48 8d 45 ec          	lea    rax,[rbp-0x14]
      3f7:	48 89 c6             	mov    rsi,rax
      3fa:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
      401:	e8 00 00 00 00       	call   406 <scroll_left+0xd0>
@@ -897,7 +897,7 @@ Pos1:
      990:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
      994:	0f b7 40 0e          	movzx  eax,WORD PTR [rax+0xe]
      998:	01 d0                	add    eax,edx
-     99a:	66 89 45 e0          	mov    WORD PTR [rbp-0x20],ax
+     99a:	66 89 45 ea          	mov    WORD PTR [rbp-0x16],ax
 				r.y = cr->y + cr->cur_y;
      99e:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
      9a2:	0f b7 40 02          	movzx  eax,WORD PTR [rax+0x2]
@@ -905,9 +905,9 @@ Pos1:
      9a8:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
      9ac:	0f b7 40 10          	movzx  eax,WORD PTR [rax+0x10]
      9b0:	01 d0                	add    eax,edx
-     9b2:	66 89 45 e2          	mov    WORD PTR [rbp-0x1e],ax
+     9b2:	66 89 45 ec          	mov    WORD PTR [rbp-0x14],ax
 				r.ly = 1;
-     9b6:	66 c7 45 e6 01 00    	mov    WORD PTR [rbp-0x1a],0x1
+     9b6:	66 c7 45 f0 01 00    	mov    WORD PTR [rbp-0x10],0x1
 				r.lx = cr->lx - cr->cur_x;
      9bc:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
      9c0:	0f b7 40 04          	movzx  eax,WORD PTR [rax+0x4]
@@ -917,7 +917,7 @@ Pos1:
      9ce:	89 c1                	mov    ecx,eax
      9d0:	89 d0                	mov    eax,edx
      9d2:	29 c8                	sub    eax,ecx
-     9d4:	66 89 45 e4          	mov    WORD PTR [rbp-0x1c],ax
+     9d4:	66 89 45 ee          	mov    WORD PTR [rbp-0x12],ax
 				cr->cur_x = 0;
      9d8:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
      9dc:	66 c7 40 0e 00 00    	mov    WORD PTR [rax+0xe],0x0
@@ -965,7 +965,7 @@ Pos1:
      a57:	66 83 7d fe ff       	cmp    WORD PTR [rbp-0x2],0xffff
      a5c:	0f 84 90 01 00 00    	je     bf2 <region_putchar+0x2d6>
 						framebuffer_update_region(&fb_initial, &r);
-     a62:	48 8d 45 e0          	lea    rax,[rbp-0x20]
+     a62:	48 8d 45 ea          	lea    rax,[rbp-0x16]
      a66:	48 89 c6             	mov    rsi,rax
      a69:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
      a70:	e8 00 00 00 00       	call   a75 <region_putchar+0x159>
@@ -1267,7 +1267,6 @@ Pos1:
      da4:	48 89 c7             	mov    rdi,rax
      da7:	ff d2                	call   rdx
      da9:	eb 04                	jmp    daf <putb+0x121>
-				else
 						rv--;
      dab:	83 6d f4 01          	sub    DWORD PTR [rbp-0xc],0x1
 				arg <<= 1;
@@ -2270,7 +2269,7 @@ int internal_vprintf(struct ivp_ctx* ctx, const char* fmt, va_list args)
 		int rv = 0;
     1789:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [rbp-0xc],0x0
 		while (*fmt) {
-    1790:	e9 b4 09 00 00       	jmp    2149 <internal_vprintf+0x9f8>
+    1790:	e9 18 0f 00 00       	jmp    26ad <internal_vprintf+0xf5c>
 			switch (*fmt) {
     1795:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
     1799:	0f b6 00             	movzx  eax,BYTE PTR [rax]
@@ -2307,7 +2306,7 @@ int internal_vprintf(struct ivp_ctx* ctx, const char* fmt, va_list args)
 							size = 0;
     17e9:	c6 45 fb 00          	mov    BYTE PTR [rbp-0x5],0x0
 							break;
-    17ed:	e9 57 09 00 00       	jmp    2149 <internal_vprintf+0x9f8>
+    17ed:	e9 bb 0e 00 00       	jmp    26ad <internal_vprintf+0xf5c>
 							if ((is_fmt == 1) && (*fmt == ' ' || *fmt == '0' || *fmt == '#' || *fmt == '+' || *fmt == '-')) {
     17f2:	80 7d ff 01          	cmp    BYTE PTR [rbp-0x1],0x1
     17f6:	0f 85 94 00 00 00    	jne    1890 <internal_vprintf+0x13f>
@@ -2372,7 +2371,7 @@ int internal_vprintf(struct ivp_ctx* ctx, const char* fmt, va_list args)
     1882:	80 4d fe 10          	or     BYTE PTR [rbp-0x2],0x10
 									fmt++;
     1886:	48 83 45 b0 01       	add    QWORD PTR [rbp-0x50],0x1
-    188b:	e9 b9 08 00 00       	jmp    2149 <internal_vprintf+0x9f8>
+    188b:	e9 1d 0e 00 00       	jmp    26ad <internal_vprintf+0xf5c>
 							} else if (is_fmt && *fmt >= '0' && *fmt <= '9') {
     1890:	80 7d ff 00          	cmp    BYTE PTR [rbp-0x1],0x0
     1894:	74 7c                	je     1912 <internal_vprintf+0x1c1>
@@ -2425,7 +2424,7 @@ int internal_vprintf(struct ivp_ctx* ctx, const char* fmt, va_list args)
     1905:	88 45 fd             	mov    BYTE PTR [rbp-0x3],al
 									fmt++;
     1908:	48 83 45 b0 01       	add    QWORD PTR [rbp-0x50],0x1
-    190d:	e9 37 08 00 00       	jmp    2149 <internal_vprintf+0x9f8>
+    190d:	e9 9b 0d 00 00       	jmp    26ad <internal_vprintf+0xf5c>
 							} else if (is_fmt && *fmt == '.') {
     1912:	80 7d ff 00          	cmp    BYTE PTR [rbp-0x1],0x0
     1916:	74 19                	je     1931 <internal_vprintf+0x1e0>
@@ -2437,1456 +2436,1840 @@ int internal_vprintf(struct ivp_ctx* ctx, const char* fmt, va_list args)
     1923:	c6 45 ff 02          	mov    BYTE PTR [rbp-0x1],0x2
 									fmt++;
     1927:	48 83 45 b0 01       	add    QWORD PTR [rbp-0x50],0x1
-    192c:	e9 18 08 00 00       	jmp    2149 <internal_vprintf+0x9f8>
+    192c:	e9 7c 0d 00 00       	jmp    26ad <internal_vprintf+0xf5c>
 							} else if (is_fmt && *fmt == '*') {
     1931:	80 7d ff 00          	cmp    BYTE PTR [rbp-0x1],0x0
-    1935:	74 41                	je     1978 <internal_vprintf+0x227>
-    1937:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    193b:	0f b6 00             	movzx  eax,BYTE PTR [rax]
-    193e:	3c 2a                	cmp    al,0x2a
-    1940:	75 36                	jne    1978 <internal_vprintf+0x227>
+    1935:	0f 84 b1 00 00 00    	je     19ec <internal_vprintf+0x29b>
+    193b:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    193f:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+    1942:	3c 2a                	cmp    al,0x2a
+    1944:	0f 85 a2 00 00 00    	jne    19ec <internal_vprintf+0x29b>
 									if (is_fmt == 2)
-    1942:	80 7d ff 02          	cmp    BYTE PTR [rbp-0x1],0x2
-    1946:	75 14                	jne    195c <internal_vprintf+0x20b>
+    194a:	80 7d ff 02          	cmp    BYTE PTR [rbp-0x1],0x2
+    194e:	75 4a                	jne    199a <internal_vprintf+0x249>
 											prec = va_arg(args, int);
-    1948:	48 83 45 a8 04       	add    QWORD PTR [rbp-0x58],0x4
-    194d:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    1951:	48 83 e8 04          	sub    rax,0x4
-    1955:	8b 00                	mov    eax,DWORD PTR [rax]
-    1957:	88 45 fc             	mov    BYTE PTR [rbp-0x4],al
-    195a:	eb 12                	jmp    196e <internal_vprintf+0x21d>
+    1950:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1954:	8b 00                	mov    eax,DWORD PTR [rax]
+    1956:	83 f8 2f             	cmp    eax,0x2f
+    1959:	77 24                	ja     197f <internal_vprintf+0x22e>
+    195b:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    195f:	48 8b 50 10          	mov    rdx,QWORD PTR [rax+0x10]
+    1963:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1967:	8b 00                	mov    eax,DWORD PTR [rax]
+    1969:	89 c0                	mov    eax,eax
+    196b:	48 01 d0             	add    rax,rdx
+    196e:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    1972:	8b 12                	mov    edx,DWORD PTR [rdx]
+    1974:	8d 4a 08             	lea    ecx,[rdx+0x8]
+    1977:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    197b:	89 0a                	mov    DWORD PTR [rdx],ecx
+    197d:	eb 14                	jmp    1993 <internal_vprintf+0x242>
+    197f:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1983:	48 8b 40 08          	mov    rax,QWORD PTR [rax+0x8]
+    1987:	48 8d 48 08          	lea    rcx,[rax+0x8]
+    198b:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    198f:	48 89 4a 08          	mov    QWORD PTR [rdx+0x8],rcx
+    1993:	8b 00                	mov    eax,DWORD PTR [rax]
+    1995:	88 45 fc             	mov    BYTE PTR [rbp-0x4],al
+    1998:	eb 48                	jmp    19e2 <internal_vprintf+0x291>
 											width = va_arg(args, int);
-    195c:	48 83 45 a8 04       	add    QWORD PTR [rbp-0x58],0x4
-    1961:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    1965:	48 83 e8 04          	sub    rax,0x4
-    1969:	8b 00                	mov    eax,DWORD PTR [rax]
-    196b:	88 45 fd             	mov    BYTE PTR [rbp-0x3],al
+    199a:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    199e:	8b 00                	mov    eax,DWORD PTR [rax]
+    19a0:	83 f8 2f             	cmp    eax,0x2f
+    19a3:	77 24                	ja     19c9 <internal_vprintf+0x278>
+    19a5:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    19a9:	48 8b 50 10          	mov    rdx,QWORD PTR [rax+0x10]
+    19ad:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    19b1:	8b 00                	mov    eax,DWORD PTR [rax]
+    19b3:	89 c0                	mov    eax,eax
+    19b5:	48 01 d0             	add    rax,rdx
+    19b8:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    19bc:	8b 12                	mov    edx,DWORD PTR [rdx]
+    19be:	8d 4a 08             	lea    ecx,[rdx+0x8]
+    19c1:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    19c5:	89 0a                	mov    DWORD PTR [rdx],ecx
+    19c7:	eb 14                	jmp    19dd <internal_vprintf+0x28c>
+    19c9:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    19cd:	48 8b 40 08          	mov    rax,QWORD PTR [rax+0x8]
+    19d1:	48 8d 48 08          	lea    rcx,[rax+0x8]
+    19d5:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    19d9:	48 89 4a 08          	mov    QWORD PTR [rdx+0x8],rcx
+    19dd:	8b 00                	mov    eax,DWORD PTR [rax]
+    19df:	88 45 fd             	mov    BYTE PTR [rbp-0x3],al
 									fmt++;
-    196e:	48 83 45 b0 01       	add    QWORD PTR [rbp-0x50],0x1
-    1973:	e9 d1 07 00 00       	jmp    2149 <internal_vprintf+0x9f8>
+    19e2:	48 83 45 b0 01       	add    QWORD PTR [rbp-0x50],0x1
+    19e7:	e9 c1 0c 00 00       	jmp    26ad <internal_vprintf+0xf5c>
 							} else if (is_fmt) {
-    1978:	80 7d ff 00          	cmp    BYTE PTR [rbp-0x1],0x0
-    197c:	0f 84 9e 07 00 00    	je     2120 <internal_vprintf+0x9cf>
+    19ec:	80 7d ff 00          	cmp    BYTE PTR [rbp-0x1],0x0
+    19f0:	0f 84 8e 0c 00 00    	je     2684 <internal_vprintf+0xf33>
 									if (is_fmt == 2 && !prec)
-    1982:	80 7d ff 02          	cmp    BYTE PTR [rbp-0x1],0x2
-    1986:	75 0a                	jne    1992 <internal_vprintf+0x241>
-    1988:	80 7d fc 00          	cmp    BYTE PTR [rbp-0x4],0x0
-    198c:	75 04                	jne    1992 <internal_vprintf+0x241>
+    19f6:	80 7d ff 02          	cmp    BYTE PTR [rbp-0x1],0x2
+    19fa:	75 0a                	jne    1a06 <internal_vprintf+0x2b5>
+    19fc:	80 7d fc 00          	cmp    BYTE PTR [rbp-0x4],0x0
+    1a00:	75 04                	jne    1a06 <internal_vprintf+0x2b5>
 											prec = -1; /* no zero */
-    198e:	c6 45 fc ff          	mov    BYTE PTR [rbp-0x4],0xff
+    1a02:	c6 45 fc ff          	mov    BYTE PTR [rbp-0x4],0xff
 									if (*fmt == 'h') {
-    1992:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    1996:	0f b6 00             	movzx  eax,BYTE PTR [rax]
-    1999:	3c 68                	cmp    al,0x68
-    199b:	75 27                	jne    19c4 <internal_vprintf+0x273>
-											fmt++;
-    199d:	48 83 45 b0 01       	add    QWORD PTR [rbp-0x50],0x1
-											if (*fmt == 'h') {
-    19a2:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    19a6:	0f b6 00             	movzx  eax,BYTE PTR [rax]
-    19a9:	3c 68                	cmp    al,0x68
-    19ab:	75 0e                	jne    19bb <internal_vprintf+0x26a>
-													size = 1; /* hh */
-    19ad:	c6 45 fb 01          	mov    BYTE PTR [rbp-0x5],0x1
-													fmt++;
-    19b1:	48 83 45 b0 01       	add    QWORD PTR [rbp-0x50],0x1
-    19b6:	e9 8b 00 00 00       	jmp    1a46 <internal_vprintf+0x2f5>
-													size = 2; /* h */
-    19bb:	c6 45 fb 02          	mov    BYTE PTR [rbp-0x5],0x2
-    19bf:	e9 82 00 00 00       	jmp    1a46 <internal_vprintf+0x2f5>
-									} else if (*fmt == 'l') {
-    19c4:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    19c8:	0f b6 00             	movzx  eax,BYTE PTR [rax]
-    19cb:	3c 6c                	cmp    al,0x6c
-    19cd:	75 21                	jne    19f0 <internal_vprintf+0x29f>
-											fmt++;
-    19cf:	48 83 45 b0 01       	add    QWORD PTR [rbp-0x50],0x1
-											if (*fmt == 'l') {
-    19d4:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    19d8:	0f b6 00             	movzx  eax,BYTE PTR [rax]
-    19db:	3c 6c                	cmp    al,0x6c
-    19dd:	75 0b                	jne    19ea <internal_vprintf+0x299>
-													size = 4; /* ll */
-    19df:	c6 45 fb 04          	mov    BYTE PTR [rbp-0x5],0x4
-													fmt++;
-    19e3:	48 83 45 b0 01       	add    QWORD PTR [rbp-0x50],0x1
-    19e8:	eb 5c                	jmp    1a46 <internal_vprintf+0x2f5>
-													size = 3;
-    19ea:	c6 45 fb 03          	mov    BYTE PTR [rbp-0x5],0x3
-    19ee:	eb 56                	jmp    1a46 <internal_vprintf+0x2f5>
-									} else if (*fmt == 'j') {
-    19f0:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    19f4:	0f b6 00             	movzx  eax,BYTE PTR [rax]
-    19f7:	3c 6a                	cmp    al,0x6a
-    19f9:	75 0b                	jne    1a06 <internal_vprintf+0x2b5>
-											fmt++;
-    19fb:	48 83 45 b0 01       	add    QWORD PTR [rbp-0x50],0x1
-											size = 5;
-    1a00:	c6 45 fb 05          	mov    BYTE PTR [rbp-0x5],0x5
-    1a04:	eb 40                	jmp    1a46 <internal_vprintf+0x2f5>
-									} else if (*fmt == 'z') {
     1a06:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
     1a0a:	0f b6 00             	movzx  eax,BYTE PTR [rax]
-    1a0d:	3c 7a                	cmp    al,0x7a
-    1a0f:	75 0b                	jne    1a1c <internal_vprintf+0x2cb>
+    1a0d:	3c 68                	cmp    al,0x68
+    1a0f:	75 27                	jne    1a38 <internal_vprintf+0x2e7>
+											fmt++;
+    1a11:	48 83 45 b0 01       	add    QWORD PTR [rbp-0x50],0x1
+											if (*fmt == 'h') {
+    1a16:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    1a1a:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+    1a1d:	3c 68                	cmp    al,0x68
+    1a1f:	75 0e                	jne    1a2f <internal_vprintf+0x2de>
+													size = 1; /* hh */
+    1a21:	c6 45 fb 01          	mov    BYTE PTR [rbp-0x5],0x1
+													fmt++;
+    1a25:	48 83 45 b0 01       	add    QWORD PTR [rbp-0x50],0x1
+    1a2a:	e9 8b 00 00 00       	jmp    1aba <internal_vprintf+0x369>
+													size = 2; /* h */
+    1a2f:	c6 45 fb 02          	mov    BYTE PTR [rbp-0x5],0x2
+    1a33:	e9 82 00 00 00       	jmp    1aba <internal_vprintf+0x369>
+									} else if (*fmt == 'l') {
+    1a38:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    1a3c:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+    1a3f:	3c 6c                	cmp    al,0x6c
+    1a41:	75 21                	jne    1a64 <internal_vprintf+0x313>
+											fmt++;
+    1a43:	48 83 45 b0 01       	add    QWORD PTR [rbp-0x50],0x1
+											if (*fmt == 'l') {
+    1a48:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    1a4c:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+    1a4f:	3c 6c                	cmp    al,0x6c
+    1a51:	75 0b                	jne    1a5e <internal_vprintf+0x30d>
+													size = 4; /* ll */
+    1a53:	c6 45 fb 04          	mov    BYTE PTR [rbp-0x5],0x4
+													fmt++;
+    1a57:	48 83 45 b0 01       	add    QWORD PTR [rbp-0x50],0x1
+    1a5c:	eb 5c                	jmp    1aba <internal_vprintf+0x369>
+													size = 3;
+    1a5e:	c6 45 fb 03          	mov    BYTE PTR [rbp-0x5],0x3
+    1a62:	eb 56                	jmp    1aba <internal_vprintf+0x369>
+									} else if (*fmt == 'j') {
+    1a64:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    1a68:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+    1a6b:	3c 6a                	cmp    al,0x6a
+    1a6d:	75 0b                	jne    1a7a <internal_vprintf+0x329>
+											fmt++;
+    1a6f:	48 83 45 b0 01       	add    QWORD PTR [rbp-0x50],0x1
+											size = 5;
+    1a74:	c6 45 fb 05          	mov    BYTE PTR [rbp-0x5],0x5
+    1a78:	eb 40                	jmp    1aba <internal_vprintf+0x369>
+									} else if (*fmt == 'z') {
+    1a7a:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    1a7e:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+    1a81:	3c 7a                	cmp    al,0x7a
+    1a83:	75 0b                	jne    1a90 <internal_vprintf+0x33f>
 											size = 6;
-    1a11:	c6 45 fb 06          	mov    BYTE PTR [rbp-0x5],0x6
+    1a85:	c6 45 fb 06          	mov    BYTE PTR [rbp-0x5],0x6
 											fmt++;
-    1a15:	48 83 45 b0 01       	add    QWORD PTR [rbp-0x50],0x1
-    1a1a:	eb 2a                	jmp    1a46 <internal_vprintf+0x2f5>
+    1a89:	48 83 45 b0 01       	add    QWORD PTR [rbp-0x50],0x1
+    1a8e:	eb 2a                	jmp    1aba <internal_vprintf+0x369>
 									} else if (*fmt == 't') {
-    1a1c:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    1a20:	0f b6 00             	movzx  eax,BYTE PTR [rax]
-    1a23:	3c 74                	cmp    al,0x74
-    1a25:	75 0b                	jne    1a32 <internal_vprintf+0x2e1>
+    1a90:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    1a94:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+    1a97:	3c 74                	cmp    al,0x74
+    1a99:	75 0b                	jne    1aa6 <internal_vprintf+0x355>
 											size = 7;
-    1a27:	c6 45 fb 07          	mov    BYTE PTR [rbp-0x5],0x7
+    1a9b:	c6 45 fb 07          	mov    BYTE PTR [rbp-0x5],0x7
 											fmt++;
-    1a2b:	48 83 45 b0 01       	add    QWORD PTR [rbp-0x50],0x1
-    1a30:	eb 14                	jmp    1a46 <internal_vprintf+0x2f5>
+    1a9f:	48 83 45 b0 01       	add    QWORD PTR [rbp-0x50],0x1
+    1aa4:	eb 14                	jmp    1aba <internal_vprintf+0x369>
 									} else if (*fmt == 'L') {
-    1a32:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    1a36:	0f b6 00             	movzx  eax,BYTE PTR [rax]
-    1a39:	3c 4c                	cmp    al,0x4c
-    1a3b:	75 09                	jne    1a46 <internal_vprintf+0x2f5>
+    1aa6:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    1aaa:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+    1aad:	3c 4c                	cmp    al,0x4c
+    1aaf:	75 09                	jne    1aba <internal_vprintf+0x369>
 											size = 8;
-    1a3d:	c6 45 fb 08          	mov    BYTE PTR [rbp-0x5],0x8
+    1ab1:	c6 45 fb 08          	mov    BYTE PTR [rbp-0x5],0x8
 											fmt++;
-    1a41:	48 83 45 b0 01       	add    QWORD PTR [rbp-0x50],0x1
+    1ab5:	48 83 45 b0 01       	add    QWORD PTR [rbp-0x50],0x1
 									if (*fmt == 'd' || *fmt == 'i') {
-    1a46:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    1a4a:	0f b6 00             	movzx  eax,BYTE PTR [rax]
-    1a4d:	3c 64                	cmp    al,0x64
-    1a4f:	74 0f                	je     1a60 <internal_vprintf+0x30f>
-    1a51:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    1a55:	0f b6 00             	movzx  eax,BYTE PTR [rax]
-    1a58:	3c 69                	cmp    al,0x69
-    1a5a:	0f 85 21 01 00 00    	jne    1b81 <internal_vprintf+0x430>
+    1aba:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    1abe:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+    1ac1:	3c 64                	cmp    al,0x64
+    1ac3:	74 0f                	je     1ad4 <internal_vprintf+0x383>
+    1ac5:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    1ac9:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+    1acc:	3c 69                	cmp    al,0x69
+    1ace:	0f 85 55 02 00 00    	jne    1d29 <internal_vprintf+0x5d8>
 											signed long long int val = 0;
-    1a60:	48 c7 45 e8 00 00 00 00 	mov    QWORD PTR [rbp-0x18],0x0
+    1ad4:	48 c7 45 e8 00 00 00 00 	mov    QWORD PTR [rbp-0x18],0x0
 											if (!size) val = va_arg(args, signed int);
-    1a68:	80 7d fb 00          	cmp    BYTE PTR [rbp-0x5],0x0
-    1a6c:	75 1a                	jne    1a88 <internal_vprintf+0x337>
-    1a6e:	48 83 45 a8 04       	add    QWORD PTR [rbp-0x58],0x4
-    1a73:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    1a77:	48 83 e8 04          	sub    rax,0x4
-    1a7b:	8b 00                	mov    eax,DWORD PTR [rax]
-    1a7d:	48 98                	cdqe
-    1a7f:	48 89 45 e8          	mov    QWORD PTR [rbp-0x18],rax
-    1a83:	e9 d2 00 00 00       	jmp    1b5a <internal_vprintf+0x409>
-											else if (size == 1) val = va_arg(args, signed char);
-    1a88:	80 7d fb 01          	cmp    BYTE PTR [rbp-0x5],0x1
-    1a8c:	75 1d                	jne    1aab <internal_vprintf+0x35a>
-    1a8e:	48 83 45 a8 04       	add    QWORD PTR [rbp-0x58],0x4
-    1a93:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    1a97:	48 83 e8 04          	sub    rax,0x4
-    1a9b:	0f b6 00             	movzx  eax,BYTE PTR [rax]
-    1a9e:	48 0f be c0          	movsx  rax,al
-    1aa2:	48 89 45 e8          	mov    QWORD PTR [rbp-0x18],rax
-    1aa6:	e9 af 00 00 00       	jmp    1b5a <internal_vprintf+0x409>
-											else if (size == 2) val = va_arg(args, signed short int);
-    1aab:	80 7d fb 02          	cmp    BYTE PTR [rbp-0x5],0x2
-    1aaf:	75 1d                	jne    1ace <internal_vprintf+0x37d>
-    1ab1:	48 83 45 a8 04       	add    QWORD PTR [rbp-0x58],0x4
-    1ab6:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    1aba:	48 83 e8 04          	sub    rax,0x4
-    1abe:	0f b7 00             	movzx  eax,WORD PTR [rax]
-    1ac1:	48 0f bf c0          	movsx  rax,ax
-    1ac5:	48 89 45 e8          	mov    QWORD PTR [rbp-0x18],rax
-    1ac9:	e9 8c 00 00 00       	jmp    1b5a <internal_vprintf+0x409>
-											else if (size == 3) val = va_arg(args, signed long int);
-    1ace:	80 7d fb 03          	cmp    BYTE PTR [rbp-0x5],0x3
-    1ad2:	75 16                	jne    1aea <internal_vprintf+0x399>
-    1ad4:	48 83 45 a8 08       	add    QWORD PTR [rbp-0x58],0x8
-    1ad9:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    1add:	48 83 e8 08          	sub    rax,0x8
-    1ae1:	48 8b 00             	mov    rax,QWORD PTR [rax]
-    1ae4:	48 89 45 e8          	mov    QWORD PTR [rbp-0x18],rax
-    1ae8:	eb 70                	jmp    1b5a <internal_vprintf+0x409>
-											else if (size == 4) val = va_arg(args, signed long long int);
-    1aea:	80 7d fb 04          	cmp    BYTE PTR [rbp-0x5],0x4
-    1aee:	75 13                	jne    1b03 <internal_vprintf+0x3b2>
-    1af0:	48 83 45 a8 08       	add    QWORD PTR [rbp-0x58],0x8
+    1adc:	80 7d fb 00          	cmp    BYTE PTR [rbp-0x5],0x0
+    1ae0:	75 50                	jne    1b32 <internal_vprintf+0x3e1>
+    1ae2:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1ae6:	8b 00                	mov    eax,DWORD PTR [rax]
+    1ae8:	83 f8 2f             	cmp    eax,0x2f
+    1aeb:	77 24                	ja     1b11 <internal_vprintf+0x3c0>
+    1aed:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1af1:	48 8b 50 10          	mov    rdx,QWORD PTR [rax+0x10]
     1af5:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    1af9:	48 8b 40 f8          	mov    rax,QWORD PTR [rax-0x8]
-    1afd:	48 89 45 e8          	mov    QWORD PTR [rbp-0x18],rax
-    1b01:	eb 57                	jmp    1b5a <internal_vprintf+0x409>
+    1af9:	8b 00                	mov    eax,DWORD PTR [rax]
+    1afb:	89 c0                	mov    eax,eax
+    1afd:	48 01 d0             	add    rax,rdx
+    1b00:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    1b04:	8b 12                	mov    edx,DWORD PTR [rdx]
+    1b06:	8d 4a 08             	lea    ecx,[rdx+0x8]
+    1b09:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    1b0d:	89 0a                	mov    DWORD PTR [rdx],ecx
+    1b0f:	eb 14                	jmp    1b25 <internal_vprintf+0x3d4>
+    1b11:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1b15:	48 8b 40 08          	mov    rax,QWORD PTR [rax+0x8]
+    1b19:	48 8d 48 08          	lea    rcx,[rax+0x8]
+    1b1d:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    1b21:	48 89 4a 08          	mov    QWORD PTR [rdx+0x8],rcx
+    1b25:	8b 00                	mov    eax,DWORD PTR [rax]
+    1b27:	48 98                	cdqe
+    1b29:	48 89 45 e8          	mov    QWORD PTR [rbp-0x18],rax
+    1b2d:	e9 d0 01 00 00       	jmp    1d02 <internal_vprintf+0x5b1>
+											else if (size == 1) val = va_arg(args, signed char);
+    1b32:	80 7d fb 01          	cmp    BYTE PTR [rbp-0x5],0x1
+    1b36:	75 02                	jne    1b3a <internal_vprintf+0x3e9>
+    1b38:	0f 0b                	ud2
+											else if (size == 2) val = va_arg(args, signed short int);
+    1b3a:	80 7d fb 02          	cmp    BYTE PTR [rbp-0x5],0x2
+    1b3e:	75 02                	jne    1b42 <internal_vprintf+0x3f1>
+    1b40:	0f 0b                	ud2
+											else if (size == 3) val = va_arg(args, signed long int);
+    1b42:	80 7d fb 03          	cmp    BYTE PTR [rbp-0x5],0x3
+    1b46:	75 4f                	jne    1b97 <internal_vprintf+0x446>
+    1b48:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1b4c:	8b 00                	mov    eax,DWORD PTR [rax]
+    1b4e:	83 f8 2f             	cmp    eax,0x2f
+    1b51:	77 24                	ja     1b77 <internal_vprintf+0x426>
+    1b53:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1b57:	48 8b 50 10          	mov    rdx,QWORD PTR [rax+0x10]
+    1b5b:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1b5f:	8b 00                	mov    eax,DWORD PTR [rax]
+    1b61:	89 c0                	mov    eax,eax
+    1b63:	48 01 d0             	add    rax,rdx
+    1b66:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    1b6a:	8b 12                	mov    edx,DWORD PTR [rdx]
+    1b6c:	8d 4a 08             	lea    ecx,[rdx+0x8]
+    1b6f:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    1b73:	89 0a                	mov    DWORD PTR [rdx],ecx
+    1b75:	eb 14                	jmp    1b8b <internal_vprintf+0x43a>
+    1b77:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1b7b:	48 8b 40 08          	mov    rax,QWORD PTR [rax+0x8]
+    1b7f:	48 8d 48 08          	lea    rcx,[rax+0x8]
+    1b83:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    1b87:	48 89 4a 08          	mov    QWORD PTR [rdx+0x8],rcx
+    1b8b:	48 8b 00             	mov    rax,QWORD PTR [rax]
+    1b8e:	48 89 45 e8          	mov    QWORD PTR [rbp-0x18],rax
+    1b92:	e9 6b 01 00 00       	jmp    1d02 <internal_vprintf+0x5b1>
+											else if (size == 4) val = va_arg(args, signed long long int);
+    1b97:	80 7d fb 04          	cmp    BYTE PTR [rbp-0x5],0x4
+    1b9b:	75 4f                	jne    1bec <internal_vprintf+0x49b>
+    1b9d:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1ba1:	8b 00                	mov    eax,DWORD PTR [rax]
+    1ba3:	83 f8 2f             	cmp    eax,0x2f
+    1ba6:	77 24                	ja     1bcc <internal_vprintf+0x47b>
+    1ba8:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1bac:	48 8b 50 10          	mov    rdx,QWORD PTR [rax+0x10]
+    1bb0:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1bb4:	8b 00                	mov    eax,DWORD PTR [rax]
+    1bb6:	89 c0                	mov    eax,eax
+    1bb8:	48 01 d0             	add    rax,rdx
+    1bbb:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    1bbf:	8b 12                	mov    edx,DWORD PTR [rdx]
+    1bc1:	8d 4a 08             	lea    ecx,[rdx+0x8]
+    1bc4:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    1bc8:	89 0a                	mov    DWORD PTR [rdx],ecx
+    1bca:	eb 14                	jmp    1be0 <internal_vprintf+0x48f>
+    1bcc:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1bd0:	48 8b 40 08          	mov    rax,QWORD PTR [rax+0x8]
+    1bd4:	48 8d 48 08          	lea    rcx,[rax+0x8]
+    1bd8:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    1bdc:	48 89 4a 08          	mov    QWORD PTR [rdx+0x8],rcx
+    1be0:	48 8b 00             	mov    rax,QWORD PTR [rax]
+    1be3:	48 89 45 e8          	mov    QWORD PTR [rbp-0x18],rax
+    1be7:	e9 16 01 00 00       	jmp    1d02 <internal_vprintf+0x5b1>
 											else if (size == 5) val = va_arg(args, intmax_t);
-    1b03:	80 7d fb 05          	cmp    BYTE PTR [rbp-0x5],0x5
-    1b07:	75 13                	jne    1b1c <internal_vprintf+0x3cb>
-    1b09:	48 83 45 a8 08       	add    QWORD PTR [rbp-0x58],0x8
-    1b0e:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    1b12:	48 8b 40 f8          	mov    rax,QWORD PTR [rax-0x8]
-    1b16:	48 89 45 e8          	mov    QWORD PTR [rbp-0x18],rax
-    1b1a:	eb 3e                	jmp    1b5a <internal_vprintf+0x409>
+    1bec:	80 7d fb 05          	cmp    BYTE PTR [rbp-0x5],0x5
+    1bf0:	75 4f                	jne    1c41 <internal_vprintf+0x4f0>
+    1bf2:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1bf6:	8b 00                	mov    eax,DWORD PTR [rax]
+    1bf8:	83 f8 2f             	cmp    eax,0x2f
+    1bfb:	77 24                	ja     1c21 <internal_vprintf+0x4d0>
+    1bfd:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1c01:	48 8b 50 10          	mov    rdx,QWORD PTR [rax+0x10]
+    1c05:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1c09:	8b 00                	mov    eax,DWORD PTR [rax]
+    1c0b:	89 c0                	mov    eax,eax
+    1c0d:	48 01 d0             	add    rax,rdx
+    1c10:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    1c14:	8b 12                	mov    edx,DWORD PTR [rdx]
+    1c16:	8d 4a 08             	lea    ecx,[rdx+0x8]
+    1c19:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    1c1d:	89 0a                	mov    DWORD PTR [rdx],ecx
+    1c1f:	eb 14                	jmp    1c35 <internal_vprintf+0x4e4>
+    1c21:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1c25:	48 8b 40 08          	mov    rax,QWORD PTR [rax+0x8]
+    1c29:	48 8d 48 08          	lea    rcx,[rax+0x8]
+    1c2d:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    1c31:	48 89 4a 08          	mov    QWORD PTR [rdx+0x8],rcx
+    1c35:	48 8b 00             	mov    rax,QWORD PTR [rax]
+    1c38:	48 89 45 e8          	mov    QWORD PTR [rbp-0x18],rax
+    1c3c:	e9 c1 00 00 00       	jmp    1d02 <internal_vprintf+0x5b1>
 											else if (size == 6) val = va_arg(args, ssize_t);
-    1b1c:	80 7d fb 06          	cmp    BYTE PTR [rbp-0x5],0x6
-    1b20:	75 17                	jne    1b39 <internal_vprintf+0x3e8>
-    1b22:	48 83 45 a8 04       	add    QWORD PTR [rbp-0x58],0x4
-    1b27:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    1b2b:	48 83 e8 04          	sub    rax,0x4
-    1b2f:	8b 00                	mov    eax,DWORD PTR [rax]
-    1b31:	48 98                	cdqe
-    1b33:	48 89 45 e8          	mov    QWORD PTR [rbp-0x18],rax
-    1b37:	eb 21                	jmp    1b5a <internal_vprintf+0x409>
+    1c41:	80 7d fb 06          	cmp    BYTE PTR [rbp-0x5],0x6
+    1c45:	75 4d                	jne    1c94 <internal_vprintf+0x543>
+    1c47:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1c4b:	8b 00                	mov    eax,DWORD PTR [rax]
+    1c4d:	83 f8 2f             	cmp    eax,0x2f
+    1c50:	77 24                	ja     1c76 <internal_vprintf+0x525>
+    1c52:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1c56:	48 8b 50 10          	mov    rdx,QWORD PTR [rax+0x10]
+    1c5a:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1c5e:	8b 00                	mov    eax,DWORD PTR [rax]
+    1c60:	89 c0                	mov    eax,eax
+    1c62:	48 01 d0             	add    rax,rdx
+    1c65:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    1c69:	8b 12                	mov    edx,DWORD PTR [rdx]
+    1c6b:	8d 4a 08             	lea    ecx,[rdx+0x8]
+    1c6e:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    1c72:	89 0a                	mov    DWORD PTR [rdx],ecx
+    1c74:	eb 14                	jmp    1c8a <internal_vprintf+0x539>
+    1c76:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1c7a:	48 8b 40 08          	mov    rax,QWORD PTR [rax+0x8]
+    1c7e:	48 8d 48 08          	lea    rcx,[rax+0x8]
+    1c82:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    1c86:	48 89 4a 08          	mov    QWORD PTR [rdx+0x8],rcx
+    1c8a:	8b 00                	mov    eax,DWORD PTR [rax]
+    1c8c:	48 98                	cdqe
+    1c8e:	48 89 45 e8          	mov    QWORD PTR [rbp-0x18],rax
+    1c92:	eb 6e                	jmp    1d02 <internal_vprintf+0x5b1>
 											else if (size == 7) val = va_arg(args, ptrdiff_t);
-    1b39:	80 7d fb 07          	cmp    BYTE PTR [rbp-0x5],0x7
-    1b3d:	75 16                	jne    1b55 <internal_vprintf+0x404>
-    1b3f:	48 83 45 a8 08       	add    QWORD PTR [rbp-0x58],0x8
-    1b44:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    1b48:	48 83 e8 08          	sub    rax,0x8
-    1b4c:	48 8b 00             	mov    rax,QWORD PTR [rax]
-    1b4f:	48 89 45 e8          	mov    QWORD PTR [rbp-0x18],rax
-    1b53:	eb 05                	jmp    1b5a <internal_vprintf+0x409>
+    1c94:	80 7d fb 07          	cmp    BYTE PTR [rbp-0x5],0x7
+    1c98:	75 4c                	jne    1ce6 <internal_vprintf+0x595>
+    1c9a:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1c9e:	8b 00                	mov    eax,DWORD PTR [rax]
+    1ca0:	83 f8 2f             	cmp    eax,0x2f
+    1ca3:	77 24                	ja     1cc9 <internal_vprintf+0x578>
+    1ca5:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1ca9:	48 8b 50 10          	mov    rdx,QWORD PTR [rax+0x10]
+    1cad:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1cb1:	8b 00                	mov    eax,DWORD PTR [rax]
+    1cb3:	89 c0                	mov    eax,eax
+    1cb5:	48 01 d0             	add    rax,rdx
+    1cb8:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    1cbc:	8b 12                	mov    edx,DWORD PTR [rdx]
+    1cbe:	8d 4a 08             	lea    ecx,[rdx+0x8]
+    1cc1:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    1cc5:	89 0a                	mov    DWORD PTR [rdx],ecx
+    1cc7:	eb 14                	jmp    1cdd <internal_vprintf+0x58c>
+    1cc9:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1ccd:	48 8b 40 08          	mov    rax,QWORD PTR [rax+0x8]
+    1cd1:	48 8d 48 08          	lea    rcx,[rax+0x8]
+    1cd5:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    1cd9:	48 89 4a 08          	mov    QWORD PTR [rdx+0x8],rcx
+    1cdd:	48 8b 00             	mov    rax,QWORD PTR [rax]
+    1ce0:	48 89 45 e8          	mov    QWORD PTR [rbp-0x18],rax
+    1ce4:	eb 1c                	jmp    1d02 <internal_vprintf+0x5b1>
 											else (void)va_arg(args, long double); /* remove bogus value*/
-    1b55:	48 83 45 a8 10       	add    QWORD PTR [rbp-0x58],0x10
+    1ce6:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1cea:	48 8b 40 08          	mov    rax,QWORD PTR [rax+0x8]
+    1cee:	48 83 c0 0f          	add    rax,0xf
+    1cf2:	48 83 e0 f0          	and    rax,0xfffffffffffffff0
+    1cf6:	48 8d 50 10          	lea    rdx,[rax+0x10]
+    1cfa:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1cfe:	48 89 50 08          	mov    QWORD PTR [rax+0x8],rdx
 											rv += putd(ctx, val, flags, width, prec);
-    1b5a:	0f be 7d fc          	movsx  edi,BYTE PTR [rbp-0x4]
-    1b5e:	0f be 4d fd          	movsx  ecx,BYTE PTR [rbp-0x3]
-    1b62:	0f be 55 fe          	movsx  edx,BYTE PTR [rbp-0x2]
-    1b66:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1b6a:	48 8b 75 e8          	mov    rsi,QWORD PTR [rbp-0x18]
-    1b6e:	41 89 f8             	mov    r8d,edi
-    1b71:	48 89 c7             	mov    rdi,rax
-    1b74:	e8 00 00 00 00       	call   1b79 <internal_vprintf+0x428>
-    1b79:	01 45 f4             	add    DWORD PTR [rbp-0xc],eax
+    1d02:	0f be 7d fc          	movsx  edi,BYTE PTR [rbp-0x4]
+    1d06:	0f be 4d fd          	movsx  ecx,BYTE PTR [rbp-0x3]
+    1d0a:	0f be 55 fe          	movsx  edx,BYTE PTR [rbp-0x2]
+    1d0e:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    1d12:	48 8b 75 e8          	mov    rsi,QWORD PTR [rbp-0x18]
+    1d16:	41 89 f8             	mov    r8d,edi
+    1d19:	48 89 c7             	mov    rdi,rax
+    1d1c:	e8 00 00 00 00       	call   1d21 <internal_vprintf+0x5d0>
+    1d21:	01 45 f4             	add    DWORD PTR [rbp-0xc],eax
 									if (*fmt == 'd' || *fmt == 'i') {
-    1b7c:	e9 84 05 00 00       	jmp    2105 <internal_vprintf+0x9b4>
+    1d24:	e9 40 09 00 00       	jmp    2669 <internal_vprintf+0xf18>
 									} else if (*fmt == 'x' || *fmt == 'X' || *fmt == 'u' || *fmt == 'o' || *fmt == 'b') {
-    1b81:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    1b85:	0f b6 00             	movzx  eax,BYTE PTR [rax]
-    1b88:	3c 78                	cmp    al,0x78
-    1b8a:	74 30                	je     1bbc <internal_vprintf+0x46b>
-    1b8c:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    1b90:	0f b6 00             	movzx  eax,BYTE PTR [rax]
-    1b93:	3c 58                	cmp    al,0x58
-    1b95:	74 25                	je     1bbc <internal_vprintf+0x46b>
-    1b97:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    1b9b:	0f b6 00             	movzx  eax,BYTE PTR [rax]
-    1b9e:	3c 75                	cmp    al,0x75
-    1ba0:	74 1a                	je     1bbc <internal_vprintf+0x46b>
-    1ba2:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    1ba6:	0f b6 00             	movzx  eax,BYTE PTR [rax]
-    1ba9:	3c 6f                	cmp    al,0x6f
-    1bab:	74 0f                	je     1bbc <internal_vprintf+0x46b>
-    1bad:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    1bb1:	0f b6 00             	movzx  eax,BYTE PTR [rax]
-    1bb4:	3c 62                	cmp    al,0x62
-    1bb6:	0f 85 0b 02 00 00    	jne    1dc7 <internal_vprintf+0x676>
-											unsigned long long int val = 0;
-    1bbc:	48 c7 45 e0 00 00 00 00 	mov    QWORD PTR [rbp-0x20],0x0
-											if (!size) val = va_arg(args, unsigned int);
-    1bc4:	80 7d fb 00          	cmp    BYTE PTR [rbp-0x5],0x0
-    1bc8:	75 1a                	jne    1be4 <internal_vprintf+0x493>
-    1bca:	48 83 45 a8 04       	add    QWORD PTR [rbp-0x58],0x4
-    1bcf:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    1bd3:	48 83 e8 04          	sub    rax,0x4
-    1bd7:	8b 00                	mov    eax,DWORD PTR [rax]
-    1bd9:	89 c0                	mov    eax,eax
-    1bdb:	48 89 45 e0          	mov    QWORD PTR [rbp-0x20],rax
-    1bdf:	e9 cf 00 00 00       	jmp    1cb3 <internal_vprintf+0x562>
-											else if (size == 1) val = va_arg(args, unsigned char);
-    1be4:	80 7d fb 01          	cmp    BYTE PTR [rbp-0x5],0x1
-    1be8:	75 1c                	jne    1c06 <internal_vprintf+0x4b5>
-    1bea:	48 83 45 a8 04       	add    QWORD PTR [rbp-0x58],0x4
-    1bef:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    1bf3:	48 83 e8 04          	sub    rax,0x4
-    1bf7:	0f b6 00             	movzx  eax,BYTE PTR [rax]
-    1bfa:	0f b6 c0             	movzx  eax,al
-    1bfd:	48 89 45 e0          	mov    QWORD PTR [rbp-0x20],rax
-    1c01:	e9 ad 00 00 00       	jmp    1cb3 <internal_vprintf+0x562>
-											else if (size == 2) val = va_arg(args, unsigned short int);
-    1c06:	80 7d fb 02          	cmp    BYTE PTR [rbp-0x5],0x2
-    1c0a:	75 1c                	jne    1c28 <internal_vprintf+0x4d7>
-    1c0c:	48 83 45 a8 04       	add    QWORD PTR [rbp-0x58],0x4
-    1c11:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    1c15:	48 83 e8 04          	sub    rax,0x4
-    1c19:	0f b7 00             	movzx  eax,WORD PTR [rax]
-    1c1c:	0f b7 c0             	movzx  eax,ax
-    1c1f:	48 89 45 e0          	mov    QWORD PTR [rbp-0x20],rax
-    1c23:	e9 8b 00 00 00       	jmp    1cb3 <internal_vprintf+0x562>
-											else if (size == 3) val = va_arg(args, unsigned long int);
-    1c28:	80 7d fb 03          	cmp    BYTE PTR [rbp-0x5],0x3
-    1c2c:	75 16                	jne    1c44 <internal_vprintf+0x4f3>
-    1c2e:	48 83 45 a8 08       	add    QWORD PTR [rbp-0x58],0x8
-    1c33:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    1c37:	48 83 e8 08          	sub    rax,0x8
-    1c3b:	48 8b 00             	mov    rax,QWORD PTR [rax]
-    1c3e:	48 89 45 e0          	mov    QWORD PTR [rbp-0x20],rax
-    1c42:	eb 6f                	jmp    1cb3 <internal_vprintf+0x562>
-											else if (size == 4) val = va_arg(args, unsigned long long int);
-    1c44:	80 7d fb 04          	cmp    BYTE PTR [rbp-0x5],0x4
-    1c48:	75 13                	jne    1c5d <internal_vprintf+0x50c>
-    1c4a:	48 83 45 a8 08       	add    QWORD PTR [rbp-0x58],0x8
-    1c4f:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    1c53:	48 8b 40 f8          	mov    rax,QWORD PTR [rax-0x8]
-    1c57:	48 89 45 e0          	mov    QWORD PTR [rbp-0x20],rax
-    1c5b:	eb 56                	jmp    1cb3 <internal_vprintf+0x562>
-											else if (size == 5) val = va_arg(args, uintmax_t);
-    1c5d:	80 7d fb 05          	cmp    BYTE PTR [rbp-0x5],0x5
-    1c61:	75 13                	jne    1c76 <internal_vprintf+0x525>
-    1c63:	48 83 45 a8 08       	add    QWORD PTR [rbp-0x58],0x8
-    1c68:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    1c6c:	48 8b 40 f8          	mov    rax,QWORD PTR [rax-0x8]
-    1c70:	48 89 45 e0          	mov    QWORD PTR [rbp-0x20],rax
-    1c74:	eb 3d                	jmp    1cb3 <internal_vprintf+0x562>
-											else if (size == 6) val = va_arg(args, size_t);
-    1c76:	80 7d fb 06          	cmp    BYTE PTR [rbp-0x5],0x6
-    1c7a:	75 16                	jne    1c92 <internal_vprintf+0x541>
-    1c7c:	48 83 45 a8 08       	add    QWORD PTR [rbp-0x58],0x8
-    1c81:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    1c85:	48 83 e8 08          	sub    rax,0x8
-    1c89:	48 8b 00             	mov    rax,QWORD PTR [rax]
-    1c8c:	48 89 45 e0          	mov    QWORD PTR [rbp-0x20],rax
-    1c90:	eb 21                	jmp    1cb3 <internal_vprintf+0x562>
-											else if (size == 7) val = va_arg(args, ptrdiff_t);
-    1c92:	80 7d fb 07          	cmp    BYTE PTR [rbp-0x5],0x7
-    1c96:	75 16                	jne    1cae <internal_vprintf+0x55d>
-    1c98:	48 83 45 a8 08       	add    QWORD PTR [rbp-0x58],0x8
-    1c9d:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    1ca1:	48 83 e8 08          	sub    rax,0x8
-    1ca5:	48 8b 00             	mov    rax,QWORD PTR [rax]
-    1ca8:	48 89 45 e0          	mov    QWORD PTR [rbp-0x20],rax
-    1cac:	eb 05                	jmp    1cb3 <internal_vprintf+0x562>
-											else (void)va_arg(args, long double); /* remove bogus value*/
-    1cae:	48 83 45 a8 10       	add    QWORD PTR [rbp-0x58],0x10
-											if (*fmt == 'x')
-    1cb3:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    1cb7:	0f b6 00             	movzx  eax,BYTE PTR [rax]
-    1cba:	3c 78                	cmp    al,0x78
-    1cbc:	75 2d                	jne    1ceb <internal_vprintf+0x59a>
-													rv += putu(ctx, val, flags | KFL_IS_HEX, width, prec);
-    1cbe:	0f be 7d fc          	movsx  edi,BYTE PTR [rbp-0x4]
-    1cc2:	0f be 4d fd          	movsx  ecx,BYTE PTR [rbp-0x3]
-    1cc6:	0f b6 45 fe          	movzx  eax,BYTE PTR [rbp-0x2]
-    1cca:	83 c8 01             	or     eax,0x1
-    1ccd:	0f be d0             	movsx  edx,al
-    1cd0:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1cd4:	48 8b 75 e0          	mov    rsi,QWORD PTR [rbp-0x20]
-    1cd8:	41 89 f8             	mov    r8d,edi
-    1cdb:	48 89 c7             	mov    rdi,rax
-    1cde:	e8 00 00 00 00       	call   1ce3 <internal_vprintf+0x592>
-    1ce3:	01 45 f4             	add    DWORD PTR [rbp-0xc],eax
-									} else if (*fmt == 'x' || *fmt == 'X' || *fmt == 'u' || *fmt == 'o' || *fmt == 'b') {
-    1ce6:	e9 19 04 00 00       	jmp    2104 <internal_vprintf+0x9b3>
-											else if (*fmt == 'X')
-    1ceb:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    1cef:	0f b6 00             	movzx  eax,BYTE PTR [rax]
-    1cf2:	3c 58                	cmp    al,0x58
-    1cf4:	75 2d                	jne    1d23 <internal_vprintf+0x5d2>
-													rv += putu(ctx, val, flags | KFL_IS_HEX | KFL_CAPITAL, width, prec);
-    1cf6:	0f be 7d fc          	movsx  edi,BYTE PTR [rbp-0x4]
-    1cfa:	0f be 4d fd          	movsx  ecx,BYTE PTR [rbp-0x3]
-    1cfe:	0f b6 45 fe          	movzx  eax,BYTE PTR [rbp-0x2]
-    1d02:	83 c8 81             	or     eax,0xffffff81
-    1d05:	0f be d0             	movsx  edx,al
-    1d08:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1d0c:	48 8b 75 e0          	mov    rsi,QWORD PTR [rbp-0x20]
-    1d10:	41 89 f8             	mov    r8d,edi
-    1d13:	48 89 c7             	mov    rdi,rax
-    1d16:	e8 00 00 00 00       	call   1d1b <internal_vprintf+0x5ca>
-    1d1b:	01 45 f4             	add    DWORD PTR [rbp-0xc],eax
-									} else if (*fmt == 'x' || *fmt == 'X' || *fmt == 'u' || *fmt == 'o' || *fmt == 'b') {
-    1d1e:	e9 e1 03 00 00       	jmp    2104 <internal_vprintf+0x9b3>
-											else if (*fmt == 'u')
-    1d23:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    1d27:	0f b6 00             	movzx  eax,BYTE PTR [rax]
-    1d2a:	3c 75                	cmp    al,0x75
-    1d2c:	75 27                	jne    1d55 <internal_vprintf+0x604>
-													rv += putu(ctx, val, flags, width, prec);
-    1d2e:	0f be 7d fc          	movsx  edi,BYTE PTR [rbp-0x4]
-    1d32:	0f be 4d fd          	movsx  ecx,BYTE PTR [rbp-0x3]
-    1d36:	0f be 55 fe          	movsx  edx,BYTE PTR [rbp-0x2]
-    1d3a:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1d3e:	48 8b 75 e0          	mov    rsi,QWORD PTR [rbp-0x20]
-    1d42:	41 89 f8             	mov    r8d,edi
-    1d45:	48 89 c7             	mov    rdi,rax
-    1d48:	e8 00 00 00 00       	call   1d4d <internal_vprintf+0x5fc>
-    1d4d:	01 45 f4             	add    DWORD PTR [rbp-0xc],eax
-									} else if (*fmt == 'x' || *fmt == 'X' || *fmt == 'u' || *fmt == 'o' || *fmt == 'b') {
-    1d50:	e9 af 03 00 00       	jmp    2104 <internal_vprintf+0x9b3>
-											else if (*fmt == 'o')
+    1d29:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    1d2d:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+    1d30:	3c 78                	cmp    al,0x78
+    1d32:	74 30                	je     1d64 <internal_vprintf+0x613>
+    1d34:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    1d38:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+    1d3b:	3c 58                	cmp    al,0x58
+    1d3d:	74 25                	je     1d64 <internal_vprintf+0x613>
+    1d3f:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    1d43:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+    1d46:	3c 75                	cmp    al,0x75
+    1d48:	74 1a                	je     1d64 <internal_vprintf+0x613>
+    1d4a:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    1d4e:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+    1d51:	3c 6f                	cmp    al,0x6f
+    1d53:	74 0f                	je     1d64 <internal_vprintf+0x613>
     1d55:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
     1d59:	0f b6 00             	movzx  eax,BYTE PTR [rax]
-    1d5c:	3c 6f                	cmp    al,0x6f
-    1d5e:	75 2d                	jne    1d8d <internal_vprintf+0x63c>
+    1d5c:	3c 62                	cmp    al,0x62
+    1d5e:	0f 85 41 03 00 00    	jne    20a5 <internal_vprintf+0x954>
+											unsigned long long int val = 0;
+    1d64:	48 c7 45 e0 00 00 00 00 	mov    QWORD PTR [rbp-0x20],0x0
+											if (!size) val = va_arg(args, unsigned int);
+    1d6c:	80 7d fb 00          	cmp    BYTE PTR [rbp-0x5],0x0
+    1d70:	75 50                	jne    1dc2 <internal_vprintf+0x671>
+    1d72:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1d76:	8b 00                	mov    eax,DWORD PTR [rax]
+    1d78:	83 f8 2f             	cmp    eax,0x2f
+    1d7b:	77 24                	ja     1da1 <internal_vprintf+0x650>
+    1d7d:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1d81:	48 8b 50 10          	mov    rdx,QWORD PTR [rax+0x10]
+    1d85:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1d89:	8b 00                	mov    eax,DWORD PTR [rax]
+    1d8b:	89 c0                	mov    eax,eax
+    1d8d:	48 01 d0             	add    rax,rdx
+    1d90:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    1d94:	8b 12                	mov    edx,DWORD PTR [rdx]
+    1d96:	8d 4a 08             	lea    ecx,[rdx+0x8]
+    1d99:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    1d9d:	89 0a                	mov    DWORD PTR [rdx],ecx
+    1d9f:	eb 14                	jmp    1db5 <internal_vprintf+0x664>
+    1da1:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1da5:	48 8b 40 08          	mov    rax,QWORD PTR [rax+0x8]
+    1da9:	48 8d 48 08          	lea    rcx,[rax+0x8]
+    1dad:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    1db1:	48 89 4a 08          	mov    QWORD PTR [rdx+0x8],rcx
+    1db5:	8b 00                	mov    eax,DWORD PTR [rax]
+    1db7:	89 c0                	mov    eax,eax
+    1db9:	48 89 45 e0          	mov    QWORD PTR [rbp-0x20],rax
+    1dbd:	e9 cf 01 00 00       	jmp    1f91 <internal_vprintf+0x840>
+											else if (size == 1) val = va_arg(args, unsigned char);
+    1dc2:	80 7d fb 01          	cmp    BYTE PTR [rbp-0x5],0x1
+    1dc6:	75 02                	jne    1dca <internal_vprintf+0x679>
+    1dc8:	0f 0b                	ud2
+											else if (size == 2) val = va_arg(args, unsigned short int);
+    1dca:	80 7d fb 02          	cmp    BYTE PTR [rbp-0x5],0x2
+    1dce:	75 02                	jne    1dd2 <internal_vprintf+0x681>
+    1dd0:	0f 0b                	ud2
+											else if (size == 3) val = va_arg(args, unsigned long int);
+    1dd2:	80 7d fb 03          	cmp    BYTE PTR [rbp-0x5],0x3
+    1dd6:	75 4f                	jne    1e27 <internal_vprintf+0x6d6>
+    1dd8:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1ddc:	8b 00                	mov    eax,DWORD PTR [rax]
+    1dde:	83 f8 2f             	cmp    eax,0x2f
+    1de1:	77 24                	ja     1e07 <internal_vprintf+0x6b6>
+    1de3:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1de7:	48 8b 50 10          	mov    rdx,QWORD PTR [rax+0x10]
+    1deb:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1def:	8b 00                	mov    eax,DWORD PTR [rax]
+    1df1:	89 c0                	mov    eax,eax
+    1df3:	48 01 d0             	add    rax,rdx
+    1df6:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    1dfa:	8b 12                	mov    edx,DWORD PTR [rdx]
+    1dfc:	8d 4a 08             	lea    ecx,[rdx+0x8]
+    1dff:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    1e03:	89 0a                	mov    DWORD PTR [rdx],ecx
+    1e05:	eb 14                	jmp    1e1b <internal_vprintf+0x6ca>
+    1e07:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1e0b:	48 8b 40 08          	mov    rax,QWORD PTR [rax+0x8]
+    1e0f:	48 8d 48 08          	lea    rcx,[rax+0x8]
+    1e13:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    1e17:	48 89 4a 08          	mov    QWORD PTR [rdx+0x8],rcx
+    1e1b:	48 8b 00             	mov    rax,QWORD PTR [rax]
+    1e1e:	48 89 45 e0          	mov    QWORD PTR [rbp-0x20],rax
+    1e22:	e9 6a 01 00 00       	jmp    1f91 <internal_vprintf+0x840>
+											else if (size == 4) val = va_arg(args, unsigned long long int);
+    1e27:	80 7d fb 04          	cmp    BYTE PTR [rbp-0x5],0x4
+    1e2b:	75 4f                	jne    1e7c <internal_vprintf+0x72b>
+    1e2d:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1e31:	8b 00                	mov    eax,DWORD PTR [rax]
+    1e33:	83 f8 2f             	cmp    eax,0x2f
+    1e36:	77 24                	ja     1e5c <internal_vprintf+0x70b>
+    1e38:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1e3c:	48 8b 50 10          	mov    rdx,QWORD PTR [rax+0x10]
+    1e40:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1e44:	8b 00                	mov    eax,DWORD PTR [rax]
+    1e46:	89 c0                	mov    eax,eax
+    1e48:	48 01 d0             	add    rax,rdx
+    1e4b:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    1e4f:	8b 12                	mov    edx,DWORD PTR [rdx]
+    1e51:	8d 4a 08             	lea    ecx,[rdx+0x8]
+    1e54:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    1e58:	89 0a                	mov    DWORD PTR [rdx],ecx
+    1e5a:	eb 14                	jmp    1e70 <internal_vprintf+0x71f>
+    1e5c:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1e60:	48 8b 40 08          	mov    rax,QWORD PTR [rax+0x8]
+    1e64:	48 8d 48 08          	lea    rcx,[rax+0x8]
+    1e68:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    1e6c:	48 89 4a 08          	mov    QWORD PTR [rdx+0x8],rcx
+    1e70:	48 8b 00             	mov    rax,QWORD PTR [rax]
+    1e73:	48 89 45 e0          	mov    QWORD PTR [rbp-0x20],rax
+    1e77:	e9 15 01 00 00       	jmp    1f91 <internal_vprintf+0x840>
+											else if (size == 5) val = va_arg(args, uintmax_t);
+    1e7c:	80 7d fb 05          	cmp    BYTE PTR [rbp-0x5],0x5
+    1e80:	75 4f                	jne    1ed1 <internal_vprintf+0x780>
+    1e82:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1e86:	8b 00                	mov    eax,DWORD PTR [rax]
+    1e88:	83 f8 2f             	cmp    eax,0x2f
+    1e8b:	77 24                	ja     1eb1 <internal_vprintf+0x760>
+    1e8d:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1e91:	48 8b 50 10          	mov    rdx,QWORD PTR [rax+0x10]
+    1e95:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1e99:	8b 00                	mov    eax,DWORD PTR [rax]
+    1e9b:	89 c0                	mov    eax,eax
+    1e9d:	48 01 d0             	add    rax,rdx
+    1ea0:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    1ea4:	8b 12                	mov    edx,DWORD PTR [rdx]
+    1ea6:	8d 4a 08             	lea    ecx,[rdx+0x8]
+    1ea9:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    1ead:	89 0a                	mov    DWORD PTR [rdx],ecx
+    1eaf:	eb 14                	jmp    1ec5 <internal_vprintf+0x774>
+    1eb1:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1eb5:	48 8b 40 08          	mov    rax,QWORD PTR [rax+0x8]
+    1eb9:	48 8d 48 08          	lea    rcx,[rax+0x8]
+    1ebd:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    1ec1:	48 89 4a 08          	mov    QWORD PTR [rdx+0x8],rcx
+    1ec5:	48 8b 00             	mov    rax,QWORD PTR [rax]
+    1ec8:	48 89 45 e0          	mov    QWORD PTR [rbp-0x20],rax
+    1ecc:	e9 c0 00 00 00       	jmp    1f91 <internal_vprintf+0x840>
+											else if (size == 6) val = va_arg(args, size_t);
+    1ed1:	80 7d fb 06          	cmp    BYTE PTR [rbp-0x5],0x6
+    1ed5:	75 4c                	jne    1f23 <internal_vprintf+0x7d2>
+    1ed7:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1edb:	8b 00                	mov    eax,DWORD PTR [rax]
+    1edd:	83 f8 2f             	cmp    eax,0x2f
+    1ee0:	77 24                	ja     1f06 <internal_vprintf+0x7b5>
+    1ee2:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1ee6:	48 8b 50 10          	mov    rdx,QWORD PTR [rax+0x10]
+    1eea:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1eee:	8b 00                	mov    eax,DWORD PTR [rax]
+    1ef0:	89 c0                	mov    eax,eax
+    1ef2:	48 01 d0             	add    rax,rdx
+    1ef5:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    1ef9:	8b 12                	mov    edx,DWORD PTR [rdx]
+    1efb:	8d 4a 08             	lea    ecx,[rdx+0x8]
+    1efe:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    1f02:	89 0a                	mov    DWORD PTR [rdx],ecx
+    1f04:	eb 14                	jmp    1f1a <internal_vprintf+0x7c9>
+    1f06:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1f0a:	48 8b 40 08          	mov    rax,QWORD PTR [rax+0x8]
+    1f0e:	48 8d 48 08          	lea    rcx,[rax+0x8]
+    1f12:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    1f16:	48 89 4a 08          	mov    QWORD PTR [rdx+0x8],rcx
+    1f1a:	48 8b 00             	mov    rax,QWORD PTR [rax]
+    1f1d:	48 89 45 e0          	mov    QWORD PTR [rbp-0x20],rax
+    1f21:	eb 6e                	jmp    1f91 <internal_vprintf+0x840>
+											else if (size == 7) val = va_arg(args, ptrdiff_t);
+    1f23:	80 7d fb 07          	cmp    BYTE PTR [rbp-0x5],0x7
+    1f27:	75 4c                	jne    1f75 <internal_vprintf+0x824>
+    1f29:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1f2d:	8b 00                	mov    eax,DWORD PTR [rax]
+    1f2f:	83 f8 2f             	cmp    eax,0x2f
+    1f32:	77 24                	ja     1f58 <internal_vprintf+0x807>
+    1f34:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1f38:	48 8b 50 10          	mov    rdx,QWORD PTR [rax+0x10]
+    1f3c:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1f40:	8b 00                	mov    eax,DWORD PTR [rax]
+    1f42:	89 c0                	mov    eax,eax
+    1f44:	48 01 d0             	add    rax,rdx
+    1f47:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    1f4b:	8b 12                	mov    edx,DWORD PTR [rdx]
+    1f4d:	8d 4a 08             	lea    ecx,[rdx+0x8]
+    1f50:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    1f54:	89 0a                	mov    DWORD PTR [rdx],ecx
+    1f56:	eb 14                	jmp    1f6c <internal_vprintf+0x81b>
+    1f58:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1f5c:	48 8b 40 08          	mov    rax,QWORD PTR [rax+0x8]
+    1f60:	48 8d 48 08          	lea    rcx,[rax+0x8]
+    1f64:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    1f68:	48 89 4a 08          	mov    QWORD PTR [rdx+0x8],rcx
+    1f6c:	48 8b 00             	mov    rax,QWORD PTR [rax]
+    1f6f:	48 89 45 e0          	mov    QWORD PTR [rbp-0x20],rax
+    1f73:	eb 1c                	jmp    1f91 <internal_vprintf+0x840>
+											else (void)va_arg(args, long double); /* remove bogus value*/
+    1f75:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1f79:	48 8b 40 08          	mov    rax,QWORD PTR [rax+0x8]
+    1f7d:	48 83 c0 0f          	add    rax,0xf
+    1f81:	48 83 e0 f0          	and    rax,0xfffffffffffffff0
+    1f85:	48 8d 50 10          	lea    rdx,[rax+0x10]
+    1f89:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1f8d:	48 89 50 08          	mov    QWORD PTR [rax+0x8],rdx
+											if (*fmt == 'x')
+    1f91:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    1f95:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+    1f98:	3c 78                	cmp    al,0x78
+    1f9a:	75 2d                	jne    1fc9 <internal_vprintf+0x878>
+													rv += putu(ctx, val, flags | KFL_IS_HEX, width, prec);
+    1f9c:	0f be 7d fc          	movsx  edi,BYTE PTR [rbp-0x4]
+    1fa0:	0f be 4d fd          	movsx  ecx,BYTE PTR [rbp-0x3]
+    1fa4:	0f b6 45 fe          	movzx  eax,BYTE PTR [rbp-0x2]
+    1fa8:	83 c8 01             	or     eax,0x1
+    1fab:	0f be d0             	movsx  edx,al
+    1fae:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    1fb2:	48 8b 75 e0          	mov    rsi,QWORD PTR [rbp-0x20]
+    1fb6:	41 89 f8             	mov    r8d,edi
+    1fb9:	48 89 c7             	mov    rdi,rax
+    1fbc:	e8 00 00 00 00       	call   1fc1 <internal_vprintf+0x870>
+    1fc1:	01 45 f4             	add    DWORD PTR [rbp-0xc],eax
+									} else if (*fmt == 'x' || *fmt == 'X' || *fmt == 'u' || *fmt == 'o' || *fmt == 'b') {
+    1fc4:	e9 9f 06 00 00       	jmp    2668 <internal_vprintf+0xf17>
+											else if (*fmt == 'X')
+    1fc9:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    1fcd:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+    1fd0:	3c 58                	cmp    al,0x58
+    1fd2:	75 2d                	jne    2001 <internal_vprintf+0x8b0>
+													rv += putu(ctx, val, flags | KFL_IS_HEX | KFL_CAPITAL, width, prec);
+    1fd4:	0f be 7d fc          	movsx  edi,BYTE PTR [rbp-0x4]
+    1fd8:	0f be 4d fd          	movsx  ecx,BYTE PTR [rbp-0x3]
+    1fdc:	0f b6 45 fe          	movzx  eax,BYTE PTR [rbp-0x2]
+    1fe0:	83 c8 81             	or     eax,0xffffff81
+    1fe3:	0f be d0             	movsx  edx,al
+    1fe6:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    1fea:	48 8b 75 e0          	mov    rsi,QWORD PTR [rbp-0x20]
+    1fee:	41 89 f8             	mov    r8d,edi
+    1ff1:	48 89 c7             	mov    rdi,rax
+    1ff4:	e8 00 00 00 00       	call   1ff9 <internal_vprintf+0x8a8>
+    1ff9:	01 45 f4             	add    DWORD PTR [rbp-0xc],eax
+									} else if (*fmt == 'x' || *fmt == 'X' || *fmt == 'u' || *fmt == 'o' || *fmt == 'b') {
+    1ffc:	e9 67 06 00 00       	jmp    2668 <internal_vprintf+0xf17>
+											else if (*fmt == 'u')
+    2001:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    2005:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+    2008:	3c 75                	cmp    al,0x75
+    200a:	75 27                	jne    2033 <internal_vprintf+0x8e2>
+													rv += putu(ctx, val, flags, width, prec);
+    200c:	0f be 7d fc          	movsx  edi,BYTE PTR [rbp-0x4]
+    2010:	0f be 4d fd          	movsx  ecx,BYTE PTR [rbp-0x3]
+    2014:	0f be 55 fe          	movsx  edx,BYTE PTR [rbp-0x2]
+    2018:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    201c:	48 8b 75 e0          	mov    rsi,QWORD PTR [rbp-0x20]
+    2020:	41 89 f8             	mov    r8d,edi
+    2023:	48 89 c7             	mov    rdi,rax
+    2026:	e8 00 00 00 00       	call   202b <internal_vprintf+0x8da>
+    202b:	01 45 f4             	add    DWORD PTR [rbp-0xc],eax
+									} else if (*fmt == 'x' || *fmt == 'X' || *fmt == 'u' || *fmt == 'o' || *fmt == 'b') {
+    202e:	e9 35 06 00 00       	jmp    2668 <internal_vprintf+0xf17>
+											else if (*fmt == 'o')
+    2033:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    2037:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+    203a:	3c 6f                	cmp    al,0x6f
+    203c:	75 2d                	jne    206b <internal_vprintf+0x91a>
 													rv += putu(ctx, val, flags | KFL_IS_OCT, width, prec);
-    1d60:	0f be 7d fc          	movsx  edi,BYTE PTR [rbp-0x4]
-    1d64:	0f be 4d fd          	movsx  ecx,BYTE PTR [rbp-0x3]
-    1d68:	0f b6 45 fe          	movzx  eax,BYTE PTR [rbp-0x2]
-    1d6c:	83 c8 40             	or     eax,0x40
-    1d6f:	0f be d0             	movsx  edx,al
-    1d72:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1d76:	48 8b 75 e0          	mov    rsi,QWORD PTR [rbp-0x20]
-    1d7a:	41 89 f8             	mov    r8d,edi
-    1d7d:	48 89 c7             	mov    rdi,rax
-    1d80:	e8 00 00 00 00       	call   1d85 <internal_vprintf+0x634>
-    1d85:	01 45 f4             	add    DWORD PTR [rbp-0xc],eax
+    203e:	0f be 7d fc          	movsx  edi,BYTE PTR [rbp-0x4]
+    2042:	0f be 4d fd          	movsx  ecx,BYTE PTR [rbp-0x3]
+    2046:	0f b6 45 fe          	movzx  eax,BYTE PTR [rbp-0x2]
+    204a:	83 c8 40             	or     eax,0x40
+    204d:	0f be d0             	movsx  edx,al
+    2050:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    2054:	48 8b 75 e0          	mov    rsi,QWORD PTR [rbp-0x20]
+    2058:	41 89 f8             	mov    r8d,edi
+    205b:	48 89 c7             	mov    rdi,rax
+    205e:	e8 00 00 00 00       	call   2063 <internal_vprintf+0x912>
+    2063:	01 45 f4             	add    DWORD PTR [rbp-0xc],eax
 									} else if (*fmt == 'x' || *fmt == 'X' || *fmt == 'u' || *fmt == 'o' || *fmt == 'b') {
-    1d88:	e9 77 03 00 00       	jmp    2104 <internal_vprintf+0x9b3>
+    2066:	e9 fd 05 00 00       	jmp    2668 <internal_vprintf+0xf17>
 											else if (*fmt == 'b')
-    1d8d:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    1d91:	0f b6 00             	movzx  eax,BYTE PTR [rax]
-    1d94:	3c 62                	cmp    al,0x62
-    1d96:	0f 85 68 03 00 00    	jne    2104 <internal_vprintf+0x9b3>
+    206b:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    206f:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+    2072:	3c 62                	cmp    al,0x62
+    2074:	0f 85 ee 05 00 00    	jne    2668 <internal_vprintf+0xf17>
 													rv += putb(ctx, val, flags, width, prec);
-    1d9c:	0f be 75 fc          	movsx  esi,BYTE PTR [rbp-0x4]
-    1da0:	0f be 4d fd          	movsx  ecx,BYTE PTR [rbp-0x3]
-    1da4:	0f be 55 fe          	movsx  edx,BYTE PTR [rbp-0x2]
-    1da8:	48 8b 45 e0          	mov    rax,QWORD PTR [rbp-0x20]
-    1dac:	89 c7                	mov    edi,eax
-    1dae:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1db2:	41 89 f0             	mov    r8d,esi
-    1db5:	89 fe                	mov    esi,edi
-    1db7:	48 89 c7             	mov    rdi,rax
-    1dba:	e8 00 00 00 00       	call   1dbf <internal_vprintf+0x66e>
-    1dbf:	01 45 f4             	add    DWORD PTR [rbp-0xc],eax
+    207a:	0f be 75 fc          	movsx  esi,BYTE PTR [rbp-0x4]
+    207e:	0f be 4d fd          	movsx  ecx,BYTE PTR [rbp-0x3]
+    2082:	0f be 55 fe          	movsx  edx,BYTE PTR [rbp-0x2]
+    2086:	48 8b 45 e0          	mov    rax,QWORD PTR [rbp-0x20]
+    208a:	89 c7                	mov    edi,eax
+    208c:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    2090:	41 89 f0             	mov    r8d,esi
+    2093:	89 fe                	mov    esi,edi
+    2095:	48 89 c7             	mov    rdi,rax
+    2098:	e8 00 00 00 00       	call   209d <internal_vprintf+0x94c>
+    209d:	01 45 f4             	add    DWORD PTR [rbp-0xc],eax
 									} else if (*fmt == 'x' || *fmt == 'X' || *fmt == 'u' || *fmt == 'o' || *fmt == 'b') {
-    1dc2:	e9 3d 03 00 00       	jmp    2104 <internal_vprintf+0x9b3>
+    20a0:	e9 c3 05 00 00       	jmp    2668 <internal_vprintf+0xf17>
 									} else if(*fmt == 'p')/* {
-    1dc7:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    1dcb:	0f b6 00             	movzx  eax,BYTE PTR [rax]
-    1dce:	3c 70                	cmp    al,0x70
-    1dd0:	75 37                	jne    1e09 <internal_vprintf+0x6b8>
+    20a5:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    20a9:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+    20ac:	3c 70                	cmp    al,0x70
+    20ae:	75 6d                	jne    211d <internal_vprintf+0x9cc>
 											rv += putu(ctx, (uint64_t)(uintptr_t)va_arg(args, void*), /*KFL_ZERO_PREFIX |*/ KFL_IS_HEX,
-    1dd2:	48 83 45 a8 08       	add    QWORD PTR [rbp-0x58],0x8
-    1dd7:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    1ddb:	48 83 e8 08          	sub    rax,0x8
-    1ddf:	48 8b 00             	mov    rax,QWORD PTR [rax]
-    1de2:	48 89 c6             	mov    rsi,rax
-    1de5:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1de9:	41 b8 10 00 00 00    	mov    r8d,0x10
-    1def:	b9 00 00 00 00       	mov    ecx,0x0
-    1df4:	ba 01 00 00 00       	mov    edx,0x1
-    1df9:	48 89 c7             	mov    rdi,rax
-    1dfc:	e8 00 00 00 00       	call   1e01 <internal_vprintf+0x6b0>
-    1e01:	01 45 f4             	add    DWORD PTR [rbp-0xc],eax
-    1e04:	e9 fc 02 00 00       	jmp    2105 <internal_vprintf+0x9b4>
+    20b0:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    20b4:	8b 00                	mov    eax,DWORD PTR [rax]
+    20b6:	83 f8 2f             	cmp    eax,0x2f
+    20b9:	77 24                	ja     20df <internal_vprintf+0x98e>
+    20bb:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    20bf:	48 8b 50 10          	mov    rdx,QWORD PTR [rax+0x10]
+    20c3:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    20c7:	8b 00                	mov    eax,DWORD PTR [rax]
+    20c9:	89 c0                	mov    eax,eax
+    20cb:	48 01 d0             	add    rax,rdx
+    20ce:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    20d2:	8b 12                	mov    edx,DWORD PTR [rdx]
+    20d4:	8d 4a 08             	lea    ecx,[rdx+0x8]
+    20d7:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    20db:	89 0a                	mov    DWORD PTR [rdx],ecx
+    20dd:	eb 14                	jmp    20f3 <internal_vprintf+0x9a2>
+    20df:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    20e3:	48 8b 40 08          	mov    rax,QWORD PTR [rax+0x8]
+    20e7:	48 8d 48 08          	lea    rcx,[rax+0x8]
+    20eb:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    20ef:	48 89 4a 08          	mov    QWORD PTR [rdx+0x8],rcx
+    20f3:	48 8b 00             	mov    rax,QWORD PTR [rax]
+    20f6:	48 89 c6             	mov    rsi,rax
+    20f9:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    20fd:	41 b8 10 00 00 00    	mov    r8d,0x10
+    2103:	b9 00 00 00 00       	mov    ecx,0x0
+    2108:	ba 01 00 00 00       	mov    edx,0x1
+    210d:	48 89 c7             	mov    rdi,rax
+    2110:	e8 00 00 00 00       	call   2115 <internal_vprintf+0x9c4>
+    2115:	01 45 f4             	add    DWORD PTR [rbp-0xc],eax
+    2118:	e9 4c 05 00 00       	jmp    2669 <internal_vprintf+0xf18>
 									else if (*fmt == 's') {
-    1e09:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    1e0d:	0f b6 00             	movzx  eax,BYTE PTR [rax]
-    1e10:	3c 73                	cmp    al,0x73
-    1e12:	0f 85 4d 01 00 00    	jne    1f65 <internal_vprintf+0x814>
+    211d:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    2121:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+    2124:	3c 73                	cmp    al,0x73
+    2126:	0f 85 86 01 00 00    	jne    22b2 <internal_vprintf+0xb61>
 											const char* str = va_arg(args, const char*);
-    1e18:	48 83 45 a8 08       	add    QWORD PTR [rbp-0x58],0x8
-    1e1d:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    1e21:	48 8b 40 f8          	mov    rax,QWORD PTR [rax-0x8]
-    1e25:	48 89 45 d8          	mov    QWORD PTR [rbp-0x28],rax
+    212c:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    2130:	8b 00                	mov    eax,DWORD PTR [rax]
+    2132:	83 f8 2f             	cmp    eax,0x2f
+    2135:	77 24                	ja     215b <internal_vprintf+0xa0a>
+    2137:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    213b:	48 8b 50 10          	mov    rdx,QWORD PTR [rax+0x10]
+    213f:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    2143:	8b 00                	mov    eax,DWORD PTR [rax]
+    2145:	89 c0                	mov    eax,eax
+    2147:	48 01 d0             	add    rax,rdx
+    214a:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    214e:	8b 12                	mov    edx,DWORD PTR [rdx]
+    2150:	8d 4a 08             	lea    ecx,[rdx+0x8]
+    2153:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    2157:	89 0a                	mov    DWORD PTR [rdx],ecx
+    2159:	eb 14                	jmp    216f <internal_vprintf+0xa1e>
+    215b:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    215f:	48 8b 40 08          	mov    rax,QWORD PTR [rax+0x8]
+    2163:	48 8d 48 08          	lea    rcx,[rax+0x8]
+    2167:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    216b:	48 89 4a 08          	mov    QWORD PTR [rdx+0x8],rcx
+    216f:	48 8b 00             	mov    rax,QWORD PTR [rax]
+    2172:	48 89 45 d8          	mov    QWORD PTR [rbp-0x28],rax
 											if(str) {
-    1e29:	48 83 7d d8 00       	cmp    QWORD PTR [rbp-0x28],0x0
-    1e2e:	0f 84 19 01 00 00    	je     1f4d <internal_vprintf+0x7fc>
+    2176:	48 83 7d d8 00       	cmp    QWORD PTR [rbp-0x28],0x0
+    217b:	0f 84 19 01 00 00    	je     229a <internal_vprintf+0xb49>
 													size_t l = strlen(str);
-    1e34:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
-    1e38:	48 89 c7             	mov    rdi,rax
-    1e3b:	e8 00 00 00 00       	call   1e40 <internal_vprintf+0x6ef>
-    1e40:	48 89 45 d0          	mov    QWORD PTR [rbp-0x30],rax
+    2181:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
+    2185:	48 89 c7             	mov    rdi,rax
+    2188:	e8 00 00 00 00       	call   218d <internal_vprintf+0xa3c>
+    218d:	48 89 45 d0          	mov    QWORD PTR [rbp-0x30],rax
 													if ((size_t)width > l) {
-    1e44:	48 0f be 45 fd       	movsx  rax,BYTE PTR [rbp-0x3]
-    1e49:	48 39 45 d0          	cmp    QWORD PTR [rbp-0x30],rax
-    1e4d:	73 76                	jae    1ec5 <internal_vprintf+0x774>
+    2191:	48 0f be 45 fd       	movsx  rax,BYTE PTR [rbp-0x3]
+    2196:	48 39 45 d0          	cmp    QWORD PTR [rbp-0x30],rax
+    219a:	73 76                	jae    2212 <internal_vprintf+0xac1>
 															if (!(flags & KFL_LEFT_ALIGN))
-    1e4f:	0f be 45 fe          	movsx  eax,BYTE PTR [rbp-0x2]
-    1e53:	83 e0 08             	and    eax,0x8
-    1e56:	85 c0                	test   eax,eax
-    1e58:	75 2b                	jne    1e85 <internal_vprintf+0x734>
+    219c:	0f be 45 fe          	movsx  eax,BYTE PTR [rbp-0x2]
+    21a0:	83 e0 08             	and    eax,0x8
+    21a3:	85 c0                	test   eax,eax
+    21a5:	75 2b                	jne    21d2 <internal_vprintf+0xa81>
 																	cputs(str);
-    1e5a:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
-    1e5e:	48 8d 55 c0          	lea    rdx,[rbp-0x40]
-    1e62:	49 89 d2             	mov    r10,rdx
-    1e65:	48 89 c7             	mov    rdi,rax
-    1e68:	e8 98 f8 ff ff       	call   1705 <cputs.0>
+    21a7:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
+    21ab:	48 8d 55 c0          	lea    rdx,[rbp-0x40]
+    21af:	49 89 d2             	mov    r10,rdx
+    21b2:	48 89 c7             	mov    rdi,rax
+    21b5:	e8 4b f5 ff ff       	call   1705 <cputs.0>
 															while ((size_t)(width--) > l)
-    1e6d:	eb 16                	jmp    1e85 <internal_vprintf+0x734>
+    21ba:	eb 16                	jmp    21d2 <internal_vprintf+0xa81>
 																	ctx->putchar(ctx, ' ');
-    1e6f:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1e73:	48 8b 50 10          	mov    rdx,QWORD PTR [rax+0x10]
-    1e77:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1e7b:	be 20 00 00 00       	mov    esi,0x20
-    1e80:	48 89 c7             	mov    rdi,rax
-    1e83:	ff d2                	call   rdx
+    21bc:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    21c0:	48 8b 50 10          	mov    rdx,QWORD PTR [rax+0x10]
+    21c4:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    21c8:	be 20 00 00 00       	mov    esi,0x20
+    21cd:	48 89 c7             	mov    rdi,rax
+    21d0:	ff d2                	call   rdx
 															while ((size_t)(width--) > l)
-    1e85:	0f b6 45 fd          	movzx  eax,BYTE PTR [rbp-0x3]
-    1e89:	89 c2                	mov    edx,eax
-    1e8b:	83 ea 01             	sub    edx,0x1
-    1e8e:	88 55 fd             	mov    BYTE PTR [rbp-0x3],dl
-    1e91:	48 0f be c0          	movsx  rax,al
-    1e95:	48 39 45 d0          	cmp    QWORD PTR [rbp-0x30],rax
-    1e99:	72 d4                	jb     1e6f <internal_vprintf+0x71e>
+    21d2:	0f b6 45 fd          	movzx  eax,BYTE PTR [rbp-0x3]
+    21d6:	89 c2                	mov    edx,eax
+    21d8:	83 ea 01             	sub    edx,0x1
+    21db:	88 55 fd             	mov    BYTE PTR [rbp-0x3],dl
+    21de:	48 0f be c0          	movsx  rax,al
+    21e2:	48 39 45 d0          	cmp    QWORD PTR [rbp-0x30],rax
+    21e6:	72 d4                	jb     21bc <internal_vprintf+0xa6b>
 															if (flags & KFL_LEFT_ALIGN)
-    1e9b:	0f be 45 fe          	movsx  eax,BYTE PTR [rbp-0x2]
-    1e9f:	83 e0 08             	and    eax,0x8
-    1ea2:	85 c0                	test   eax,eax
-    1ea4:	74 13                	je     1eb9 <internal_vprintf+0x768>
+    21e8:	0f be 45 fe          	movsx  eax,BYTE PTR [rbp-0x2]
+    21ec:	83 e0 08             	and    eax,0x8
+    21ef:	85 c0                	test   eax,eax
+    21f1:	74 13                	je     2206 <internal_vprintf+0xab5>
 																	cputs(str);
-    1ea6:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
-    1eaa:	48 8d 55 c0          	lea    rdx,[rbp-0x40]
-    1eae:	49 89 d2             	mov    r10,rdx
-    1eb1:	48 89 c7             	mov    rdi,rax
-    1eb4:	e8 4c f8 ff ff       	call   1705 <cputs.0>
+    21f3:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
+    21f7:	48 8d 55 c0          	lea    rdx,[rbp-0x40]
+    21fb:	49 89 d2             	mov    r10,rdx
+    21fe:	48 89 c7             	mov    rdi,rax
+    2201:	e8 ff f4 ff ff       	call   1705 <cputs.0>
 															rv += width;
-    1eb9:	0f be 45 fd          	movsx  eax,BYTE PTR [rbp-0x3]
-    1ebd:	01 45 f4             	add    DWORD PTR [rbp-0xc],eax
-    1ec0:	e9 40 02 00 00       	jmp    2105 <internal_vprintf+0x9b4>
+    2206:	0f be 45 fd          	movsx  eax,BYTE PTR [rbp-0x3]
+    220a:	01 45 f4             	add    DWORD PTR [rbp-0xc],eax
+    220d:	e9 57 04 00 00       	jmp    2669 <internal_vprintf+0xf18>
 													} else if (prec && l > (size_t)prec) {
-    1ec5:	80 7d fc 00          	cmp    BYTE PTR [rbp-0x4],0x0
-    1ec9:	74 5c                	je     1f27 <internal_vprintf+0x7d6>
-    1ecb:	48 0f be 45 fc       	movsx  rax,BYTE PTR [rbp-0x4]
-    1ed0:	48 3b 45 d0          	cmp    rax,QWORD PTR [rbp-0x30]
-    1ed4:	73 51                	jae    1f27 <internal_vprintf+0x7d6>
+    2212:	80 7d fc 00          	cmp    BYTE PTR [rbp-0x4],0x0
+    2216:	74 5c                	je     2274 <internal_vprintf+0xb23>
+    2218:	48 0f be 45 fc       	movsx  rax,BYTE PTR [rbp-0x4]
+    221d:	48 3b 45 d0          	cmp    rax,QWORD PTR [rbp-0x30]
+    2221:	73 51                	jae    2274 <internal_vprintf+0xb23>
 															rv += prec;
-    1ed6:	0f be 45 fc          	movsx  eax,BYTE PTR [rbp-0x4]
-    1eda:	01 45 f4             	add    DWORD PTR [rbp-0xc],eax
+    2223:	0f be 45 fc          	movsx  eax,BYTE PTR [rbp-0x4]
+    2227:	01 45 f4             	add    DWORD PTR [rbp-0xc],eax
 															l = 0;
-    1edd:	48 c7 45 d0 00 00 00 00 	mov    QWORD PTR [rbp-0x30],0x0
+    222a:	48 c7 45 d0 00 00 00 00 	mov    QWORD PTR [rbp-0x30],0x0
 															while (l++ < (size_t)prec)
-    1ee5:	eb 25                	jmp    1f0c <internal_vprintf+0x7bb>
+    2232:	eb 25                	jmp    2259 <internal_vprintf+0xb08>
 																	ctx->putchar(ctx, *str++);
-    1ee7:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1eeb:	48 8b 48 10          	mov    rcx,QWORD PTR [rax+0x10]
-    1eef:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
-    1ef3:	48 8d 50 01          	lea    rdx,[rax+0x1]
-    1ef7:	48 89 55 d8          	mov    QWORD PTR [rbp-0x28],rdx
-    1efb:	0f b6 00             	movzx  eax,BYTE PTR [rax]
-    1efe:	0f be d0             	movsx  edx,al
-    1f01:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1f05:	89 d6                	mov    esi,edx
-    1f07:	48 89 c7             	mov    rdi,rax
-    1f0a:	ff d1                	call   rcx
+    2234:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    2238:	48 8b 48 10          	mov    rcx,QWORD PTR [rax+0x10]
+    223c:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
+    2240:	48 8d 50 01          	lea    rdx,[rax+0x1]
+    2244:	48 89 55 d8          	mov    QWORD PTR [rbp-0x28],rdx
+    2248:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+    224b:	0f be d0             	movsx  edx,al
+    224e:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    2252:	89 d6                	mov    esi,edx
+    2254:	48 89 c7             	mov    rdi,rax
+    2257:	ff d1                	call   rcx
 															while (l++ < (size_t)prec)
-    1f0c:	48 8b 45 d0          	mov    rax,QWORD PTR [rbp-0x30]
-    1f10:	48 8d 50 01          	lea    rdx,[rax+0x1]
-    1f14:	48 89 55 d0          	mov    QWORD PTR [rbp-0x30],rdx
-    1f18:	48 0f be 55 fc       	movsx  rdx,BYTE PTR [rbp-0x4]
-    1f1d:	48 39 d0             	cmp    rax,rdx
-    1f20:	72 c5                	jb     1ee7 <internal_vprintf+0x796>
+    2259:	48 8b 45 d0          	mov    rax,QWORD PTR [rbp-0x30]
+    225d:	48 8d 50 01          	lea    rdx,[rax+0x1]
+    2261:	48 89 55 d0          	mov    QWORD PTR [rbp-0x30],rdx
+    2265:	48 0f be 55 fc       	movsx  rdx,BYTE PTR [rbp-0x4]
+    226a:	48 39 d0             	cmp    rax,rdx
+    226d:	72 c5                	jb     2234 <internal_vprintf+0xae3>
 													} else if (prec && l > (size_t)prec) {
-    1f22:	e9 de 01 00 00       	jmp    2105 <internal_vprintf+0x9b4>
+    226f:	e9 f5 03 00 00       	jmp    2669 <internal_vprintf+0xf18>
 													} else {
 															rv += l;
-    1f27:	48 8b 45 d0          	mov    rax,QWORD PTR [rbp-0x30]
-    1f2b:	89 c2                	mov    edx,eax
-    1f2d:	8b 45 f4             	mov    eax,DWORD PTR [rbp-0xc]
-    1f30:	01 d0                	add    eax,edx
-    1f32:	89 45 f4             	mov    DWORD PTR [rbp-0xc],eax
+    2274:	48 8b 45 d0          	mov    rax,QWORD PTR [rbp-0x30]
+    2278:	89 c2                	mov    edx,eax
+    227a:	8b 45 f4             	mov    eax,DWORD PTR [rbp-0xc]
+    227d:	01 d0                	add    eax,edx
+    227f:	89 45 f4             	mov    DWORD PTR [rbp-0xc],eax
 															cputs(str);
-    1f35:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
-    1f39:	48 8d 55 c0          	lea    rdx,[rbp-0x40]
-    1f3d:	49 89 d2             	mov    r10,rdx
-    1f40:	48 89 c7             	mov    rdi,rax
-    1f43:	e8 bd f7 ff ff       	call   1705 <cputs.0>
-    1f48:	e9 b8 01 00 00       	jmp    2105 <internal_vprintf+0x9b4>
+    2282:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
+    2286:	48 8d 55 c0          	lea    rdx,[rbp-0x40]
+    228a:	49 89 d2             	mov    r10,rdx
+    228d:	48 89 c7             	mov    rdi,rax
+    2290:	e8 70 f4 ff ff       	call   1705 <cputs.0>
+    2295:	e9 cf 03 00 00       	jmp    2669 <internal_vprintf+0xf18>
 													}
 											}
 											else
 													cputs("(null)");
-    1f4d:	48 8d 45 c0          	lea    rax,[rbp-0x40]
-    1f51:	49 89 c2             	mov    r10,rax
-    1f54:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-    1f5b:	e8 a5 f7 ff ff       	call   1705 <cputs.0>
-    1f60:	e9 a0 01 00 00       	jmp    2105 <internal_vprintf+0x9b4>
+    229a:	48 8d 45 c0          	lea    rax,[rbp-0x40]
+    229e:	49 89 c2             	mov    r10,rax
+    22a1:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+    22a8:	e8 58 f4 ff ff       	call   1705 <cputs.0>
+    22ad:	e9 b7 03 00 00       	jmp    2669 <internal_vprintf+0xf18>
 									} else if (*fmt == 'c') {
-    1f65:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    1f69:	0f b6 00             	movzx  eax,BYTE PTR [rax]
-    1f6c:	3c 63                	cmp    al,0x63
-    1f6e:	75 2e                	jne    1f9e <internal_vprintf+0x84d>
+    22b2:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    22b6:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+    22b9:	3c 63                	cmp    al,0x63
+    22bb:	75 64                	jne    2321 <internal_vprintf+0xbd0>
 											ctx->putchar(ctx, (char)va_arg(args, int));
-    1f70:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1f74:	48 8b 48 10          	mov    rcx,QWORD PTR [rax+0x10]
-    1f78:	48 83 45 a8 04       	add    QWORD PTR [rbp-0x58],0x4
-    1f7d:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    1f81:	48 83 e8 04          	sub    rax,0x4
-    1f85:	8b 00                	mov    eax,DWORD PTR [rax]
-    1f87:	0f be d0             	movsx  edx,al
-    1f8a:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1f8e:	89 d6                	mov    esi,edx
-    1f90:	48 89 c7             	mov    rdi,rax
-    1f93:	ff d1                	call   rcx
+    22bd:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    22c1:	48 8b 48 10          	mov    rcx,QWORD PTR [rax+0x10]
+    22c5:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    22c9:	8b 00                	mov    eax,DWORD PTR [rax]
+    22cb:	83 f8 2f             	cmp    eax,0x2f
+    22ce:	77 24                	ja     22f4 <internal_vprintf+0xba3>
+    22d0:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    22d4:	48 8b 50 10          	mov    rdx,QWORD PTR [rax+0x10]
+    22d8:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    22dc:	8b 00                	mov    eax,DWORD PTR [rax]
+    22de:	89 c0                	mov    eax,eax
+    22e0:	48 01 d0             	add    rax,rdx
+    22e3:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    22e7:	8b 12                	mov    edx,DWORD PTR [rdx]
+    22e9:	8d 72 08             	lea    esi,[rdx+0x8]
+    22ec:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    22f0:	89 32                	mov    DWORD PTR [rdx],esi
+    22f2:	eb 14                	jmp    2308 <internal_vprintf+0xbb7>
+    22f4:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    22f8:	48 8b 40 08          	mov    rax,QWORD PTR [rax+0x8]
+    22fc:	48 8d 70 08          	lea    rsi,[rax+0x8]
+    2300:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    2304:	48 89 72 08          	mov    QWORD PTR [rdx+0x8],rsi
+    2308:	8b 00                	mov    eax,DWORD PTR [rax]
+    230a:	0f be d0             	movsx  edx,al
+    230d:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    2311:	89 d6                	mov    esi,edx
+    2313:	48 89 c7             	mov    rdi,rax
+    2316:	ff d1                	call   rcx
 											rv++;
-    1f95:	83 45 f4 01          	add    DWORD PTR [rbp-0xc],0x1
-    1f99:	e9 67 01 00 00       	jmp    2105 <internal_vprintf+0x9b4>
+    2318:	83 45 f4 01          	add    DWORD PTR [rbp-0xc],0x1
+    231c:	e9 48 03 00 00       	jmp    2669 <internal_vprintf+0xf18>
 									} else if (*fmt == 'f')
-    1f9e:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    1fa2:	0f b6 00             	movzx  eax,BYTE PTR [rax]
-    1fa5:	3c 66                	cmp    al,0x66
-    1fa7:	0f 84 58 01 00 00    	je     2105 <internal_vprintf+0x9b4>
+    2321:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    2325:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+    2328:	3c 66                	cmp    al,0x66
+    232a:	0f 84 39 03 00 00    	je     2669 <internal_vprintf+0xf18>
 											/* FPU init needed? */;
 									else if (*fmt == 'n') {
-    1fad:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    1fb1:	0f b6 00             	movzx  eax,BYTE PTR [rax]
-    1fb4:	3c 6e                	cmp    al,0x6e
-    1fb6:	0f 85 0f 01 00 00    	jne    20cb <internal_vprintf+0x97a>
+    2330:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    2334:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+    2337:	3c 6e                	cmp    al,0x6e
+    2339:	0f 85 f0 02 00 00    	jne    262f <internal_vprintf+0xede>
 											if (!size)
-    1fbc:	80 7d fb 00          	cmp    BYTE PTR [rbp-0x5],0x0
-    1fc0:	75 1a                	jne    1fdc <internal_vprintf+0x88b>
+    233f:	80 7d fb 00          	cmp    BYTE PTR [rbp-0x5],0x0
+    2343:	75 50                	jne    2395 <internal_vprintf+0xc44>
 													*va_arg(args, int*) = (int)rv;
-    1fc2:	48 83 45 a8 08       	add    QWORD PTR [rbp-0x58],0x8
-    1fc7:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    1fcb:	48 83 e8 08          	sub    rax,0x8
-    1fcf:	48 8b 00             	mov    rax,QWORD PTR [rax]
-    1fd2:	8b 55 f4             	mov    edx,DWORD PTR [rbp-0xc]
-    1fd5:	89 10                	mov    DWORD PTR [rax],edx
-    1fd7:	e9 29 01 00 00       	jmp    2105 <internal_vprintf+0x9b4>
+    2345:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    2349:	8b 00                	mov    eax,DWORD PTR [rax]
+    234b:	83 f8 2f             	cmp    eax,0x2f
+    234e:	77 24                	ja     2374 <internal_vprintf+0xc23>
+    2350:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    2354:	48 8b 50 10          	mov    rdx,QWORD PTR [rax+0x10]
+    2358:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    235c:	8b 00                	mov    eax,DWORD PTR [rax]
+    235e:	89 c0                	mov    eax,eax
+    2360:	48 01 d0             	add    rax,rdx
+    2363:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    2367:	8b 12                	mov    edx,DWORD PTR [rdx]
+    2369:	8d 4a 08             	lea    ecx,[rdx+0x8]
+    236c:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    2370:	89 0a                	mov    DWORD PTR [rdx],ecx
+    2372:	eb 14                	jmp    2388 <internal_vprintf+0xc37>
+    2374:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    2378:	48 8b 40 08          	mov    rax,QWORD PTR [rax+0x8]
+    237c:	48 8d 48 08          	lea    rcx,[rax+0x8]
+    2380:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    2384:	48 89 4a 08          	mov    QWORD PTR [rdx+0x8],rcx
+    2388:	48 8b 00             	mov    rax,QWORD PTR [rax]
+    238b:	8b 55 f4             	mov    edx,DWORD PTR [rbp-0xc]
+    238e:	89 10                	mov    DWORD PTR [rax],edx
+    2390:	e9 d4 02 00 00       	jmp    2669 <internal_vprintf+0xf18>
 											else if (size == 1)
-    1fdc:	80 7d fb 01          	cmp    BYTE PTR [rbp-0x5],0x1
-    1fe0:	75 1a                	jne    1ffc <internal_vprintf+0x8ab>
+    2395:	80 7d fb 01          	cmp    BYTE PTR [rbp-0x5],0x1
+    2399:	75 50                	jne    23eb <internal_vprintf+0xc9a>
 													*va_arg(args, signed char*) = (signed char)rv;
-    1fe2:	48 83 45 a8 08       	add    QWORD PTR [rbp-0x58],0x8
-    1fe7:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    1feb:	48 83 e8 08          	sub    rax,0x8
-    1fef:	48 8b 00             	mov    rax,QWORD PTR [rax]
-    1ff2:	8b 55 f4             	mov    edx,DWORD PTR [rbp-0xc]
-    1ff5:	88 10                	mov    BYTE PTR [rax],dl
-    1ff7:	e9 09 01 00 00       	jmp    2105 <internal_vprintf+0x9b4>
+    239b:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    239f:	8b 00                	mov    eax,DWORD PTR [rax]
+    23a1:	83 f8 2f             	cmp    eax,0x2f
+    23a4:	77 24                	ja     23ca <internal_vprintf+0xc79>
+    23a6:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    23aa:	48 8b 50 10          	mov    rdx,QWORD PTR [rax+0x10]
+    23ae:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    23b2:	8b 00                	mov    eax,DWORD PTR [rax]
+    23b4:	89 c0                	mov    eax,eax
+    23b6:	48 01 d0             	add    rax,rdx
+    23b9:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    23bd:	8b 12                	mov    edx,DWORD PTR [rdx]
+    23bf:	8d 4a 08             	lea    ecx,[rdx+0x8]
+    23c2:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    23c6:	89 0a                	mov    DWORD PTR [rdx],ecx
+    23c8:	eb 14                	jmp    23de <internal_vprintf+0xc8d>
+    23ca:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    23ce:	48 8b 40 08          	mov    rax,QWORD PTR [rax+0x8]
+    23d2:	48 8d 48 08          	lea    rcx,[rax+0x8]
+    23d6:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    23da:	48 89 4a 08          	mov    QWORD PTR [rdx+0x8],rcx
+    23de:	48 8b 00             	mov    rax,QWORD PTR [rax]
+    23e1:	8b 55 f4             	mov    edx,DWORD PTR [rbp-0xc]
+    23e4:	88 10                	mov    BYTE PTR [rax],dl
+    23e6:	e9 7e 02 00 00       	jmp    2669 <internal_vprintf+0xf18>
 											else if (size == 2)
-    1ffc:	80 7d fb 02          	cmp    BYTE PTR [rbp-0x5],0x2
-    2000:	75 1b                	jne    201d <internal_vprintf+0x8cc>
+    23eb:	80 7d fb 02          	cmp    BYTE PTR [rbp-0x5],0x2
+    23ef:	75 51                	jne    2442 <internal_vprintf+0xcf1>
 													*va_arg(args, short int*) = (short int)rv;
-    2002:	48 83 45 a8 08       	add    QWORD PTR [rbp-0x58],0x8
-    2007:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    200b:	48 83 e8 08          	sub    rax,0x8
-    200f:	48 8b 00             	mov    rax,QWORD PTR [rax]
-    2012:	8b 55 f4             	mov    edx,DWORD PTR [rbp-0xc]
-    2015:	66 89 10             	mov    WORD PTR [rax],dx
-    2018:	e9 e8 00 00 00       	jmp    2105 <internal_vprintf+0x9b4>
+    23f1:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    23f5:	8b 00                	mov    eax,DWORD PTR [rax]
+    23f7:	83 f8 2f             	cmp    eax,0x2f
+    23fa:	77 24                	ja     2420 <internal_vprintf+0xccf>
+    23fc:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    2400:	48 8b 50 10          	mov    rdx,QWORD PTR [rax+0x10]
+    2404:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    2408:	8b 00                	mov    eax,DWORD PTR [rax]
+    240a:	89 c0                	mov    eax,eax
+    240c:	48 01 d0             	add    rax,rdx
+    240f:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    2413:	8b 12                	mov    edx,DWORD PTR [rdx]
+    2415:	8d 4a 08             	lea    ecx,[rdx+0x8]
+    2418:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    241c:	89 0a                	mov    DWORD PTR [rdx],ecx
+    241e:	eb 14                	jmp    2434 <internal_vprintf+0xce3>
+    2420:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    2424:	48 8b 40 08          	mov    rax,QWORD PTR [rax+0x8]
+    2428:	48 8d 48 08          	lea    rcx,[rax+0x8]
+    242c:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    2430:	48 89 4a 08          	mov    QWORD PTR [rdx+0x8],rcx
+    2434:	48 8b 00             	mov    rax,QWORD PTR [rax]
+    2437:	8b 55 f4             	mov    edx,DWORD PTR [rbp-0xc]
+    243a:	66 89 10             	mov    WORD PTR [rax],dx
+    243d:	e9 27 02 00 00       	jmp    2669 <internal_vprintf+0xf18>
 											else if (size == 3)
-    201d:	80 7d fb 03          	cmp    BYTE PTR [rbp-0x5],0x3
-    2021:	75 1e                	jne    2041 <internal_vprintf+0x8f0>
+    2442:	80 7d fb 03          	cmp    BYTE PTR [rbp-0x5],0x3
+    2446:	75 54                	jne    249c <internal_vprintf+0xd4b>
 													*va_arg(args, long int*) = (long int)rv;
-    2023:	48 83 45 a8 08       	add    QWORD PTR [rbp-0x58],0x8
-    2028:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    202c:	48 83 e8 08          	sub    rax,0x8
-    2030:	48 8b 00             	mov    rax,QWORD PTR [rax]
-    2033:	8b 55 f4             	mov    edx,DWORD PTR [rbp-0xc]
-    2036:	48 63 d2             	movsxd rdx,edx
-    2039:	48 89 10             	mov    QWORD PTR [rax],rdx
-    203c:	e9 c4 00 00 00       	jmp    2105 <internal_vprintf+0x9b4>
+    2448:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    244c:	8b 00                	mov    eax,DWORD PTR [rax]
+    244e:	83 f8 2f             	cmp    eax,0x2f
+    2451:	77 24                	ja     2477 <internal_vprintf+0xd26>
+    2453:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    2457:	48 8b 50 10          	mov    rdx,QWORD PTR [rax+0x10]
+    245b:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    245f:	8b 00                	mov    eax,DWORD PTR [rax]
+    2461:	89 c0                	mov    eax,eax
+    2463:	48 01 d0             	add    rax,rdx
+    2466:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    246a:	8b 12                	mov    edx,DWORD PTR [rdx]
+    246c:	8d 4a 08             	lea    ecx,[rdx+0x8]
+    246f:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    2473:	89 0a                	mov    DWORD PTR [rdx],ecx
+    2475:	eb 14                	jmp    248b <internal_vprintf+0xd3a>
+    2477:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    247b:	48 8b 40 08          	mov    rax,QWORD PTR [rax+0x8]
+    247f:	48 8d 48 08          	lea    rcx,[rax+0x8]
+    2483:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    2487:	48 89 4a 08          	mov    QWORD PTR [rdx+0x8],rcx
+    248b:	48 8b 00             	mov    rax,QWORD PTR [rax]
+    248e:	8b 55 f4             	mov    edx,DWORD PTR [rbp-0xc]
+    2491:	48 63 d2             	movsxd rdx,edx
+    2494:	48 89 10             	mov    QWORD PTR [rax],rdx
+    2497:	e9 cd 01 00 00       	jmp    2669 <internal_vprintf+0xf18>
 											else if (size == 4)
-    2041:	80 7d fb 04          	cmp    BYTE PTR [rbp-0x5],0x4
-    2045:	75 1e                	jne    2065 <internal_vprintf+0x914>
+    249c:	80 7d fb 04          	cmp    BYTE PTR [rbp-0x5],0x4
+    24a0:	75 54                	jne    24f6 <internal_vprintf+0xda5>
 													*va_arg(args, long long int*) = (long long int)rv;
-    2047:	48 83 45 a8 08       	add    QWORD PTR [rbp-0x58],0x8
-    204c:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    2050:	48 83 e8 08          	sub    rax,0x8
-    2054:	48 8b 00             	mov    rax,QWORD PTR [rax]
-    2057:	8b 55 f4             	mov    edx,DWORD PTR [rbp-0xc]
-    205a:	48 63 d2             	movsxd rdx,edx
-    205d:	48 89 10             	mov    QWORD PTR [rax],rdx
-    2060:	e9 a0 00 00 00       	jmp    2105 <internal_vprintf+0x9b4>
+    24a2:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    24a6:	8b 00                	mov    eax,DWORD PTR [rax]
+    24a8:	83 f8 2f             	cmp    eax,0x2f
+    24ab:	77 24                	ja     24d1 <internal_vprintf+0xd80>
+    24ad:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    24b1:	48 8b 50 10          	mov    rdx,QWORD PTR [rax+0x10]
+    24b5:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    24b9:	8b 00                	mov    eax,DWORD PTR [rax]
+    24bb:	89 c0                	mov    eax,eax
+    24bd:	48 01 d0             	add    rax,rdx
+    24c0:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    24c4:	8b 12                	mov    edx,DWORD PTR [rdx]
+    24c6:	8d 4a 08             	lea    ecx,[rdx+0x8]
+    24c9:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    24cd:	89 0a                	mov    DWORD PTR [rdx],ecx
+    24cf:	eb 14                	jmp    24e5 <internal_vprintf+0xd94>
+    24d1:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    24d5:	48 8b 40 08          	mov    rax,QWORD PTR [rax+0x8]
+    24d9:	48 8d 48 08          	lea    rcx,[rax+0x8]
+    24dd:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    24e1:	48 89 4a 08          	mov    QWORD PTR [rdx+0x8],rcx
+    24e5:	48 8b 00             	mov    rax,QWORD PTR [rax]
+    24e8:	8b 55 f4             	mov    edx,DWORD PTR [rbp-0xc]
+    24eb:	48 63 d2             	movsxd rdx,edx
+    24ee:	48 89 10             	mov    QWORD PTR [rax],rdx
+    24f1:	e9 73 01 00 00       	jmp    2669 <internal_vprintf+0xf18>
 											else if (size == 5)
-    2065:	80 7d fb 05          	cmp    BYTE PTR [rbp-0x5],0x5
-    2069:	75 1b                	jne    2086 <internal_vprintf+0x935>
+    24f6:	80 7d fb 05          	cmp    BYTE PTR [rbp-0x5],0x5
+    24fa:	75 54                	jne    2550 <internal_vprintf+0xdff>
 													*va_arg(args, intmax_t*) = (intmax_t)rv;
-    206b:	48 83 45 a8 08       	add    QWORD PTR [rbp-0x58],0x8
-    2070:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    2074:	48 83 e8 08          	sub    rax,0x8
-    2078:	48 8b 00             	mov    rax,QWORD PTR [rax]
-    207b:	8b 55 f4             	mov    edx,DWORD PTR [rbp-0xc]
-    207e:	48 63 d2             	movsxd rdx,edx
-    2081:	48 89 10             	mov    QWORD PTR [rax],rdx
-    2084:	eb 7f                	jmp    2105 <internal_vprintf+0x9b4>
+    24fc:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    2500:	8b 00                	mov    eax,DWORD PTR [rax]
+    2502:	83 f8 2f             	cmp    eax,0x2f
+    2505:	77 24                	ja     252b <internal_vprintf+0xdda>
+    2507:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    250b:	48 8b 50 10          	mov    rdx,QWORD PTR [rax+0x10]
+    250f:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    2513:	8b 00                	mov    eax,DWORD PTR [rax]
+    2515:	89 c0                	mov    eax,eax
+    2517:	48 01 d0             	add    rax,rdx
+    251a:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    251e:	8b 12                	mov    edx,DWORD PTR [rdx]
+    2520:	8d 4a 08             	lea    ecx,[rdx+0x8]
+    2523:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    2527:	89 0a                	mov    DWORD PTR [rdx],ecx
+    2529:	eb 14                	jmp    253f <internal_vprintf+0xdee>
+    252b:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    252f:	48 8b 40 08          	mov    rax,QWORD PTR [rax+0x8]
+    2533:	48 8d 48 08          	lea    rcx,[rax+0x8]
+    2537:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    253b:	48 89 4a 08          	mov    QWORD PTR [rdx+0x8],rcx
+    253f:	48 8b 00             	mov    rax,QWORD PTR [rax]
+    2542:	8b 55 f4             	mov    edx,DWORD PTR [rbp-0xc]
+    2545:	48 63 d2             	movsxd rdx,edx
+    2548:	48 89 10             	mov    QWORD PTR [rax],rdx
+    254b:	e9 19 01 00 00       	jmp    2669 <internal_vprintf+0xf18>
 											else if (size == 6)
-    2086:	80 7d fb 06          	cmp    BYTE PTR [rbp-0x5],0x6
-    208a:	75 17                	jne    20a3 <internal_vprintf+0x952>
+    2550:	80 7d fb 06          	cmp    BYTE PTR [rbp-0x5],0x6
+    2554:	75 50                	jne    25a6 <internal_vprintf+0xe55>
 													*va_arg(args, ssize_t*) = (ssize_t)rv;
-    208c:	48 83 45 a8 08       	add    QWORD PTR [rbp-0x58],0x8
-    2091:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    2095:	48 83 e8 08          	sub    rax,0x8
-    2099:	48 8b 00             	mov    rax,QWORD PTR [rax]
-    209c:	8b 55 f4             	mov    edx,DWORD PTR [rbp-0xc]
-    209f:	89 10                	mov    DWORD PTR [rax],edx
-    20a1:	eb 62                	jmp    2105 <internal_vprintf+0x9b4>
+    2556:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    255a:	8b 00                	mov    eax,DWORD PTR [rax]
+    255c:	83 f8 2f             	cmp    eax,0x2f
+    255f:	77 24                	ja     2585 <internal_vprintf+0xe34>
+    2561:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    2565:	48 8b 50 10          	mov    rdx,QWORD PTR [rax+0x10]
+    2569:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    256d:	8b 00                	mov    eax,DWORD PTR [rax]
+    256f:	89 c0                	mov    eax,eax
+    2571:	48 01 d0             	add    rax,rdx
+    2574:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    2578:	8b 12                	mov    edx,DWORD PTR [rdx]
+    257a:	8d 4a 08             	lea    ecx,[rdx+0x8]
+    257d:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    2581:	89 0a                	mov    DWORD PTR [rdx],ecx
+    2583:	eb 14                	jmp    2599 <internal_vprintf+0xe48>
+    2585:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    2589:	48 8b 40 08          	mov    rax,QWORD PTR [rax+0x8]
+    258d:	48 8d 48 08          	lea    rcx,[rax+0x8]
+    2591:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    2595:	48 89 4a 08          	mov    QWORD PTR [rdx+0x8],rcx
+    2599:	48 8b 00             	mov    rax,QWORD PTR [rax]
+    259c:	8b 55 f4             	mov    edx,DWORD PTR [rbp-0xc]
+    259f:	89 10                	mov    DWORD PTR [rax],edx
+    25a1:	e9 c3 00 00 00       	jmp    2669 <internal_vprintf+0xf18>
 											else if (size == 7)
-    20a3:	80 7d fb 07          	cmp    BYTE PTR [rbp-0x5],0x7
-    20a7:	75 1b                	jne    20c4 <internal_vprintf+0x973>
+    25a6:	80 7d fb 07          	cmp    BYTE PTR [rbp-0x5],0x7
+    25aa:	75 51                	jne    25fd <internal_vprintf+0xeac>
 													*va_arg(args, ptrdiff_t*) = (ptrdiff_t)rv;
-    20a9:	48 83 45 a8 08       	add    QWORD PTR [rbp-0x58],0x8
-    20ae:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    20b2:	48 83 e8 08          	sub    rax,0x8
-    20b6:	48 8b 00             	mov    rax,QWORD PTR [rax]
-    20b9:	8b 55 f4             	mov    edx,DWORD PTR [rbp-0xc]
-    20bc:	48 63 d2             	movsxd rdx,edx
-    20bf:	48 89 10             	mov    QWORD PTR [rax],rdx
-    20c2:	eb 41                	jmp    2105 <internal_vprintf+0x9b4>
+    25ac:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    25b0:	8b 00                	mov    eax,DWORD PTR [rax]
+    25b2:	83 f8 2f             	cmp    eax,0x2f
+    25b5:	77 24                	ja     25db <internal_vprintf+0xe8a>
+    25b7:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    25bb:	48 8b 50 10          	mov    rdx,QWORD PTR [rax+0x10]
+    25bf:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    25c3:	8b 00                	mov    eax,DWORD PTR [rax]
+    25c5:	89 c0                	mov    eax,eax
+    25c7:	48 01 d0             	add    rax,rdx
+    25ca:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    25ce:	8b 12                	mov    edx,DWORD PTR [rdx]
+    25d0:	8d 4a 08             	lea    ecx,[rdx+0x8]
+    25d3:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    25d7:	89 0a                	mov    DWORD PTR [rdx],ecx
+    25d9:	eb 14                	jmp    25ef <internal_vprintf+0xe9e>
+    25db:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    25df:	48 8b 40 08          	mov    rax,QWORD PTR [rax+0x8]
+    25e3:	48 8d 48 08          	lea    rcx,[rax+0x8]
+    25e7:	48 8b 55 a8          	mov    rdx,QWORD PTR [rbp-0x58]
+    25eb:	48 89 4a 08          	mov    QWORD PTR [rdx+0x8],rcx
+    25ef:	48 8b 00             	mov    rax,QWORD PTR [rax]
+    25f2:	8b 55 f4             	mov    edx,DWORD PTR [rbp-0xc]
+    25f5:	48 63 d2             	movsxd rdx,edx
+    25f8:	48 89 10             	mov    QWORD PTR [rax],rdx
+    25fb:	eb 6c                	jmp    2669 <internal_vprintf+0xf18>
 											else
 													(void)va_arg(args, long double*);
-    20c4:	48 83 45 a8 08       	add    QWORD PTR [rbp-0x58],0x8
-    20c9:	eb 3a                	jmp    2105 <internal_vprintf+0x9b4>
+    25fd:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    2601:	8b 00                	mov    eax,DWORD PTR [rax]
+    2603:	83 f8 2f             	cmp    eax,0x2f
+    2606:	77 11                	ja     2619 <internal_vprintf+0xec8>
+    2608:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    260c:	8b 00                	mov    eax,DWORD PTR [rax]
+    260e:	8d 50 08             	lea    edx,[rax+0x8]
+    2611:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    2615:	89 10                	mov    DWORD PTR [rax],edx
+    2617:	eb 50                	jmp    2669 <internal_vprintf+0xf18>
+    2619:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    261d:	48 8b 40 08          	mov    rax,QWORD PTR [rax+0x8]
+    2621:	48 8d 50 08          	lea    rdx,[rax+0x8]
+    2625:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    2629:	48 89 50 08          	mov    QWORD PTR [rax+0x8],rdx
+    262d:	eb 3a                	jmp    2669 <internal_vprintf+0xf18>
 									} else { /* ignore */
 											ctx->putchar(ctx, '%');
-    20cb:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    20cf:	48 8b 50 10          	mov    rdx,QWORD PTR [rax+0x10]
-    20d3:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    20d7:	be 25 00 00 00       	mov    esi,0x25
-    20dc:	48 89 c7             	mov    rdi,rax
-    20df:	ff d2                	call   rdx
+    262f:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    2633:	48 8b 50 10          	mov    rdx,QWORD PTR [rax+0x10]
+    2637:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    263b:	be 25 00 00 00       	mov    esi,0x25
+    2640:	48 89 c7             	mov    rdi,rax
+    2643:	ff d2                	call   rdx
 											ctx->putchar(ctx, *fmt);
-    20e1:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    20e5:	48 8b 48 10          	mov    rcx,QWORD PTR [rax+0x10]
-    20e9:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    20ed:	0f b6 00             	movzx  eax,BYTE PTR [rax]
-    20f0:	0f be d0             	movsx  edx,al
-    20f3:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    20f7:	89 d6                	mov    esi,edx
-    20f9:	48 89 c7             	mov    rdi,rax
-    20fc:	ff d1                	call   rcx
+    2645:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    2649:	48 8b 48 10          	mov    rcx,QWORD PTR [rax+0x10]
+    264d:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    2651:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+    2654:	0f be d0             	movsx  edx,al
+    2657:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    265b:	89 d6                	mov    esi,edx
+    265d:	48 89 c7             	mov    rdi,rax
+    2660:	ff d1                	call   rcx
 											rv += 2;
-    20fe:	83 45 f4 02          	add    DWORD PTR [rbp-0xc],0x2
-    2102:	eb 01                	jmp    2105 <internal_vprintf+0x9b4>
+    2662:	83 45 f4 02          	add    DWORD PTR [rbp-0xc],0x2
+    2666:	eb 01                	jmp    2669 <internal_vprintf+0xf18>
 									} else if (*fmt == 'x' || *fmt == 'X' || *fmt == 'u' || *fmt == 'o' || *fmt == 'b') {
-    2104:	90                   	nop
+    2668:	90                   	nop
 									}
 									fmt++;
-    2105:	48 83 45 b0 01       	add    QWORD PTR [rbp-0x50],0x1
+    2669:	48 83 45 b0 01       	add    QWORD PTR [rbp-0x50],0x1
 									is_fmt = 0;
-    210a:	c6 45 ff 00          	mov    BYTE PTR [rbp-0x1],0x0
+    266e:	c6 45 ff 00          	mov    BYTE PTR [rbp-0x1],0x0
 									flags = KFL_LEFT_ALIGN;
-    210e:	c6 45 fe 08          	mov    BYTE PTR [rbp-0x2],0x8
+    2672:	c6 45 fe 08          	mov    BYTE PTR [rbp-0x2],0x8
 									width = 0;
-    2112:	c6 45 fd 00          	mov    BYTE PTR [rbp-0x3],0x0
+    2676:	c6 45 fd 00          	mov    BYTE PTR [rbp-0x3],0x0
 									prec = 0;
-    2116:	c6 45 fc 00          	mov    BYTE PTR [rbp-0x4],0x0
+    267a:	c6 45 fc 00          	mov    BYTE PTR [rbp-0x4],0x0
 									size = 0;
-    211a:	c6 45 fb 00          	mov    BYTE PTR [rbp-0x5],0x0
-    211e:	eb 29                	jmp    2149 <internal_vprintf+0x9f8>
+    267e:	c6 45 fb 00          	mov    BYTE PTR [rbp-0x5],0x0
+    2682:	eb 29                	jmp    26ad <internal_vprintf+0xf5c>
 							} else {
 									ctx->putchar(ctx, *(fmt++));
-    2120:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    2124:	48 8b 48 10          	mov    rcx,QWORD PTR [rax+0x10]
-    2128:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    212c:	48 8d 50 01          	lea    rdx,[rax+0x1]
-    2130:	48 89 55 b0          	mov    QWORD PTR [rbp-0x50],rdx
-    2134:	0f b6 00             	movzx  eax,BYTE PTR [rax]
-    2137:	0f be d0             	movsx  edx,al
-    213a:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    213e:	89 d6                	mov    esi,edx
-    2140:	48 89 c7             	mov    rdi,rax
-    2143:	ff d1                	call   rcx
+    2684:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    2688:	48 8b 48 10          	mov    rcx,QWORD PTR [rax+0x10]
+    268c:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    2690:	48 8d 50 01          	lea    rdx,[rax+0x1]
+    2694:	48 89 55 b0          	mov    QWORD PTR [rbp-0x50],rdx
+    2698:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+    269b:	0f be d0             	movsx  edx,al
+    269e:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    26a2:	89 d6                	mov    esi,edx
+    26a4:	48 89 c7             	mov    rdi,rax
+    26a7:	ff d1                	call   rcx
 									rv++;
-    2145:	83 45 f4 01          	add    DWORD PTR [rbp-0xc],0x1
+    26a9:	83 45 f4 01          	add    DWORD PTR [rbp-0xc],0x1
 		while (*fmt) {
-    2149:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    214d:	0f b6 00             	movzx  eax,BYTE PTR [rax]
-    2150:	84 c0                	test   al,al
-    2152:	0f 85 3d f6 ff ff    	jne    1795 <internal_vprintf+0x44>
+    26ad:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    26b1:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+    26b4:	84 c0                	test   al,al
+    26b6:	0f 85 d9 f0 ff ff    	jne    1795 <internal_vprintf+0x44>
 							}
 			}
 		}
 		return rv;
-    2158:	8b 45 f4             	mov    eax,DWORD PTR [rbp-0xc]
+    26bc:	8b 45 f4             	mov    eax,DWORD PTR [rbp-0xc]
 }
-    215b:	c9                   	leave
-    215c:	c3                   	ret
+    26bf:	c9                   	leave
+    26c0:	c3                   	ret
 
-000000000000215d <ctx_c_putchar>:
+00000000000026c1 <ctx_c_putchar>:
 
 void ctx_c_putchar(struct ivp_ctx* ctx, char c)
 {
-    215d:	55                   	push   rbp
-    215e:	48 89 e5             	mov    rbp,rsp
-    2161:	48 83 ec 10          	sub    rsp,0x10
-    2165:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
-    2169:	89 f0                	mov    eax,esi
-    216b:	88 45 f4             	mov    BYTE PTR [rbp-0xc],al
+    26c1:	55                   	push   rbp
+    26c2:	48 89 e5             	mov    rbp,rsp
+    26c5:	48 83 ec 10          	sub    rsp,0x10
+    26c9:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
+    26cd:	89 f0                	mov    eax,esi
+    26cf:	88 45 f4             	mov    BYTE PTR [rbp-0xc],al
 		region_putchar(ctx->buf, c);
-    216e:	0f be 55 f4          	movsx  edx,BYTE PTR [rbp-0xc]
-    2172:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-    2176:	48 8b 00             	mov    rax,QWORD PTR [rax]
-    2179:	89 d6                	mov    esi,edx
-    217b:	48 89 c7             	mov    rdi,rax
-    217e:	e8 00 00 00 00       	call   2183 <ctx_c_putchar+0x26>
+    26d2:	0f be 55 f4          	movsx  edx,BYTE PTR [rbp-0xc]
+    26d6:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    26da:	48 8b 00             	mov    rax,QWORD PTR [rax]
+    26dd:	89 d6                	mov    esi,edx
+    26df:	48 89 c7             	mov    rdi,rax
+    26e2:	e8 00 00 00 00       	call   26e7 <ctx_c_putchar+0x26>
 }
-    2183:	90                   	nop
-    2184:	c9                   	leave
-    2185:	c3                   	ret
+    26e7:	90                   	nop
+    26e8:	c9                   	leave
+    26e9:	c3                   	ret
 
-0000000000002186 <ctx_s_putchar>:
+00000000000026ea <ctx_s_putchar>:
 
 void ctx_s_putchar(struct ivp_ctx* ctx, char c)
 {
-    2186:	55                   	push   rbp
-    2187:	48 89 e5             	mov    rbp,rsp
-    218a:	48 83 ec 10          	sub    rsp,0x10
-    218e:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
-    2192:	89 f0                	mov    eax,esi
-    2194:	88 45 f4             	mov    BYTE PTR [rbp-0xc],al
+    26ea:	55                   	push   rbp
+    26eb:	48 89 e5             	mov    rbp,rsp
+    26ee:	48 83 ec 10          	sub    rsp,0x10
+    26f2:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
+    26f6:	89 f0                	mov    eax,esi
+    26f8:	88 45 f4             	mov    BYTE PTR [rbp-0xc],al
 		if (ctx->buf) {
-    2197:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-    219b:	48 8b 00             	mov    rax,QWORD PTR [rax]
-    219e:	48 85 c0             	test   rax,rax
-    21a1:	74 46                	je     21e9 <ctx_s_putchar+0x63>
+    26fb:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    26ff:	48 8b 00             	mov    rax,QWORD PTR [rax]
+    2702:	48 85 c0             	test   rax,rax
+    2705:	74 46                	je     274d <ctx_s_putchar+0x63>
 				if (!ctx->n) {
-    21a3:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-    21a7:	48 8b 40 08          	mov    rax,QWORD PTR [rax+0x8]
-    21ab:	48 85 c0             	test   rax,rax
-    21ae:	75 0d                	jne    21bd <ctx_s_putchar+0x37>
+    2707:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    270b:	48 8b 40 08          	mov    rax,QWORD PTR [rax+0x8]
+    270f:	48 85 c0             	test   rax,rax
+    2712:	75 0d                	jne    2721 <ctx_s_putchar+0x37>
 						ctx->buf = NULL;
-    21b0:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-    21b4:	48 c7 00 00 00 00 00 	mov    QWORD PTR [rax],0x0
+    2714:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    2718:	48 c7 00 00 00 00 00 	mov    QWORD PTR [rax],0x0
 						return;
-    21bb:	eb 2c                	jmp    21e9 <ctx_s_putchar+0x63>
+    271f:	eb 2c                	jmp    274d <ctx_s_putchar+0x63>
 				}
 				*ctx->buf++ = c;
-    21bd:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-    21c1:	48 8b 00             	mov    rax,QWORD PTR [rax]
-    21c4:	48 8d 48 01          	lea    rcx,[rax+0x1]
-    21c8:	48 8b 55 f8          	mov    rdx,QWORD PTR [rbp-0x8]
-    21cc:	48 89 0a             	mov    QWORD PTR [rdx],rcx
-    21cf:	0f b6 55 f4          	movzx  edx,BYTE PTR [rbp-0xc]
-    21d3:	88 10                	mov    BYTE PTR [rax],dl
+    2721:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    2725:	48 8b 00             	mov    rax,QWORD PTR [rax]
+    2728:	48 8d 48 01          	lea    rcx,[rax+0x1]
+    272c:	48 8b 55 f8          	mov    rdx,QWORD PTR [rbp-0x8]
+    2730:	48 89 0a             	mov    QWORD PTR [rdx],rcx
+    2733:	0f b6 55 f4          	movzx  edx,BYTE PTR [rbp-0xc]
+    2737:	88 10                	mov    BYTE PTR [rax],dl
 				ctx->n--;
-    21d5:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-    21d9:	48 8b 40 08          	mov    rax,QWORD PTR [rax+0x8]
-    21dd:	48 8d 50 ff          	lea    rdx,[rax-0x1]
-    21e1:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-    21e5:	48 89 50 08          	mov    QWORD PTR [rax+0x8],rdx
+    2739:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    273d:	48 8b 40 08          	mov    rax,QWORD PTR [rax+0x8]
+    2741:	48 8d 50 ff          	lea    rdx,[rax-0x1]
+    2745:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    2749:	48 89 50 08          	mov    QWORD PTR [rax+0x8],rdx
 		}
 }
-    21e9:	c9                   	leave
-    21ea:	c3                   	ret
+    274d:	c9                   	leave
+    274e:	c3                   	ret
 
-00000000000021eb <vrprintf>:
+000000000000274f <vrprintf>:
 
 int vrprintf(struct kio_region* cr, const char* fmt, va_list args)
 {
-    21eb:	55                   	push   rbp
-    21ec:	48 89 e5             	mov    rbp,rsp
-    21ef:	48 83 ec 40          	sub    rsp,0x40
-    21f3:	48 89 7d d8          	mov    QWORD PTR [rbp-0x28],rdi
-    21f7:	48 89 75 d0          	mov    QWORD PTR [rbp-0x30],rsi
-    21fb:	48 89 55 c8          	mov    QWORD PTR [rbp-0x38],rdx
+    274f:	55                   	push   rbp
+    2750:	48 89 e5             	mov    rbp,rsp
+    2753:	48 83 ec 40          	sub    rsp,0x40
+    2757:	48 89 7d d8          	mov    QWORD PTR [rbp-0x28],rdi
+    275b:	48 89 75 d0          	mov    QWORD PTR [rbp-0x30],rsi
+    275f:	48 89 55 c8          	mov    QWORD PTR [rbp-0x38],rdx
 		int rv;
 		struct ivp_ctx ct = {cr, 0, &ctx_c_putchar};
-    21ff:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
-    2203:	48 89 45 e0          	mov    QWORD PTR [rbp-0x20],rax
-    2207:	48 c7 45 e8 00 00 00 00 	mov    QWORD PTR [rbp-0x18],0x0
-    220f:	48 c7 45 f0 00 00 00 00 	mov    QWORD PTR [rbp-0x10],0x0
+    2763:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
+    2767:	48 89 45 e0          	mov    QWORD PTR [rbp-0x20],rax
+    276b:	48 c7 45 e8 00 00 00 00 	mov    QWORD PTR [rbp-0x18],0x0
+    2773:	48 c7 45 f0 00 00 00 00 	mov    QWORD PTR [rbp-0x10],0x0
 		rv = internal_vprintf(&ct, fmt, args);
-    2217:	48 8b 55 c8          	mov    rdx,QWORD PTR [rbp-0x38]
-    221b:	48 8b 4d d0          	mov    rcx,QWORD PTR [rbp-0x30]
-    221f:	48 8d 45 e0          	lea    rax,[rbp-0x20]
-    2223:	48 89 ce             	mov    rsi,rcx
-    2226:	48 89 c7             	mov    rdi,rax
-    2229:	e8 00 00 00 00       	call   222e <vrprintf+0x43>
-    222e:	89 45 fc             	mov    DWORD PTR [rbp-0x4],eax
+    277b:	48 8b 55 c8          	mov    rdx,QWORD PTR [rbp-0x38]
+    277f:	48 8b 4d d0          	mov    rcx,QWORD PTR [rbp-0x30]
+    2783:	48 8d 45 e0          	lea    rax,[rbp-0x20]
+    2787:	48 89 ce             	mov    rsi,rcx
+    278a:	48 89 c7             	mov    rdi,rax
+    278d:	e8 00 00 00 00       	call   2792 <vrprintf+0x43>
+    2792:	89 45 fc             	mov    DWORD PTR [rbp-0x4],eax
 		return rv;
-    2231:	8b 45 fc             	mov    eax,DWORD PTR [rbp-0x4]
+    2795:	8b 45 fc             	mov    eax,DWORD PTR [rbp-0x4]
 }
-    2234:	c9                   	leave
-    2235:	c3                   	ret
+    2798:	c9                   	leave
+    2799:	c3                   	ret
 
-0000000000002236 <vprintf>:
+000000000000279a <vprintf>:
 
 int vprintf(const char* fmt, va_list args)
 {
-    2236:	55                   	push   rbp
-    2237:	48 89 e5             	mov    rbp,rsp
-    223a:	48 83 ec 30          	sub    rsp,0x30
-    223e:	48 89 7d d8          	mov    QWORD PTR [rbp-0x28],rdi
-    2242:	48 89 75 d0          	mov    QWORD PTR [rbp-0x30],rsi
+    279a:	55                   	push   rbp
+    279b:	48 89 e5             	mov    rbp,rsp
+    279e:	48 83 ec 30          	sub    rsp,0x30
+    27a2:	48 89 7d d8          	mov    QWORD PTR [rbp-0x28],rdi
+    27a6:	48 89 75 d0          	mov    QWORD PTR [rbp-0x30],rsi
 		int rv;
 		struct ivp_ctx ct = {&reg_def, 0, &ctx_c_putchar};
-    2246:	48 c7 45 e0 00 00 00 00 	mov    QWORD PTR [rbp-0x20],0x0
-    224e:	48 c7 45 e8 00 00 00 00 	mov    QWORD PTR [rbp-0x18],0x0
-    2256:	48 c7 45 f0 00 00 00 00 	mov    QWORD PTR [rbp-0x10],0x0
+    27aa:	48 c7 45 e0 00 00 00 00 	mov    QWORD PTR [rbp-0x20],0x0
+    27b2:	48 c7 45 e8 00 00 00 00 	mov    QWORD PTR [rbp-0x18],0x0
+    27ba:	48 c7 45 f0 00 00 00 00 	mov    QWORD PTR [rbp-0x10],0x0
 		rv = internal_vprintf(&ct, fmt, args);
-    225e:	48 8b 55 d0          	mov    rdx,QWORD PTR [rbp-0x30]
-    2262:	48 8b 4d d8          	mov    rcx,QWORD PTR [rbp-0x28]
-    2266:	48 8d 45 e0          	lea    rax,[rbp-0x20]
-    226a:	48 89 ce             	mov    rsi,rcx
-    226d:	48 89 c7             	mov    rdi,rax
-    2270:	e8 00 00 00 00       	call   2275 <vprintf+0x3f>
-    2275:	89 45 fc             	mov    DWORD PTR [rbp-0x4],eax
+    27c2:	48 8b 55 d0          	mov    rdx,QWORD PTR [rbp-0x30]
+    27c6:	48 8b 4d d8          	mov    rcx,QWORD PTR [rbp-0x28]
+    27ca:	48 8d 45 e0          	lea    rax,[rbp-0x20]
+    27ce:	48 89 ce             	mov    rsi,rcx
+    27d1:	48 89 c7             	mov    rdi,rax
+    27d4:	e8 00 00 00 00       	call   27d9 <vprintf+0x3f>
+    27d9:	89 45 fc             	mov    DWORD PTR [rbp-0x4],eax
 		return rv;
-    2278:	8b 45 fc             	mov    eax,DWORD PTR [rbp-0x4]
+    27dc:	8b 45 fc             	mov    eax,DWORD PTR [rbp-0x4]
 }
-    227b:	c9                   	leave
-    227c:	c3                   	ret
+    27df:	c9                   	leave
+    27e0:	c3                   	ret
 
-000000000000227d <rprintf>:
+00000000000027e1 <rprintf>:
 
 /* with region ptr, region has lock & spin_trylock & lock-free add-buffer
   & malloc in irq question */
 int rprintf(struct kio_region* cr, const char* fmt, ...)
 {
-    227d:	55                   	push   rbp
-    227e:	48 89 e5             	mov    rbp,rsp
-    2281:	48 81 ec d0 00 00 00 	sub    rsp,0xd0
-    2288:	48 89 bd 38 ff ff ff 	mov    QWORD PTR [rbp-0xc8],rdi
-    228f:	48 89 b5 30 ff ff ff 	mov    QWORD PTR [rbp-0xd0],rsi
-    2296:	48 89 95 60 ff ff ff 	mov    QWORD PTR [rbp-0xa0],rdx
-    229d:	48 89 8d 68 ff ff ff 	mov    QWORD PTR [rbp-0x98],rcx
-    22a4:	4c 89 85 70 ff ff ff 	mov    QWORD PTR [rbp-0x90],r8
-    22ab:	4c 89 8d 78 ff ff ff 	mov    QWORD PTR [rbp-0x88],r9
-    22b2:	84 c0                	test   al,al
-    22b4:	74 20                	je     22d6 <rprintf+0x59>
-    22b6:	0f 29 45 80          	movaps XMMWORD PTR [rbp-0x80],xmm0
-    22ba:	0f 29 4d 90          	movaps XMMWORD PTR [rbp-0x70],xmm1
-    22be:	0f 29 55 a0          	movaps XMMWORD PTR [rbp-0x60],xmm2
-    22c2:	0f 29 5d b0          	movaps XMMWORD PTR [rbp-0x50],xmm3
-    22c6:	0f 29 65 c0          	movaps XMMWORD PTR [rbp-0x40],xmm4
-    22ca:	0f 29 6d d0          	movaps XMMWORD PTR [rbp-0x30],xmm5
-    22ce:	0f 29 75 e0          	movaps XMMWORD PTR [rbp-0x20],xmm6
-    22d2:	0f 29 7d f0          	movaps XMMWORD PTR [rbp-0x10],xmm7
+    27e1:	55                   	push   rbp
+    27e2:	48 89 e5             	mov    rbp,rsp
+    27e5:	48 83 ec 60          	sub    rsp,0x60
+    27e9:	48 89 7d a8          	mov    QWORD PTR [rbp-0x58],rdi
+    27ed:	48 89 75 a0          	mov    QWORD PTR [rbp-0x60],rsi
+    27f1:	48 89 55 e0          	mov    QWORD PTR [rbp-0x20],rdx
+    27f5:	48 89 4d e8          	mov    QWORD PTR [rbp-0x18],rcx
+    27f9:	4c 89 45 f0          	mov    QWORD PTR [rbp-0x10],r8
+    27fd:	4c 89 4d f8          	mov    QWORD PTR [rbp-0x8],r9
 		int rv;
 		va_list args;
 		va_start(args, fmt);
-    22d6:	48 8d 85 30 ff ff ff 	lea    rax,[rbp-0xd0]
-    22dd:	48 83 c0 08          	add    rax,0x8
-    22e1:	48 89 85 48 ff ff ff 	mov    QWORD PTR [rbp-0xb8],rax
+    2801:	c7 45 b0 10 00 00 00 	mov    DWORD PTR [rbp-0x50],0x10
+    2808:	48 8d 45 10          	lea    rax,[rbp+0x10]
+    280c:	48 89 45 b8          	mov    QWORD PTR [rbp-0x48],rax
+    2810:	48 8d 45 d0          	lea    rax,[rbp-0x30]
+    2814:	48 89 45 c0          	mov    QWORD PTR [rbp-0x40],rax
 		rv = vrprintf(cr, fmt, args);
-    22e8:	48 8b 8d 30 ff ff ff 	mov    rcx,QWORD PTR [rbp-0xd0]
-    22ef:	48 8b 95 48 ff ff ff 	mov    rdx,QWORD PTR [rbp-0xb8]
-    22f6:	48 8b 85 38 ff ff ff 	mov    rax,QWORD PTR [rbp-0xc8]
-    22fd:	48 89 ce             	mov    rsi,rcx
-    2300:	48 89 c7             	mov    rdi,rax
-    2303:	e8 00 00 00 00       	call   2308 <rprintf+0x8b>
-    2308:	89 85 44 ff ff ff    	mov    DWORD PTR [rbp-0xbc],eax
+    2818:	48 8d 55 b0          	lea    rdx,[rbp-0x50]
+    281c:	48 8b 4d a0          	mov    rcx,QWORD PTR [rbp-0x60]
+    2820:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    2824:	48 89 ce             	mov    rsi,rcx
+    2827:	48 89 c7             	mov    rdi,rax
+    282a:	e8 00 00 00 00       	call   282f <rprintf+0x4e>
+    282f:	89 45 cc             	mov    DWORD PTR [rbp-0x34],eax
 		va_end(args);
-    230e:	48 c7 85 48 ff ff ff 00 00 00 00 	mov    QWORD PTR [rbp-0xb8],0x0
 		return rv;
-    2319:	8b 85 44 ff ff ff    	mov    eax,DWORD PTR [rbp-0xbc]
+    2832:	8b 45 cc             	mov    eax,DWORD PTR [rbp-0x34]
 }
-    231f:	c9                   	leave
-    2320:	c3                   	ret
+    2835:	c9                   	leave
+    2836:	c3                   	ret
 
-0000000000002321 <crprintf>:
+0000000000002837 <crprintf>:
 
 int crprintf(char col, struct kio_region* cr, const char* fmt, ...)
 {
-    2321:	55                   	push   rbp
-    2322:	48 89 e5             	mov    rbp,rsp
-    2325:	48 81 ec f0 00 00 00 	sub    rsp,0xf0
-    232c:	48 89 b5 20 ff ff ff 	mov    QWORD PTR [rbp-0xe0],rsi
-    2333:	48 89 95 18 ff ff ff 	mov    QWORD PTR [rbp-0xe8],rdx
-    233a:	48 89 8d 68 ff ff ff 	mov    QWORD PTR [rbp-0x98],rcx
-    2341:	4c 89 85 70 ff ff ff 	mov    QWORD PTR [rbp-0x90],r8
-    2348:	4c 89 8d 78 ff ff ff 	mov    QWORD PTR [rbp-0x88],r9
-    234f:	84 c0                	test   al,al
-    2351:	74 20                	je     2373 <crprintf+0x52>
-    2353:	0f 29 45 80          	movaps XMMWORD PTR [rbp-0x80],xmm0
-    2357:	0f 29 4d 90          	movaps XMMWORD PTR [rbp-0x70],xmm1
-    235b:	0f 29 55 a0          	movaps XMMWORD PTR [rbp-0x60],xmm2
-    235f:	0f 29 5d b0          	movaps XMMWORD PTR [rbp-0x50],xmm3
-    2363:	0f 29 65 c0          	movaps XMMWORD PTR [rbp-0x40],xmm4
-    2367:	0f 29 6d d0          	movaps XMMWORD PTR [rbp-0x30],xmm5
-    236b:	0f 29 75 e0          	movaps XMMWORD PTR [rbp-0x20],xmm6
-    236f:	0f 29 7d f0          	movaps XMMWORD PTR [rbp-0x10],xmm7
-    2373:	89 f8                	mov    eax,edi
-    2375:	88 85 2c ff ff ff    	mov    BYTE PTR [rbp-0xd4],al
+    2837:	55                   	push   rbp
+    2838:	48 89 e5             	mov    rbp,rsp
+    283b:	48 83 ec 70          	sub    rsp,0x70
+    283f:	89 f8                	mov    eax,edi
+    2841:	48 89 75 a0          	mov    QWORD PTR [rbp-0x60],rsi
+    2845:	48 89 55 98          	mov    QWORD PTR [rbp-0x68],rdx
+    2849:	48 89 4d e8          	mov    QWORD PTR [rbp-0x18],rcx
+    284d:	4c 89 45 f0          	mov    QWORD PTR [rbp-0x10],r8
+    2851:	4c 89 4d f8          	mov    QWORD PTR [rbp-0x8],r9
+    2855:	88 45 ac             	mov    BYTE PTR [rbp-0x54],al
 		int rv; char cf = cr->fmt;
-    237b:	48 8b 85 20 ff ff ff 	mov    rax,QWORD PTR [rbp-0xe0]
-    2382:	0f b6 40 0c          	movzx  eax,BYTE PTR [rax+0xc]
-    2386:	88 85 4f ff ff ff    	mov    BYTE PTR [rbp-0xb1],al
+    2858:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
+    285c:	0f b6 40 0c          	movzx  eax,BYTE PTR [rax+0xc]
+    2860:	88 45 cf             	mov    BYTE PTR [rbp-0x31],al
 		va_list args;
 		va_start(args, fmt);
-    238c:	48 8d 85 18 ff ff ff 	lea    rax,[rbp-0xe8]
-    2393:	48 83 c0 08          	add    rax,0x8
-    2397:	48 89 85 40 ff ff ff 	mov    QWORD PTR [rbp-0xc0],rax
+    2863:	c7 45 b0 18 00 00 00 	mov    DWORD PTR [rbp-0x50],0x18
+    286a:	48 8d 45 10          	lea    rax,[rbp+0x10]
+    286e:	48 89 45 b8          	mov    QWORD PTR [rbp-0x48],rax
+    2872:	48 8d 45 d0          	lea    rax,[rbp-0x30]
+    2876:	48 89 45 c0          	mov    QWORD PTR [rbp-0x40],rax
 		cr->fmt = col;
-    239e:	48 8b 85 20 ff ff ff 	mov    rax,QWORD PTR [rbp-0xe0]
-    23a5:	0f b6 95 2c ff ff ff 	movzx  edx,BYTE PTR [rbp-0xd4]
-    23ac:	88 50 0c             	mov    BYTE PTR [rax+0xc],dl
+    287a:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
+    287e:	0f b6 55 ac          	movzx  edx,BYTE PTR [rbp-0x54]
+    2882:	88 50 0c             	mov    BYTE PTR [rax+0xc],dl
 		rv = vrprintf(cr, fmt, args);
-    23af:	48 8b 8d 18 ff ff ff 	mov    rcx,QWORD PTR [rbp-0xe8]
-    23b6:	48 8b 95 40 ff ff ff 	mov    rdx,QWORD PTR [rbp-0xc0]
-    23bd:	48 8b 85 20 ff ff ff 	mov    rax,QWORD PTR [rbp-0xe0]
-    23c4:	48 89 ce             	mov    rsi,rcx
-    23c7:	48 89 c7             	mov    rdi,rax
-    23ca:	e8 00 00 00 00       	call   23cf <crprintf+0xae>
-    23cf:	89 85 3c ff ff ff    	mov    DWORD PTR [rbp-0xc4],eax
+    2885:	48 8d 55 b0          	lea    rdx,[rbp-0x50]
+    2889:	48 8b 4d 98          	mov    rcx,QWORD PTR [rbp-0x68]
+    288d:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
+    2891:	48 89 ce             	mov    rsi,rcx
+    2894:	48 89 c7             	mov    rdi,rax
+    2897:	e8 00 00 00 00       	call   289c <crprintf+0x65>
+    289c:	89 45 c8             	mov    DWORD PTR [rbp-0x38],eax
 		cr->fmt = cf;
-    23d5:	48 8b 85 20 ff ff ff 	mov    rax,QWORD PTR [rbp-0xe0]
-    23dc:	0f b6 95 4f ff ff ff 	movzx  edx,BYTE PTR [rbp-0xb1]
-    23e3:	88 50 0c             	mov    BYTE PTR [rax+0xc],dl
+    289f:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
+    28a3:	0f b6 55 cf          	movzx  edx,BYTE PTR [rbp-0x31]
+    28a7:	88 50 0c             	mov    BYTE PTR [rax+0xc],dl
 		va_end(args);
-    23e6:	48 c7 85 40 ff ff ff 00 00 00 00 	mov    QWORD PTR [rbp-0xc0],0x0
 		return rv;
-    23f1:	8b 85 3c ff ff ff    	mov    eax,DWORD PTR [rbp-0xc4]
+    28aa:	8b 45 c8             	mov    eax,DWORD PTR [rbp-0x38]
 }
-    23f7:	c9                   	leave
-    23f8:	c3                   	ret
+    28ad:	c9                   	leave
+    28ae:	c3                   	ret
 
-00000000000023f9 <cprintf>:
+00000000000028af <cprintf>:
 
 int cprintf(char col, const char* fmt, ...)
 {
-    23f9:	55                   	push   rbp
-    23fa:	48 89 e5             	mov    rbp,rsp
-    23fd:	48 81 ec e0 00 00 00 	sub    rsp,0xe0
-    2404:	48 89 b5 20 ff ff ff 	mov    QWORD PTR [rbp-0xe0],rsi
-    240b:	48 89 95 60 ff ff ff 	mov    QWORD PTR [rbp-0xa0],rdx
-    2412:	48 89 8d 68 ff ff ff 	mov    QWORD PTR [rbp-0x98],rcx
-    2419:	4c 89 85 70 ff ff ff 	mov    QWORD PTR [rbp-0x90],r8
-    2420:	4c 89 8d 78 ff ff ff 	mov    QWORD PTR [rbp-0x88],r9
-    2427:	84 c0                	test   al,al
-    2429:	74 20                	je     244b <cprintf+0x52>
-    242b:	0f 29 45 80          	movaps XMMWORD PTR [rbp-0x80],xmm0
-    242f:	0f 29 4d 90          	movaps XMMWORD PTR [rbp-0x70],xmm1
-    2433:	0f 29 55 a0          	movaps XMMWORD PTR [rbp-0x60],xmm2
-    2437:	0f 29 5d b0          	movaps XMMWORD PTR [rbp-0x50],xmm3
-    243b:	0f 29 65 c0          	movaps XMMWORD PTR [rbp-0x40],xmm4
-    243f:	0f 29 6d d0          	movaps XMMWORD PTR [rbp-0x30],xmm5
-    2443:	0f 29 75 e0          	movaps XMMWORD PTR [rbp-0x20],xmm6
-    2447:	0f 29 7d f0          	movaps XMMWORD PTR [rbp-0x10],xmm7
-    244b:	89 f8                	mov    eax,edi
-    244d:	88 85 2c ff ff ff    	mov    BYTE PTR [rbp-0xd4],al
+    28af:	55                   	push   rbp
+    28b0:	48 89 e5             	mov    rbp,rsp
+    28b3:	48 83 ec 60          	sub    rsp,0x60
+    28b7:	89 f8                	mov    eax,edi
+    28b9:	48 89 75 a0          	mov    QWORD PTR [rbp-0x60],rsi
+    28bd:	48 89 55 e0          	mov    QWORD PTR [rbp-0x20],rdx
+    28c1:	48 89 4d e8          	mov    QWORD PTR [rbp-0x18],rcx
+    28c5:	4c 89 45 f0          	mov    QWORD PTR [rbp-0x10],r8
+    28c9:	4c 89 4d f8          	mov    QWORD PTR [rbp-0x8],r9
+    28cd:	88 45 ac             	mov    BYTE PTR [rbp-0x54],al
 		int rv; char cf = reg_def.fmt;
-    2453:	0f b6 05 00 00 00 00 	movzx  eax,BYTE PTR [rip+0x0]        # 245a <cprintf+0x61>
-    245a:	88 85 4f ff ff ff    	mov    BYTE PTR [rbp-0xb1],al
+    28d0:	0f b6 05 00 00 00 00 	movzx  eax,BYTE PTR [rip+0x0]        # 28d7 <cprintf+0x28>
+    28d7:	88 45 cf             	mov    BYTE PTR [rbp-0x31],al
 		va_list args;
 		va_start(args, fmt);
-    2460:	48 8d 85 20 ff ff ff 	lea    rax,[rbp-0xe0]
-    2467:	48 83 c0 08          	add    rax,0x8
-    246b:	48 89 85 40 ff ff ff 	mov    QWORD PTR [rbp-0xc0],rax
+    28da:	c7 45 b0 10 00 00 00 	mov    DWORD PTR [rbp-0x50],0x10
+    28e1:	48 8d 45 10          	lea    rax,[rbp+0x10]
+    28e5:	48 89 45 b8          	mov    QWORD PTR [rbp-0x48],rax
+    28e9:	48 8d 45 d0          	lea    rax,[rbp-0x30]
+    28ed:	48 89 45 c0          	mov    QWORD PTR [rbp-0x40],rax
 		reg_def.fmt = col;
-    2472:	0f b6 85 2c ff ff ff 	movzx  eax,BYTE PTR [rbp-0xd4]
-    2479:	88 05 00 00 00 00    	mov    BYTE PTR [rip+0x0],al        # 247f <cprintf+0x86>
+    28f1:	0f b6 45 ac          	movzx  eax,BYTE PTR [rbp-0x54]
+    28f5:	88 05 00 00 00 00    	mov    BYTE PTR [rip+0x0],al        # 28fb <cprintf+0x4c>
 		rv = vprintf(fmt, args);
-    247f:	48 8b 85 20 ff ff ff 	mov    rax,QWORD PTR [rbp-0xe0]
-    2486:	48 8b 95 40 ff ff ff 	mov    rdx,QWORD PTR [rbp-0xc0]
-    248d:	48 89 d6             	mov    rsi,rdx
-    2490:	48 89 c7             	mov    rdi,rax
-    2493:	e8 00 00 00 00       	call   2498 <cprintf+0x9f>
-    2498:	89 85 3c ff ff ff    	mov    DWORD PTR [rbp-0xc4],eax
+    28fb:	48 8d 55 b0          	lea    rdx,[rbp-0x50]
+    28ff:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
+    2903:	48 89 d6             	mov    rsi,rdx
+    2906:	48 89 c7             	mov    rdi,rax
+    2909:	e8 00 00 00 00       	call   290e <cprintf+0x5f>
+    290e:	89 45 c8             	mov    DWORD PTR [rbp-0x38],eax
 		reg_def.fmt = cf;
-    249e:	0f b6 85 4f ff ff ff 	movzx  eax,BYTE PTR [rbp-0xb1]
-    24a5:	88 05 00 00 00 00    	mov    BYTE PTR [rip+0x0],al        # 24ab <cprintf+0xb2>
+    2911:	0f b6 45 cf          	movzx  eax,BYTE PTR [rbp-0x31]
+    2915:	88 05 00 00 00 00    	mov    BYTE PTR [rip+0x0],al        # 291b <cprintf+0x6c>
 		va_end(args);
-    24ab:	48 c7 85 40 ff ff ff 00 00 00 00 	mov    QWORD PTR [rbp-0xc0],0x0
 		return rv;
-    24b6:	8b 85 3c ff ff ff    	mov    eax,DWORD PTR [rbp-0xc4]
+    291b:	8b 45 c8             	mov    eax,DWORD PTR [rbp-0x38]
 }
-    24bc:	c9                   	leave
-    24bd:	c3                   	ret
+    291e:	c9                   	leave
+    291f:	c3                   	ret
 
-00000000000024be <vsprintf>:
+0000000000002920 <vsprintf>:
 
 int vsprintf(char* str, const char* fmt, va_list args)
 {
-    24be:	55                   	push   rbp
-    24bf:	48 89 e5             	mov    rbp,rsp
-    24c2:	48 83 ec 40          	sub    rsp,0x40
-    24c6:	48 89 7d d8          	mov    QWORD PTR [rbp-0x28],rdi
-    24ca:	48 89 75 d0          	mov    QWORD PTR [rbp-0x30],rsi
-    24ce:	48 89 55 c8          	mov    QWORD PTR [rbp-0x38],rdx
+    2920:	55                   	push   rbp
+    2921:	48 89 e5             	mov    rbp,rsp
+    2924:	48 83 ec 40          	sub    rsp,0x40
+    2928:	48 89 7d d8          	mov    QWORD PTR [rbp-0x28],rdi
+    292c:	48 89 75 d0          	mov    QWORD PTR [rbp-0x30],rsi
+    2930:	48 89 55 c8          	mov    QWORD PTR [rbp-0x38],rdx
 		struct ivp_ctx ct = {str, 0xffffffff, &ctx_s_putchar};
-    24d2:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
-    24d6:	48 89 45 e0          	mov    QWORD PTR [rbp-0x20],rax
-    24da:	b8 ff ff ff ff       	mov    eax,0xffffffff
-    24df:	48 89 45 e8          	mov    QWORD PTR [rbp-0x18],rax
-    24e3:	48 c7 45 f0 00 00 00 00 	mov    QWORD PTR [rbp-0x10],0x0
+    2934:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
+    2938:	48 89 45 e8          	mov    QWORD PTR [rbp-0x18],rax
+    293c:	b8 ff ff ff ff       	mov    eax,0xffffffff
+    2941:	48 89 45 f0          	mov    QWORD PTR [rbp-0x10],rax
+    2945:	48 c7 45 f8 00 00 00 00 	mov    QWORD PTR [rbp-0x8],0x0
 		return internal_vprintf(&ct, fmt, args);
-    24eb:	48 8b 55 c8          	mov    rdx,QWORD PTR [rbp-0x38]
-    24ef:	48 8b 4d d0          	mov    rcx,QWORD PTR [rbp-0x30]
-    24f3:	48 8d 45 e0          	lea    rax,[rbp-0x20]
-    24f7:	48 89 ce             	mov    rsi,rcx
-    24fa:	48 89 c7             	mov    rdi,rax
-    24fd:	e8 00 00 00 00       	call   2502 <vsprintf+0x44>
+    294d:	48 8b 55 c8          	mov    rdx,QWORD PTR [rbp-0x38]
+    2951:	48 8b 4d d0          	mov    rcx,QWORD PTR [rbp-0x30]
+    2955:	48 8d 45 e8          	lea    rax,[rbp-0x18]
+    2959:	48 89 ce             	mov    rsi,rcx
+    295c:	48 89 c7             	mov    rdi,rax
+    295f:	e8 00 00 00 00       	call   2964 <vsprintf+0x44>
 }
-    2502:	c9                   	leave
-    2503:	c3                   	ret
+    2964:	c9                   	leave
+    2965:	c3                   	ret
 
-0000000000002504 <sprintf>:
+0000000000002966 <sprintf>:
 
 int sprintf(char* str, const char* fmt, ...)
 {
-    2504:	55                   	push   rbp
-    2505:	48 89 e5             	mov    rbp,rsp
-    2508:	48 81 ec d0 00 00 00 	sub    rsp,0xd0
-    250f:	48 89 bd 38 ff ff ff 	mov    QWORD PTR [rbp-0xc8],rdi
-    2516:	48 89 b5 30 ff ff ff 	mov    QWORD PTR [rbp-0xd0],rsi
-    251d:	48 89 95 60 ff ff ff 	mov    QWORD PTR [rbp-0xa0],rdx
-    2524:	48 89 8d 68 ff ff ff 	mov    QWORD PTR [rbp-0x98],rcx
-    252b:	4c 89 85 70 ff ff ff 	mov    QWORD PTR [rbp-0x90],r8
-    2532:	4c 89 8d 78 ff ff ff 	mov    QWORD PTR [rbp-0x88],r9
-    2539:	84 c0                	test   al,al
-    253b:	74 20                	je     255d <sprintf+0x59>
-    253d:	0f 29 45 80          	movaps XMMWORD PTR [rbp-0x80],xmm0
-    2541:	0f 29 4d 90          	movaps XMMWORD PTR [rbp-0x70],xmm1
-    2545:	0f 29 55 a0          	movaps XMMWORD PTR [rbp-0x60],xmm2
-    2549:	0f 29 5d b0          	movaps XMMWORD PTR [rbp-0x50],xmm3
-    254d:	0f 29 65 c0          	movaps XMMWORD PTR [rbp-0x40],xmm4
-    2551:	0f 29 6d d0          	movaps XMMWORD PTR [rbp-0x30],xmm5
-    2555:	0f 29 75 e0          	movaps XMMWORD PTR [rbp-0x20],xmm6
-    2559:	0f 29 7d f0          	movaps XMMWORD PTR [rbp-0x10],xmm7
+    2966:	55                   	push   rbp
+    2967:	48 89 e5             	mov    rbp,rsp
+    296a:	48 83 ec 60          	sub    rsp,0x60
+    296e:	48 89 7d a8          	mov    QWORD PTR [rbp-0x58],rdi
+    2972:	48 89 75 a0          	mov    QWORD PTR [rbp-0x60],rsi
+    2976:	48 89 55 e0          	mov    QWORD PTR [rbp-0x20],rdx
+    297a:	48 89 4d e8          	mov    QWORD PTR [rbp-0x18],rcx
+    297e:	4c 89 45 f0          	mov    QWORD PTR [rbp-0x10],r8
+    2982:	4c 89 4d f8          	mov    QWORD PTR [rbp-0x8],r9
 		int rv;
 		va_list args;
 		va_start(args, fmt);
-    255d:	48 8d 85 30 ff ff ff 	lea    rax,[rbp-0xd0]
-    2564:	48 83 c0 08          	add    rax,0x8
-    2568:	48 89 85 48 ff ff ff 	mov    QWORD PTR [rbp-0xb8],rax
+    2986:	c7 45 b0 10 00 00 00 	mov    DWORD PTR [rbp-0x50],0x10
+    298d:	48 8d 45 10          	lea    rax,[rbp+0x10]
+    2991:	48 89 45 b8          	mov    QWORD PTR [rbp-0x48],rax
+    2995:	48 8d 45 d0          	lea    rax,[rbp-0x30]
+    2999:	48 89 45 c0          	mov    QWORD PTR [rbp-0x40],rax
 		rv = vsprintf(str, fmt, args);
-    256f:	48 8b 8d 30 ff ff ff 	mov    rcx,QWORD PTR [rbp-0xd0]
-    2576:	48 8b 95 48 ff ff ff 	mov    rdx,QWORD PTR [rbp-0xb8]
-    257d:	48 8b 85 38 ff ff ff 	mov    rax,QWORD PTR [rbp-0xc8]
-    2584:	48 89 ce             	mov    rsi,rcx
-    2587:	48 89 c7             	mov    rdi,rax
-    258a:	e8 00 00 00 00       	call   258f <sprintf+0x8b>
-    258f:	89 85 44 ff ff ff    	mov    DWORD PTR [rbp-0xbc],eax
+    299d:	48 8d 55 b0          	lea    rdx,[rbp-0x50]
+    29a1:	48 8b 4d a0          	mov    rcx,QWORD PTR [rbp-0x60]
+    29a5:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    29a9:	48 89 ce             	mov    rsi,rcx
+    29ac:	48 89 c7             	mov    rdi,rax
+    29af:	e8 00 00 00 00       	call   29b4 <sprintf+0x4e>
+    29b4:	89 45 cc             	mov    DWORD PTR [rbp-0x34],eax
 		va_end(args);
-    2595:	48 c7 85 48 ff ff ff 00 00 00 00 	mov    QWORD PTR [rbp-0xb8],0x0
 		return rv;
-    25a0:	8b 85 44 ff ff ff    	mov    eax,DWORD PTR [rbp-0xbc]
+    29b7:	8b 45 cc             	mov    eax,DWORD PTR [rbp-0x34]
 }
-    25a6:	c9                   	leave
-    25a7:	c3                   	ret
+    29ba:	c9                   	leave
+    29bb:	c3                   	ret
 
-00000000000025a8 <vsnprintf>:
+00000000000029bc <vsnprintf>:
 
 int vsnprintf(char* str, size_t n, const char* fmt, va_list args)
 {
-    25a8:	55                   	push   rbp
-    25a9:	48 89 e5             	mov    rbp,rsp
-    25ac:	48 83 ec 40          	sub    rsp,0x40
-    25b0:	48 89 7d d8          	mov    QWORD PTR [rbp-0x28],rdi
-    25b4:	48 89 75 d0          	mov    QWORD PTR [rbp-0x30],rsi
-    25b8:	48 89 55 c8          	mov    QWORD PTR [rbp-0x38],rdx
-    25bc:	48 89 4d c0          	mov    QWORD PTR [rbp-0x40],rcx
+    29bc:	55                   	push   rbp
+    29bd:	48 89 e5             	mov    rbp,rsp
+    29c0:	48 83 ec 40          	sub    rsp,0x40
+    29c4:	48 89 7d d8          	mov    QWORD PTR [rbp-0x28],rdi
+    29c8:	48 89 75 d0          	mov    QWORD PTR [rbp-0x30],rsi
+    29cc:	48 89 55 c8          	mov    QWORD PTR [rbp-0x38],rdx
+    29d0:	48 89 4d c0          	mov    QWORD PTR [rbp-0x40],rcx
 		struct ivp_ctx ct = {str, n, &ctx_s_putchar};
-    25c0:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
-    25c4:	48 89 45 e0          	mov    QWORD PTR [rbp-0x20],rax
-    25c8:	48 8b 45 d0          	mov    rax,QWORD PTR [rbp-0x30]
-    25cc:	48 89 45 e8          	mov    QWORD PTR [rbp-0x18],rax
-    25d0:	48 c7 45 f0 00 00 00 00 	mov    QWORD PTR [rbp-0x10],0x0
+    29d4:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
+    29d8:	48 89 45 e8          	mov    QWORD PTR [rbp-0x18],rax
+    29dc:	48 8b 45 d0          	mov    rax,QWORD PTR [rbp-0x30]
+    29e0:	48 89 45 f0          	mov    QWORD PTR [rbp-0x10],rax
+    29e4:	48 c7 45 f8 00 00 00 00 	mov    QWORD PTR [rbp-0x8],0x0
 		return internal_vprintf(&ct, fmt, args);
-    25d8:	48 8b 55 c0          	mov    rdx,QWORD PTR [rbp-0x40]
-    25dc:	48 8b 4d c8          	mov    rcx,QWORD PTR [rbp-0x38]
-    25e0:	48 8d 45 e0          	lea    rax,[rbp-0x20]
-    25e4:	48 89 ce             	mov    rsi,rcx
-    25e7:	48 89 c7             	mov    rdi,rax
-    25ea:	e8 00 00 00 00       	call   25ef <vsnprintf+0x47>
+    29ec:	48 8b 55 c0          	mov    rdx,QWORD PTR [rbp-0x40]
+    29f0:	48 8b 4d c8          	mov    rcx,QWORD PTR [rbp-0x38]
+    29f4:	48 8d 45 e8          	lea    rax,[rbp-0x18]
+    29f8:	48 89 ce             	mov    rsi,rcx
+    29fb:	48 89 c7             	mov    rdi,rax
+    29fe:	e8 00 00 00 00       	call   2a03 <vsnprintf+0x47>
 }
-    25ef:	c9                   	leave
-    25f0:	c3                   	ret
+    2a03:	c9                   	leave
+    2a04:	c3                   	ret
 
-00000000000025f1 <snprintf>:
+0000000000002a05 <snprintf>:
 
 int snprintf(char* str, size_t n, const char* fmt, ...)
 {
-    25f1:	55                   	push   rbp
-    25f2:	48 89 e5             	mov    rbp,rsp
-    25f5:	48 81 ec e0 00 00 00 	sub    rsp,0xe0
-    25fc:	48 89 bd 38 ff ff ff 	mov    QWORD PTR [rbp-0xc8],rdi
-    2603:	48 89 b5 30 ff ff ff 	mov    QWORD PTR [rbp-0xd0],rsi
-    260a:	48 89 95 28 ff ff ff 	mov    QWORD PTR [rbp-0xd8],rdx
-    2611:	48 89 8d 68 ff ff ff 	mov    QWORD PTR [rbp-0x98],rcx
-    2618:	4c 89 85 70 ff ff ff 	mov    QWORD PTR [rbp-0x90],r8
-    261f:	4c 89 8d 78 ff ff ff 	mov    QWORD PTR [rbp-0x88],r9
-    2626:	84 c0                	test   al,al
-    2628:	74 20                	je     264a <snprintf+0x59>
-    262a:	0f 29 45 80          	movaps XMMWORD PTR [rbp-0x80],xmm0
-    262e:	0f 29 4d 90          	movaps XMMWORD PTR [rbp-0x70],xmm1
-    2632:	0f 29 55 a0          	movaps XMMWORD PTR [rbp-0x60],xmm2
-    2636:	0f 29 5d b0          	movaps XMMWORD PTR [rbp-0x50],xmm3
-    263a:	0f 29 65 c0          	movaps XMMWORD PTR [rbp-0x40],xmm4
-    263e:	0f 29 6d d0          	movaps XMMWORD PTR [rbp-0x30],xmm5
-    2642:	0f 29 75 e0          	movaps XMMWORD PTR [rbp-0x20],xmm6
-    2646:	0f 29 7d f0          	movaps XMMWORD PTR [rbp-0x10],xmm7
+    2a05:	55                   	push   rbp
+    2a06:	48 89 e5             	mov    rbp,rsp
+    2a09:	48 83 ec 70          	sub    rsp,0x70
+    2a0d:	48 89 7d a8          	mov    QWORD PTR [rbp-0x58],rdi
+    2a11:	48 89 75 a0          	mov    QWORD PTR [rbp-0x60],rsi
+    2a15:	48 89 55 98          	mov    QWORD PTR [rbp-0x68],rdx
+    2a19:	48 89 4d e8          	mov    QWORD PTR [rbp-0x18],rcx
+    2a1d:	4c 89 45 f0          	mov    QWORD PTR [rbp-0x10],r8
+    2a21:	4c 89 4d f8          	mov    QWORD PTR [rbp-0x8],r9
 		int rv;
 		va_list args;
 		va_start(args, fmt);
-    264a:	48 8d 85 28 ff ff ff 	lea    rax,[rbp-0xd8]
-    2651:	48 83 c0 08          	add    rax,0x8
-    2655:	48 89 85 48 ff ff ff 	mov    QWORD PTR [rbp-0xb8],rax
+    2a25:	c7 45 b0 18 00 00 00 	mov    DWORD PTR [rbp-0x50],0x18
+    2a2c:	48 8d 45 10          	lea    rax,[rbp+0x10]
+    2a30:	48 89 45 b8          	mov    QWORD PTR [rbp-0x48],rax
+    2a34:	48 8d 45 d0          	lea    rax,[rbp-0x30]
+    2a38:	48 89 45 c0          	mov    QWORD PTR [rbp-0x40],rax
 		rv = vsnprintf(str, n, fmt, args);
-    265c:	48 8b 95 28 ff ff ff 	mov    rdx,QWORD PTR [rbp-0xd8]
-    2663:	48 8b 8d 48 ff ff ff 	mov    rcx,QWORD PTR [rbp-0xb8]
-    266a:	48 8b b5 30 ff ff ff 	mov    rsi,QWORD PTR [rbp-0xd0]
-    2671:	48 8b 85 38 ff ff ff 	mov    rax,QWORD PTR [rbp-0xc8]
-    2678:	48 89 c7             	mov    rdi,rax
-    267b:	e8 00 00 00 00       	call   2680 <snprintf+0x8f>
-    2680:	89 85 44 ff ff ff    	mov    DWORD PTR [rbp-0xbc],eax
+    2a3c:	48 8d 4d b0          	lea    rcx,[rbp-0x50]
+    2a40:	48 8b 55 98          	mov    rdx,QWORD PTR [rbp-0x68]
+    2a44:	48 8b 75 a0          	mov    rsi,QWORD PTR [rbp-0x60]
+    2a48:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    2a4c:	48 89 c7             	mov    rdi,rax
+    2a4f:	e8 00 00 00 00       	call   2a54 <snprintf+0x4f>
+    2a54:	89 45 cc             	mov    DWORD PTR [rbp-0x34],eax
 		va_end(args);
-    2686:	48 c7 85 48 ff ff ff 00 00 00 00 	mov    QWORD PTR [rbp-0xb8],0x0
 		return rv;
-    2691:	8b 85 44 ff ff ff    	mov    eax,DWORD PTR [rbp-0xbc]
+    2a57:	8b 45 cc             	mov    eax,DWORD PTR [rbp-0x34]
 }
-    2697:	c9                   	leave
-    2698:	c3                   	ret
+    2a5a:	c9                   	leave
+    2a5b:	c3                   	ret
 
-0000000000002699 <printf>:
+0000000000002a5c <printf>:
 
 int printf(const char* fmt, ...)
 {
-    2699:	55                   	push   rbp
-    269a:	48 89 e5             	mov    rbp,rsp
-    269d:	48 81 ec d0 00 00 00 	sub    rsp,0xd0
-    26a4:	48 89 bd 38 ff ff ff 	mov    QWORD PTR [rbp-0xc8],rdi
-    26ab:	48 89 b5 58 ff ff ff 	mov    QWORD PTR [rbp-0xa8],rsi
-    26b2:	48 89 95 60 ff ff ff 	mov    QWORD PTR [rbp-0xa0],rdx
-    26b9:	48 89 8d 68 ff ff ff 	mov    QWORD PTR [rbp-0x98],rcx
-    26c0:	4c 89 85 70 ff ff ff 	mov    QWORD PTR [rbp-0x90],r8
-    26c7:	4c 89 8d 78 ff ff ff 	mov    QWORD PTR [rbp-0x88],r9
-    26ce:	84 c0                	test   al,al
-    26d0:	74 20                	je     26f2 <printf+0x59>
-    26d2:	0f 29 45 80          	movaps XMMWORD PTR [rbp-0x80],xmm0
-    26d6:	0f 29 4d 90          	movaps XMMWORD PTR [rbp-0x70],xmm1
-    26da:	0f 29 55 a0          	movaps XMMWORD PTR [rbp-0x60],xmm2
-    26de:	0f 29 5d b0          	movaps XMMWORD PTR [rbp-0x50],xmm3
-    26e2:	0f 29 65 c0          	movaps XMMWORD PTR [rbp-0x40],xmm4
-    26e6:	0f 29 6d d0          	movaps XMMWORD PTR [rbp-0x30],xmm5
-    26ea:	0f 29 75 e0          	movaps XMMWORD PTR [rbp-0x20],xmm6
-    26ee:	0f 29 7d f0          	movaps XMMWORD PTR [rbp-0x10],xmm7
+    2a5c:	55                   	push   rbp
+    2a5d:	48 89 e5             	mov    rbp,rsp
+    2a60:	48 83 ec 60          	sub    rsp,0x60
+    2a64:	48 89 7d a8          	mov    QWORD PTR [rbp-0x58],rdi
+    2a68:	48 89 75 d8          	mov    QWORD PTR [rbp-0x28],rsi
+    2a6c:	48 89 55 e0          	mov    QWORD PTR [rbp-0x20],rdx
+    2a70:	48 89 4d e8          	mov    QWORD PTR [rbp-0x18],rcx
+    2a74:	4c 89 45 f0          	mov    QWORD PTR [rbp-0x10],r8
+    2a78:	4c 89 4d f8          	mov    QWORD PTR [rbp-0x8],r9
 		int rv;
 		va_list args;
 		va_start(args, fmt);
-    26f2:	48 8d 85 38 ff ff ff 	lea    rax,[rbp-0xc8]
-    26f9:	48 83 c0 08          	add    rax,0x8
-    26fd:	48 89 85 48 ff ff ff 	mov    QWORD PTR [rbp-0xb8],rax
+    2a7c:	c7 45 b0 08 00 00 00 	mov    DWORD PTR [rbp-0x50],0x8
+    2a83:	48 8d 45 10          	lea    rax,[rbp+0x10]
+    2a87:	48 89 45 b8          	mov    QWORD PTR [rbp-0x48],rax
+    2a8b:	48 8d 45 d0          	lea    rax,[rbp-0x30]
+    2a8f:	48 89 45 c0          	mov    QWORD PTR [rbp-0x40],rax
 		rv = vprintf(fmt, args);
-    2704:	48 8b 85 38 ff ff ff 	mov    rax,QWORD PTR [rbp-0xc8]
-    270b:	48 8b 95 48 ff ff ff 	mov    rdx,QWORD PTR [rbp-0xb8]
-    2712:	48 89 d6             	mov    rsi,rdx
-    2715:	48 89 c7             	mov    rdi,rax
-    2718:	e8 00 00 00 00       	call   271d <printf+0x84>
-    271d:	89 85 44 ff ff ff    	mov    DWORD PTR [rbp-0xbc],eax
+    2a93:	48 8d 55 b0          	lea    rdx,[rbp-0x50]
+    2a97:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    2a9b:	48 89 d6             	mov    rsi,rdx
+    2a9e:	48 89 c7             	mov    rdi,rax
+    2aa1:	e8 00 00 00 00       	call   2aa6 <printf+0x4a>
+    2aa6:	89 45 cc             	mov    DWORD PTR [rbp-0x34],eax
 		va_end(args);
-    2723:	48 c7 85 48 ff ff ff 00 00 00 00 	mov    QWORD PTR [rbp-0xb8],0x0
 		return rv;
-    272e:	8b 85 44 ff ff ff    	mov    eax,DWORD PTR [rbp-0xbc]
+    2aa9:	8b 45 cc             	mov    eax,DWORD PTR [rbp-0x34]
 }
-    2734:	c9                   	leave
-    2735:	c3                   	ret
+    2aac:	c9                   	leave
+    2aad:	c3                   	ret
 
-0000000000002736 <iprintf>:
+0000000000002aae <iprintf>:
 /* no delay intr version */
 int iprintf(const char* fmt, ...)
 {
-    2736:	55                   	push   rbp
-    2737:	48 89 e5             	mov    rbp,rsp
-    273a:	48 81 ec d0 00 00 00 	sub    rsp,0xd0
-    2741:	48 89 bd 38 ff ff ff 	mov    QWORD PTR [rbp-0xc8],rdi
-    2748:	48 89 b5 58 ff ff ff 	mov    QWORD PTR [rbp-0xa8],rsi
-    274f:	48 89 95 60 ff ff ff 	mov    QWORD PTR [rbp-0xa0],rdx
-    2756:	48 89 8d 68 ff ff ff 	mov    QWORD PTR [rbp-0x98],rcx
-    275d:	4c 89 85 70 ff ff ff 	mov    QWORD PTR [rbp-0x90],r8
-    2764:	4c 89 8d 78 ff ff ff 	mov    QWORD PTR [rbp-0x88],r9
-    276b:	84 c0                	test   al,al
-    276d:	74 20                	je     278f <iprintf+0x59>
-    276f:	0f 29 45 80          	movaps XMMWORD PTR [rbp-0x80],xmm0
-    2773:	0f 29 4d 90          	movaps XMMWORD PTR [rbp-0x70],xmm1
-    2777:	0f 29 55 a0          	movaps XMMWORD PTR [rbp-0x60],xmm2
-    277b:	0f 29 5d b0          	movaps XMMWORD PTR [rbp-0x50],xmm3
-    277f:	0f 29 65 c0          	movaps XMMWORD PTR [rbp-0x40],xmm4
-    2783:	0f 29 6d d0          	movaps XMMWORD PTR [rbp-0x30],xmm5
-    2787:	0f 29 75 e0          	movaps XMMWORD PTR [rbp-0x20],xmm6
-    278b:	0f 29 7d f0          	movaps XMMWORD PTR [rbp-0x10],xmm7
+    2aae:	55                   	push   rbp
+    2aaf:	48 89 e5             	mov    rbp,rsp
+    2ab2:	48 83 ec 60          	sub    rsp,0x60
+    2ab6:	48 89 7d a8          	mov    QWORD PTR [rbp-0x58],rdi
+    2aba:	48 89 75 d8          	mov    QWORD PTR [rbp-0x28],rsi
+    2abe:	48 89 55 e0          	mov    QWORD PTR [rbp-0x20],rdx
+    2ac2:	48 89 4d e8          	mov    QWORD PTR [rbp-0x18],rcx
+    2ac6:	4c 89 45 f0          	mov    QWORD PTR [rbp-0x10],r8
+    2aca:	4c 89 4d f8          	mov    QWORD PTR [rbp-0x8],r9
 		int rv;
 		va_list args;
 		va_start(args, fmt);
-    278f:	48 8d 85 38 ff ff ff 	lea    rax,[rbp-0xc8]
-    2796:	48 83 c0 08          	add    rax,0x8
-    279a:	48 89 85 48 ff ff ff 	mov    QWORD PTR [rbp-0xb8],rax
+    2ace:	c7 45 b0 08 00 00 00 	mov    DWORD PTR [rbp-0x50],0x8
+    2ad5:	48 8d 45 10          	lea    rax,[rbp+0x10]
+    2ad9:	48 89 45 b8          	mov    QWORD PTR [rbp-0x48],rax
+    2add:	48 8d 45 d0          	lea    rax,[rbp-0x30]
+    2ae1:	48 89 45 c0          	mov    QWORD PTR [rbp-0x40],rax
 		reg_def.flags |= KIO_REGION_NO_DELAY;
-    27a1:	0f b6 05 00 00 00 00 	movzx  eax,BYTE PTR [rip+0x0]        # 27a8 <iprintf+0x72>
-    27a8:	83 c8 01             	or     eax,0x1
-    27ab:	88 05 00 00 00 00    	mov    BYTE PTR [rip+0x0],al        # 27b1 <iprintf+0x7b>
+    2ae5:	0f b6 05 00 00 00 00 	movzx  eax,BYTE PTR [rip+0x0]        # 2aec <iprintf+0x3e>
+    2aec:	83 c8 01             	or     eax,0x1
+    2aef:	88 05 00 00 00 00    	mov    BYTE PTR [rip+0x0],al        # 2af5 <iprintf+0x47>
 		rv = vprintf(fmt, args);
-    27b1:	48 8b 85 38 ff ff ff 	mov    rax,QWORD PTR [rbp-0xc8]
-    27b8:	48 8b 95 48 ff ff ff 	mov    rdx,QWORD PTR [rbp-0xb8]
-    27bf:	48 89 d6             	mov    rsi,rdx
-    27c2:	48 89 c7             	mov    rdi,rax
-    27c5:	e8 00 00 00 00       	call   27ca <iprintf+0x94>
-    27ca:	89 85 44 ff ff ff    	mov    DWORD PTR [rbp-0xbc],eax
+    2af5:	48 8d 55 b0          	lea    rdx,[rbp-0x50]
+    2af9:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    2afd:	48 89 d6             	mov    rsi,rdx
+    2b00:	48 89 c7             	mov    rdi,rax
+    2b03:	e8 00 00 00 00       	call   2b08 <iprintf+0x5a>
+    2b08:	89 45 cc             	mov    DWORD PTR [rbp-0x34],eax
 		reg_def.flags &= ~KIO_REGION_NO_DELAY;
-    27d0:	0f b6 05 00 00 00 00 	movzx  eax,BYTE PTR [rip+0x0]        # 27d7 <iprintf+0xa1>
-    27d7:	83 e0 fe             	and    eax,0xfffffffe
-    27da:	88 05 00 00 00 00    	mov    BYTE PTR [rip+0x0],al        # 27e0 <iprintf+0xaa>
+    2b0b:	0f b6 05 00 00 00 00 	movzx  eax,BYTE PTR [rip+0x0]        # 2b12 <iprintf+0x64>
+    2b12:	83 e0 fe             	and    eax,0xfffffffe
+    2b15:	88 05 00 00 00 00    	mov    BYTE PTR [rip+0x0],al        # 2b1b <iprintf+0x6d>
 		va_end(args);
-    27e0:	48 c7 85 48 ff ff ff 00 00 00 00 	mov    QWORD PTR [rbp-0xb8],0x0
 		return rv;
-    27eb:	8b 85 44 ff ff ff    	mov    eax,DWORD PTR [rbp-0xbc]
+    2b1b:	8b 45 cc             	mov    eax,DWORD PTR [rbp-0x34]
 }
-    27f1:	c9                   	leave
-    27f2:	c3                   	ret
+    2b1e:	c9                   	leave
+    2b1f:	c3                   	ret
 
-00000000000027f3 <noprintf>:
+0000000000002b20 <noprintf>:
 int noprintf(const char* c, ...) { (void)c; return 0; }
-    27f3:	55                   	push   rbp
-    27f4:	48 89 e5             	mov    rbp,rsp
-    27f7:	48 81 ec c0 00 00 00 	sub    rsp,0xc0
-    27fe:	48 89 bd 48 ff ff ff 	mov    QWORD PTR [rbp-0xb8],rdi
-    2805:	48 89 b5 58 ff ff ff 	mov    QWORD PTR [rbp-0xa8],rsi
-    280c:	48 89 95 60 ff ff ff 	mov    QWORD PTR [rbp-0xa0],rdx
-    2813:	48 89 8d 68 ff ff ff 	mov    QWORD PTR [rbp-0x98],rcx
-    281a:	4c 89 85 70 ff ff ff 	mov    QWORD PTR [rbp-0x90],r8
-    2821:	4c 89 8d 78 ff ff ff 	mov    QWORD PTR [rbp-0x88],r9
-    2828:	84 c0                	test   al,al
-    282a:	74 20                	je     284c <noprintf+0x59>
-    282c:	0f 29 45 80          	movaps XMMWORD PTR [rbp-0x80],xmm0
-    2830:	0f 29 4d 90          	movaps XMMWORD PTR [rbp-0x70],xmm1
-    2834:	0f 29 55 a0          	movaps XMMWORD PTR [rbp-0x60],xmm2
-    2838:	0f 29 5d b0          	movaps XMMWORD PTR [rbp-0x50],xmm3
-    283c:	0f 29 65 c0          	movaps XMMWORD PTR [rbp-0x40],xmm4
-    2840:	0f 29 6d d0          	movaps XMMWORD PTR [rbp-0x30],xmm5
-    2844:	0f 29 75 e0          	movaps XMMWORD PTR [rbp-0x20],xmm6
-    2848:	0f 29 7d f0          	movaps XMMWORD PTR [rbp-0x10],xmm7
-    284c:	b8 00 00 00 00       	mov    eax,0x0
-    2851:	c9                   	leave
-    2852:	c3                   	ret
+    2b20:	55                   	push   rbp
+    2b21:	48 89 e5             	mov    rbp,rsp
+    2b24:	48 83 ec 38          	sub    rsp,0x38
+    2b28:	48 89 7d c8          	mov    QWORD PTR [rbp-0x38],rdi
+    2b2c:	48 89 75 d8          	mov    QWORD PTR [rbp-0x28],rsi
+    2b30:	48 89 55 e0          	mov    QWORD PTR [rbp-0x20],rdx
+    2b34:	48 89 4d e8          	mov    QWORD PTR [rbp-0x18],rcx
+    2b38:	4c 89 45 f0          	mov    QWORD PTR [rbp-0x10],r8
+    2b3c:	4c 89 4d f8          	mov    QWORD PTR [rbp-0x8],r9
+    2b40:	b8 00 00 00 00       	mov    eax,0x0
+    2b45:	c9                   	leave
+    2b46:	c3                   	ret
 
-0000000000002853 <memdump>:
+0000000000002b47 <memdump>:
 
 void memdump(void* ofs, size_t sz)
 {
-    2853:	55                   	push   rbp
-    2854:	48 89 e5             	mov    rbp,rsp
-    2857:	48 83 ec 40          	sub    rsp,0x40
-    285b:	48 89 7d c8          	mov    QWORD PTR [rbp-0x38],rdi
-    285f:	48 89 75 c0          	mov    QWORD PTR [rbp-0x40],rsi
+    2b47:	55                   	push   rbp
+    2b48:	48 89 e5             	mov    rbp,rsp
+    2b4b:	48 83 ec 40          	sub    rsp,0x40
+    2b4f:	48 89 7d c8          	mov    QWORD PTR [rbp-0x38],rdi
+    2b53:	48 89 75 c0          	mov    QWORD PTR [rbp-0x40],rsi
 		size_t i, ct;
 
 		printf("dumping memory at %p with size %u:\n", ofs, sz);
-    2863:	48 8b 55 c0          	mov    rdx,QWORD PTR [rbp-0x40]
-    2867:	48 8b 45 c8          	mov    rax,QWORD PTR [rbp-0x38]
-    286b:	48 89 c6             	mov    rsi,rax
-    286e:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-    2875:	b8 00 00 00 00       	mov    eax,0x0
-    287a:	e8 00 00 00 00       	call   287f <memdump+0x2c>
+    2b57:	48 8b 55 c0          	mov    rdx,QWORD PTR [rbp-0x40]
+    2b5b:	48 8b 45 c8          	mov    rax,QWORD PTR [rbp-0x38]
+    2b5f:	48 89 c6             	mov    rsi,rax
+    2b62:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+    2b69:	b8 00 00 00 00       	mov    eax,0x0
+    2b6e:	e8 00 00 00 00       	call   2b73 <memdump+0x2c>
 		for (i = 0; i < sz; i += 16) {
-    287f:	48 c7 45 f8 00 00 00 00 	mov    QWORD PTR [rbp-0x8],0x0
-    2887:	e9 7a 01 00 00       	jmp    2a06 <memdump+0x1b3>
+    2b73:	48 c7 45 f8 00 00 00 00 	mov    QWORD PTR [rbp-0x8],0x0
+    2b7b:	e9 7a 01 00 00       	jmp    2cfa <memdump+0x1b3>
 				uint16_t* mem = (uint16_t*)(ofs + i);
-    288c:	48 8b 55 c8          	mov    rdx,QWORD PTR [rbp-0x38]
-    2890:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-    2894:	48 01 d0             	add    rax,rdx
-    2897:	48 89 45 e0          	mov    QWORD PTR [rbp-0x20],rax
+    2b80:	48 8b 55 c8          	mov    rdx,QWORD PTR [rbp-0x38]
+    2b84:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    2b88:	48 01 d0             	add    rax,rdx
+    2b8b:	48 89 45 e0          	mov    QWORD PTR [rbp-0x20],rax
 				uint8_t nbl = 41; /* 41 blanks until text output */
-    289b:	c6 45 ef 29          	mov    BYTE PTR [rbp-0x11],0x29
+    2b8f:	c6 45 ef 29          	mov    BYTE PTR [rbp-0x11],0x29
 				/* xxd-style output: 8 words and text */
 				for (ct = 0; ct < 8; ct++) {
-    289f:	48 c7 45 f0 00 00 00 00 	mov    QWORD PTR [rbp-0x10],0x0
-    28a7:	e9 b8 00 00 00       	jmp    2964 <memdump+0x111>
+    2b93:	48 c7 45 f0 00 00 00 00 	mov    QWORD PTR [rbp-0x10],0x0
+    2b9b:	e9 b8 00 00 00       	jmp    2c58 <memdump+0x111>
 						if (i + 2 * ct <= sz - 2) {
-    28ac:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
-    28b0:	48 8d 14 00          	lea    rdx,[rax+rax*1]
-    28b4:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-    28b8:	48 01 d0             	add    rax,rdx
-    28bb:	48 8b 55 c0          	mov    rdx,QWORD PTR [rbp-0x40]
-    28bf:	48 83 ea 02          	sub    rdx,0x2
-    28c3:	48 39 c2             	cmp    rdx,rax
-    28c6:	72 4f                	jb     2917 <memdump+0xc4>
+    2ba0:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
+    2ba4:	48 8d 14 00          	lea    rdx,[rax+rax*1]
+    2ba8:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    2bac:	48 01 d0             	add    rax,rdx
+    2baf:	48 8b 55 c0          	mov    rdx,QWORD PTR [rbp-0x40]
+    2bb3:	48 83 ea 02          	sub    rdx,0x2
+    2bb7:	48 39 c2             	cmp    rdx,rax
+    2bba:	72 4f                	jb     2c0b <memdump+0xc4>
 								printf("%04x ", ((mem[ct] << 8) & 0xff00) | (mem[ct] >> 8));
-    28c8:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
-    28cc:	48 8d 14 00          	lea    rdx,[rax+rax*1]
-    28d0:	48 8b 45 e0          	mov    rax,QWORD PTR [rbp-0x20]
-    28d4:	48 01 d0             	add    rax,rdx
-    28d7:	0f b7 00             	movzx  eax,WORD PTR [rax]
-    28da:	0f b7 c0             	movzx  eax,ax
-    28dd:	c1 e0 08             	shl    eax,0x8
-    28e0:	0f b7 d0             	movzx  edx,ax
-    28e3:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
-    28e7:	48 8d 0c 00          	lea    rcx,[rax+rax*1]
-    28eb:	48 8b 45 e0          	mov    rax,QWORD PTR [rbp-0x20]
-    28ef:	48 01 c8             	add    rax,rcx
-    28f2:	0f b7 00             	movzx  eax,WORD PTR [rax]
-    28f5:	66 c1 e8 08          	shr    ax,0x8
-    28f9:	0f b7 c0             	movzx  eax,ax
-    28fc:	09 d0                	or     eax,edx
-    28fe:	89 c6                	mov    esi,eax
-    2900:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-    2907:	b8 00 00 00 00       	mov    eax,0x0
-    290c:	e8 00 00 00 00       	call   2911 <memdump+0xbe>
+    2bbc:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
+    2bc0:	48 8d 14 00          	lea    rdx,[rax+rax*1]
+    2bc4:	48 8b 45 e0          	mov    rax,QWORD PTR [rbp-0x20]
+    2bc8:	48 01 d0             	add    rax,rdx
+    2bcb:	0f b7 00             	movzx  eax,WORD PTR [rax]
+    2bce:	0f b7 c0             	movzx  eax,ax
+    2bd1:	c1 e0 08             	shl    eax,0x8
+    2bd4:	0f b7 d0             	movzx  edx,ax
+    2bd7:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
+    2bdb:	48 8d 0c 00          	lea    rcx,[rax+rax*1]
+    2bdf:	48 8b 45 e0          	mov    rax,QWORD PTR [rbp-0x20]
+    2be3:	48 01 c8             	add    rax,rcx
+    2be6:	0f b7 00             	movzx  eax,WORD PTR [rax]
+    2be9:	66 c1 e8 08          	shr    ax,0x8
+    2bed:	0f b7 c0             	movzx  eax,ax
+    2bf0:	09 d0                	or     eax,edx
+    2bf2:	89 c6                	mov    esi,eax
+    2bf4:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+    2bfb:	b8 00 00 00 00       	mov    eax,0x0
+    2c00:	e8 00 00 00 00       	call   2c05 <memdump+0xbe>
 								nbl -= 5;
-    2911:	80 6d ef 05          	sub    BYTE PTR [rbp-0x11],0x5
-    2915:	eb 48                	jmp    295f <memdump+0x10c>
+    2c05:	80 6d ef 05          	sub    BYTE PTR [rbp-0x11],0x5
+    2c09:	eb 48                	jmp    2c53 <memdump+0x10c>
 						} else if (i + 2 * ct == sz - 1) { /* ending on half word */
-    2917:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
-    291b:	48 8d 14 00          	lea    rdx,[rax+rax*1]
-    291f:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-    2923:	48 01 c2             	add    rdx,rax
-    2926:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    292a:	48 83 e8 01          	sub    rax,0x1
-    292e:	48 39 c2             	cmp    rdx,rax
-    2931:	75 3e                	jne    2971 <memdump+0x11e>
+    2c0b:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
+    2c0f:	48 8d 14 00          	lea    rdx,[rax+rax*1]
+    2c13:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    2c17:	48 01 c2             	add    rdx,rax
+    2c1a:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    2c1e:	48 83 e8 01          	sub    rax,0x1
+    2c22:	48 39 c2             	cmp    rdx,rax
+    2c25:	75 3e                	jne    2c65 <memdump+0x11e>
 								printf("%02x   ", *(uint8_t*)(mem + ct));
-    2933:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
-    2937:	48 8d 14 00          	lea    rdx,[rax+rax*1]
-    293b:	48 8b 45 e0          	mov    rax,QWORD PTR [rbp-0x20]
-    293f:	48 01 d0             	add    rax,rdx
-    2942:	0f b6 00             	movzx  eax,BYTE PTR [rax]
-    2945:	0f b6 c0             	movzx  eax,al
-    2948:	89 c6                	mov    esi,eax
-    294a:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-    2951:	b8 00 00 00 00       	mov    eax,0x0
-    2956:	e8 00 00 00 00       	call   295b <memdump+0x108>
+    2c27:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
+    2c2b:	48 8d 14 00          	lea    rdx,[rax+rax*1]
+    2c2f:	48 8b 45 e0          	mov    rax,QWORD PTR [rbp-0x20]
+    2c33:	48 01 d0             	add    rax,rdx
+    2c36:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+    2c39:	0f b6 c0             	movzx  eax,al
+    2c3c:	89 c6                	mov    esi,eax
+    2c3e:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+    2c45:	b8 00 00 00 00       	mov    eax,0x0
+    2c4a:	e8 00 00 00 00       	call   2c4f <memdump+0x108>
 								nbl -= 5;
-    295b:	80 6d ef 05          	sub    BYTE PTR [rbp-0x11],0x5
+    2c4f:	80 6d ef 05          	sub    BYTE PTR [rbp-0x11],0x5
 				for (ct = 0; ct < 8; ct++) {
-    295f:	48 83 45 f0 01       	add    QWORD PTR [rbp-0x10],0x1
-    2964:	48 83 7d f0 07       	cmp    QWORD PTR [rbp-0x10],0x7
-    2969:	0f 86 3d ff ff ff    	jbe    28ac <memdump+0x59>
-    296f:	eb 0d                	jmp    297e <memdump+0x12b>
+    2c53:	48 83 45 f0 01       	add    QWORD PTR [rbp-0x10],0x1
+    2c58:	48 83 7d f0 07       	cmp    QWORD PTR [rbp-0x10],0x7
+    2c5d:	0f 86 3d ff ff ff    	jbe    2ba0 <memdump+0x59>
+    2c63:	eb 0d                	jmp    2c72 <memdump+0x12b>
 						} else
 								break;
-    2971:	90                   	nop
+    2c65:	90                   	nop
 				}
 				/* fill with blanks */
 				while (nbl--)
-    2972:	eb 0a                	jmp    297e <memdump+0x12b>
+    2c66:	eb 0a                	jmp    2c72 <memdump+0x12b>
 						putchar(' ');
-    2974:	bf 20 00 00 00       	mov    edi,0x20
-    2979:	e8 00 00 00 00       	call   297e <memdump+0x12b>
+    2c68:	bf 20 00 00 00       	mov    edi,0x20
+    2c6d:	e8 00 00 00 00       	call   2c72 <memdump+0x12b>
 				while (nbl--)
-    297e:	0f b6 45 ef          	movzx  eax,BYTE PTR [rbp-0x11]
-    2982:	8d 50 ff             	lea    edx,[rax-0x1]
-    2985:	88 55 ef             	mov    BYTE PTR [rbp-0x11],dl
-    2988:	84 c0                	test   al,al
-    298a:	75 e8                	jne    2974 <memdump+0x121>
+    2c72:	0f b6 45 ef          	movzx  eax,BYTE PTR [rbp-0x11]
+    2c76:	8d 50 ff             	lea    edx,[rax-0x1]
+    2c79:	88 55 ef             	mov    BYTE PTR [rbp-0x11],dl
+    2c7c:	84 c0                	test   al,al
+    2c7e:	75 e8                	jne    2c68 <memdump+0x121>
 				/* output the text */
 				for (ct = 0; ct < 16; ct++) {
-    298c:	48 c7 45 f0 00 00 00 00 	mov    QWORD PTR [rbp-0x10],0x0
-    2994:	eb 57                	jmp    29ed <memdump+0x19a>
+    2c80:	48 c7 45 f0 00 00 00 00 	mov    QWORD PTR [rbp-0x10],0x0
+    2c88:	eb 57                	jmp    2ce1 <memdump+0x19a>
 						char* c = (char*)mem + ct;
-    2996:	48 8b 55 e0          	mov    rdx,QWORD PTR [rbp-0x20]
-    299a:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
-    299e:	48 01 d0             	add    rax,rdx
-    29a1:	48 89 45 d8          	mov    QWORD PTR [rbp-0x28],rax
+    2c8a:	48 8b 55 e0          	mov    rdx,QWORD PTR [rbp-0x20]
+    2c8e:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
+    2c92:	48 01 d0             	add    rax,rdx
+    2c95:	48 89 45 d8          	mov    QWORD PTR [rbp-0x28],rax
 						if (i + ct >= sz)
-    29a5:	48 8b 55 f8          	mov    rdx,QWORD PTR [rbp-0x8]
-    29a9:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
-    29ad:	48 01 d0             	add    rax,rdx
-    29b0:	48 3b 45 c0          	cmp    rax,QWORD PTR [rbp-0x40]
-    29b4:	73 40                	jae    29f6 <memdump+0x1a3>
+    2c99:	48 8b 55 f8          	mov    rdx,QWORD PTR [rbp-0x8]
+    2c9d:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
+    2ca1:	48 01 d0             	add    rax,rdx
+    2ca4:	48 3b 45 c0          	cmp    rax,QWORD PTR [rbp-0x40]
+    2ca8:	73 40                	jae    2cea <memdump+0x1a3>
 								break;
 						if (isprint(*c))
-    29b6:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
-    29ba:	0f b6 00             	movzx  eax,BYTE PTR [rax]
-    29bd:	0f be c0             	movsx  eax,al
-    29c0:	89 c7                	mov    edi,eax
-    29c2:	e8 00 00 00 00       	call   29c7 <memdump+0x174>
-    29c7:	85 c0                	test   eax,eax
-    29c9:	74 13                	je     29de <memdump+0x18b>
+    2caa:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
+    2cae:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+    2cb1:	0f be c0             	movsx  eax,al
+    2cb4:	89 c7                	mov    edi,eax
+    2cb6:	e8 00 00 00 00       	call   2cbb <memdump+0x174>
+    2cbb:	85 c0                	test   eax,eax
+    2cbd:	74 13                	je     2cd2 <memdump+0x18b>
 								putchar(*c);
-    29cb:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
-    29cf:	0f b6 00             	movzx  eax,BYTE PTR [rax]
-    29d2:	0f be c0             	movsx  eax,al
-    29d5:	89 c7                	mov    edi,eax
-    29d7:	e8 00 00 00 00       	call   29dc <memdump+0x189>
-    29dc:	eb 0a                	jmp    29e8 <memdump+0x195>
+    2cbf:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
+    2cc3:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+    2cc6:	0f be c0             	movsx  eax,al
+    2cc9:	89 c7                	mov    edi,eax
+    2ccb:	e8 00 00 00 00       	call   2cd0 <memdump+0x189>
+    2cd0:	eb 0a                	jmp    2cdc <memdump+0x195>
 						else
 								putchar('.');
-    29de:	bf 2e 00 00 00       	mov    edi,0x2e
-    29e3:	e8 00 00 00 00       	call   29e8 <memdump+0x195>
+    2cd2:	bf 2e 00 00 00       	mov    edi,0x2e
+    2cd7:	e8 00 00 00 00       	call   2cdc <memdump+0x195>
 				for (ct = 0; ct < 16; ct++) {
-    29e8:	48 83 45 f0 01       	add    QWORD PTR [rbp-0x10],0x1
-    29ed:	48 83 7d f0 0f       	cmp    QWORD PTR [rbp-0x10],0xf
-    29f2:	76 a2                	jbe    2996 <memdump+0x143>
-    29f4:	eb 01                	jmp    29f7 <memdump+0x1a4>
+    2cdc:	48 83 45 f0 01       	add    QWORD PTR [rbp-0x10],0x1
+    2ce1:	48 83 7d f0 0f       	cmp    QWORD PTR [rbp-0x10],0xf
+    2ce6:	76 a2                	jbe    2c8a <memdump+0x143>
+    2ce8:	eb 01                	jmp    2ceb <memdump+0x1a4>
 								break;
-    29f6:	90                   	nop
+    2cea:	90                   	nop
 				}
 				putchar('\n');
-    29f7:	bf 0a 00 00 00       	mov    edi,0xa
-    29fc:	e8 00 00 00 00       	call   2a01 <memdump+0x1ae>
+    2ceb:	bf 0a 00 00 00       	mov    edi,0xa
+    2cf0:	e8 00 00 00 00       	call   2cf5 <memdump+0x1ae>
 		for (i = 0; i < sz; i += 16) {
-    2a01:	48 83 45 f8 10       	add    QWORD PTR [rbp-0x8],0x10
-    2a06:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-    2a0a:	48 3b 45 c0          	cmp    rax,QWORD PTR [rbp-0x40]
-    2a0e:	0f 82 78 fe ff ff    	jb     288c <memdump+0x39>
+    2cf5:	48 83 45 f8 10       	add    QWORD PTR [rbp-0x8],0x10
+    2cfa:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    2cfe:	48 3b 45 c0          	cmp    rax,QWORD PTR [rbp-0x40]
+    2d02:	0f 82 78 fe ff ff    	jb     2b80 <memdump+0x39>
 		}
 }
-    2a14:	90                   	nop
-    2a15:	90                   	nop
-    2a16:	c9                   	leave
-    2a17:	c3                   	ret
+    2d08:	90                   	nop
+    2d09:	90                   	nop
+    2d0a:	c9                   	leave
+    2d0b:	c3                   	ret

@@ -168,7 +168,7 @@ void* mm_map64(void* vm_mapping, void* vaddr, struct page_range* pr, size_t prc,
 		uint64_t low48;
 		struct vm_pg_ptrs64* vp = vm_mapping;
 		uint32_t pml4e, pdpte, pde, pte;
-		struct page_range pr_copy;
+		struct page_range pr_copy = *pr;
 
 		/* physical pointers */
 		struct pte64 *p = vp->pml4;
@@ -198,7 +198,7 @@ new_pdpt:
 		if (ENTER_CS_PTE(vp->pml4e[pml4e])) {
 				struct page_range pr2[2];
 				/* allocate the PDPT */
-				pl = mm_alloc_page(&pr2[0].base);
+				pl = mm_alloc_page(&pr2[0].base); /* alloc returns mapped memory */
 
 				/* and set the reference in the PML4 */
 				p[pml4e].addr = pr2[0].base / 4096;
@@ -208,7 +208,7 @@ new_pdpt:
 
 				/* now allocate the map (2 pages) */
 				mm_alloc_pm(2, pr2, 2); /* not cont. as only virt access */
-				m = __sync_fetch_and_sub(&vp->cur, 8096) - 4096;
+				m = __sync_fetch_and_sub(&vp->cur, 8192) - 8192;
 				mm_map(&mm_kernel, m, pr2, pr2[0].count > 1 ? 1 : 2,
 								MMGR_MAP_WRITE | MMGR_MAP_KERNEL /*| MMGR_MAP_GLOBAL*/);
 				vp->pdpte[pml4e] = m;
@@ -273,17 +273,15 @@ new_pt:
 		}
 
 		/* now map the pages */
-		pr_copy = *pr++;
 		while (prc) {
 				pt[pte].addr = pr_copy.base / 4096;
-				pt[pte].u = 1; /* FIXME: for now (u ? 1 : 0) */
+				pt[pte].u = (u ? 1 : 0); /* FIXME: for now (u ? 1 : 0) */
 				pt[pte].w = (w ? 1 : 0);
 				pt[pte].p = 1;
 				pt[pte].s = (wc ? 1 : 0); /* PAT bit */
 				pt[pte].wt = (wt ? 1 : 0);
 				pt[pte].cd = (cd ? 1 : 0);
 				pt[pte].g = (g ? 1 : 0);
-				pt[pte].u = 1; /* FIXME: for now */
 				pt[pte].ign = avl & 7;
 				pt[pte].ign2 = (avl >> 3);
 				if (cpu.e_has_nx)
@@ -309,8 +307,8 @@ new_pt:
 				}
 				pr_copy.base += 4096;
 				if (!--pr_copy.count) {
-						if (prc--)
-								pr_copy = *pr++;
+						if (--prc)
+								pr_copy = *++pr; /* advance then dereference */
 				}
 		}
 		return vaddr;
@@ -321,7 +319,7 @@ void* mm_map36(void* vm_mapping, void* vaddr, struct page_range* pr, size_t prc,
 {
 		struct vm_pg_ptrs36* vp = vm_mapping;
 		uint32_t pdpte, pde, pte;
-		struct page_range pr_copy;
+		struct page_range pr_copy = *pr;
 
 		/* physical pointers */
 		struct pte64* pd = 0;
@@ -358,7 +356,6 @@ new_pt:
 		}
 
 		/* now map the pages */
-		pr_copy = *pr++;
 		while (prc) {
 				pt[pte].addr = pr_copy.base / 4096;
 				pt[pte].u = 1; /* FIXME: for now (u ? 1 : 0) */
@@ -389,8 +386,8 @@ new_pt:
 				}
 				pr_copy.base += 4096;
 				if (!--pr_copy.count) {
-						if (prc--)
-								pr_copy = *pr++;
+						if (--prc)
+								pr_copy = *++pr; /* advance then dereference */
 				}
 		}
 		return vaddr;
@@ -401,7 +398,7 @@ void* mm_map32(void* vm_mapping, void* vaddr, struct page_range* pr, size_t prc,
 {
 		struct vm_pg_ptrs32* vp = vm_mapping;
 		uint32_t pde, pte;
-		struct page_range pr_copy;
+		struct page_range pr_copy = *pr;
 
 		/* entry pointers */
 		struct pte32* pd = vp->pd;
@@ -435,10 +432,9 @@ new_pt:
 		}
 
 		/* now map the pages */
-		pr_copy = *pr++;
 		while (prc) {
 				pt[pte].addr = pr_copy.base / 4096;
-				pt[pte].u = 1; /* FIXME: for now (u ? 1 : 0) */
+				pt[pte].u = (u ? 1 : 0); /* FIXME: for now (u ? 1 : 0) */
 				pt[pte].w = (w ? 1 : 0);
 				pt[pte].p = 1;
 				pt[pte].s = (wc ? 1 : 0); /* PAT bit */
@@ -456,8 +452,8 @@ new_pt:
 				}
 				pr_copy.base += 4096;
 				if (!--pr_copy.count) {
-						if (prc--)
-								pr_copy = *pr++;
+						if (--prc)
+								pr_copy = *++pr; /* advance then dereference */
 				}
 		}
 		return vaddr;
@@ -473,9 +469,9 @@ map_fun mf_map = NULL;
 void* mm_map(struct mm* mm, void* virt_address,	const struct page_range* prs,
 				size_t pr_ct, int flags)
 {
-		int x = flags & MMGR_MAP_EXECUTE, w = flags & MMGR_MAP_WRITE,
-			wc = flags & MMGR_MAP_PAT, wt = flags & MMGR_MAP_WRITE_THROUGH,
-			cd = flags & MMGR_MAP_NO_CACHING, g = flags & MMGR_MAP_GLOBAL,
+		int x = !!(flags & MMGR_MAP_EXECUTE), w = !!(flags & MMGR_MAP_WRITE),
+			wc = !!(flags & MMGR_MAP_PAT), wt = !!(flags & MMGR_MAP_WRITE_THROUGH),
+			cd = !!(flags & MMGR_MAP_NO_CACHING), g = !!(flags & MMGR_MAP_GLOBAL),
 			u = !(flags & MMGR_MAP_KERNEL);
 		int avl = 0;
 
@@ -857,7 +853,7 @@ present:
 												struct page_range pr2[2];
 												struct vm_pg_ptrs64* vp = mm_kernel.ctx;
 												mm_alloc_pm(2, pr2, 2);
-												map = __sync_fetch_and_sub(&vp->cur, 8096) - 4096;
+												map = __sync_fetch_and_sub(&vp->cur, 8192) - 8192;
 												mm_map(&mm_kernel, map, pr2, pr2[0].count > 1 ? 1 : 2,
 														MMGR_MAP_WRITE | MMGR_MAP_KERNEL /*| MMGR_MAP_GLOBAL*/);
 										} else
@@ -1423,15 +1419,5 @@ print_help:
 				}
 		}
 		stc--;
-}
-
-void mm_idt_init()
-{
-		extern void idt_init();
-		mm_protect(&mm_kernel, idt, 1, MMGR_MAP_SET | MMGR_MAP_WRITE);
-		flush_tlb_single(idt);
-		idt_init();
-		mm_protect(&mm_kernel, idt, 1, MMGR_MAP_UNSET | MMGR_MAP_WRITE);
-		flush_tlb_single(idt);
 }
 

@@ -445,6 +445,7 @@ void cpu_do_stats()
 				if (cpu_pcs)
 						kfree(cpu_pcs);
 				cpu_pcs = kmalloc((nproc + 1) * sizeof(*cpu_pcs));
+				nproc_alloc = nproc;
 		}
 		bzero(&cpu_pcs[0], sizeof(cpu_pcs[0]));
 		size_t nval = 0; uint32_t ntot;
@@ -456,6 +457,8 @@ void cpu_do_stats()
 		nproc_rep = nval;
 		/* calculate the total percentages (assuming a second has passed) */
 		ntot = 10000000 * nval; /* div 100 */
+		if (!ntot)
+			return; /* div0 otherwise */
 		for (size_t i = 0; i < 4; i++) {
 				uint32_t val = cpu_pcs[0].vals[i];
 				cpu_pcs[0].vals[i] = val / ntot;
@@ -495,6 +498,7 @@ struct {
 		uint32_t tot_runtime; /* sec */
 		uint32_t sec_runtime; /* ms */
 } task_stats = {0};
+STAT_DECL_COUNTER(sched_mr_count, uint32_t) = 0;
 
 void print_tasks()
 {

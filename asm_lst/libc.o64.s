@@ -1198,7 +1198,7 @@ char* asctime_r(const struct tm* timep, char* result)
 {
      a6c:	55                   	push   rbp
      a6d:	48 89 e5             	mov    rbp,rsp
-     a70:	48 83 ec 20          	sub    rsp,0x20
+     a70:	48 83 ec 40          	sub    rsp,0x40
      a74:	48 89 7d e8          	mov    QWORD PTR [rbp-0x18],rdi
      a78:	48 89 75 e0          	mov    QWORD PTR [rbp-0x20],rsi
 		};
@@ -1246,16 +1246,14 @@ char* asctime_r(const struct tm* timep, char* result)
      ad8:	48 8d 90 00 00 00 00 	lea    rdx,[rax+0x0]
 		sprintf(result, "%.3s %.3s%3d %.2d:%.2d:%.2d %d\n",
      adf:	48 8b 45 e0          	mov    rax,QWORD PTR [rbp-0x20]
-     ae3:	48 83 ec 08          	sub    rsp,0x8
-     ae7:	41 50                	push   r8
-     ae9:	57                   	push   rdi
-     aea:	56                   	push   rsi
-     aeb:	45 89 d0             	mov    r8d,r10d
-     aee:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
-     af5:	48 89 c7             	mov    rdi,rax
-     af8:	b8 00 00 00 00       	mov    eax,0x0
-     afd:	e8 00 00 00 00       	call   b02 <asctime_r+0x96>
-     b02:	48 83 c4 20          	add    rsp,0x20
+     ae3:	44 89 44 24 10       	mov    DWORD PTR [rsp+0x10],r8d
+     ae8:	89 7c 24 08          	mov    DWORD PTR [rsp+0x8],edi
+     aec:	89 34 24             	mov    DWORD PTR [rsp],esi
+     aef:	45 89 d0             	mov    r8d,r10d
+     af2:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
+     af9:	48 89 c7             	mov    rdi,rax
+     afc:	b8 00 00 00 00       	mov    eax,0x0
+     b01:	e8 00 00 00 00       	call   b06 <asctime_r+0x9a>
 		return result;
      b06:	48 8b 45 e0          	mov    rax,QWORD PTR [rbp-0x20]
 }
@@ -1372,879 +1370,862 @@ struct tm* gmtime_r(const time_t* timep, struct tm* result)
      bd5:	89 45 fc             	mov    DWORD PTR [rbp-0x4],eax
 		*result = (struct tm){0};
      bd8:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-     bdc:	66 0f ef c0          	pxor   xmm0,xmm0
-     be0:	0f 11 00             	movups XMMWORD PTR [rax],xmm0
-     be3:	0f 11 40 10          	movups XMMWORD PTR [rax+0x10],xmm0
-     be7:	66 0f 7e 40 20       	movd   DWORD PTR [rax+0x20],xmm0
+     bdc:	48 c7 00 00 00 00 00 	mov    QWORD PTR [rax],0x0
+     be3:	48 c7 40 08 00 00 00 00 	mov    QWORD PTR [rax+0x8],0x0
+     beb:	48 c7 40 10 00 00 00 00 	mov    QWORD PTR [rax+0x10],0x0
+     bf3:	48 c7 40 18 00 00 00 00 	mov    QWORD PTR [rax+0x18],0x0
+     bfb:	c7 40 20 00 00 00 00 	mov    DWORD PTR [rax+0x20],0x0
 		result->tm_wday = (dayct + 4) % 7; /* Jan 1 1970 is Thu */
-     bec:	8b 45 fc             	mov    eax,DWORD PTR [rbp-0x4]
-     bef:	83 c0 04             	add    eax,0x4
-     bf2:	48 63 d0             	movsxd rdx,eax
-     bf5:	48 69 d2 93 24 49 92 	imul   rdx,rdx,0xffffffff92492493
-     bfc:	48 c1 ea 20          	shr    rdx,0x20
-     c00:	01 c2                	add    edx,eax
-     c02:	c1 fa 02             	sar    edx,0x2
-     c05:	89 c1                	mov    ecx,eax
-     c07:	c1 f9 1f             	sar    ecx,0x1f
-     c0a:	29 ca                	sub    edx,ecx
-     c0c:	89 d1                	mov    ecx,edx
-     c0e:	c1 e1 03             	shl    ecx,0x3
-     c11:	29 d1                	sub    ecx,edx
-     c13:	29 c8                	sub    eax,ecx
-     c15:	89 c2                	mov    edx,eax
-     c17:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-     c1b:	89 50 18             	mov    DWORD PTR [rax+0x18],edx
+     c02:	8b 45 fc             	mov    eax,DWORD PTR [rbp-0x4]
+     c05:	8d 50 04             	lea    edx,[rax+0x4]
+     c08:	48 63 c2             	movsxd rax,edx
+     c0b:	48 69 c0 93 24 49 92 	imul   rax,rax,0xffffffff92492493
+     c12:	48 c1 e8 20          	shr    rax,0x20
+     c16:	01 d0                	add    eax,edx
+     c18:	c1 f8 02             	sar    eax,0x2
+     c1b:	89 d1                	mov    ecx,edx
+     c1d:	c1 f9 1f             	sar    ecx,0x1f
+     c20:	29 c8                	sub    eax,ecx
+     c22:	89 c1                	mov    ecx,eax
+     c24:	c1 e1 03             	shl    ecx,0x3
+     c27:	29 c1                	sub    ecx,eax
+     c29:	89 d0                	mov    eax,edx
+     c2b:	29 c8                	sub    eax,ecx
+     c2d:	48 8b 55 c0          	mov    rdx,QWORD PTR [rbp-0x40]
+     c31:	89 42 18             	mov    DWORD PTR [rdx+0x18],eax
 		while (COUNT_DAYS(1900 + result->tm_year) - COUNT_DAYS(1970) <= dayct)
-     c1e:	eb 11                	jmp    c31 <gmtime_r+0x94>
+     c34:	eb 11                	jmp    c47 <gmtime_r+0xaa>
 			result->tm_year++;
-     c20:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-     c24:	8b 40 14             	mov    eax,DWORD PTR [rax+0x14]
-     c27:	8d 50 01             	lea    edx,[rax+0x1]
-     c2a:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-     c2e:	89 50 14             	mov    DWORD PTR [rax+0x14],edx
+     c36:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+     c3a:	8b 40 14             	mov    eax,DWORD PTR [rax+0x14]
+     c3d:	8d 50 01             	lea    edx,[rax+0x1]
+     c40:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+     c44:	89 50 14             	mov    DWORD PTR [rax+0x14],edx
 		while (COUNT_DAYS(1900 + result->tm_year) - COUNT_DAYS(1970) <= dayct)
-     c31:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-     c35:	8b 40 14             	mov    eax,DWORD PTR [rax+0x14]
-     c38:	05 6b 07 00 00       	add    eax,0x76b
-     c3d:	69 d0 6d 01 00 00    	imul   edx,eax,0x16d
-     c43:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-     c47:	8b 40 14             	mov    eax,DWORD PTR [rax+0x14]
-     c4a:	05 6b 07 00 00       	add    eax,0x76b
-     c4f:	8d 48 03             	lea    ecx,[rax+0x3]
-     c52:	85 c0                	test   eax,eax
-     c54:	0f 48 c1             	cmovs  eax,ecx
-     c57:	c1 f8 02             	sar    eax,0x2
-     c5a:	89 c6                	mov    esi,eax
-     c5c:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-     c60:	8b 40 14             	mov    eax,DWORD PTR [rax+0x14]
-     c63:	05 6b 07 00 00       	add    eax,0x76b
-     c68:	48 63 c8             	movsxd rcx,eax
-     c6b:	48 69 c9 1f 85 eb 51 	imul   rcx,rcx,0x51eb851f
-     c72:	48 c1 e9 20          	shr    rcx,0x20
-     c76:	c1 f9 05             	sar    ecx,0x5
-     c79:	c1 f8 1f             	sar    eax,0x1f
-     c7c:	29 c8                	sub    eax,ecx
-     c7e:	01 c6                	add    esi,eax
-     c80:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-     c84:	8b 40 14             	mov    eax,DWORD PTR [rax+0x14]
-     c87:	05 6b 07 00 00       	add    eax,0x76b
-     c8c:	48 63 c8             	movsxd rcx,eax
-     c8f:	48 69 c9 1f 85 eb 51 	imul   rcx,rcx,0x51eb851f
-     c96:	48 c1 e9 20          	shr    rcx,0x20
-     c9a:	c1 f9 07             	sar    ecx,0x7
-     c9d:	c1 f8 1f             	sar    eax,0x1f
-     ca0:	29 c1                	sub    ecx,eax
-     ca2:	8d 04 0e             	lea    eax,[rsi+rcx*1]
-     ca5:	01 d0                	add    eax,edx
-     ca7:	2d 3a f9 0a 00       	sub    eax,0xaf93a
-     cac:	39 45 fc             	cmp    DWORD PTR [rbp-0x4],eax
-     caf:	0f 8d 6b ff ff ff    	jge    c20 <gmtime_r+0x83>
+     c47:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+     c4b:	8b 40 14             	mov    eax,DWORD PTR [rax+0x14]
+     c4e:	05 6b 07 00 00       	add    eax,0x76b
+     c53:	69 d0 6d 01 00 00    	imul   edx,eax,0x16d
+     c59:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+     c5d:	8b 40 14             	mov    eax,DWORD PTR [rax+0x14]
+     c60:	05 6b 07 00 00       	add    eax,0x76b
+     c65:	8d 48 03             	lea    ecx,[rax+0x3]
+     c68:	85 c0                	test   eax,eax
+     c6a:	0f 48 c1             	cmovs  eax,ecx
+     c6d:	c1 f8 02             	sar    eax,0x2
+     c70:	89 c6                	mov    esi,eax
+     c72:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+     c76:	8b 40 14             	mov    eax,DWORD PTR [rax+0x14]
+     c79:	05 6b 07 00 00       	add    eax,0x76b
+     c7e:	48 63 c8             	movsxd rcx,eax
+     c81:	48 69 c9 1f 85 eb 51 	imul   rcx,rcx,0x51eb851f
+     c88:	48 c1 e9 20          	shr    rcx,0x20
+     c8c:	c1 f9 05             	sar    ecx,0x5
+     c8f:	c1 f8 1f             	sar    eax,0x1f
+     c92:	29 c8                	sub    eax,ecx
+     c94:	01 c6                	add    esi,eax
+     c96:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+     c9a:	8b 40 14             	mov    eax,DWORD PTR [rax+0x14]
+     c9d:	05 6b 07 00 00       	add    eax,0x76b
+     ca2:	48 63 c8             	movsxd rcx,eax
+     ca5:	48 69 c9 1f 85 eb 51 	imul   rcx,rcx,0x51eb851f
+     cac:	48 c1 e9 20          	shr    rcx,0x20
+     cb0:	c1 f9 07             	sar    ecx,0x7
+     cb3:	c1 f8 1f             	sar    eax,0x1f
+     cb6:	29 c1                	sub    ecx,eax
+     cb8:	8d 04 0e             	lea    eax,[rsi+rcx*1]
+     cbb:	01 d0                	add    eax,edx
+     cbd:	2d 3a f9 0a 00       	sub    eax,0xaf93a
+     cc2:	39 45 fc             	cmp    DWORD PTR [rbp-0x4],eax
+     cc5:	0f 8d 6b ff ff ff    	jge    c36 <gmtime_r+0x99>
 		result->tm_year--;
-     cb5:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-     cb9:	8b 40 14             	mov    eax,DWORD PTR [rax+0x14]
-     cbc:	8d 50 ff             	lea    edx,[rax-0x1]
-     cbf:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-     cc3:	89 50 14             	mov    DWORD PTR [rax+0x14],edx
+     ccb:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+     ccf:	8b 40 14             	mov    eax,DWORD PTR [rax+0x14]
+     cd2:	8d 50 ff             	lea    edx,[rax-0x1]
+     cd5:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+     cd9:	89 50 14             	mov    DWORD PTR [rax+0x14],edx
 		isl = IS_LEAP_YEAR(result->tm_year);
-     cc6:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-     cca:	8b 40 14             	mov    eax,DWORD PTR [rax+0x14]
-     ccd:	85 c0                	test   eax,eax
-     ccf:	7e 6c                	jle    d3d <gmtime_r+0x1a0>
-     cd1:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-     cd5:	8b 40 14             	mov    eax,DWORD PTR [rax+0x14]
-     cd8:	83 e0 03             	and    eax,0x3
-     cdb:	85 c0                	test   eax,eax
-     cdd:	75 5e                	jne    d3d <gmtime_r+0x1a0>
-     cdf:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-     ce3:	8b 50 14             	mov    edx,DWORD PTR [rax+0x14]
-     ce6:	48 63 c2             	movsxd rax,edx
-     ce9:	48 69 c0 1f 85 eb 51 	imul   rax,rax,0x51eb851f
-     cf0:	48 c1 e8 20          	shr    rax,0x20
-     cf4:	c1 f8 05             	sar    eax,0x5
-     cf7:	89 d1                	mov    ecx,edx
-     cf9:	c1 f9 1f             	sar    ecx,0x1f
-     cfc:	29 c8                	sub    eax,ecx
-     cfe:	6b c8 64             	imul   ecx,eax,0x64
-     d01:	89 d0                	mov    eax,edx
-     d03:	29 c8                	sub    eax,ecx
-     d05:	85 c0                	test   eax,eax
-     d07:	75 2d                	jne    d36 <gmtime_r+0x199>
-     d09:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-     d0d:	8b 50 14             	mov    edx,DWORD PTR [rax+0x14]
-     d10:	48 63 c2             	movsxd rax,edx
-     d13:	48 69 c0 1f 85 eb 51 	imul   rax,rax,0x51eb851f
-     d1a:	48 c1 e8 20          	shr    rax,0x20
-     d1e:	c1 f8 07             	sar    eax,0x7
-     d21:	89 d1                	mov    ecx,edx
-     d23:	c1 f9 1f             	sar    ecx,0x1f
-     d26:	29 c8                	sub    eax,ecx
-     d28:	69 c8 90 01 00 00    	imul   ecx,eax,0x190
-     d2e:	89 d0                	mov    eax,edx
-     d30:	29 c8                	sub    eax,ecx
-     d32:	85 c0                	test   eax,eax
-     d34:	75 07                	jne    d3d <gmtime_r+0x1a0>
-     d36:	b8 01 00 00 00       	mov    eax,0x1
-     d3b:	eb 05                	jmp    d42 <gmtime_r+0x1a5>
-     d3d:	b8 00 00 00 00       	mov    eax,0x0
-     d42:	89 45 f8             	mov    DWORD PTR [rbp-0x8],eax
+     cdc:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+     ce0:	8b 40 14             	mov    eax,DWORD PTR [rax+0x14]
+     ce3:	85 c0                	test   eax,eax
+     ce5:	7e 6c                	jle    d53 <gmtime_r+0x1b6>
+     ce7:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+     ceb:	8b 40 14             	mov    eax,DWORD PTR [rax+0x14]
+     cee:	83 e0 03             	and    eax,0x3
+     cf1:	85 c0                	test   eax,eax
+     cf3:	75 5e                	jne    d53 <gmtime_r+0x1b6>
+     cf5:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+     cf9:	8b 50 14             	mov    edx,DWORD PTR [rax+0x14]
+     cfc:	48 63 c2             	movsxd rax,edx
+     cff:	48 69 c0 1f 85 eb 51 	imul   rax,rax,0x51eb851f
+     d06:	48 c1 e8 20          	shr    rax,0x20
+     d0a:	c1 f8 05             	sar    eax,0x5
+     d0d:	89 d1                	mov    ecx,edx
+     d0f:	c1 f9 1f             	sar    ecx,0x1f
+     d12:	29 c8                	sub    eax,ecx
+     d14:	6b c8 64             	imul   ecx,eax,0x64
+     d17:	89 d0                	mov    eax,edx
+     d19:	29 c8                	sub    eax,ecx
+     d1b:	85 c0                	test   eax,eax
+     d1d:	75 2d                	jne    d4c <gmtime_r+0x1af>
+     d1f:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+     d23:	8b 50 14             	mov    edx,DWORD PTR [rax+0x14]
+     d26:	48 63 c2             	movsxd rax,edx
+     d29:	48 69 c0 1f 85 eb 51 	imul   rax,rax,0x51eb851f
+     d30:	48 c1 e8 20          	shr    rax,0x20
+     d34:	c1 f8 07             	sar    eax,0x7
+     d37:	89 d1                	mov    ecx,edx
+     d39:	c1 f9 1f             	sar    ecx,0x1f
+     d3c:	29 c8                	sub    eax,ecx
+     d3e:	69 c8 90 01 00 00    	imul   ecx,eax,0x190
+     d44:	89 d0                	mov    eax,edx
+     d46:	29 c8                	sub    eax,ecx
+     d48:	85 c0                	test   eax,eax
+     d4a:	75 07                	jne    d53 <gmtime_r+0x1b6>
+     d4c:	b8 01 00 00 00       	mov    eax,0x1
+     d51:	eb 05                	jmp    d58 <gmtime_r+0x1bb>
+     d53:	b8 00 00 00 00       	mov    eax,0x0
+     d58:	89 45 f8             	mov    DWORD PTR [rbp-0x8],eax
 		dayct -= COUNT_DAYS(1900 + result->tm_year) - COUNT_DAYS(1970);
-     d45:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-     d49:	8b 40 14             	mov    eax,DWORD PTR [rax+0x14]
-     d4c:	05 6b 07 00 00       	add    eax,0x76b
-     d51:	69 d0 6d 01 00 00    	imul   edx,eax,0x16d
-     d57:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-     d5b:	8b 40 14             	mov    eax,DWORD PTR [rax+0x14]
-     d5e:	05 6b 07 00 00       	add    eax,0x76b
-     d63:	8d 48 03             	lea    ecx,[rax+0x3]
-     d66:	85 c0                	test   eax,eax
-     d68:	0f 48 c1             	cmovs  eax,ecx
-     d6b:	c1 f8 02             	sar    eax,0x2
-     d6e:	89 c6                	mov    esi,eax
-     d70:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-     d74:	8b 40 14             	mov    eax,DWORD PTR [rax+0x14]
-     d77:	05 6b 07 00 00       	add    eax,0x76b
-     d7c:	48 63 c8             	movsxd rcx,eax
-     d7f:	48 69 c9 1f 85 eb 51 	imul   rcx,rcx,0x51eb851f
-     d86:	48 c1 e9 20          	shr    rcx,0x20
-     d8a:	c1 f9 05             	sar    ecx,0x5
-     d8d:	c1 f8 1f             	sar    eax,0x1f
-     d90:	29 c8                	sub    eax,ecx
-     d92:	01 c6                	add    esi,eax
-     d94:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-     d98:	8b 40 14             	mov    eax,DWORD PTR [rax+0x14]
-     d9b:	05 6b 07 00 00       	add    eax,0x76b
-     da0:	48 63 c8             	movsxd rcx,eax
-     da3:	48 69 c9 1f 85 eb 51 	imul   rcx,rcx,0x51eb851f
-     daa:	48 c1 e9 20          	shr    rcx,0x20
-     dae:	c1 f9 07             	sar    ecx,0x7
-     db1:	c1 f8 1f             	sar    eax,0x1f
-     db4:	29 c1                	sub    ecx,eax
-     db6:	8d 04 0e             	lea    eax,[rsi+rcx*1]
-     db9:	01 d0                	add    eax,edx
-     dbb:	2d 3a f9 0a 00       	sub    eax,0xaf93a
-     dc0:	29 45 fc             	sub    DWORD PTR [rbp-0x4],eax
+     d5b:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+     d5f:	8b 40 14             	mov    eax,DWORD PTR [rax+0x14]
+     d62:	05 6b 07 00 00       	add    eax,0x76b
+     d67:	69 d0 6d 01 00 00    	imul   edx,eax,0x16d
+     d6d:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+     d71:	8b 40 14             	mov    eax,DWORD PTR [rax+0x14]
+     d74:	05 6b 07 00 00       	add    eax,0x76b
+     d79:	8d 48 03             	lea    ecx,[rax+0x3]
+     d7c:	85 c0                	test   eax,eax
+     d7e:	0f 48 c1             	cmovs  eax,ecx
+     d81:	c1 f8 02             	sar    eax,0x2
+     d84:	89 c6                	mov    esi,eax
+     d86:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+     d8a:	8b 40 14             	mov    eax,DWORD PTR [rax+0x14]
+     d8d:	05 6b 07 00 00       	add    eax,0x76b
+     d92:	48 63 c8             	movsxd rcx,eax
+     d95:	48 69 c9 1f 85 eb 51 	imul   rcx,rcx,0x51eb851f
+     d9c:	48 c1 e9 20          	shr    rcx,0x20
+     da0:	c1 f9 05             	sar    ecx,0x5
+     da3:	c1 f8 1f             	sar    eax,0x1f
+     da6:	29 c8                	sub    eax,ecx
+     da8:	01 c6                	add    esi,eax
+     daa:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+     dae:	8b 40 14             	mov    eax,DWORD PTR [rax+0x14]
+     db1:	05 6b 07 00 00       	add    eax,0x76b
+     db6:	48 63 c8             	movsxd rcx,eax
+     db9:	48 69 c9 1f 85 eb 51 	imul   rcx,rcx,0x51eb851f
+     dc0:	48 c1 e9 20          	shr    rcx,0x20
+     dc4:	c1 f9 07             	sar    ecx,0x7
+     dc7:	c1 f8 1f             	sar    eax,0x1f
+     dca:	29 c1                	sub    ecx,eax
+     dcc:	8d 04 0e             	lea    eax,[rsi+rcx*1]
+     dcf:	01 d0                	add    eax,edx
+     dd1:	2d 3a f9 0a 00       	sub    eax,0xaf93a
+     dd6:	29 45 fc             	sub    DWORD PTR [rbp-0x4],eax
 		result->tm_yday = dayct;
-     dc3:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-     dc7:	8b 55 fc             	mov    edx,DWORD PTR [rbp-0x4]
-     dca:	89 50 1c             	mov    DWORD PTR [rax+0x1c],edx
+     dd9:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+     ddd:	8b 55 fc             	mov    edx,DWORD PTR [rbp-0x4]
+     de0:	89 50 1c             	mov    DWORD PTR [rax+0x1c],edx
 		static const int dayct_nl[] = { 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, INT_MAX };
 		static const int dayct_lp[] = { 0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, INT_MAX };
 		while ((isl ? dayct_lp : dayct_nl)[result->tm_mon] < result->tm_yday)
-     dcd:	eb 11                	jmp    de0 <gmtime_r+0x243>
+     de3:	eb 11                	jmp    df6 <gmtime_r+0x259>
 			result->tm_mon++;
-     dcf:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-     dd3:	8b 40 10             	mov    eax,DWORD PTR [rax+0x10]
-     dd6:	8d 50 01             	lea    edx,[rax+0x1]
-     dd9:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-     ddd:	89 50 10             	mov    DWORD PTR [rax+0x10],edx
+     de5:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+     de9:	8b 40 10             	mov    eax,DWORD PTR [rax+0x10]
+     dec:	8d 50 01             	lea    edx,[rax+0x1]
+     def:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+     df3:	89 50 10             	mov    DWORD PTR [rax+0x10],edx
 		while ((isl ? dayct_lp : dayct_nl)[result->tm_mon] < result->tm_yday)
-     de0:	83 7d f8 00          	cmp    DWORD PTR [rbp-0x8],0x0
-     de4:	74 09                	je     def <gmtime_r+0x252>
-     de6:	48 c7 c2 00 00 00 00 	mov    rdx,0x0
-     ded:	eb 07                	jmp    df6 <gmtime_r+0x259>
-     def:	48 c7 c2 00 00 00 00 	mov    rdx,0x0
-     df6:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-     dfa:	8b 40 10             	mov    eax,DWORD PTR [rax+0x10]
-     dfd:	48 98                	cdqe
-     dff:	48 c1 e0 02          	shl    rax,0x2
-     e03:	48 01 d0             	add    rax,rdx
-     e06:	8b 10                	mov    edx,DWORD PTR [rax]
-     e08:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-     e0c:	8b 40 1c             	mov    eax,DWORD PTR [rax+0x1c]
-     e0f:	39 c2                	cmp    edx,eax
-     e11:	7c bc                	jl     dcf <gmtime_r+0x232>
+     df6:	83 7d f8 00          	cmp    DWORD PTR [rbp-0x8],0x0
+     dfa:	74 09                	je     e05 <gmtime_r+0x268>
+     dfc:	48 c7 c2 00 00 00 00 	mov    rdx,0x0
+     e03:	eb 07                	jmp    e0c <gmtime_r+0x26f>
+     e05:	48 c7 c2 00 00 00 00 	mov    rdx,0x0
+     e0c:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+     e10:	8b 40 10             	mov    eax,DWORD PTR [rax+0x10]
+     e13:	48 98                	cdqe
+     e15:	48 c1 e0 02          	shl    rax,0x2
+     e19:	48 01 d0             	add    rax,rdx
+     e1c:	8b 10                	mov    edx,DWORD PTR [rax]
+     e1e:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+     e22:	8b 40 1c             	mov    eax,DWORD PTR [rax+0x1c]
+     e25:	39 c2                	cmp    edx,eax
+     e27:	7c bc                	jl     de5 <gmtime_r+0x248>
 		result->tm_mon--;
-     e13:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-     e17:	8b 40 10             	mov    eax,DWORD PTR [rax+0x10]
-     e1a:	8d 50 ff             	lea    edx,[rax-0x1]
-     e1d:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-     e21:	89 50 10             	mov    DWORD PTR [rax+0x10],edx
+     e29:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+     e2d:	8b 40 10             	mov    eax,DWORD PTR [rax+0x10]
+     e30:	8d 50 ff             	lea    edx,[rax-0x1]
+     e33:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+     e37:	89 50 10             	mov    DWORD PTR [rax+0x10],edx
 		dayct -= (isl ? dayct_lp : dayct_nl)[result->tm_mon]; /* 0 based */
-     e24:	83 7d f8 00          	cmp    DWORD PTR [rbp-0x8],0x0
-     e28:	74 09                	je     e33 <gmtime_r+0x296>
-     e2a:	48 c7 c2 00 00 00 00 	mov    rdx,0x0
-     e31:	eb 07                	jmp    e3a <gmtime_r+0x29d>
-     e33:	48 c7 c2 00 00 00 00 	mov    rdx,0x0
-     e3a:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-     e3e:	8b 40 10             	mov    eax,DWORD PTR [rax+0x10]
-     e41:	48 98                	cdqe
-     e43:	48 c1 e0 02          	shl    rax,0x2
-     e47:	48 01 d0             	add    rax,rdx
-     e4a:	8b 00                	mov    eax,DWORD PTR [rax]
-     e4c:	29 45 fc             	sub    DWORD PTR [rbp-0x4],eax
+     e3a:	83 7d f8 00          	cmp    DWORD PTR [rbp-0x8],0x0
+     e3e:	74 09                	je     e49 <gmtime_r+0x2ac>
+     e40:	48 c7 c2 00 00 00 00 	mov    rdx,0x0
+     e47:	eb 07                	jmp    e50 <gmtime_r+0x2b3>
+     e49:	48 c7 c2 00 00 00 00 	mov    rdx,0x0
+     e50:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+     e54:	8b 40 10             	mov    eax,DWORD PTR [rax+0x10]
+     e57:	48 98                	cdqe
+     e59:	48 c1 e0 02          	shl    rax,0x2
+     e5d:	48 01 d0             	add    rax,rdx
+     e60:	8b 00                	mov    eax,DWORD PTR [rax]
+     e62:	29 45 fc             	sub    DWORD PTR [rbp-0x4],eax
 		result->tm_mday = dayct + 1; /* 1 based */
-     e4f:	8b 45 fc             	mov    eax,DWORD PTR [rbp-0x4]
-     e52:	8d 50 01             	lea    edx,[rax+0x1]
-     e55:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-     e59:	89 50 0c             	mov    DWORD PTR [rax+0xc],edx
+     e65:	8b 45 fc             	mov    eax,DWORD PTR [rbp-0x4]
+     e68:	8d 50 01             	lea    edx,[rax+0x1]
+     e6b:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+     e6f:	89 50 0c             	mov    DWORD PTR [rax+0xc],edx
 		/* time logic */
 		rem = *timep % 86400;
-     e5c:	48 8b 45 c8          	mov    rax,QWORD PTR [rbp-0x38]
-     e60:	48 8b 08             	mov    rcx,QWORD PTR [rax]
-     e63:	48 ba 57 29 51 ce a0 c8 45 18 	movabs rdx,0x1845c8a0ce512957
-     e6d:	48 89 c8             	mov    rax,rcx
-     e70:	48 f7 ea             	imul   rdx
-     e73:	48 89 d0             	mov    rax,rdx
-     e76:	48 c1 f8 0d          	sar    rax,0xd
-     e7a:	48 89 ca             	mov    rdx,rcx
-     e7d:	48 c1 fa 3f          	sar    rdx,0x3f
-     e81:	48 29 d0             	sub    rax,rdx
-     e84:	48 69 d0 80 51 01 00 	imul   rdx,rax,0x15180
-     e8b:	48 89 c8             	mov    rax,rcx
-     e8e:	48 29 d0             	sub    rax,rdx
-     e91:	89 45 f4             	mov    DWORD PTR [rbp-0xc],eax
+     e72:	48 8b 45 c8          	mov    rax,QWORD PTR [rbp-0x38]
+     e76:	48 8b 08             	mov    rcx,QWORD PTR [rax]
+     e79:	48 ba 57 29 51 ce a0 c8 45 18 	movabs rdx,0x1845c8a0ce512957
+     e83:	48 89 c8             	mov    rax,rcx
+     e86:	48 f7 ea             	imul   rdx
+     e89:	48 89 d0             	mov    rax,rdx
+     e8c:	48 c1 f8 0d          	sar    rax,0xd
+     e90:	48 89 ca             	mov    rdx,rcx
+     e93:	48 c1 fa 3f          	sar    rdx,0x3f
+     e97:	48 29 d0             	sub    rax,rdx
+     e9a:	48 69 d0 80 51 01 00 	imul   rdx,rax,0x15180
+     ea1:	48 89 c8             	mov    rax,rcx
+     ea4:	48 29 d0             	sub    rax,rdx
+     ea7:	89 45 f4             	mov    DWORD PTR [rbp-0xc],eax
 		result->tm_hour = rem / 3600;
-     e94:	8b 45 f4             	mov    eax,DWORD PTR [rbp-0xc]
-     e97:	48 63 d0             	movsxd rdx,eax
-     e9a:	48 69 d2 c5 b3 a2 91 	imul   rdx,rdx,0xffffffff91a2b3c5
-     ea1:	48 c1 ea 20          	shr    rdx,0x20
-     ea5:	01 c2                	add    edx,eax
-     ea7:	c1 fa 0b             	sar    edx,0xb
-     eaa:	c1 f8 1f             	sar    eax,0x1f
-     ead:	29 c2                	sub    edx,eax
-     eaf:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-     eb3:	89 50 08             	mov    DWORD PTR [rax+0x8],edx
+     eaa:	8b 45 f4             	mov    eax,DWORD PTR [rbp-0xc]
+     ead:	48 63 d0             	movsxd rdx,eax
+     eb0:	48 69 d2 c5 b3 a2 91 	imul   rdx,rdx,0xffffffff91a2b3c5
+     eb7:	48 c1 ea 20          	shr    rdx,0x20
+     ebb:	01 c2                	add    edx,eax
+     ebd:	c1 fa 0b             	sar    edx,0xb
+     ec0:	c1 f8 1f             	sar    eax,0x1f
+     ec3:	29 c2                	sub    edx,eax
+     ec5:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+     ec9:	89 50 08             	mov    DWORD PTR [rax+0x8],edx
 		rem %= 3600;
-     eb6:	8b 45 f4             	mov    eax,DWORD PTR [rbp-0xc]
-     eb9:	48 63 d0             	movsxd rdx,eax
-     ebc:	48 69 d2 c5 b3 a2 91 	imul   rdx,rdx,0xffffffff91a2b3c5
-     ec3:	48 c1 ea 20          	shr    rdx,0x20
-     ec7:	01 c2                	add    edx,eax
-     ec9:	89 d1                	mov    ecx,edx
-     ecb:	c1 f9 0b             	sar    ecx,0xb
-     ece:	99                   	cdq
-     ecf:	29 d1                	sub    ecx,edx
-     ed1:	69 d1 10 0e 00 00    	imul   edx,ecx,0xe10
-     ed7:	29 d0                	sub    eax,edx
-     ed9:	89 45 f4             	mov    DWORD PTR [rbp-0xc],eax
+     ecc:	8b 45 f4             	mov    eax,DWORD PTR [rbp-0xc]
+     ecf:	48 63 d0             	movsxd rdx,eax
+     ed2:	48 69 d2 c5 b3 a2 91 	imul   rdx,rdx,0xffffffff91a2b3c5
+     ed9:	48 c1 ea 20          	shr    rdx,0x20
+     edd:	01 c2                	add    edx,eax
+     edf:	89 d1                	mov    ecx,edx
+     ee1:	c1 f9 0b             	sar    ecx,0xb
+     ee4:	99                   	cdq
+     ee5:	29 d1                	sub    ecx,edx
+     ee7:	69 d1 10 0e 00 00    	imul   edx,ecx,0xe10
+     eed:	29 d0                	sub    eax,edx
+     eef:	89 45 f4             	mov    DWORD PTR [rbp-0xc],eax
 		result->tm_min = rem / 60;
-     edc:	8b 45 f4             	mov    eax,DWORD PTR [rbp-0xc]
-     edf:	48 63 d0             	movsxd rdx,eax
-     ee2:	48 69 d2 89 88 88 88 	imul   rdx,rdx,0xffffffff88888889
-     ee9:	48 c1 ea 20          	shr    rdx,0x20
-     eed:	01 c2                	add    edx,eax
-     eef:	c1 fa 05             	sar    edx,0x5
-     ef2:	c1 f8 1f             	sar    eax,0x1f
-     ef5:	29 c2                	sub    edx,eax
-     ef7:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-     efb:	89 50 04             	mov    DWORD PTR [rax+0x4],edx
+     ef2:	8b 45 f4             	mov    eax,DWORD PTR [rbp-0xc]
+     ef5:	48 63 d0             	movsxd rdx,eax
+     ef8:	48 69 d2 89 88 88 88 	imul   rdx,rdx,0xffffffff88888889
+     eff:	48 c1 ea 20          	shr    rdx,0x20
+     f03:	01 c2                	add    edx,eax
+     f05:	c1 fa 05             	sar    edx,0x5
+     f08:	c1 f8 1f             	sar    eax,0x1f
+     f0b:	29 c2                	sub    edx,eax
+     f0d:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+     f11:	89 50 04             	mov    DWORD PTR [rax+0x4],edx
 		rem %= 60;
-     efe:	8b 45 f4             	mov    eax,DWORD PTR [rbp-0xc]
-     f01:	48 63 d0             	movsxd rdx,eax
-     f04:	48 69 d2 89 88 88 88 	imul   rdx,rdx,0xffffffff88888889
-     f0b:	48 c1 ea 20          	shr    rdx,0x20
-     f0f:	01 c2                	add    edx,eax
-     f11:	89 d1                	mov    ecx,edx
-     f13:	c1 f9 05             	sar    ecx,0x5
-     f16:	99                   	cdq
-     f17:	29 d1                	sub    ecx,edx
-     f19:	6b d1 3c             	imul   edx,ecx,0x3c
-     f1c:	29 d0                	sub    eax,edx
-     f1e:	89 45 f4             	mov    DWORD PTR [rbp-0xc],eax
+     f14:	8b 45 f4             	mov    eax,DWORD PTR [rbp-0xc]
+     f17:	48 63 d0             	movsxd rdx,eax
+     f1a:	48 69 d2 89 88 88 88 	imul   rdx,rdx,0xffffffff88888889
+     f21:	48 c1 ea 20          	shr    rdx,0x20
+     f25:	01 c2                	add    edx,eax
+     f27:	89 d1                	mov    ecx,edx
+     f29:	c1 f9 05             	sar    ecx,0x5
+     f2c:	99                   	cdq
+     f2d:	29 d1                	sub    ecx,edx
+     f2f:	6b d1 3c             	imul   edx,ecx,0x3c
+     f32:	29 d0                	sub    eax,edx
+     f34:	89 45 f4             	mov    DWORD PTR [rbp-0xc],eax
 		result->tm_sec = rem;
-     f21:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-     f25:	8b 55 f4             	mov    edx,DWORD PTR [rbp-0xc]
-     f28:	89 10                	mov    DWORD PTR [rax],edx
+     f37:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+     f3b:	8b 55 f4             	mov    edx,DWORD PTR [rbp-0xc]
+     f3e:	89 10                	mov    DWORD PTR [rax],edx
 		/* gmtime isdst=0 */
 		return result;
-     f2a:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+     f40:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
 }
-     f2e:	c9                   	leave
-     f2f:	c3                   	ret
+     f44:	c9                   	leave
+     f45:	c3                   	ret
 
-0000000000000f30 <gmtime>:
+0000000000000f46 <gmtime>:
 
 struct tm* gmtime(const time_t* timep)
 {
-     f30:	55                   	push   rbp
-     f31:	48 89 e5             	mov    rbp,rsp
-     f34:	48 83 ec 10          	sub    rsp,0x10
-     f38:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
+     f46:	55                   	push   rbp
+     f47:	48 89 e5             	mov    rbp,rsp
+     f4a:	48 83 ec 08          	sub    rsp,0x8
+     f4e:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
 		static struct tm lts;
 		return gmtime_r(timep, &lts);
-     f3c:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-     f40:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
-     f47:	48 89 c7             	mov    rdi,rax
-     f4a:	e8 00 00 00 00       	call   f4f <gmtime+0x1f>
+     f52:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+     f56:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
+     f5d:	48 89 c7             	mov    rdi,rax
+     f60:	e8 00 00 00 00       	call   f65 <gmtime+0x1f>
 }
-     f4f:	c9                   	leave
-     f50:	c3                   	ret
+     f65:	c9                   	leave
+     f66:	c3                   	ret
 
-0000000000000f51 <localtime_r>:
+0000000000000f67 <localtime_r>:
 
 struct tm* localtime_r(const time_t* timep, struct tm* result)
 {
-     f51:	55                   	push   rbp
-     f52:	48 89 e5             	mov    rbp,rsp
-     f55:	48 83 ec 10          	sub    rsp,0x10
-     f59:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
-     f5d:	48 89 75 f0          	mov    QWORD PTR [rbp-0x10],rsi
+     f67:	55                   	push   rbp
+     f68:	48 89 e5             	mov    rbp,rsp
+     f6b:	48 83 ec 10          	sub    rsp,0x10
+     f6f:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
+     f73:	48 89 75 f0          	mov    QWORD PTR [rbp-0x10],rsi
 		/*TODO: +- time_t offset */
 		return gmtime_r(timep, result);
-     f61:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
-     f65:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-     f69:	48 89 d6             	mov    rsi,rdx
-     f6c:	48 89 c7             	mov    rdi,rax
-     f6f:	e8 00 00 00 00       	call   f74 <localtime_r+0x23>
+     f77:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
+     f7b:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+     f7f:	48 89 d6             	mov    rsi,rdx
+     f82:	48 89 c7             	mov    rdi,rax
+     f85:	e8 00 00 00 00       	call   f8a <localtime_r+0x23>
 }
-     f74:	c9                   	leave
-     f75:	c3                   	ret
+     f8a:	c9                   	leave
+     f8b:	c3                   	ret
 
-0000000000000f76 <localtime>:
+0000000000000f8c <localtime>:
 
 struct tm* localtime(const time_t* timep)
 {
-     f76:	55                   	push   rbp
-     f77:	48 89 e5             	mov    rbp,rsp
-     f7a:	48 83 ec 10          	sub    rsp,0x10
-     f7e:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
+     f8c:	55                   	push   rbp
+     f8d:	48 89 e5             	mov    rbp,rsp
+     f90:	48 83 ec 08          	sub    rsp,0x8
+     f94:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
 		static struct tm lts;
 		return localtime_r(timep, &lts);
-     f82:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-     f86:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
-     f8d:	48 89 c7             	mov    rdi,rax
-     f90:	e8 00 00 00 00       	call   f95 <localtime+0x1f>
+     f98:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+     f9c:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
+     fa3:	48 89 c7             	mov    rdi,rax
+     fa6:	e8 00 00 00 00       	call   fab <localtime+0x1f>
 }
-     f95:	c9                   	leave
-     f96:	c3                   	ret
+     fab:	c9                   	leave
+     fac:	c3                   	ret
 
-0000000000000f97 <difftime>:
-
-double difftime(time_t end, time_t beg)
-{
-     f97:	55                   	push   rbp
-     f98:	48 89 e5             	mov    rbp,rsp
-     f9b:	48 83 ec 10          	sub    rsp,0x10
-     f9f:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
-     fa3:	48 89 75 f0          	mov    QWORD PTR [rbp-0x10],rsi
-		return (double)(end - beg); /* our time_t is in seconds */
-     fa7:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-     fab:	48 2b 45 f0          	sub    rax,QWORD PTR [rbp-0x10]
-     faf:	66 0f ef c0          	pxor   xmm0,xmm0
-     fb3:	f2 48 0f 2a c0       	cvtsi2sd xmm0,rax
-}
-     fb8:	c9                   	leave
-     fb9:	c3                   	ret
-
-0000000000000fba <__umoddi3>:
+0000000000000fad <__umoddi3>:
 		return q;
 }
 
 UDWtype
 __umoddi3 (UDWtype u, UDWtype v)
 {
-     fba:	55                   	push   rbp
-     fbb:	48 89 e5             	mov    rbp,rsp
-     fbe:	48 83 ec 60          	sub    rsp,0x60
-     fc2:	48 89 7d a8          	mov    QWORD PTR [rbp-0x58],rdi
-     fc6:	48 89 75 a0          	mov    QWORD PTR [rbp-0x60],rsi
-     fca:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-     fce:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
-     fd2:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
-     fd6:	48 89 45 f0          	mov    QWORD PTR [rbp-0x10],rax
-     fda:	48 8d 45 b8          	lea    rax,[rbp-0x48]
-     fde:	48 89 45 e8          	mov    QWORD PTR [rbp-0x18],rax
+     fad:	55                   	push   rbp
+     fae:	48 89 e5             	mov    rbp,rsp
+     fb1:	48 83 ec 60          	sub    rsp,0x60
+     fb5:	48 89 7d a8          	mov    QWORD PTR [rbp-0x58],rdi
+     fb9:	48 89 75 a0          	mov    QWORD PTR [rbp-0x60],rsi
+     fbd:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+     fc1:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
+     fc5:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
+     fc9:	48 89 45 f0          	mov    QWORD PTR [rbp-0x10],rax
+     fcd:	48 8d 45 b8          	lea    rax,[rbp-0x48]
+     fd1:	48 89 45 e8          	mov    QWORD PTR [rbp-0x18],rax
 		UDWtype q = 0, r = n, y = d;
-     fe2:	48 c7 45 e0 00 00 00 00 	mov    QWORD PTR [rbp-0x20],0x0
-     fea:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-     fee:	48 89 45 d8          	mov    QWORD PTR [rbp-0x28],rax
-     ff2:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
-     ff6:	48 89 45 d0          	mov    QWORD PTR [rbp-0x30],rax
+     fd5:	48 c7 45 e0 00 00 00 00 	mov    QWORD PTR [rbp-0x20],0x0
+     fdd:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+     fe1:	48 89 45 d8          	mov    QWORD PTR [rbp-0x28],rax
+     fe5:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
+     fe9:	48 89 45 d0          	mov    QWORD PTR [rbp-0x30],rax
 		if (y <= r)
-     ffa:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
-     ffe:	48 3b 45 d0          	cmp    rax,QWORD PTR [rbp-0x30]
-    1002:	0f 82 b1 00 00 00    	jb     10b9 <__umoddi3+0xff>
+     fed:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
+     ff1:	48 3b 45 d0          	cmp    rax,QWORD PTR [rbp-0x30]
+     ff5:	0f 82 b1 00 00 00    	jb     10ac <__umoddi3+0xff>
 				lz1 = __builtin_clzll (d);
-    1008:	48 0f bd 45 f0       	bsr    rax,QWORD PTR [rbp-0x10]
-    100d:	48 83 f0 3f          	xor    rax,0x3f
-    1011:	89 45 cc             	mov    DWORD PTR [rbp-0x34],eax
+     ffb:	48 0f bd 45 f0       	bsr    rax,QWORD PTR [rbp-0x10]
+    1000:	48 83 f0 3f          	xor    rax,0x3f
+    1004:	89 45 cc             	mov    DWORD PTR [rbp-0x34],eax
 				lz2 = __builtin_clzll (n);
-    1014:	48 0f bd 45 f8       	bsr    rax,QWORD PTR [rbp-0x8]
-    1019:	48 83 f0 3f          	xor    rax,0x3f
-    101d:	89 45 c8             	mov    DWORD PTR [rbp-0x38],eax
+    1007:	48 0f bd 45 f8       	bsr    rax,QWORD PTR [rbp-0x8]
+    100c:	48 83 f0 3f          	xor    rax,0x3f
+    1010:	89 45 c8             	mov    DWORD PTR [rbp-0x38],eax
 				k = lz1 - lz2;
-    1020:	8b 45 cc             	mov    eax,DWORD PTR [rbp-0x34]
-    1023:	2b 45 c8             	sub    eax,DWORD PTR [rbp-0x38]
-    1026:	89 45 c4             	mov    DWORD PTR [rbp-0x3c],eax
+    1013:	8b 45 cc             	mov    eax,DWORD PTR [rbp-0x34]
+    1016:	2b 45 c8             	sub    eax,DWORD PTR [rbp-0x38]
+    1019:	89 45 c4             	mov    DWORD PTR [rbp-0x3c],eax
 				y = (y << k);
-    1029:	8b 45 c4             	mov    eax,DWORD PTR [rbp-0x3c]
-    102c:	89 c1                	mov    ecx,eax
-    102e:	48 d3 65 d0          	shl    QWORD PTR [rbp-0x30],cl
+    101c:	8b 45 c4             	mov    eax,DWORD PTR [rbp-0x3c]
+    101f:	89 c1                	mov    ecx,eax
+    1021:	48 d3 65 d0          	shl    QWORD PTR [rbp-0x30],cl
 				if (r >= y)
-    1032:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
-    1036:	48 3b 45 d0          	cmp    rax,QWORD PTR [rbp-0x30]
-    103a:	72 1c                	jb     1058 <__umoddi3+0x9e>
+    1025:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
+    1029:	48 3b 45 d0          	cmp    rax,QWORD PTR [rbp-0x30]
+    102d:	72 1c                	jb     104b <__umoddi3+0x9e>
 						r = r - y;
-    103c:	48 8b 45 d0          	mov    rax,QWORD PTR [rbp-0x30]
-    1040:	48 29 45 d8          	sub    QWORD PTR [rbp-0x28],rax
+    102f:	48 8b 45 d0          	mov    rax,QWORD PTR [rbp-0x30]
+    1033:	48 29 45 d8          	sub    QWORD PTR [rbp-0x28],rax
 						q =  (1ULL << k);
-    1044:	8b 45 c4             	mov    eax,DWORD PTR [rbp-0x3c]
-    1047:	ba 01 00 00 00       	mov    edx,0x1
-    104c:	89 c1                	mov    ecx,eax
-    104e:	48 d3 e2             	shl    rdx,cl
-    1051:	48 89 d0             	mov    rax,rdx
-    1054:	48 89 45 e0          	mov    QWORD PTR [rbp-0x20],rax
+    1037:	8b 45 c4             	mov    eax,DWORD PTR [rbp-0x3c]
+    103a:	ba 01 00 00 00       	mov    edx,0x1
+    103f:	89 c1                	mov    ecx,eax
+    1041:	48 d3 e2             	shl    rdx,cl
+    1044:	48 89 d0             	mov    rax,rdx
+    1047:	48 89 45 e0          	mov    QWORD PTR [rbp-0x20],rax
 				if (k > 0)
-    1058:	83 7d c4 00          	cmp    DWORD PTR [rbp-0x3c],0x0
-    105c:	74 5b                	je     10b9 <__umoddi3+0xff>
+    104b:	83 7d c4 00          	cmp    DWORD PTR [rbp-0x3c],0x0
+    104f:	74 5b                	je     10ac <__umoddi3+0xff>
 						y = y >> 1;
-    105e:	48 d1 6d d0          	shr    QWORD PTR [rbp-0x30],1
+    1051:	48 d1 6d d0          	shr    QWORD PTR [rbp-0x30],1
 						i = k;
-    1062:	8b 45 c4             	mov    eax,DWORD PTR [rbp-0x3c]
-    1065:	89 45 c0             	mov    DWORD PTR [rbp-0x40],eax
+    1055:	8b 45 c4             	mov    eax,DWORD PTR [rbp-0x3c]
+    1058:	89 45 c0             	mov    DWORD PTR [rbp-0x40],eax
 								if (r >= y)
-    1068:	48 8b 45 d0          	mov    rax,QWORD PTR [rbp-0x30]
-    106c:	48 39 45 d8          	cmp    QWORD PTR [rbp-0x28],rax
-    1070:	72 15                	jb     1087 <__umoddi3+0xcd>
+    105b:	48 8b 45 d0          	mov    rax,QWORD PTR [rbp-0x30]
+    105f:	48 39 45 d8          	cmp    QWORD PTR [rbp-0x28],rax
+    1063:	72 15                	jb     107a <__umoddi3+0xcd>
 										r = ((r - y) << 1) + 1;
-    1072:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
-    1076:	48 2b 45 d0          	sub    rax,QWORD PTR [rbp-0x30]
-    107a:	48 01 c0             	add    rax,rax
-    107d:	48 83 c0 01          	add    rax,0x1
-    1081:	48 89 45 d8          	mov    QWORD PTR [rbp-0x28],rax
-    1085:	eb 04                	jmp    108b <__umoddi3+0xd1>
+    1065:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
+    1069:	48 2b 45 d0          	sub    rax,QWORD PTR [rbp-0x30]
+    106d:	48 01 c0             	add    rax,rax
+    1070:	48 83 c0 01          	add    rax,0x1
+    1074:	48 89 45 d8          	mov    QWORD PTR [rbp-0x28],rax
+    1078:	eb 04                	jmp    107e <__umoddi3+0xd1>
 										r =  (r << 1);
-    1087:	48 d1 65 d8          	shl    QWORD PTR [rbp-0x28],1
+    107a:	48 d1 65 d8          	shl    QWORD PTR [rbp-0x28],1
 								i = i - 1;
-    108b:	83 6d c0 01          	sub    DWORD PTR [rbp-0x40],0x1
+    107e:	83 6d c0 01          	sub    DWORD PTR [rbp-0x40],0x1
 						} while (i != 0);
-    108f:	83 7d c0 00          	cmp    DWORD PTR [rbp-0x40],0x0
-    1093:	75 d3                	jne    1068 <__umoddi3+0xae>
+    1082:	83 7d c0 00          	cmp    DWORD PTR [rbp-0x40],0x0
+    1086:	75 d3                	jne    105b <__umoddi3+0xae>
 						q = q + r;
-    1095:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
-    1099:	48 01 45 e0          	add    QWORD PTR [rbp-0x20],rax
+    1088:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
+    108c:	48 01 45 e0          	add    QWORD PTR [rbp-0x20],rax
 						r = r >> k;
-    109d:	8b 45 c4             	mov    eax,DWORD PTR [rbp-0x3c]
-    10a0:	89 c1                	mov    ecx,eax
-    10a2:	48 d3 6d d8          	shr    QWORD PTR [rbp-0x28],cl
+    1090:	8b 45 c4             	mov    eax,DWORD PTR [rbp-0x3c]
+    1093:	89 c1                	mov    ecx,eax
+    1095:	48 d3 6d d8          	shr    QWORD PTR [rbp-0x28],cl
 						q = q - (r << k);
-    10a6:	8b 45 c4             	mov    eax,DWORD PTR [rbp-0x3c]
-    10a9:	48 8b 55 d8          	mov    rdx,QWORD PTR [rbp-0x28]
-    10ad:	89 c1                	mov    ecx,eax
-    10af:	48 d3 e2             	shl    rdx,cl
-    10b2:	48 89 d0             	mov    rax,rdx
-    10b5:	48 29 45 e0          	sub    QWORD PTR [rbp-0x20],rax
+    1099:	8b 45 c4             	mov    eax,DWORD PTR [rbp-0x3c]
+    109c:	48 8b 55 d8          	mov    rdx,QWORD PTR [rbp-0x28]
+    10a0:	89 c1                	mov    ecx,eax
+    10a2:	48 d3 e2             	shl    rdx,cl
+    10a5:	48 89 d0             	mov    rax,rdx
+    10a8:	48 29 45 e0          	sub    QWORD PTR [rbp-0x20],rax
 		if (rp)
-    10b9:	48 83 7d e8 00       	cmp    QWORD PTR [rbp-0x18],0x0
-    10be:	74 0b                	je     10cb <__umoddi3+0x111>
+    10ac:	48 83 7d e8 00       	cmp    QWORD PTR [rbp-0x18],0x0
+    10b1:	74 0b                	je     10be <__umoddi3+0x111>
 				*rp = r;
-    10c0:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
-    10c4:	48 8b 55 d8          	mov    rdx,QWORD PTR [rbp-0x28]
-    10c8:	48 89 10             	mov    QWORD PTR [rax],rdx
+    10b3:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+    10b7:	48 8b 55 d8          	mov    rdx,QWORD PTR [rbp-0x28]
+    10bb:	48 89 10             	mov    QWORD PTR [rax],rdx
 		UDWtype w;
 
 		(void) __udivmoddi4 (u, v, &w);
 
 		return w;
-    10cb:	48 8b 45 b8          	mov    rax,QWORD PTR [rbp-0x48]
+    10be:	48 8b 45 b8          	mov    rax,QWORD PTR [rbp-0x48]
 }
-    10cf:	c9                   	leave
-    10d0:	c3                   	ret
+    10c2:	c9                   	leave
+    10c3:	c3                   	ret
 
-00000000000010d1 <__udivdi3>:
+00000000000010c4 <__udivdi3>:
 
 UDWtype
 __udivdi3 (UDWtype n, UDWtype d)
 {
-    10d1:	55                   	push   rbp
-    10d2:	48 89 e5             	mov    rbp,rsp
-    10d5:	48 83 ec 50          	sub    rsp,0x50
-    10d9:	48 89 7d b8          	mov    QWORD PTR [rbp-0x48],rdi
-    10dd:	48 89 75 b0          	mov    QWORD PTR [rbp-0x50],rsi
-    10e1:	48 8b 45 b8          	mov    rax,QWORD PTR [rbp-0x48]
-    10e5:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
-    10e9:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    10ed:	48 89 45 f0          	mov    QWORD PTR [rbp-0x10],rax
-    10f1:	48 c7 45 e8 00 00 00 00 	mov    QWORD PTR [rbp-0x18],0x0
+    10c4:	55                   	push   rbp
+    10c5:	48 89 e5             	mov    rbp,rsp
+    10c8:	48 83 ec 50          	sub    rsp,0x50
+    10cc:	48 89 7d b8          	mov    QWORD PTR [rbp-0x48],rdi
+    10d0:	48 89 75 b0          	mov    QWORD PTR [rbp-0x50],rsi
+    10d4:	48 8b 45 b8          	mov    rax,QWORD PTR [rbp-0x48]
+    10d8:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
+    10dc:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    10e0:	48 89 45 f0          	mov    QWORD PTR [rbp-0x10],rax
+    10e4:	48 c7 45 e8 00 00 00 00 	mov    QWORD PTR [rbp-0x18],0x0
 		UDWtype q = 0, r = n, y = d;
-    10f9:	48 c7 45 e0 00 00 00 00 	mov    QWORD PTR [rbp-0x20],0x0
-    1101:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-    1105:	48 89 45 d8          	mov    QWORD PTR [rbp-0x28],rax
-    1109:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
-    110d:	48 89 45 d0          	mov    QWORD PTR [rbp-0x30],rax
+    10ec:	48 c7 45 e0 00 00 00 00 	mov    QWORD PTR [rbp-0x20],0x0
+    10f4:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    10f8:	48 89 45 d8          	mov    QWORD PTR [rbp-0x28],rax
+    10fc:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
+    1100:	48 89 45 d0          	mov    QWORD PTR [rbp-0x30],rax
 		if (y <= r)
-    1111:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
-    1115:	48 3b 45 d0          	cmp    rax,QWORD PTR [rbp-0x30]
-    1119:	0f 82 b1 00 00 00    	jb     11d0 <__udivdi3+0xff>
+    1104:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
+    1108:	48 3b 45 d0          	cmp    rax,QWORD PTR [rbp-0x30]
+    110c:	0f 82 b1 00 00 00    	jb     11c3 <__udivdi3+0xff>
 				lz1 = __builtin_clzll (d);
-    111f:	48 0f bd 45 f0       	bsr    rax,QWORD PTR [rbp-0x10]
-    1124:	48 83 f0 3f          	xor    rax,0x3f
-    1128:	89 45 cc             	mov    DWORD PTR [rbp-0x34],eax
+    1112:	48 0f bd 45 f0       	bsr    rax,QWORD PTR [rbp-0x10]
+    1117:	48 83 f0 3f          	xor    rax,0x3f
+    111b:	89 45 cc             	mov    DWORD PTR [rbp-0x34],eax
 				lz2 = __builtin_clzll (n);
-    112b:	48 0f bd 45 f8       	bsr    rax,QWORD PTR [rbp-0x8]
-    1130:	48 83 f0 3f          	xor    rax,0x3f
-    1134:	89 45 c8             	mov    DWORD PTR [rbp-0x38],eax
+    111e:	48 0f bd 45 f8       	bsr    rax,QWORD PTR [rbp-0x8]
+    1123:	48 83 f0 3f          	xor    rax,0x3f
+    1127:	89 45 c8             	mov    DWORD PTR [rbp-0x38],eax
 				k = lz1 - lz2;
-    1137:	8b 45 cc             	mov    eax,DWORD PTR [rbp-0x34]
-    113a:	2b 45 c8             	sub    eax,DWORD PTR [rbp-0x38]
-    113d:	89 45 c4             	mov    DWORD PTR [rbp-0x3c],eax
+    112a:	8b 45 cc             	mov    eax,DWORD PTR [rbp-0x34]
+    112d:	2b 45 c8             	sub    eax,DWORD PTR [rbp-0x38]
+    1130:	89 45 c4             	mov    DWORD PTR [rbp-0x3c],eax
 				y = (y << k);
-    1140:	8b 45 c4             	mov    eax,DWORD PTR [rbp-0x3c]
-    1143:	89 c1                	mov    ecx,eax
-    1145:	48 d3 65 d0          	shl    QWORD PTR [rbp-0x30],cl
+    1133:	8b 45 c4             	mov    eax,DWORD PTR [rbp-0x3c]
+    1136:	89 c1                	mov    ecx,eax
+    1138:	48 d3 65 d0          	shl    QWORD PTR [rbp-0x30],cl
 				if (r >= y)
-    1149:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
-    114d:	48 3b 45 d0          	cmp    rax,QWORD PTR [rbp-0x30]
-    1151:	72 1c                	jb     116f <__udivdi3+0x9e>
+    113c:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
+    1140:	48 3b 45 d0          	cmp    rax,QWORD PTR [rbp-0x30]
+    1144:	72 1c                	jb     1162 <__udivdi3+0x9e>
 						r = r - y;
-    1153:	48 8b 45 d0          	mov    rax,QWORD PTR [rbp-0x30]
-    1157:	48 29 45 d8          	sub    QWORD PTR [rbp-0x28],rax
+    1146:	48 8b 45 d0          	mov    rax,QWORD PTR [rbp-0x30]
+    114a:	48 29 45 d8          	sub    QWORD PTR [rbp-0x28],rax
 						q =  (1ULL << k);
-    115b:	8b 45 c4             	mov    eax,DWORD PTR [rbp-0x3c]
-    115e:	ba 01 00 00 00       	mov    edx,0x1
-    1163:	89 c1                	mov    ecx,eax
-    1165:	48 d3 e2             	shl    rdx,cl
-    1168:	48 89 d0             	mov    rax,rdx
-    116b:	48 89 45 e0          	mov    QWORD PTR [rbp-0x20],rax
+    114e:	8b 45 c4             	mov    eax,DWORD PTR [rbp-0x3c]
+    1151:	ba 01 00 00 00       	mov    edx,0x1
+    1156:	89 c1                	mov    ecx,eax
+    1158:	48 d3 e2             	shl    rdx,cl
+    115b:	48 89 d0             	mov    rax,rdx
+    115e:	48 89 45 e0          	mov    QWORD PTR [rbp-0x20],rax
 				if (k > 0)
-    116f:	83 7d c4 00          	cmp    DWORD PTR [rbp-0x3c],0x0
-    1173:	74 5b                	je     11d0 <__udivdi3+0xff>
+    1162:	83 7d c4 00          	cmp    DWORD PTR [rbp-0x3c],0x0
+    1166:	74 5b                	je     11c3 <__udivdi3+0xff>
 						y = y >> 1;
-    1175:	48 d1 6d d0          	shr    QWORD PTR [rbp-0x30],1
+    1168:	48 d1 6d d0          	shr    QWORD PTR [rbp-0x30],1
 						i = k;
-    1179:	8b 45 c4             	mov    eax,DWORD PTR [rbp-0x3c]
-    117c:	89 45 c0             	mov    DWORD PTR [rbp-0x40],eax
+    116c:	8b 45 c4             	mov    eax,DWORD PTR [rbp-0x3c]
+    116f:	89 45 c0             	mov    DWORD PTR [rbp-0x40],eax
 								if (r >= y)
-    117f:	48 8b 45 d0          	mov    rax,QWORD PTR [rbp-0x30]
-    1183:	48 39 45 d8          	cmp    QWORD PTR [rbp-0x28],rax
-    1187:	72 15                	jb     119e <__udivdi3+0xcd>
+    1172:	48 8b 45 d0          	mov    rax,QWORD PTR [rbp-0x30]
+    1176:	48 39 45 d8          	cmp    QWORD PTR [rbp-0x28],rax
+    117a:	72 15                	jb     1191 <__udivdi3+0xcd>
 										r = ((r - y) << 1) + 1;
-    1189:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
-    118d:	48 2b 45 d0          	sub    rax,QWORD PTR [rbp-0x30]
-    1191:	48 01 c0             	add    rax,rax
-    1194:	48 83 c0 01          	add    rax,0x1
-    1198:	48 89 45 d8          	mov    QWORD PTR [rbp-0x28],rax
-    119c:	eb 04                	jmp    11a2 <__udivdi3+0xd1>
+    117c:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
+    1180:	48 2b 45 d0          	sub    rax,QWORD PTR [rbp-0x30]
+    1184:	48 01 c0             	add    rax,rax
+    1187:	48 83 c0 01          	add    rax,0x1
+    118b:	48 89 45 d8          	mov    QWORD PTR [rbp-0x28],rax
+    118f:	eb 04                	jmp    1195 <__udivdi3+0xd1>
 										r =  (r << 1);
-    119e:	48 d1 65 d8          	shl    QWORD PTR [rbp-0x28],1
+    1191:	48 d1 65 d8          	shl    QWORD PTR [rbp-0x28],1
 								i = i - 1;
-    11a2:	83 6d c0 01          	sub    DWORD PTR [rbp-0x40],0x1
+    1195:	83 6d c0 01          	sub    DWORD PTR [rbp-0x40],0x1
 						} while (i != 0);
-    11a6:	83 7d c0 00          	cmp    DWORD PTR [rbp-0x40],0x0
-    11aa:	75 d3                	jne    117f <__udivdi3+0xae>
+    1199:	83 7d c0 00          	cmp    DWORD PTR [rbp-0x40],0x0
+    119d:	75 d3                	jne    1172 <__udivdi3+0xae>
 						q = q + r;
-    11ac:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
-    11b0:	48 01 45 e0          	add    QWORD PTR [rbp-0x20],rax
+    119f:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
+    11a3:	48 01 45 e0          	add    QWORD PTR [rbp-0x20],rax
 						r = r >> k;
-    11b4:	8b 45 c4             	mov    eax,DWORD PTR [rbp-0x3c]
-    11b7:	89 c1                	mov    ecx,eax
-    11b9:	48 d3 6d d8          	shr    QWORD PTR [rbp-0x28],cl
+    11a7:	8b 45 c4             	mov    eax,DWORD PTR [rbp-0x3c]
+    11aa:	89 c1                	mov    ecx,eax
+    11ac:	48 d3 6d d8          	shr    QWORD PTR [rbp-0x28],cl
 						q = q - (r << k);
-    11bd:	8b 45 c4             	mov    eax,DWORD PTR [rbp-0x3c]
-    11c0:	48 8b 55 d8          	mov    rdx,QWORD PTR [rbp-0x28]
-    11c4:	89 c1                	mov    ecx,eax
-    11c6:	48 d3 e2             	shl    rdx,cl
-    11c9:	48 89 d0             	mov    rax,rdx
-    11cc:	48 29 45 e0          	sub    QWORD PTR [rbp-0x20],rax
+    11b0:	8b 45 c4             	mov    eax,DWORD PTR [rbp-0x3c]
+    11b3:	48 8b 55 d8          	mov    rdx,QWORD PTR [rbp-0x28]
+    11b7:	89 c1                	mov    ecx,eax
+    11b9:	48 d3 e2             	shl    rdx,cl
+    11bc:	48 89 d0             	mov    rax,rdx
+    11bf:	48 29 45 e0          	sub    QWORD PTR [rbp-0x20],rax
 		if (rp)
-    11d0:	48 83 7d e8 00       	cmp    QWORD PTR [rbp-0x18],0x0
-    11d5:	74 0b                	je     11e2 <__udivdi3+0x111>
+    11c3:	48 83 7d e8 00       	cmp    QWORD PTR [rbp-0x18],0x0
+    11c8:	74 0b                	je     11d5 <__udivdi3+0x111>
 				*rp = r;
-    11d7:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
-    11db:	48 8b 55 d8          	mov    rdx,QWORD PTR [rbp-0x28]
-    11df:	48 89 10             	mov    QWORD PTR [rax],rdx
+    11ca:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+    11ce:	48 8b 55 d8          	mov    rdx,QWORD PTR [rbp-0x28]
+    11d2:	48 89 10             	mov    QWORD PTR [rax],rdx
 		return q;
-    11e2:	48 8b 45 e0          	mov    rax,QWORD PTR [rbp-0x20]
+    11d5:	48 8b 45 e0          	mov    rax,QWORD PTR [rbp-0x20]
 		return __udivmoddi4 (n, d, (UDWtype *) 0);
 }
-    11e6:	c9                   	leave
-    11e7:	c3                   	ret
+    11d9:	c9                   	leave
+    11da:	c3                   	ret
 
-00000000000011e8 <__moddi3>:
+00000000000011db <__moddi3>:
 
 DWtype
 __moddi3 (DWtype u, DWtype v)
 {
-    11e8:	55                   	push   rbp
-    11e9:	48 89 e5             	mov    rbp,rsp
-    11ec:	48 83 ec 70          	sub    rsp,0x70
-    11f0:	48 89 7d 98          	mov    QWORD PTR [rbp-0x68],rdi
-    11f4:	48 89 75 90          	mov    QWORD PTR [rbp-0x70],rsi
+    11db:	55                   	push   rbp
+    11dc:	48 89 e5             	mov    rbp,rsp
+    11df:	48 83 ec 70          	sub    rsp,0x70
+    11e3:	48 89 7d 98          	mov    QWORD PTR [rbp-0x68],rdi
+    11e7:	48 89 75 90          	mov    QWORD PTR [rbp-0x70],rsi
 		Wtype c = 0;
-    11f8:	c7 45 fc 00 00 00 00 	mov    DWORD PTR [rbp-0x4],0x0
+    11eb:	c7 45 fc 00 00 00 00 	mov    DWORD PTR [rbp-0x4],0x0
 		DWunion uu = {.ll = u};
-    11ff:	48 8b 45 98          	mov    rax,QWORD PTR [rbp-0x68]
-    1203:	48 89 45 b0          	mov    QWORD PTR [rbp-0x50],rax
+    11f2:	48 8b 45 98          	mov    rax,QWORD PTR [rbp-0x68]
+    11f6:	48 89 45 b0          	mov    QWORD PTR [rbp-0x50],rax
 		DWunion vv = {.ll = v};
-    1207:	48 8b 45 90          	mov    rax,QWORD PTR [rbp-0x70]
-    120b:	48 89 45 a8          	mov    QWORD PTR [rbp-0x58],rax
+    11fa:	48 8b 45 90          	mov    rax,QWORD PTR [rbp-0x70]
+    11fe:	48 89 45 a8          	mov    QWORD PTR [rbp-0x58],rax
 		DWtype w;
 	
 		if (uu.s.high < 0)
-    120f:	8b 45 b4             	mov    eax,DWORD PTR [rbp-0x4c]
-    1212:	85 c0                	test   eax,eax
-    1214:	79 0e                	jns    1224 <__moddi3+0x3c>
+    1202:	8b 45 b4             	mov    eax,DWORD PTR [rbp-0x4c]
+    1205:	85 c0                	test   eax,eax
+    1207:	79 0e                	jns    1217 <__moddi3+0x3c>
 				c = ~c,
-    1216:	f7 55 fc             	not    DWORD PTR [rbp-0x4]
+    1209:	f7 55 fc             	not    DWORD PTR [rbp-0x4]
 					uu.ll = -uu.ll;
-    1219:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    121d:	48 f7 d8             	neg    rax
-    1220:	48 89 45 b0          	mov    QWORD PTR [rbp-0x50],rax
+    120c:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    1210:	48 f7 d8             	neg    rax
+    1213:	48 89 45 b0          	mov    QWORD PTR [rbp-0x50],rax
 		if (vv.s.high < 0)
-    1224:	8b 45 ac             	mov    eax,DWORD PTR [rbp-0x54]
-    1227:	85 c0                	test   eax,eax
-    1229:	79 0b                	jns    1236 <__moddi3+0x4e>
+    1217:	8b 45 ac             	mov    eax,DWORD PTR [rbp-0x54]
+    121a:	85 c0                	test   eax,eax
+    121c:	79 0b                	jns    1229 <__moddi3+0x4e>
 				vv.ll = -vv.ll;
-    122b:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    122f:	48 f7 d8             	neg    rax
-    1232:	48 89 45 a8          	mov    QWORD PTR [rbp-0x58],rax
+    121e:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1222:	48 f7 d8             	neg    rax
+    1225:	48 89 45 a8          	mov    QWORD PTR [rbp-0x58],rax
 	
 		(void) __udivmoddi4 (uu.ll, vv.ll, (UDWtype*)&w);
-    1236:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    123a:	48 89 c2             	mov    rdx,rax
-    123d:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    1241:	48 89 45 f0          	mov    QWORD PTR [rbp-0x10],rax
-    1245:	48 89 55 e8          	mov    QWORD PTR [rbp-0x18],rdx
-    1249:	48 8d 45 a0          	lea    rax,[rbp-0x60]
-    124d:	48 89 45 e0          	mov    QWORD PTR [rbp-0x20],rax
+    1229:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    122d:	48 89 c2             	mov    rdx,rax
+    1230:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    1234:	48 89 45 f0          	mov    QWORD PTR [rbp-0x10],rax
+    1238:	48 89 55 e8          	mov    QWORD PTR [rbp-0x18],rdx
+    123c:	48 8d 45 a0          	lea    rax,[rbp-0x60]
+    1240:	48 89 45 e0          	mov    QWORD PTR [rbp-0x20],rax
 		UDWtype q = 0, r = n, y = d;
-    1251:	48 c7 45 d8 00 00 00 00 	mov    QWORD PTR [rbp-0x28],0x0
-    1259:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
-    125d:	48 89 45 d0          	mov    QWORD PTR [rbp-0x30],rax
-    1261:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
-    1265:	48 89 45 c8          	mov    QWORD PTR [rbp-0x38],rax
+    1244:	48 c7 45 d8 00 00 00 00 	mov    QWORD PTR [rbp-0x28],0x0
+    124c:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
+    1250:	48 89 45 d0          	mov    QWORD PTR [rbp-0x30],rax
+    1254:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+    1258:	48 89 45 c8          	mov    QWORD PTR [rbp-0x38],rax
 		if (y <= r)
-    1269:	48 8b 45 d0          	mov    rax,QWORD PTR [rbp-0x30]
-    126d:	48 3b 45 c8          	cmp    rax,QWORD PTR [rbp-0x38]
-    1271:	0f 82 b1 00 00 00    	jb     1328 <__moddi3+0x140>
+    125c:	48 8b 45 d0          	mov    rax,QWORD PTR [rbp-0x30]
+    1260:	48 3b 45 c8          	cmp    rax,QWORD PTR [rbp-0x38]
+    1264:	0f 82 b1 00 00 00    	jb     131b <__moddi3+0x140>
 				lz1 = __builtin_clzll (d);
-    1277:	48 0f bd 45 e8       	bsr    rax,QWORD PTR [rbp-0x18]
-    127c:	48 83 f0 3f          	xor    rax,0x3f
-    1280:	89 45 c4             	mov    DWORD PTR [rbp-0x3c],eax
+    126a:	48 0f bd 45 e8       	bsr    rax,QWORD PTR [rbp-0x18]
+    126f:	48 83 f0 3f          	xor    rax,0x3f
+    1273:	89 45 c4             	mov    DWORD PTR [rbp-0x3c],eax
 				lz2 = __builtin_clzll (n);
-    1283:	48 0f bd 45 f0       	bsr    rax,QWORD PTR [rbp-0x10]
-    1288:	48 83 f0 3f          	xor    rax,0x3f
-    128c:	89 45 c0             	mov    DWORD PTR [rbp-0x40],eax
+    1276:	48 0f bd 45 f0       	bsr    rax,QWORD PTR [rbp-0x10]
+    127b:	48 83 f0 3f          	xor    rax,0x3f
+    127f:	89 45 c0             	mov    DWORD PTR [rbp-0x40],eax
 				k = lz1 - lz2;
-    128f:	8b 45 c4             	mov    eax,DWORD PTR [rbp-0x3c]
-    1292:	2b 45 c0             	sub    eax,DWORD PTR [rbp-0x40]
-    1295:	89 45 bc             	mov    DWORD PTR [rbp-0x44],eax
+    1282:	8b 45 c4             	mov    eax,DWORD PTR [rbp-0x3c]
+    1285:	2b 45 c0             	sub    eax,DWORD PTR [rbp-0x40]
+    1288:	89 45 bc             	mov    DWORD PTR [rbp-0x44],eax
 				y = (y << k);
-    1298:	8b 45 bc             	mov    eax,DWORD PTR [rbp-0x44]
-    129b:	89 c1                	mov    ecx,eax
-    129d:	48 d3 65 c8          	shl    QWORD PTR [rbp-0x38],cl
+    128b:	8b 45 bc             	mov    eax,DWORD PTR [rbp-0x44]
+    128e:	89 c1                	mov    ecx,eax
+    1290:	48 d3 65 c8          	shl    QWORD PTR [rbp-0x38],cl
 				if (r >= y)
-    12a1:	48 8b 45 d0          	mov    rax,QWORD PTR [rbp-0x30]
-    12a5:	48 3b 45 c8          	cmp    rax,QWORD PTR [rbp-0x38]
-    12a9:	72 1c                	jb     12c7 <__moddi3+0xdf>
+    1294:	48 8b 45 d0          	mov    rax,QWORD PTR [rbp-0x30]
+    1298:	48 3b 45 c8          	cmp    rax,QWORD PTR [rbp-0x38]
+    129c:	72 1c                	jb     12ba <__moddi3+0xdf>
 						r = r - y;
-    12ab:	48 8b 45 c8          	mov    rax,QWORD PTR [rbp-0x38]
-    12af:	48 29 45 d0          	sub    QWORD PTR [rbp-0x30],rax
+    129e:	48 8b 45 c8          	mov    rax,QWORD PTR [rbp-0x38]
+    12a2:	48 29 45 d0          	sub    QWORD PTR [rbp-0x30],rax
 						q =  (1ULL << k);
-    12b3:	8b 45 bc             	mov    eax,DWORD PTR [rbp-0x44]
-    12b6:	ba 01 00 00 00       	mov    edx,0x1
-    12bb:	89 c1                	mov    ecx,eax
-    12bd:	48 d3 e2             	shl    rdx,cl
-    12c0:	48 89 d0             	mov    rax,rdx
-    12c3:	48 89 45 d8          	mov    QWORD PTR [rbp-0x28],rax
+    12a6:	8b 45 bc             	mov    eax,DWORD PTR [rbp-0x44]
+    12a9:	ba 01 00 00 00       	mov    edx,0x1
+    12ae:	89 c1                	mov    ecx,eax
+    12b0:	48 d3 e2             	shl    rdx,cl
+    12b3:	48 89 d0             	mov    rax,rdx
+    12b6:	48 89 45 d8          	mov    QWORD PTR [rbp-0x28],rax
 				if (k > 0)
-    12c7:	83 7d bc 00          	cmp    DWORD PTR [rbp-0x44],0x0
-    12cb:	74 5b                	je     1328 <__moddi3+0x140>
+    12ba:	83 7d bc 00          	cmp    DWORD PTR [rbp-0x44],0x0
+    12be:	74 5b                	je     131b <__moddi3+0x140>
 						y = y >> 1;
-    12cd:	48 d1 6d c8          	shr    QWORD PTR [rbp-0x38],1
+    12c0:	48 d1 6d c8          	shr    QWORD PTR [rbp-0x38],1
 						i = k;
-    12d1:	8b 45 bc             	mov    eax,DWORD PTR [rbp-0x44]
-    12d4:	89 45 b8             	mov    DWORD PTR [rbp-0x48],eax
+    12c4:	8b 45 bc             	mov    eax,DWORD PTR [rbp-0x44]
+    12c7:	89 45 b8             	mov    DWORD PTR [rbp-0x48],eax
 								if (r >= y)
-    12d7:	48 8b 45 c8          	mov    rax,QWORD PTR [rbp-0x38]
-    12db:	48 39 45 d0          	cmp    QWORD PTR [rbp-0x30],rax
-    12df:	72 15                	jb     12f6 <__moddi3+0x10e>
+    12ca:	48 8b 45 c8          	mov    rax,QWORD PTR [rbp-0x38]
+    12ce:	48 39 45 d0          	cmp    QWORD PTR [rbp-0x30],rax
+    12d2:	72 15                	jb     12e9 <__moddi3+0x10e>
 										r = ((r - y) << 1) + 1;
-    12e1:	48 8b 45 d0          	mov    rax,QWORD PTR [rbp-0x30]
-    12e5:	48 2b 45 c8          	sub    rax,QWORD PTR [rbp-0x38]
-    12e9:	48 01 c0             	add    rax,rax
-    12ec:	48 83 c0 01          	add    rax,0x1
-    12f0:	48 89 45 d0          	mov    QWORD PTR [rbp-0x30],rax
-    12f4:	eb 04                	jmp    12fa <__moddi3+0x112>
+    12d4:	48 8b 45 d0          	mov    rax,QWORD PTR [rbp-0x30]
+    12d8:	48 2b 45 c8          	sub    rax,QWORD PTR [rbp-0x38]
+    12dc:	48 01 c0             	add    rax,rax
+    12df:	48 83 c0 01          	add    rax,0x1
+    12e3:	48 89 45 d0          	mov    QWORD PTR [rbp-0x30],rax
+    12e7:	eb 04                	jmp    12ed <__moddi3+0x112>
 										r =  (r << 1);
-    12f6:	48 d1 65 d0          	shl    QWORD PTR [rbp-0x30],1
+    12e9:	48 d1 65 d0          	shl    QWORD PTR [rbp-0x30],1
 								i = i - 1;
-    12fa:	83 6d b8 01          	sub    DWORD PTR [rbp-0x48],0x1
+    12ed:	83 6d b8 01          	sub    DWORD PTR [rbp-0x48],0x1
 						} while (i != 0);
-    12fe:	83 7d b8 00          	cmp    DWORD PTR [rbp-0x48],0x0
-    1302:	75 d3                	jne    12d7 <__moddi3+0xef>
+    12f1:	83 7d b8 00          	cmp    DWORD PTR [rbp-0x48],0x0
+    12f5:	75 d3                	jne    12ca <__moddi3+0xef>
 						q = q + r;
-    1304:	48 8b 45 d0          	mov    rax,QWORD PTR [rbp-0x30]
-    1308:	48 01 45 d8          	add    QWORD PTR [rbp-0x28],rax
+    12f7:	48 8b 45 d0          	mov    rax,QWORD PTR [rbp-0x30]
+    12fb:	48 01 45 d8          	add    QWORD PTR [rbp-0x28],rax
 						r = r >> k;
-    130c:	8b 45 bc             	mov    eax,DWORD PTR [rbp-0x44]
-    130f:	89 c1                	mov    ecx,eax
-    1311:	48 d3 6d d0          	shr    QWORD PTR [rbp-0x30],cl
+    12ff:	8b 45 bc             	mov    eax,DWORD PTR [rbp-0x44]
+    1302:	89 c1                	mov    ecx,eax
+    1304:	48 d3 6d d0          	shr    QWORD PTR [rbp-0x30],cl
 						q = q - (r << k);
-    1315:	8b 45 bc             	mov    eax,DWORD PTR [rbp-0x44]
-    1318:	48 8b 55 d0          	mov    rdx,QWORD PTR [rbp-0x30]
-    131c:	89 c1                	mov    ecx,eax
-    131e:	48 d3 e2             	shl    rdx,cl
-    1321:	48 89 d0             	mov    rax,rdx
-    1324:	48 29 45 d8          	sub    QWORD PTR [rbp-0x28],rax
+    1308:	8b 45 bc             	mov    eax,DWORD PTR [rbp-0x44]
+    130b:	48 8b 55 d0          	mov    rdx,QWORD PTR [rbp-0x30]
+    130f:	89 c1                	mov    ecx,eax
+    1311:	48 d3 e2             	shl    rdx,cl
+    1314:	48 89 d0             	mov    rax,rdx
+    1317:	48 29 45 d8          	sub    QWORD PTR [rbp-0x28],rax
 		if (rp)
-    1328:	48 83 7d e0 00       	cmp    QWORD PTR [rbp-0x20],0x0
-    132d:	74 0b                	je     133a <__moddi3+0x152>
+    131b:	48 83 7d e0 00       	cmp    QWORD PTR [rbp-0x20],0x0
+    1320:	74 0b                	je     132d <__moddi3+0x152>
 				*rp = r;
-    132f:	48 8b 45 e0          	mov    rax,QWORD PTR [rbp-0x20]
-    1333:	48 8b 55 d0          	mov    rdx,QWORD PTR [rbp-0x30]
-    1337:	48 89 10             	mov    QWORD PTR [rax],rdx
+    1322:	48 8b 45 e0          	mov    rax,QWORD PTR [rbp-0x20]
+    1326:	48 8b 55 d0          	mov    rdx,QWORD PTR [rbp-0x30]
+    132a:	48 89 10             	mov    QWORD PTR [rax],rdx
 		if (c)
-    133a:	83 7d fc 00          	cmp    DWORD PTR [rbp-0x4],0x0
-    133e:	74 0b                	je     134b <__moddi3+0x163>
+    132d:	83 7d fc 00          	cmp    DWORD PTR [rbp-0x4],0x0
+    1331:	74 0b                	je     133e <__moddi3+0x163>
 				w = -w;
-    1340:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
-    1344:	48 f7 d8             	neg    rax
-    1347:	48 89 45 a0          	mov    QWORD PTR [rbp-0x60],rax
+    1333:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
+    1337:	48 f7 d8             	neg    rax
+    133a:	48 89 45 a0          	mov    QWORD PTR [rbp-0x60],rax
 	
 		return w;
-    134b:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
+    133e:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
 }
-    134f:	c9                   	leave
-    1350:	c3                   	ret
+    1342:	c9                   	leave
+    1343:	c3                   	ret
 
-0000000000001351 <__divdi3>:
+0000000000001344 <__divdi3>:
 
 DWtype
 __divdi3 (DWtype u, DWtype v)
 {
-    1351:	55                   	push   rbp
-    1352:	48 89 e5             	mov    rbp,rsp
-    1355:	48 83 ec 70          	sub    rsp,0x70
-    1359:	48 89 7d 98          	mov    QWORD PTR [rbp-0x68],rdi
-    135d:	48 89 75 90          	mov    QWORD PTR [rbp-0x70],rsi
+    1344:	55                   	push   rbp
+    1345:	48 89 e5             	mov    rbp,rsp
+    1348:	48 83 ec 70          	sub    rsp,0x70
+    134c:	48 89 7d 98          	mov    QWORD PTR [rbp-0x68],rdi
+    1350:	48 89 75 90          	mov    QWORD PTR [rbp-0x70],rsi
 		Wtype c = 0;
-    1361:	c7 45 fc 00 00 00 00 	mov    DWORD PTR [rbp-0x4],0x0
+    1354:	c7 45 fc 00 00 00 00 	mov    DWORD PTR [rbp-0x4],0x0
 		DWunion uu = {.ll = u};
-    1368:	48 8b 45 98          	mov    rax,QWORD PTR [rbp-0x68]
-    136c:	48 89 45 a8          	mov    QWORD PTR [rbp-0x58],rax
+    135b:	48 8b 45 98          	mov    rax,QWORD PTR [rbp-0x68]
+    135f:	48 89 45 a8          	mov    QWORD PTR [rbp-0x58],rax
 		DWunion vv = {.ll = v};
-    1370:	48 8b 45 90          	mov    rax,QWORD PTR [rbp-0x70]
-    1374:	48 89 45 a0          	mov    QWORD PTR [rbp-0x60],rax
+    1363:	48 8b 45 90          	mov    rax,QWORD PTR [rbp-0x70]
+    1367:	48 89 45 a0          	mov    QWORD PTR [rbp-0x60],rax
 		DWtype w;
 	
 		if (uu.s.high < 0)
-    1378:	8b 45 ac             	mov    eax,DWORD PTR [rbp-0x54]
-    137b:	85 c0                	test   eax,eax
-    137d:	79 0e                	jns    138d <__divdi3+0x3c>
+    136b:	8b 45 ac             	mov    eax,DWORD PTR [rbp-0x54]
+    136e:	85 c0                	test   eax,eax
+    1370:	79 0e                	jns    1380 <__divdi3+0x3c>
 				c = ~c,
-    137f:	f7 55 fc             	not    DWORD PTR [rbp-0x4]
+    1372:	f7 55 fc             	not    DWORD PTR [rbp-0x4]
 				  uu.ll = -uu.ll;
-    1382:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    1386:	48 f7 d8             	neg    rax
-    1389:	48 89 45 a8          	mov    QWORD PTR [rbp-0x58],rax
+    1375:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    1379:	48 f7 d8             	neg    rax
+    137c:	48 89 45 a8          	mov    QWORD PTR [rbp-0x58],rax
 		if (vv.s.high < 0)
-    138d:	8b 45 a4             	mov    eax,DWORD PTR [rbp-0x5c]
-    1390:	85 c0                	test   eax,eax
-    1392:	79 0e                	jns    13a2 <__divdi3+0x51>
+    1380:	8b 45 a4             	mov    eax,DWORD PTR [rbp-0x5c]
+    1383:	85 c0                	test   eax,eax
+    1385:	79 0e                	jns    1395 <__divdi3+0x51>
 				c = ~c,
-    1394:	f7 55 fc             	not    DWORD PTR [rbp-0x4]
+    1387:	f7 55 fc             	not    DWORD PTR [rbp-0x4]
 				  vv.ll = -vv.ll;
-    1397:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
-    139b:	48 f7 d8             	neg    rax
-    139e:	48 89 45 a0          	mov    QWORD PTR [rbp-0x60],rax
+    138a:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
+    138e:	48 f7 d8             	neg    rax
+    1391:	48 89 45 a0          	mov    QWORD PTR [rbp-0x60],rax
 	
 		w = __udivmoddi4 (uu.ll, vv.ll, (UDWtype *) 0);
-    13a2:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
-    13a6:	48 89 c2             	mov    rdx,rax
-    13a9:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    13ad:	48 89 45 e8          	mov    QWORD PTR [rbp-0x18],rax
-    13b1:	48 89 55 e0          	mov    QWORD PTR [rbp-0x20],rdx
-    13b5:	48 c7 45 d8 00 00 00 00 	mov    QWORD PTR [rbp-0x28],0x0
+    1395:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
+    1399:	48 89 c2             	mov    rdx,rax
+    139c:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    13a0:	48 89 45 e8          	mov    QWORD PTR [rbp-0x18],rax
+    13a4:	48 89 55 e0          	mov    QWORD PTR [rbp-0x20],rdx
+    13a8:	48 c7 45 d8 00 00 00 00 	mov    QWORD PTR [rbp-0x28],0x0
 		UDWtype q = 0, r = n, y = d;
-    13bd:	48 c7 45 d0 00 00 00 00 	mov    QWORD PTR [rbp-0x30],0x0
-    13c5:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
-    13c9:	48 89 45 c8          	mov    QWORD PTR [rbp-0x38],rax
-    13cd:	48 8b 45 e0          	mov    rax,QWORD PTR [rbp-0x20]
-    13d1:	48 89 45 c0          	mov    QWORD PTR [rbp-0x40],rax
+    13b0:	48 c7 45 d0 00 00 00 00 	mov    QWORD PTR [rbp-0x30],0x0
+    13b8:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+    13bc:	48 89 45 c8          	mov    QWORD PTR [rbp-0x38],rax
+    13c0:	48 8b 45 e0          	mov    rax,QWORD PTR [rbp-0x20]
+    13c4:	48 89 45 c0          	mov    QWORD PTR [rbp-0x40],rax
 		if (y <= r)
-    13d5:	48 8b 45 c8          	mov    rax,QWORD PTR [rbp-0x38]
-    13d9:	48 3b 45 c0          	cmp    rax,QWORD PTR [rbp-0x40]
-    13dd:	0f 82 b1 00 00 00    	jb     1494 <__divdi3+0x143>
+    13c8:	48 8b 45 c8          	mov    rax,QWORD PTR [rbp-0x38]
+    13cc:	48 3b 45 c0          	cmp    rax,QWORD PTR [rbp-0x40]
+    13d0:	0f 82 b1 00 00 00    	jb     1487 <__divdi3+0x143>
 				lz1 = __builtin_clzll (d);
-    13e3:	48 0f bd 45 e0       	bsr    rax,QWORD PTR [rbp-0x20]
-    13e8:	48 83 f0 3f          	xor    rax,0x3f
-    13ec:	89 45 bc             	mov    DWORD PTR [rbp-0x44],eax
+    13d6:	48 0f bd 45 e0       	bsr    rax,QWORD PTR [rbp-0x20]
+    13db:	48 83 f0 3f          	xor    rax,0x3f
+    13df:	89 45 bc             	mov    DWORD PTR [rbp-0x44],eax
 				lz2 = __builtin_clzll (n);
-    13ef:	48 0f bd 45 e8       	bsr    rax,QWORD PTR [rbp-0x18]
-    13f4:	48 83 f0 3f          	xor    rax,0x3f
-    13f8:	89 45 b8             	mov    DWORD PTR [rbp-0x48],eax
+    13e2:	48 0f bd 45 e8       	bsr    rax,QWORD PTR [rbp-0x18]
+    13e7:	48 83 f0 3f          	xor    rax,0x3f
+    13eb:	89 45 b8             	mov    DWORD PTR [rbp-0x48],eax
 				k = lz1 - lz2;
-    13fb:	8b 45 bc             	mov    eax,DWORD PTR [rbp-0x44]
-    13fe:	2b 45 b8             	sub    eax,DWORD PTR [rbp-0x48]
-    1401:	89 45 b4             	mov    DWORD PTR [rbp-0x4c],eax
+    13ee:	8b 45 bc             	mov    eax,DWORD PTR [rbp-0x44]
+    13f1:	2b 45 b8             	sub    eax,DWORD PTR [rbp-0x48]
+    13f4:	89 45 b4             	mov    DWORD PTR [rbp-0x4c],eax
 				y = (y << k);
-    1404:	8b 45 b4             	mov    eax,DWORD PTR [rbp-0x4c]
-    1407:	89 c1                	mov    ecx,eax
-    1409:	48 d3 65 c0          	shl    QWORD PTR [rbp-0x40],cl
+    13f7:	8b 45 b4             	mov    eax,DWORD PTR [rbp-0x4c]
+    13fa:	89 c1                	mov    ecx,eax
+    13fc:	48 d3 65 c0          	shl    QWORD PTR [rbp-0x40],cl
 				if (r >= y)
-    140d:	48 8b 45 c8          	mov    rax,QWORD PTR [rbp-0x38]
-    1411:	48 3b 45 c0          	cmp    rax,QWORD PTR [rbp-0x40]
-    1415:	72 1c                	jb     1433 <__divdi3+0xe2>
+    1400:	48 8b 45 c8          	mov    rax,QWORD PTR [rbp-0x38]
+    1404:	48 3b 45 c0          	cmp    rax,QWORD PTR [rbp-0x40]
+    1408:	72 1c                	jb     1426 <__divdi3+0xe2>
 						r = r - y;
-    1417:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    141b:	48 29 45 c8          	sub    QWORD PTR [rbp-0x38],rax
+    140a:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    140e:	48 29 45 c8          	sub    QWORD PTR [rbp-0x38],rax
 						q =  (1ULL << k);
-    141f:	8b 45 b4             	mov    eax,DWORD PTR [rbp-0x4c]
-    1422:	ba 01 00 00 00       	mov    edx,0x1
-    1427:	89 c1                	mov    ecx,eax
-    1429:	48 d3 e2             	shl    rdx,cl
-    142c:	48 89 d0             	mov    rax,rdx
-    142f:	48 89 45 d0          	mov    QWORD PTR [rbp-0x30],rax
+    1412:	8b 45 b4             	mov    eax,DWORD PTR [rbp-0x4c]
+    1415:	ba 01 00 00 00       	mov    edx,0x1
+    141a:	89 c1                	mov    ecx,eax
+    141c:	48 d3 e2             	shl    rdx,cl
+    141f:	48 89 d0             	mov    rax,rdx
+    1422:	48 89 45 d0          	mov    QWORD PTR [rbp-0x30],rax
 				if (k > 0)
-    1433:	83 7d b4 00          	cmp    DWORD PTR [rbp-0x4c],0x0
-    1437:	74 5b                	je     1494 <__divdi3+0x143>
+    1426:	83 7d b4 00          	cmp    DWORD PTR [rbp-0x4c],0x0
+    142a:	74 5b                	je     1487 <__divdi3+0x143>
 						y = y >> 1;
-    1439:	48 d1 6d c0          	shr    QWORD PTR [rbp-0x40],1
+    142c:	48 d1 6d c0          	shr    QWORD PTR [rbp-0x40],1
 						i = k;
-    143d:	8b 45 b4             	mov    eax,DWORD PTR [rbp-0x4c]
-    1440:	89 45 b0             	mov    DWORD PTR [rbp-0x50],eax
+    1430:	8b 45 b4             	mov    eax,DWORD PTR [rbp-0x4c]
+    1433:	89 45 b0             	mov    DWORD PTR [rbp-0x50],eax
 								if (r >= y)
-    1443:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1447:	48 39 45 c8          	cmp    QWORD PTR [rbp-0x38],rax
-    144b:	72 15                	jb     1462 <__divdi3+0x111>
+    1436:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    143a:	48 39 45 c8          	cmp    QWORD PTR [rbp-0x38],rax
+    143e:	72 15                	jb     1455 <__divdi3+0x111>
 										r = ((r - y) << 1) + 1;
-    144d:	48 8b 45 c8          	mov    rax,QWORD PTR [rbp-0x38]
-    1451:	48 2b 45 c0          	sub    rax,QWORD PTR [rbp-0x40]
-    1455:	48 01 c0             	add    rax,rax
-    1458:	48 83 c0 01          	add    rax,0x1
-    145c:	48 89 45 c8          	mov    QWORD PTR [rbp-0x38],rax
-    1460:	eb 04                	jmp    1466 <__divdi3+0x115>
+    1440:	48 8b 45 c8          	mov    rax,QWORD PTR [rbp-0x38]
+    1444:	48 2b 45 c0          	sub    rax,QWORD PTR [rbp-0x40]
+    1448:	48 01 c0             	add    rax,rax
+    144b:	48 83 c0 01          	add    rax,0x1
+    144f:	48 89 45 c8          	mov    QWORD PTR [rbp-0x38],rax
+    1453:	eb 04                	jmp    1459 <__divdi3+0x115>
 										r =  (r << 1);
-    1462:	48 d1 65 c8          	shl    QWORD PTR [rbp-0x38],1
+    1455:	48 d1 65 c8          	shl    QWORD PTR [rbp-0x38],1
 								i = i - 1;
-    1466:	83 6d b0 01          	sub    DWORD PTR [rbp-0x50],0x1
+    1459:	83 6d b0 01          	sub    DWORD PTR [rbp-0x50],0x1
 						} while (i != 0);
-    146a:	83 7d b0 00          	cmp    DWORD PTR [rbp-0x50],0x0
-    146e:	75 d3                	jne    1443 <__divdi3+0xf2>
+    145d:	83 7d b0 00          	cmp    DWORD PTR [rbp-0x50],0x0
+    1461:	75 d3                	jne    1436 <__divdi3+0xf2>
 						q = q + r;
-    1470:	48 8b 45 c8          	mov    rax,QWORD PTR [rbp-0x38]
-    1474:	48 01 45 d0          	add    QWORD PTR [rbp-0x30],rax
+    1463:	48 8b 45 c8          	mov    rax,QWORD PTR [rbp-0x38]
+    1467:	48 01 45 d0          	add    QWORD PTR [rbp-0x30],rax
 						r = r >> k;
-    1478:	8b 45 b4             	mov    eax,DWORD PTR [rbp-0x4c]
-    147b:	89 c1                	mov    ecx,eax
-    147d:	48 d3 6d c8          	shr    QWORD PTR [rbp-0x38],cl
+    146b:	8b 45 b4             	mov    eax,DWORD PTR [rbp-0x4c]
+    146e:	89 c1                	mov    ecx,eax
+    1470:	48 d3 6d c8          	shr    QWORD PTR [rbp-0x38],cl
 						q = q - (r << k);
-    1481:	8b 45 b4             	mov    eax,DWORD PTR [rbp-0x4c]
-    1484:	48 8b 55 c8          	mov    rdx,QWORD PTR [rbp-0x38]
-    1488:	89 c1                	mov    ecx,eax
-    148a:	48 d3 e2             	shl    rdx,cl
-    148d:	48 89 d0             	mov    rax,rdx
-    1490:	48 29 45 d0          	sub    QWORD PTR [rbp-0x30],rax
+    1474:	8b 45 b4             	mov    eax,DWORD PTR [rbp-0x4c]
+    1477:	48 8b 55 c8          	mov    rdx,QWORD PTR [rbp-0x38]
+    147b:	89 c1                	mov    ecx,eax
+    147d:	48 d3 e2             	shl    rdx,cl
+    1480:	48 89 d0             	mov    rax,rdx
+    1483:	48 29 45 d0          	sub    QWORD PTR [rbp-0x30],rax
 		if (rp)
-    1494:	48 83 7d d8 00       	cmp    QWORD PTR [rbp-0x28],0x0
-    1499:	74 0b                	je     14a6 <__divdi3+0x155>
+    1487:	48 83 7d d8 00       	cmp    QWORD PTR [rbp-0x28],0x0
+    148c:	74 0b                	je     1499 <__divdi3+0x155>
 				*rp = r;
-    149b:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
-    149f:	48 8b 55 c8          	mov    rdx,QWORD PTR [rbp-0x38]
-    14a3:	48 89 10             	mov    QWORD PTR [rax],rdx
+    148e:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
+    1492:	48 8b 55 c8          	mov    rdx,QWORD PTR [rbp-0x38]
+    1496:	48 89 10             	mov    QWORD PTR [rax],rdx
 		return q;
-    14a6:	48 8b 45 d0          	mov    rax,QWORD PTR [rbp-0x30]
+    1499:	48 8b 45 d0          	mov    rax,QWORD PTR [rbp-0x30]
 		w = __udivmoddi4 (uu.ll, vv.ll, (UDWtype *) 0);
-    14aa:	48 89 45 f0          	mov    QWORD PTR [rbp-0x10],rax
+    149d:	48 89 45 f0          	mov    QWORD PTR [rbp-0x10],rax
 		if (c)
-    14ae:	83 7d fc 00          	cmp    DWORD PTR [rbp-0x4],0x0
-    14b2:	74 04                	je     14b8 <__divdi3+0x167>
+    14a1:	83 7d fc 00          	cmp    DWORD PTR [rbp-0x4],0x0
+    14a5:	74 04                	je     14ab <__divdi3+0x167>
 				w = -w;
-    14b4:	48 f7 5d f0          	neg    QWORD PTR [rbp-0x10]
+    14a7:	48 f7 5d f0          	neg    QWORD PTR [rbp-0x10]
 	
 		return w;
-    14b8:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
+    14ab:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
 }
-    14bc:	c9                   	leave
-    14bd:	c3                   	ret
+    14af:	c9                   	leave
+    14b0:	c3                   	ret

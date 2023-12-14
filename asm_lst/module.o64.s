@@ -5,27 +5,27 @@ module.o64:     file format elf64-x86-64
 Disassembly of section .text:
 
 0000000000000000 <memcpy>:
-						}
-				}
-		}
-}
-
 const char* get_section_type_string(Elf32_Word tp)
+{
+		if (tp == SHT_PROGBITS)
+				return "PROGBITS";
+		else if (tp == SHT_SYMTAB)
+				return "SYMTAB";
        0:	55                   	push   rbp
        1:	48 89 e5             	mov    rbp,rsp
        4:	48 83 ec 28          	sub    rsp,0x28
        8:	48 89 7d e8          	mov    QWORD PTR [rbp-0x18],rdi
        c:	48 89 75 e0          	mov    QWORD PTR [rbp-0x20],rsi
       10:	48 89 55 d8          	mov    QWORD PTR [rbp-0x28],rdx
-{
+		else if (tp == SHT_DYNSYM)
       14:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
       18:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
-		if (tp == SHT_PROGBITS)
+				return "DYNSYM";
       1c:	48 8b 45 e0          	mov    rax,QWORD PTR [rbp-0x20]
       20:	48 89 45 f0          	mov    QWORD PTR [rbp-0x10],rax
-				return "PROGBITS";
+		else if (tp == SHT_STRTAB)
       24:	eb 1d                	jmp    43 <memcpy+0x43>
-		else if (tp == SHT_SYMTAB)
+				return "STRTAB";
       26:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
       2a:	48 8d 42 01          	lea    rax,[rdx+0x1]
       2e:	48 89 45 f0          	mov    QWORD PTR [rbp-0x10],rax
@@ -34,13 +34,13 @@ const char* get_section_type_string(Elf32_Word tp)
       3a:	48 89 4d f8          	mov    QWORD PTR [rbp-0x8],rcx
       3e:	0f b6 12             	movzx  edx,BYTE PTR [rdx]
       41:	88 10                	mov    BYTE PTR [rax],dl
-				return "PROGBITS";
+		else if (tp == SHT_STRTAB)
       43:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
       47:	48 8d 50 ff          	lea    rdx,[rax-0x1]
       4b:	48 89 55 d8          	mov    QWORD PTR [rbp-0x28],rdx
       4f:	48 85 c0             	test   rax,rax
       52:	75 d2                	jne    26 <memcpy+0x26>
-				return "SYMTAB";
+		else if (tp == SHT_RELA)
       54:	90                   	nop
       55:	90                   	nop
       56:	c9                   	leave
@@ -124,7 +124,7 @@ const char* get_section_type_string(Elf32_Word tp)
 {
      12a:	55                   	push   rbp
      12b:	48 89 e5             	mov    rbp,rsp
-     12e:	48 83 ec 60          	sub    rsp,0x60
+     12e:	48 83 ec 70          	sub    rsp,0x70
      132:	48 89 7d b8          	mov    QWORD PTR [rbp-0x48],rdi
      136:	48 89 75 b0          	mov    QWORD PTR [rbp-0x50],rsi
      13a:	89 d0                	mov    eax,edx
@@ -169,7 +169,7 @@ const char* get_section_type_string(Elf32_Word tp)
      1b5:	48 89 45 c8          	mov    QWORD PTR [rbp-0x38],rax
 		if (ct <= 1)
      1b9:	48 83 7d c8 01       	cmp    QWORD PTR [rbp-0x38],0x1
-     1be:	0f 86 c9 02 00 00    	jbe    48d <elf_dump_symtab+0x363>
+     1be:	0f 86 d0 02 00 00    	jbe    494 <elf_dump_symtab+0x36a>
 		printf("dumping symtab with %lu entries\n", ct);
      1c4:	48 8b 45 c8          	mov    rax,QWORD PTR [rbp-0x38]
      1c8:	48 89 c6             	mov    rsi,rax
@@ -182,7 +182,7 @@ const char* get_section_type_string(Elf32_Word tp)
      1e8:	e8 00 00 00 00       	call   1ed <elf_dump_symtab+0xc3>
 		for (i = 1; i < ct; i++) {
      1ed:	48 c7 45 f8 01 00 00 00 	mov    QWORD PTR [rbp-0x8],0x1
-     1f5:	e9 83 02 00 00       	jmp    47d <elf_dump_symtab+0x353>
+     1f5:	e9 8a 02 00 00       	jmp    484 <elf_dump_symtab+0x35a>
 				Elf32_Sym* s = (ptr + i * shdr[symtab].sh_entsize);
      1fa:	0f b7 55 ac          	movzx  edx,WORD PTR [rbp-0x54]
      1fe:	48 89 d0             	mov    rax,rdx
@@ -380,4250 +380,4251 @@ const char* get_section_type_string(Elf32_Word tp)
      43e:	8b 48 08             	mov    ecx,DWORD PTR [rax+0x8]
      441:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
      445:	8b 50 04             	mov    edx,DWORD PTR [rax+0x4]
-     448:	48 8b 7d d8          	mov    rdi,QWORD PTR [rbp-0x28]
-     44c:	48 8b 75 e0          	mov    rsi,QWORD PTR [rbp-0x20]
+     448:	4c 8b 45 d8          	mov    r8,QWORD PTR [rbp-0x28]
+     44c:	48 8b 7d e0          	mov    rdi,QWORD PTR [rbp-0x20]
      450:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-     454:	ff 75 f0             	push   QWORD PTR [rbp-0x10]
-     457:	ff 75 e8             	push   QWORD PTR [rbp-0x18]
-     45a:	49 89 f9             	mov    r9,rdi
-     45d:	49 89 f0             	mov    r8,rsi
-     460:	48 89 c6             	mov    rsi,rax
-     463:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-     46a:	b8 00 00 00 00       	mov    eax,0x0
-     46f:	e8 00 00 00 00       	call   474 <elf_dump_symtab+0x34a>
-     474:	48 83 c4 10          	add    rsp,0x10
+     454:	48 8b 75 f0          	mov    rsi,QWORD PTR [rbp-0x10]
+     458:	48 89 74 24 08       	mov    QWORD PTR [rsp+0x8],rsi
+     45d:	48 8b 75 e8          	mov    rsi,QWORD PTR [rbp-0x18]
+     461:	48 89 34 24          	mov    QWORD PTR [rsp],rsi
+     465:	4d 89 c1             	mov    r9,r8
+     468:	49 89 f8             	mov    r8,rdi
+     46b:	48 89 c6             	mov    rsi,rax
+     46e:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+     475:	b8 00 00 00 00       	mov    eax,0x0
+     47a:	e8 00 00 00 00       	call   47f <elf_dump_symtab+0x355>
 		for (i = 1; i < ct; i++) {
-     478:	48 83 45 f8 01       	add    QWORD PTR [rbp-0x8],0x1
-     47d:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-     481:	48 3b 45 c8          	cmp    rax,QWORD PTR [rbp-0x38]
-     485:	0f 82 6f fd ff ff    	jb     1fa <elf_dump_symtab+0xd0>
-     48b:	eb 01                	jmp    48e <elf_dump_symtab+0x364>
+     47f:	48 83 45 f8 01       	add    QWORD PTR [rbp-0x8],0x1
+     484:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+     488:	48 3b 45 c8          	cmp    rax,QWORD PTR [rbp-0x38]
+     48c:	0f 82 68 fd ff ff    	jb     1fa <elf_dump_symtab+0xd0>
+     492:	eb 01                	jmp    495 <elf_dump_symtab+0x36b>
 				return;
-     48d:	90                   	nop
+     494:	90                   	nop
 }
-     48e:	c9                   	leave
-     48f:	c3                   	ret
+     495:	c9                   	leave
+     496:	c3                   	ret
 
-0000000000000490 <elf_rel_type_string>:
+0000000000000497 <elf_rel_type_string>:
 {
-     490:	55                   	push   rbp
-     491:	48 89 e5             	mov    rbp,rsp
-     494:	48 83 ec 08          	sub    rsp,0x8
-     498:	89 7d fc             	mov    DWORD PTR [rbp-0x4],edi
+     497:	55                   	push   rbp
+     498:	48 89 e5             	mov    rbp,rsp
+     49b:	48 83 ec 08          	sub    rsp,0x8
+     49f:	89 7d fc             	mov    DWORD PTR [rbp-0x4],edi
 		switch (t) {
-     49b:	83 7d fc 0a          	cmp    DWORD PTR [rbp-0x4],0xa
-     49f:	77 70                	ja     511 <elf_rel_type_string+0x81>
-     4a1:	8b 45 fc             	mov    eax,DWORD PTR [rbp-0x4]
-     4a4:	48 8b 04 c5 00 00 00 00 	mov    rax,QWORD PTR [rax*8+0x0]
-     4ac:	ff e0                	jmp    rax
+     4a2:	83 7d fc 0a          	cmp    DWORD PTR [rbp-0x4],0xa
+     4a6:	77 70                	ja     518 <elf_rel_type_string+0x81>
+     4a8:	8b 45 fc             	mov    eax,DWORD PTR [rbp-0x4]
+     4ab:	48 8b 04 c5 00 00 00 00 	mov    rax,QWORD PTR [rax*8+0x0]
+     4b3:	ff e0                	jmp    rax
 				return "R_386_NONE";
-     4ae:	48 c7 c0 00 00 00 00 	mov    rax,0x0
-     4b5:	eb 61                	jmp    518 <elf_rel_type_string+0x88>
+     4b5:	48 c7 c0 00 00 00 00 	mov    rax,0x0
+     4bc:	eb 61                	jmp    51f <elf_rel_type_string+0x88>
 				return "R_386_32";
-     4b7:	48 c7 c0 00 00 00 00 	mov    rax,0x0
-     4be:	eb 58                	jmp    518 <elf_rel_type_string+0x88>
+     4be:	48 c7 c0 00 00 00 00 	mov    rax,0x0
+     4c5:	eb 58                	jmp    51f <elf_rel_type_string+0x88>
 				return "R_386_PC32";
-     4c0:	48 c7 c0 00 00 00 00 	mov    rax,0x0
-     4c7:	eb 4f                	jmp    518 <elf_rel_type_string+0x88>
+     4c7:	48 c7 c0 00 00 00 00 	mov    rax,0x0
+     4ce:	eb 4f                	jmp    51f <elf_rel_type_string+0x88>
 				return "R_386_GOT32";
-     4c9:	48 c7 c0 00 00 00 00 	mov    rax,0x0
-     4d0:	eb 46                	jmp    518 <elf_rel_type_string+0x88>
+     4d0:	48 c7 c0 00 00 00 00 	mov    rax,0x0
+     4d7:	eb 46                	jmp    51f <elf_rel_type_string+0x88>
 				return "R_386_PLT32";
-     4d2:	48 c7 c0 00 00 00 00 	mov    rax,0x0
-     4d9:	eb 3d                	jmp    518 <elf_rel_type_string+0x88>
+     4d9:	48 c7 c0 00 00 00 00 	mov    rax,0x0
+     4e0:	eb 3d                	jmp    51f <elf_rel_type_string+0x88>
 				return "R_386_COPY";
-     4db:	48 c7 c0 00 00 00 00 	mov    rax,0x0
-     4e2:	eb 34                	jmp    518 <elf_rel_type_string+0x88>
+     4e2:	48 c7 c0 00 00 00 00 	mov    rax,0x0
+     4e9:	eb 34                	jmp    51f <elf_rel_type_string+0x88>
 				return "R_386_GLOB_DAT";
-     4e4:	48 c7 c0 00 00 00 00 	mov    rax,0x0
-     4eb:	eb 2b                	jmp    518 <elf_rel_type_string+0x88>
+     4eb:	48 c7 c0 00 00 00 00 	mov    rax,0x0
+     4f2:	eb 2b                	jmp    51f <elf_rel_type_string+0x88>
 				return "R_386_JMP_SLOT";
-     4ed:	48 c7 c0 00 00 00 00 	mov    rax,0x0
-     4f4:	eb 22                	jmp    518 <elf_rel_type_string+0x88>
+     4f4:	48 c7 c0 00 00 00 00 	mov    rax,0x0
+     4fb:	eb 22                	jmp    51f <elf_rel_type_string+0x88>
 				return "R_386_RELATIVE";
-     4f6:	48 c7 c0 00 00 00 00 	mov    rax,0x0
-     4fd:	eb 19                	jmp    518 <elf_rel_type_string+0x88>
+     4fd:	48 c7 c0 00 00 00 00 	mov    rax,0x0
+     504:	eb 19                	jmp    51f <elf_rel_type_string+0x88>
 				return "R_386_GOTOFF";
-     4ff:	48 c7 c0 00 00 00 00 	mov    rax,0x0
-     506:	eb 10                	jmp    518 <elf_rel_type_string+0x88>
+     506:	48 c7 c0 00 00 00 00 	mov    rax,0x0
+     50d:	eb 10                	jmp    51f <elf_rel_type_string+0x88>
 				return "R_386_GOTPC";
-     508:	48 c7 c0 00 00 00 00 	mov    rax,0x0
-     50f:	eb 07                	jmp    518 <elf_rel_type_string+0x88>
+     50f:	48 c7 c0 00 00 00 00 	mov    rax,0x0
+     516:	eb 07                	jmp    51f <elf_rel_type_string+0x88>
 				return "UNKNOWN";
-     511:	48 c7 c0 00 00 00 00 	mov    rax,0x0
+     518:	48 c7 c0 00 00 00 00 	mov    rax,0x0
 }
-     518:	c9                   	leave
-     519:	c3                   	ret
+     51f:	c9                   	leave
+     520:	c3                   	ret
 
-000000000000051a <elf_dump_rel>:
+0000000000000521 <elf_dump_rel>:
 {
-     51a:	55                   	push   rbp
-     51b:	48 89 e5             	mov    rbp,rsp
-     51e:	41 54                	push   r12
-     520:	53                   	push   rbx
-     521:	48 81 ec 90 00 00 00 	sub    rsp,0x90
-     528:	48 89 bd 78 ff ff ff 	mov    QWORD PTR [rbp-0x88],rdi
-     52f:	48 89 b5 70 ff ff ff 	mov    QWORD PTR [rbp-0x90],rsi
-     536:	89 d0                	mov    eax,edx
-     538:	66 89 85 6c ff ff ff 	mov    WORD PTR [rbp-0x94],ax
+     521:	55                   	push   rbp
+     522:	48 89 e5             	mov    rbp,rsp
+     525:	41 54                	push   r12
+     527:	53                   	push   rbx
+     528:	48 81 ec a0 00 00 00 	sub    rsp,0xa0
+     52f:	48 89 bd 78 ff ff ff 	mov    QWORD PTR [rbp-0x88],rdi
+     536:	48 89 b5 70 ff ff ff 	mov    QWORD PTR [rbp-0x90],rsi
+     53d:	89 d0                	mov    eax,edx
+     53f:	66 89 85 6c ff ff ff 	mov    WORD PTR [rbp-0x94],ax
 		void* ptr = ((void*)hdr + shdr[rel].sh_offset), *sptr, *stptr;
-     53f:	0f b7 95 6c ff ff ff 	movzx  edx,WORD PTR [rbp-0x94]
-     546:	48 89 d0             	mov    rax,rdx
-     549:	48 c1 e0 02          	shl    rax,0x2
-     54d:	48 01 d0             	add    rax,rdx
-     550:	48 c1 e0 03          	shl    rax,0x3
-     554:	48 89 c2             	mov    rdx,rax
-     557:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
-     55e:	48 01 d0             	add    rax,rdx
-     561:	8b 40 10             	mov    eax,DWORD PTR [rax+0x10]
-     564:	89 c2                	mov    edx,eax
-     566:	48 8b 85 78 ff ff ff 	mov    rax,QWORD PTR [rbp-0x88]
-     56d:	48 01 d0             	add    rax,rdx
-     570:	48 89 45 d0          	mov    QWORD PTR [rbp-0x30],rax
+     546:	0f b7 95 6c ff ff ff 	movzx  edx,WORD PTR [rbp-0x94]
+     54d:	48 89 d0             	mov    rax,rdx
+     550:	48 c1 e0 02          	shl    rax,0x2
+     554:	48 01 d0             	add    rax,rdx
+     557:	48 c1 e0 03          	shl    rax,0x3
+     55b:	48 89 c2             	mov    rdx,rax
+     55e:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
+     565:	48 01 d0             	add    rax,rdx
+     568:	8b 40 10             	mov    eax,DWORD PTR [rax+0x10]
+     56b:	89 c2                	mov    edx,eax
+     56d:	48 8b 85 78 ff ff ff 	mov    rax,QWORD PTR [rbp-0x88]
+     574:	48 01 d0             	add    rax,rdx
+     577:	48 89 45 d0          	mov    QWORD PTR [rbp-0x30],rax
 		size_t i, ct = shdr[rel].sh_size / shdr[rel].sh_entsize;
-     574:	0f b7 95 6c ff ff ff 	movzx  edx,WORD PTR [rbp-0x94]
-     57b:	48 89 d0             	mov    rax,rdx
-     57e:	48 c1 e0 02          	shl    rax,0x2
-     582:	48 01 d0             	add    rax,rdx
-     585:	48 c1 e0 03          	shl    rax,0x3
-     589:	48 89 c2             	mov    rdx,rax
-     58c:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
-     593:	48 01 d0             	add    rax,rdx
-     596:	8b 48 14             	mov    ecx,DWORD PTR [rax+0x14]
-     599:	0f b7 95 6c ff ff ff 	movzx  edx,WORD PTR [rbp-0x94]
-     5a0:	48 89 d0             	mov    rax,rdx
-     5a3:	48 c1 e0 02          	shl    rax,0x2
-     5a7:	48 01 d0             	add    rax,rdx
-     5aa:	48 c1 e0 03          	shl    rax,0x3
-     5ae:	48 89 c2             	mov    rdx,rax
-     5b1:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
-     5b8:	48 01 d0             	add    rax,rdx
-     5bb:	8b 58 24             	mov    ebx,DWORD PTR [rax+0x24]
-     5be:	89 c8                	mov    eax,ecx
-     5c0:	ba 00 00 00 00       	mov    edx,0x0
-     5c5:	f7 f3                	div    ebx
-     5c7:	89 c0                	mov    eax,eax
-     5c9:	48 89 45 c8          	mov    QWORD PTR [rbp-0x38],rax
+     57b:	0f b7 95 6c ff ff ff 	movzx  edx,WORD PTR [rbp-0x94]
+     582:	48 89 d0             	mov    rax,rdx
+     585:	48 c1 e0 02          	shl    rax,0x2
+     589:	48 01 d0             	add    rax,rdx
+     58c:	48 c1 e0 03          	shl    rax,0x3
+     590:	48 89 c2             	mov    rdx,rax
+     593:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
+     59a:	48 01 d0             	add    rax,rdx
+     59d:	8b 48 14             	mov    ecx,DWORD PTR [rax+0x14]
+     5a0:	0f b7 95 6c ff ff ff 	movzx  edx,WORD PTR [rbp-0x94]
+     5a7:	48 89 d0             	mov    rax,rdx
+     5aa:	48 c1 e0 02          	shl    rax,0x2
+     5ae:	48 01 d0             	add    rax,rdx
+     5b1:	48 c1 e0 03          	shl    rax,0x3
+     5b5:	48 89 c2             	mov    rdx,rax
+     5b8:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
+     5bf:	48 01 d0             	add    rax,rdx
+     5c2:	8b 58 24             	mov    ebx,DWORD PTR [rax+0x24]
+     5c5:	89 c8                	mov    eax,ecx
+     5c7:	ba 00 00 00 00       	mov    edx,0x0
+     5cc:	f7 f3                	div    ebx
+     5ce:	89 c0                	mov    eax,eax
+     5d0:	48 89 45 c8          	mov    QWORD PTR [rbp-0x38],rax
 		if (!ct)
-     5cd:	48 83 7d c8 00       	cmp    QWORD PTR [rbp-0x38],0x0
-     5d2:	0f 84 71 04 00 00    	je     a49 <elf_dump_rel+0x52f>
+     5d4:	48 83 7d c8 00       	cmp    QWORD PTR [rbp-0x38],0x0
+     5d9:	0f 84 71 04 00 00    	je     a50 <elf_dump_rel+0x52f>
 		sptr = (void*)hdr + shdr[shdr[rel].sh_info].sh_offset;
-     5d8:	0f b7 95 6c ff ff ff 	movzx  edx,WORD PTR [rbp-0x94]
-     5df:	48 89 d0             	mov    rax,rdx
-     5e2:	48 c1 e0 02          	shl    rax,0x2
-     5e6:	48 01 d0             	add    rax,rdx
-     5e9:	48 c1 e0 03          	shl    rax,0x3
-     5ed:	48 89 c2             	mov    rdx,rax
-     5f0:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
-     5f7:	48 01 d0             	add    rax,rdx
-     5fa:	8b 40 1c             	mov    eax,DWORD PTR [rax+0x1c]
-     5fd:	89 c2                	mov    edx,eax
-     5ff:	48 89 d0             	mov    rax,rdx
-     602:	48 c1 e0 02          	shl    rax,0x2
-     606:	48 01 d0             	add    rax,rdx
-     609:	48 c1 e0 03          	shl    rax,0x3
-     60d:	48 89 c2             	mov    rdx,rax
-     610:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
-     617:	48 01 d0             	add    rax,rdx
-     61a:	8b 40 10             	mov    eax,DWORD PTR [rax+0x10]
-     61d:	89 c2                	mov    edx,eax
-     61f:	48 8b 85 78 ff ff ff 	mov    rax,QWORD PTR [rbp-0x88]
-     626:	48 01 d0             	add    rax,rdx
-     629:	48 89 45 c0          	mov    QWORD PTR [rbp-0x40],rax
+     5df:	0f b7 95 6c ff ff ff 	movzx  edx,WORD PTR [rbp-0x94]
+     5e6:	48 89 d0             	mov    rax,rdx
+     5e9:	48 c1 e0 02          	shl    rax,0x2
+     5ed:	48 01 d0             	add    rax,rdx
+     5f0:	48 c1 e0 03          	shl    rax,0x3
+     5f4:	48 89 c2             	mov    rdx,rax
+     5f7:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
+     5fe:	48 01 d0             	add    rax,rdx
+     601:	8b 40 1c             	mov    eax,DWORD PTR [rax+0x1c]
+     604:	89 c2                	mov    edx,eax
+     606:	48 89 d0             	mov    rax,rdx
+     609:	48 c1 e0 02          	shl    rax,0x2
+     60d:	48 01 d0             	add    rax,rdx
+     610:	48 c1 e0 03          	shl    rax,0x3
+     614:	48 89 c2             	mov    rdx,rax
+     617:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
+     61e:	48 01 d0             	add    rax,rdx
+     621:	8b 40 10             	mov    eax,DWORD PTR [rax+0x10]
+     624:	89 c2                	mov    edx,eax
+     626:	48 8b 85 78 ff ff ff 	mov    rax,QWORD PTR [rbp-0x88]
+     62d:	48 01 d0             	add    rax,rdx
+     630:	48 89 45 c0          	mov    QWORD PTR [rbp-0x40],rax
 		stptr = (void*)hdr + shdr[shdr[rel].sh_link].sh_offset;
-     62d:	0f b7 95 6c ff ff ff 	movzx  edx,WORD PTR [rbp-0x94]
-     634:	48 89 d0             	mov    rax,rdx
-     637:	48 c1 e0 02          	shl    rax,0x2
-     63b:	48 01 d0             	add    rax,rdx
-     63e:	48 c1 e0 03          	shl    rax,0x3
-     642:	48 89 c2             	mov    rdx,rax
-     645:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
-     64c:	48 01 d0             	add    rax,rdx
-     64f:	8b 40 18             	mov    eax,DWORD PTR [rax+0x18]
-     652:	89 c2                	mov    edx,eax
-     654:	48 89 d0             	mov    rax,rdx
-     657:	48 c1 e0 02          	shl    rax,0x2
-     65b:	48 01 d0             	add    rax,rdx
-     65e:	48 c1 e0 03          	shl    rax,0x3
-     662:	48 89 c2             	mov    rdx,rax
-     665:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
-     66c:	48 01 d0             	add    rax,rdx
-     66f:	8b 40 10             	mov    eax,DWORD PTR [rax+0x10]
-     672:	89 c2                	mov    edx,eax
-     674:	48 8b 85 78 ff ff ff 	mov    rax,QWORD PTR [rbp-0x88]
-     67b:	48 01 d0             	add    rax,rdx
-     67e:	48 89 45 b8          	mov    QWORD PTR [rbp-0x48],rax
+     634:	0f b7 95 6c ff ff ff 	movzx  edx,WORD PTR [rbp-0x94]
+     63b:	48 89 d0             	mov    rax,rdx
+     63e:	48 c1 e0 02          	shl    rax,0x2
+     642:	48 01 d0             	add    rax,rdx
+     645:	48 c1 e0 03          	shl    rax,0x3
+     649:	48 89 c2             	mov    rdx,rax
+     64c:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
+     653:	48 01 d0             	add    rax,rdx
+     656:	8b 40 18             	mov    eax,DWORD PTR [rax+0x18]
+     659:	89 c2                	mov    edx,eax
+     65b:	48 89 d0             	mov    rax,rdx
+     65e:	48 c1 e0 02          	shl    rax,0x2
+     662:	48 01 d0             	add    rax,rdx
+     665:	48 c1 e0 03          	shl    rax,0x3
+     669:	48 89 c2             	mov    rdx,rax
+     66c:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
+     673:	48 01 d0             	add    rax,rdx
+     676:	8b 40 10             	mov    eax,DWORD PTR [rax+0x10]
+     679:	89 c2                	mov    edx,eax
+     67b:	48 8b 85 78 ff ff ff 	mov    rax,QWORD PTR [rbp-0x88]
+     682:	48 01 d0             	add    rax,rdx
+     685:	48 89 45 b8          	mov    QWORD PTR [rbp-0x48],rax
 		stb = shdr + shdr[rel].sh_link;
-     682:	0f b7 95 6c ff ff ff 	movzx  edx,WORD PTR [rbp-0x94]
-     689:	48 89 d0             	mov    rax,rdx
-     68c:	48 c1 e0 02          	shl    rax,0x2
-     690:	48 01 d0             	add    rax,rdx
-     693:	48 c1 e0 03          	shl    rax,0x3
-     697:	48 89 c2             	mov    rdx,rax
-     69a:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
-     6a1:	48 01 d0             	add    rax,rdx
-     6a4:	8b 40 18             	mov    eax,DWORD PTR [rax+0x18]
-     6a7:	89 c2                	mov    edx,eax
-     6a9:	48 89 d0             	mov    rax,rdx
-     6ac:	48 c1 e0 02          	shl    rax,0x2
-     6b0:	48 01 d0             	add    rax,rdx
-     6b3:	48 c1 e0 03          	shl    rax,0x3
-     6b7:	48 89 c2             	mov    rdx,rax
-     6ba:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
-     6c1:	48 01 d0             	add    rax,rdx
-     6c4:	48 89 45 b0          	mov    QWORD PTR [rbp-0x50],rax
+     689:	0f b7 95 6c ff ff ff 	movzx  edx,WORD PTR [rbp-0x94]
+     690:	48 89 d0             	mov    rax,rdx
+     693:	48 c1 e0 02          	shl    rax,0x2
+     697:	48 01 d0             	add    rax,rdx
+     69a:	48 c1 e0 03          	shl    rax,0x3
+     69e:	48 89 c2             	mov    rdx,rax
+     6a1:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
+     6a8:	48 01 d0             	add    rax,rdx
+     6ab:	8b 40 18             	mov    eax,DWORD PTR [rax+0x18]
+     6ae:	89 c2                	mov    edx,eax
+     6b0:	48 89 d0             	mov    rax,rdx
+     6b3:	48 c1 e0 02          	shl    rax,0x2
+     6b7:	48 01 d0             	add    rax,rdx
+     6ba:	48 c1 e0 03          	shl    rax,0x3
+     6be:	48 89 c2             	mov    rdx,rax
+     6c1:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
+     6c8:	48 01 d0             	add    rax,rdx
+     6cb:	48 89 45 b0          	mov    QWORD PTR [rbp-0x50],rax
 		printf("dumping relocations with %lu entries\n", ct);
-     6c8:	48 8b 45 c8          	mov    rax,QWORD PTR [rbp-0x38]
-     6cc:	48 89 c6             	mov    rsi,rax
-     6cf:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-     6d6:	b8 00 00 00 00       	mov    eax,0x0
-     6db:	e8 00 00 00 00       	call   6e0 <elf_dump_rel+0x1c6>
+     6cf:	48 8b 45 c8          	mov    rax,QWORD PTR [rbp-0x38]
+     6d3:	48 89 c6             	mov    rsi,rax
+     6d6:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+     6dd:	b8 00 00 00 00       	mov    eax,0x0
+     6e2:	e8 00 00 00 00       	call   6e7 <elf_dump_rel+0x1c6>
 			shdr, hdr->e_shstrndx, shdr[shdr[rel].sh_info].sh_name));
-     6e0:	0f b7 95 6c ff ff ff 	movzx  edx,WORD PTR [rbp-0x94]
-     6e7:	48 89 d0             	mov    rax,rdx
-     6ea:	48 c1 e0 02          	shl    rax,0x2
-     6ee:	48 01 d0             	add    rax,rdx
-     6f1:	48 c1 e0 03          	shl    rax,0x3
-     6f5:	48 89 c2             	mov    rdx,rax
-     6f8:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
-     6ff:	48 01 d0             	add    rax,rdx
-     702:	8b 40 1c             	mov    eax,DWORD PTR [rax+0x1c]
-     705:	89 c2                	mov    edx,eax
-     707:	48 89 d0             	mov    rax,rdx
-     70a:	48 c1 e0 02          	shl    rax,0x2
-     70e:	48 01 d0             	add    rax,rdx
-     711:	48 c1 e0 03          	shl    rax,0x3
-     715:	48 89 c2             	mov    rdx,rax
-     718:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
-     71f:	48 01 d0             	add    rax,rdx
+     6e7:	0f b7 95 6c ff ff ff 	movzx  edx,WORD PTR [rbp-0x94]
+     6ee:	48 89 d0             	mov    rax,rdx
+     6f1:	48 c1 e0 02          	shl    rax,0x2
+     6f5:	48 01 d0             	add    rax,rdx
+     6f8:	48 c1 e0 03          	shl    rax,0x3
+     6fc:	48 89 c2             	mov    rdx,rax
+     6ff:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
+     706:	48 01 d0             	add    rax,rdx
+     709:	8b 40 1c             	mov    eax,DWORD PTR [rax+0x1c]
+     70c:	89 c2                	mov    edx,eax
+     70e:	48 89 d0             	mov    rax,rdx
+     711:	48 c1 e0 02          	shl    rax,0x2
+     715:	48 01 d0             	add    rax,rdx
+     718:	48 c1 e0 03          	shl    rax,0x3
+     71c:	48 89 c2             	mov    rdx,rax
+     71f:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
+     726:	48 01 d0             	add    rax,rdx
 		printf("relocations apply to section %s\n", elf_fetch_string(hdr,
-     722:	8b 08                	mov    ecx,DWORD PTR [rax]
+     729:	8b 08                	mov    ecx,DWORD PTR [rax]
 			shdr, hdr->e_shstrndx, shdr[shdr[rel].sh_info].sh_name));
-     724:	48 8b 85 78 ff ff ff 	mov    rax,QWORD PTR [rbp-0x88]
-     72b:	0f b7 40 32          	movzx  eax,WORD PTR [rax+0x32]
+     72b:	48 8b 85 78 ff ff ff 	mov    rax,QWORD PTR [rbp-0x88]
+     732:	0f b7 40 32          	movzx  eax,WORD PTR [rax+0x32]
 		printf("relocations apply to section %s\n", elf_fetch_string(hdr,
-     72f:	0f b7 d0             	movzx  edx,ax
-     732:	48 8b b5 70 ff ff ff 	mov    rsi,QWORD PTR [rbp-0x90]
-     739:	48 8b 85 78 ff ff ff 	mov    rax,QWORD PTR [rbp-0x88]
-     740:	48 89 c7             	mov    rdi,rax
-     743:	e8 00 00 00 00       	call   748 <elf_dump_rel+0x22e>
-     748:	48 89 c6             	mov    rsi,rax
-     74b:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-     752:	b8 00 00 00 00       	mov    eax,0x0
-     757:	e8 00 00 00 00       	call   75c <elf_dump_rel+0x242>
+     736:	0f b7 d0             	movzx  edx,ax
+     739:	48 8b b5 70 ff ff ff 	mov    rsi,QWORD PTR [rbp-0x90]
+     740:	48 8b 85 78 ff ff ff 	mov    rax,QWORD PTR [rbp-0x88]
+     747:	48 89 c7             	mov    rdi,rax
+     74a:	e8 00 00 00 00       	call   74f <elf_dump_rel+0x22e>
+     74f:	48 89 c6             	mov    rsi,rax
+     752:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+     759:	b8 00 00 00 00       	mov    eax,0x0
+     75e:	e8 00 00 00 00       	call   763 <elf_dump_rel+0x242>
 		printf("   Num:   Offset Type              Field SyNdx SymbolName\n");
-     75c:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-     763:	b8 00 00 00 00       	mov    eax,0x0
-     768:	e8 00 00 00 00       	call   76d <elf_dump_rel+0x253>
+     763:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+     76a:	b8 00 00 00 00       	mov    eax,0x0
+     76f:	e8 00 00 00 00       	call   774 <elf_dump_rel+0x253>
 		for (i = 0; i < ct; i++) {
-     76d:	48 c7 45 e8 00 00 00 00 	mov    QWORD PTR [rbp-0x18],0x0
-     775:	e9 bf 02 00 00       	jmp    a39 <elf_dump_rel+0x51f>
+     774:	48 c7 45 e8 00 00 00 00 	mov    QWORD PTR [rbp-0x18],0x0
+     77c:	e9 bf 02 00 00       	jmp    a40 <elf_dump_rel+0x51f>
 				Elf32_Rela* r = (ptr + i * shdr[rel].sh_entsize);
-     77a:	0f b7 95 6c ff ff ff 	movzx  edx,WORD PTR [rbp-0x94]
-     781:	48 89 d0             	mov    rax,rdx
-     784:	48 c1 e0 02          	shl    rax,0x2
-     788:	48 01 d0             	add    rax,rdx
-     78b:	48 c1 e0 03          	shl    rax,0x3
-     78f:	48 89 c2             	mov    rdx,rax
-     792:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
-     799:	48 01 d0             	add    rax,rdx
-     79c:	8b 40 24             	mov    eax,DWORD PTR [rax+0x24]
-     79f:	89 c0                	mov    eax,eax
-     7a1:	48 0f af 45 e8       	imul   rax,QWORD PTR [rbp-0x18]
-     7a6:	48 89 c2             	mov    rdx,rax
-     7a9:	48 8b 45 d0          	mov    rax,QWORD PTR [rbp-0x30]
-     7ad:	48 01 d0             	add    rax,rdx
-     7b0:	48 89 45 a8          	mov    QWORD PTR [rbp-0x58],rax
+     781:	0f b7 95 6c ff ff ff 	movzx  edx,WORD PTR [rbp-0x94]
+     788:	48 89 d0             	mov    rax,rdx
+     78b:	48 c1 e0 02          	shl    rax,0x2
+     78f:	48 01 d0             	add    rax,rdx
+     792:	48 c1 e0 03          	shl    rax,0x3
+     796:	48 89 c2             	mov    rdx,rax
+     799:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
+     7a0:	48 01 d0             	add    rax,rdx
+     7a3:	8b 40 24             	mov    eax,DWORD PTR [rax+0x24]
+     7a6:	89 c0                	mov    eax,eax
+     7a8:	48 0f af 45 e8       	imul   rax,QWORD PTR [rbp-0x18]
+     7ad:	48 89 c2             	mov    rdx,rax
+     7b0:	48 8b 45 d0          	mov    rax,QWORD PTR [rbp-0x30]
+     7b4:	48 01 d0             	add    rax,rdx
+     7b7:	48 89 45 a8          	mov    QWORD PTR [rbp-0x58],rax
 				Elf32_Sym* s = (stptr + ELF32_R_SYM(r->r_info) * stb->sh_entsize);
-     7b4:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-     7b8:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
-     7bb:	c1 e8 08             	shr    eax,0x8
-     7be:	89 c2                	mov    edx,eax
-     7c0:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-     7c4:	8b 40 24             	mov    eax,DWORD PTR [rax+0x24]
-     7c7:	0f af c2             	imul   eax,edx
-     7ca:	89 c2                	mov    edx,eax
-     7cc:	48 8b 45 b8          	mov    rax,QWORD PTR [rbp-0x48]
-     7d0:	48 01 d0             	add    rax,rdx
-     7d3:	48 89 45 a0          	mov    QWORD PTR [rbp-0x60],rax
+     7bb:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+     7bf:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
+     7c2:	c1 e8 08             	shr    eax,0x8
+     7c5:	89 c2                	mov    edx,eax
+     7c7:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+     7cb:	8b 40 24             	mov    eax,DWORD PTR [rax+0x24]
+     7ce:	0f af c2             	imul   eax,edx
+     7d1:	89 c2                	mov    edx,eax
+     7d3:	48 8b 45 b8          	mov    rax,QWORD PTR [rbp-0x48]
+     7d7:	48 01 d0             	add    rax,rdx
+     7da:	48 89 45 a0          	mov    QWORD PTR [rbp-0x60],rax
 				const char* sn; char dat[] = "DAT: ........";
-     7d7:	48 b8 44 41 54 3a 20 2e 2e 2e 	movabs rax,0x2e2e2e203a544144
-     7e1:	48 89 45 86          	mov    QWORD PTR [rbp-0x7a],rax
-     7e5:	48 b8 2e 2e 2e 2e 2e 2e 2e 00 	movabs rax,0x2e2e2e2e2e2e2e
-     7ef:	48 89 45 8c          	mov    QWORD PTR [rbp-0x74],rax
+     7de:	48 b8 44 41 54 3a 20 2e 2e 2e 	movabs rax,0x2e2e2e203a544144
+     7e8:	48 89 45 86          	mov    QWORD PTR [rbp-0x7a],rax
+     7ec:	48 b8 2e 2e 2e 2e 2e 2e 2e 00 	movabs rax,0x2e2e2e2e2e2e2e
+     7f6:	48 89 45 8c          	mov    QWORD PTR [rbp-0x74],rax
 				if (s->st_name)
-     7f3:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
-     7f7:	8b 00                	mov    eax,DWORD PTR [rax]
-     7f9:	85 c0                	test   eax,eax
-     7fb:	74 2f                	je     82c <elf_dump_rel+0x312>
+     7fa:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
+     7fe:	8b 00                	mov    eax,DWORD PTR [rax]
+     800:	85 c0                	test   eax,eax
+     802:	74 2f                	je     833 <elf_dump_rel+0x312>
 						sn = elf_fetch_string(hdr, shdr, stb->sh_link, s->st_name);
-     7fd:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
-     801:	8b 08                	mov    ecx,DWORD PTR [rax]
-     803:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-     807:	8b 40 18             	mov    eax,DWORD PTR [rax+0x18]
-     80a:	0f b7 d0             	movzx  edx,ax
-     80d:	48 8b b5 70 ff ff ff 	mov    rsi,QWORD PTR [rbp-0x90]
-     814:	48 8b 85 78 ff ff ff 	mov    rax,QWORD PTR [rbp-0x88]
-     81b:	48 89 c7             	mov    rdi,rax
-     81e:	e8 00 00 00 00       	call   823 <elf_dump_rel+0x309>
-     823:	48 89 45 e0          	mov    QWORD PTR [rbp-0x20],rax
-     827:	e9 a7 01 00 00       	jmp    9d3 <elf_dump_rel+0x4b9>
+     804:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
+     808:	8b 08                	mov    ecx,DWORD PTR [rax]
+     80a:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+     80e:	8b 40 18             	mov    eax,DWORD PTR [rax+0x18]
+     811:	0f b7 d0             	movzx  edx,ax
+     814:	48 8b b5 70 ff ff ff 	mov    rsi,QWORD PTR [rbp-0x90]
+     81b:	48 8b 85 78 ff ff ff 	mov    rax,QWORD PTR [rbp-0x88]
+     822:	48 89 c7             	mov    rdi,rax
+     825:	e8 00 00 00 00       	call   82a <elf_dump_rel+0x309>
+     82a:	48 89 45 e0          	mov    QWORD PTR [rbp-0x20],rax
+     82e:	e9 a7 01 00 00       	jmp    9da <elf_dump_rel+0x4b9>
 				else if ((shdr[s->st_shndx].sh_flags & SHF_WRITE) == 0
-     82c:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
-     830:	0f b7 40 0e          	movzx  eax,WORD PTR [rax+0xe]
-     834:	0f b7 d0             	movzx  edx,ax
-     837:	48 89 d0             	mov    rax,rdx
-     83a:	48 c1 e0 02          	shl    rax,0x2
-     83e:	48 01 d0             	add    rax,rdx
-     841:	48 c1 e0 03          	shl    rax,0x3
-     845:	48 89 c2             	mov    rdx,rax
-     848:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
-     84f:	48 01 d0             	add    rax,rdx
-     852:	8b 40 08             	mov    eax,DWORD PTR [rax+0x8]
-     855:	83 e0 01             	and    eax,0x1
-     858:	85 c0                	test   eax,eax
-     85a:	0f 85 23 01 00 00    	jne    983 <elf_dump_rel+0x469>
+     833:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
+     837:	0f b7 40 0e          	movzx  eax,WORD PTR [rax+0xe]
+     83b:	0f b7 d0             	movzx  edx,ax
+     83e:	48 89 d0             	mov    rax,rdx
+     841:	48 c1 e0 02          	shl    rax,0x2
+     845:	48 01 d0             	add    rax,rdx
+     848:	48 c1 e0 03          	shl    rax,0x3
+     84c:	48 89 c2             	mov    rdx,rax
+     84f:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
+     856:	48 01 d0             	add    rax,rdx
+     859:	8b 40 08             	mov    eax,DWORD PTR [rax+0x8]
+     85c:	83 e0 01             	and    eax,0x1
+     85f:	85 c0                	test   eax,eax
+     861:	0f 85 23 01 00 00    	jne    98a <elf_dump_rel+0x469>
 						&& shdr[s->st_shndx].sh_flags & SHF_ALLOC
-     860:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
-     864:	0f b7 40 0e          	movzx  eax,WORD PTR [rax+0xe]
-     868:	0f b7 d0             	movzx  edx,ax
-     86b:	48 89 d0             	mov    rax,rdx
-     86e:	48 c1 e0 02          	shl    rax,0x2
-     872:	48 01 d0             	add    rax,rdx
-     875:	48 c1 e0 03          	shl    rax,0x3
-     879:	48 89 c2             	mov    rdx,rax
-     87c:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
-     883:	48 01 d0             	add    rax,rdx
-     886:	8b 40 08             	mov    eax,DWORD PTR [rax+0x8]
-     889:	83 e0 02             	and    eax,0x2
-     88c:	85 c0                	test   eax,eax
-     88e:	0f 84 ef 00 00 00    	je     983 <elf_dump_rel+0x469>
+     867:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
+     86b:	0f b7 40 0e          	movzx  eax,WORD PTR [rax+0xe]
+     86f:	0f b7 d0             	movzx  edx,ax
+     872:	48 89 d0             	mov    rax,rdx
+     875:	48 c1 e0 02          	shl    rax,0x2
+     879:	48 01 d0             	add    rax,rdx
+     87c:	48 c1 e0 03          	shl    rax,0x3
+     880:	48 89 c2             	mov    rdx,rax
+     883:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
+     88a:	48 01 d0             	add    rax,rdx
+     88d:	8b 40 08             	mov    eax,DWORD PTR [rax+0x8]
+     890:	83 e0 02             	and    eax,0x2
+     893:	85 c0                	test   eax,eax
+     895:	0f 84 ef 00 00 00    	je     98a <elf_dump_rel+0x469>
 						&& (shdr[s->st_shndx].sh_flags & SHF_EXECINSTR) == 0) {
-     894:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
-     898:	0f b7 40 0e          	movzx  eax,WORD PTR [rax+0xe]
-     89c:	0f b7 d0             	movzx  edx,ax
-     89f:	48 89 d0             	mov    rax,rdx
-     8a2:	48 c1 e0 02          	shl    rax,0x2
-     8a6:	48 01 d0             	add    rax,rdx
-     8a9:	48 c1 e0 03          	shl    rax,0x3
-     8ad:	48 89 c2             	mov    rdx,rax
-     8b0:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
-     8b7:	48 01 d0             	add    rax,rdx
-     8ba:	8b 40 08             	mov    eax,DWORD PTR [rax+0x8]
-     8bd:	83 e0 04             	and    eax,0x4
-     8c0:	85 c0                	test   eax,eax
-     8c2:	0f 85 bb 00 00 00    	jne    983 <elf_dump_rel+0x469>
+     89b:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
+     89f:	0f b7 40 0e          	movzx  eax,WORD PTR [rax+0xe]
+     8a3:	0f b7 d0             	movzx  edx,ax
+     8a6:	48 89 d0             	mov    rax,rdx
+     8a9:	48 c1 e0 02          	shl    rax,0x2
+     8ad:	48 01 d0             	add    rax,rdx
+     8b0:	48 c1 e0 03          	shl    rax,0x3
+     8b4:	48 89 c2             	mov    rdx,rax
+     8b7:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
+     8be:	48 01 d0             	add    rax,rdx
+     8c1:	8b 40 08             	mov    eax,DWORD PTR [rax+0x8]
+     8c4:	83 e0 04             	and    eax,0x4
+     8c7:	85 c0                	test   eax,eax
+     8c9:	0f 85 bb 00 00 00    	jne    98a <elf_dump_rel+0x469>
 						const char* c = (void*)hdr + shdr[s->st_shndx].sh_offset;
-     8c8:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
-     8cc:	0f b7 40 0e          	movzx  eax,WORD PTR [rax+0xe]
-     8d0:	0f b7 d0             	movzx  edx,ax
-     8d3:	48 89 d0             	mov    rax,rdx
-     8d6:	48 c1 e0 02          	shl    rax,0x2
-     8da:	48 01 d0             	add    rax,rdx
-     8dd:	48 c1 e0 03          	shl    rax,0x3
-     8e1:	48 89 c2             	mov    rdx,rax
-     8e4:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
-     8eb:	48 01 d0             	add    rax,rdx
-     8ee:	8b 40 10             	mov    eax,DWORD PTR [rax+0x10]
-     8f1:	89 c2                	mov    edx,eax
-     8f3:	48 8b 85 78 ff ff ff 	mov    rax,QWORD PTR [rbp-0x88]
-     8fa:	48 01 d0             	add    rax,rdx
-     8fd:	48 89 45 98          	mov    QWORD PTR [rbp-0x68],rax
+     8cf:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
+     8d3:	0f b7 40 0e          	movzx  eax,WORD PTR [rax+0xe]
+     8d7:	0f b7 d0             	movzx  edx,ax
+     8da:	48 89 d0             	mov    rax,rdx
+     8dd:	48 c1 e0 02          	shl    rax,0x2
+     8e1:	48 01 d0             	add    rax,rdx
+     8e4:	48 c1 e0 03          	shl    rax,0x3
+     8e8:	48 89 c2             	mov    rdx,rax
+     8eb:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
+     8f2:	48 01 d0             	add    rax,rdx
+     8f5:	8b 40 10             	mov    eax,DWORD PTR [rax+0x10]
+     8f8:	89 c2                	mov    edx,eax
+     8fa:	48 8b 85 78 ff ff ff 	mov    rax,QWORD PTR [rbp-0x88]
+     901:	48 01 d0             	add    rax,rdx
+     904:	48 89 45 98          	mov    QWORD PTR [rbp-0x68],rax
 						uint32_t of = *(uint32_t*)(sptr + r->r_offset), j;
-     901:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-     905:	8b 00                	mov    eax,DWORD PTR [rax]
-     907:	89 c2                	mov    edx,eax
-     909:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-     90d:	48 01 d0             	add    rax,rdx
-     910:	8b 00                	mov    eax,DWORD PTR [rax]
-     912:	89 45 94             	mov    DWORD PTR [rbp-0x6c],eax
+     908:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+     90c:	8b 00                	mov    eax,DWORD PTR [rax]
+     90e:	89 c2                	mov    edx,eax
+     910:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+     914:	48 01 d0             	add    rax,rdx
+     917:	8b 00                	mov    eax,DWORD PTR [rax]
+     919:	89 45 94             	mov    DWORD PTR [rbp-0x6c],eax
 						for (j = 0; j < 8; j++)
-     915:	c7 45 dc 00 00 00 00 	mov    DWORD PTR [rbp-0x24],0x0
-     91c:	eb 55                	jmp    973 <elf_dump_rel+0x459>
+     91c:	c7 45 dc 00 00 00 00 	mov    DWORD PTR [rbp-0x24],0x0
+     923:	eb 55                	jmp    97a <elf_dump_rel+0x459>
 								if (isprint(c[of + j]))
-     91e:	8b 55 94             	mov    edx,DWORD PTR [rbp-0x6c]
-     921:	8b 45 dc             	mov    eax,DWORD PTR [rbp-0x24]
-     924:	01 d0                	add    eax,edx
-     926:	89 c2                	mov    edx,eax
-     928:	48 8b 45 98          	mov    rax,QWORD PTR [rbp-0x68]
-     92c:	48 01 d0             	add    rax,rdx
-     92f:	0f b6 00             	movzx  eax,BYTE PTR [rax]
-     932:	0f be c0             	movsx  eax,al
-     935:	89 c7                	mov    edi,eax
-     937:	e8 00 00 00 00       	call   93c <elf_dump_rel+0x422>
-     93c:	85 c0                	test   eax,eax
-     93e:	74 22                	je     962 <elf_dump_rel+0x448>
+     925:	8b 55 94             	mov    edx,DWORD PTR [rbp-0x6c]
+     928:	8b 45 dc             	mov    eax,DWORD PTR [rbp-0x24]
+     92b:	01 d0                	add    eax,edx
+     92d:	89 c2                	mov    edx,eax
+     92f:	48 8b 45 98          	mov    rax,QWORD PTR [rbp-0x68]
+     933:	48 01 d0             	add    rax,rdx
+     936:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+     939:	0f be c0             	movsx  eax,al
+     93c:	89 c7                	mov    edi,eax
+     93e:	e8 00 00 00 00       	call   943 <elf_dump_rel+0x422>
+     943:	85 c0                	test   eax,eax
+     945:	74 22                	je     969 <elf_dump_rel+0x448>
 										dat[j + 5] = c[of + j];
-     940:	8b 55 94             	mov    edx,DWORD PTR [rbp-0x6c]
-     943:	8b 45 dc             	mov    eax,DWORD PTR [rbp-0x24]
-     946:	01 d0                	add    eax,edx
-     948:	89 c2                	mov    edx,eax
-     94a:	48 8b 45 98          	mov    rax,QWORD PTR [rbp-0x68]
-     94e:	48 01 d0             	add    rax,rdx
-     951:	8b 55 dc             	mov    edx,DWORD PTR [rbp-0x24]
-     954:	83 c2 05             	add    edx,0x5
-     957:	0f b6 00             	movzx  eax,BYTE PTR [rax]
-     95a:	89 d2                	mov    edx,edx
-     95c:	88 44 15 86          	mov    BYTE PTR [rbp+rdx*1-0x7a],al
-     960:	eb 0d                	jmp    96f <elf_dump_rel+0x455>
+     947:	8b 55 94             	mov    edx,DWORD PTR [rbp-0x6c]
+     94a:	8b 45 dc             	mov    eax,DWORD PTR [rbp-0x24]
+     94d:	01 d0                	add    eax,edx
+     94f:	89 c2                	mov    edx,eax
+     951:	48 8b 45 98          	mov    rax,QWORD PTR [rbp-0x68]
+     955:	48 01 d0             	add    rax,rdx
+     958:	8b 55 dc             	mov    edx,DWORD PTR [rbp-0x24]
+     95b:	83 c2 05             	add    edx,0x5
+     95e:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+     961:	89 d2                	mov    edx,edx
+     963:	88 44 15 86          	mov    BYTE PTR [rbp+rdx*1-0x7a],al
+     967:	eb 0d                	jmp    976 <elf_dump_rel+0x455>
 										dat[j + 5] = '.';
-     962:	8b 45 dc             	mov    eax,DWORD PTR [rbp-0x24]
-     965:	83 c0 05             	add    eax,0x5
-     968:	89 c0                	mov    eax,eax
-     96a:	c6 44 05 86 2e       	mov    BYTE PTR [rbp+rax*1-0x7a],0x2e
+     969:	8b 45 dc             	mov    eax,DWORD PTR [rbp-0x24]
+     96c:	83 c0 05             	add    eax,0x5
+     96f:	89 c0                	mov    eax,eax
+     971:	c6 44 05 86 2e       	mov    BYTE PTR [rbp+rax*1-0x7a],0x2e
 						for (j = 0; j < 8; j++)
-     96f:	83 45 dc 01          	add    DWORD PTR [rbp-0x24],0x1
-     973:	83 7d dc 07          	cmp    DWORD PTR [rbp-0x24],0x7
-     977:	76 a5                	jbe    91e <elf_dump_rel+0x404>
+     976:	83 45 dc 01          	add    DWORD PTR [rbp-0x24],0x1
+     97a:	83 7d dc 07          	cmp    DWORD PTR [rbp-0x24],0x7
+     97e:	76 a5                	jbe    925 <elf_dump_rel+0x404>
 						sn = dat;
-     979:	48 8d 45 86          	lea    rax,[rbp-0x7a]
-     97d:	48 89 45 e0          	mov    QWORD PTR [rbp-0x20],rax
+     980:	48 8d 45 86          	lea    rax,[rbp-0x7a]
+     984:	48 89 45 e0          	mov    QWORD PTR [rbp-0x20],rax
 						&& (shdr[s->st_shndx].sh_flags & SHF_EXECINSTR) == 0) {
-     981:	eb 50                	jmp    9d3 <elf_dump_rel+0x4b9>
+     988:	eb 50                	jmp    9da <elf_dump_rel+0x4b9>
 						sn = elf_fetch_string(hdr, shdr, hdr->e_shstrndx, shdr[s->st_shndx].sh_name);
-     983:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
-     987:	0f b7 40 0e          	movzx  eax,WORD PTR [rax+0xe]
-     98b:	0f b7 d0             	movzx  edx,ax
-     98e:	48 89 d0             	mov    rax,rdx
-     991:	48 c1 e0 02          	shl    rax,0x2
-     995:	48 01 d0             	add    rax,rdx
-     998:	48 c1 e0 03          	shl    rax,0x3
-     99c:	48 89 c2             	mov    rdx,rax
-     99f:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
-     9a6:	48 01 d0             	add    rax,rdx
-     9a9:	8b 08                	mov    ecx,DWORD PTR [rax]
-     9ab:	48 8b 85 78 ff ff ff 	mov    rax,QWORD PTR [rbp-0x88]
-     9b2:	0f b7 40 32          	movzx  eax,WORD PTR [rax+0x32]
-     9b6:	0f b7 d0             	movzx  edx,ax
-     9b9:	48 8b b5 70 ff ff ff 	mov    rsi,QWORD PTR [rbp-0x90]
-     9c0:	48 8b 85 78 ff ff ff 	mov    rax,QWORD PTR [rbp-0x88]
-     9c7:	48 89 c7             	mov    rdi,rax
-     9ca:	e8 00 00 00 00       	call   9cf <elf_dump_rel+0x4b5>
-     9cf:	48 89 45 e0          	mov    QWORD PTR [rbp-0x20],rax
+     98a:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
+     98e:	0f b7 40 0e          	movzx  eax,WORD PTR [rax+0xe]
+     992:	0f b7 d0             	movzx  edx,ax
+     995:	48 89 d0             	mov    rax,rdx
+     998:	48 c1 e0 02          	shl    rax,0x2
+     99c:	48 01 d0             	add    rax,rdx
+     99f:	48 c1 e0 03          	shl    rax,0x3
+     9a3:	48 89 c2             	mov    rdx,rax
+     9a6:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
+     9ad:	48 01 d0             	add    rax,rdx
+     9b0:	8b 08                	mov    ecx,DWORD PTR [rax]
+     9b2:	48 8b 85 78 ff ff ff 	mov    rax,QWORD PTR [rbp-0x88]
+     9b9:	0f b7 40 32          	movzx  eax,WORD PTR [rax+0x32]
+     9bd:	0f b7 d0             	movzx  edx,ax
+     9c0:	48 8b b5 70 ff ff ff 	mov    rsi,QWORD PTR [rbp-0x90]
+     9c7:	48 8b 85 78 ff ff ff 	mov    rax,QWORD PTR [rbp-0x88]
+     9ce:	48 89 c7             	mov    rdi,rax
+     9d1:	e8 00 00 00 00       	call   9d6 <elf_dump_rel+0x4b5>
+     9d6:	48 89 45 e0          	mov    QWORD PTR [rbp-0x20],rax
 					*(uint32_t*)(sptr + r->r_offset), ELF32_R_SYM(r->r_info), sn);
-     9d3:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-     9d7:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
+     9da:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+     9de:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
 				printf("%6lu: %8x %14s %8x %5u %.13s\n", i, r->r_offset,
-     9da:	c1 e8 08             	shr    eax,0x8
-     9dd:	41 89 c4             	mov    r12d,eax
+     9e1:	c1 e8 08             	shr    eax,0x8
+     9e4:	41 89 c4             	mov    r12d,eax
 					*(uint32_t*)(sptr + r->r_offset), ELF32_R_SYM(r->r_info), sn);
-     9e0:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-     9e4:	8b 00                	mov    eax,DWORD PTR [rax]
-     9e6:	89 c2                	mov    edx,eax
-     9e8:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-     9ec:	48 01 d0             	add    rax,rdx
+     9e7:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+     9eb:	8b 00                	mov    eax,DWORD PTR [rax]
+     9ed:	89 c2                	mov    edx,eax
+     9ef:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+     9f3:	48 01 d0             	add    rax,rdx
 				printf("%6lu: %8x %14s %8x %5u %.13s\n", i, r->r_offset,
-     9ef:	8b 18                	mov    ebx,DWORD PTR [rax]
+     9f6:	8b 18                	mov    ebx,DWORD PTR [rax]
 					elf_rel_type_string(ELF32_R_TYPE(r->r_info)),
-     9f1:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-     9f5:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
+     9f8:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+     9fc:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
 				printf("%6lu: %8x %14s %8x %5u %.13s\n", i, r->r_offset,
-     9f8:	0f b6 c0             	movzx  eax,al
-     9fb:	89 c7                	mov    edi,eax
-     9fd:	e8 00 00 00 00       	call   a02 <elf_dump_rel+0x4e8>
-     a02:	48 89 c1             	mov    rcx,rax
-     a05:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-     a09:	8b 10                	mov    edx,DWORD PTR [rax]
-     a0b:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
-     a0f:	48 83 ec 08          	sub    rsp,0x8
-     a13:	ff 75 e0             	push   QWORD PTR [rbp-0x20]
-     a16:	45 89 e1             	mov    r9d,r12d
-     a19:	41 89 d8             	mov    r8d,ebx
-     a1c:	48 89 c6             	mov    rsi,rax
-     a1f:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-     a26:	b8 00 00 00 00       	mov    eax,0x0
-     a2b:	e8 00 00 00 00       	call   a30 <elf_dump_rel+0x516>
-     a30:	48 83 c4 10          	add    rsp,0x10
+     9ff:	0f b6 c0             	movzx  eax,al
+     a02:	89 c7                	mov    edi,eax
+     a04:	e8 00 00 00 00       	call   a09 <elf_dump_rel+0x4e8>
+     a09:	48 89 c6             	mov    rsi,rax
+     a0c:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+     a10:	8b 10                	mov    edx,DWORD PTR [rax]
+     a12:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+     a16:	48 8b 4d e0          	mov    rcx,QWORD PTR [rbp-0x20]
+     a1a:	48 89 0c 24          	mov    QWORD PTR [rsp],rcx
+     a1e:	45 89 e1             	mov    r9d,r12d
+     a21:	41 89 d8             	mov    r8d,ebx
+     a24:	48 89 f1             	mov    rcx,rsi
+     a27:	48 89 c6             	mov    rsi,rax
+     a2a:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+     a31:	b8 00 00 00 00       	mov    eax,0x0
+     a36:	e8 00 00 00 00       	call   a3b <elf_dump_rel+0x51a>
 		for (i = 0; i < ct; i++) {
-     a34:	48 83 45 e8 01       	add    QWORD PTR [rbp-0x18],0x1
-     a39:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
-     a3d:	48 3b 45 c8          	cmp    rax,QWORD PTR [rbp-0x38]
-     a41:	0f 82 33 fd ff ff    	jb     77a <elf_dump_rel+0x260>
-     a47:	eb 01                	jmp    a4a <elf_dump_rel+0x530>
+     a3b:	48 83 45 e8 01       	add    QWORD PTR [rbp-0x18],0x1
+     a40:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+     a44:	48 3b 45 c8          	cmp    rax,QWORD PTR [rbp-0x38]
+     a48:	0f 82 33 fd ff ff    	jb     781 <elf_dump_rel+0x260>
+     a4e:	eb 01                	jmp    a51 <elf_dump_rel+0x530>
 				return;
-     a49:	90                   	nop
+     a50:	90                   	nop
 }
-     a4a:	48 8d 65 f0          	lea    rsp,[rbp-0x10]
-     a4e:	5b                   	pop    rbx
-     a4f:	41 5c                	pop    r12
-     a51:	5d                   	pop    rbp
-     a52:	c3                   	ret
+     a51:	48 81 c4 a0 00 00 00 	add    rsp,0xa0
+     a58:	5b                   	pop    rbx
+     a59:	41 5c                	pop    r12
+     a5b:	5d                   	pop    rbp
+     a5c:	c3                   	ret
 
-0000000000000a53 <elf_relocate_section>:
+0000000000000a5d <elf_relocate_section>:
 {
-     a53:	55                   	push   rbp
-     a54:	48 89 e5             	mov    rbp,rsp
-     a57:	48 83 ec 70          	sub    rsp,0x70
-     a5b:	48 89 7d a8          	mov    QWORD PTR [rbp-0x58],rdi
-     a5f:	48 89 75 a0          	mov    QWORD PTR [rbp-0x60],rsi
-     a63:	89 d0                	mov    eax,edx
-     a65:	66 89 45 9c          	mov    WORD PTR [rbp-0x64],ax
+     a5d:	55                   	push   rbp
+     a5e:	48 89 e5             	mov    rbp,rsp
+     a61:	48 83 ec 70          	sub    rsp,0x70
+     a65:	48 89 7d a8          	mov    QWORD PTR [rbp-0x58],rdi
+     a69:	48 89 75 a0          	mov    QWORD PTR [rbp-0x60],rsi
+     a6d:	89 d0                	mov    eax,edx
+     a6f:	66 89 45 9c          	mov    WORD PTR [rbp-0x64],ax
 		void* ptr = ((void*)hdr + shdr[rel].sh_offset), *sptr, *stptr;
-     a69:	0f b7 55 9c          	movzx  edx,WORD PTR [rbp-0x64]
-     a6d:	48 89 d0             	mov    rax,rdx
-     a70:	48 c1 e0 02          	shl    rax,0x2
-     a74:	48 01 d0             	add    rax,rdx
-     a77:	48 c1 e0 03          	shl    rax,0x3
-     a7b:	48 89 c2             	mov    rdx,rax
-     a7e:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
-     a82:	48 01 d0             	add    rax,rdx
-     a85:	8b 40 10             	mov    eax,DWORD PTR [rax+0x10]
-     a88:	89 c2                	mov    edx,eax
-     a8a:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-     a8e:	48 01 d0             	add    rax,rdx
-     a91:	48 89 45 e8          	mov    QWORD PTR [rbp-0x18],rax
+     a73:	0f b7 55 9c          	movzx  edx,WORD PTR [rbp-0x64]
+     a77:	48 89 d0             	mov    rax,rdx
+     a7a:	48 c1 e0 02          	shl    rax,0x2
+     a7e:	48 01 d0             	add    rax,rdx
+     a81:	48 c1 e0 03          	shl    rax,0x3
+     a85:	48 89 c2             	mov    rdx,rax
+     a88:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
+     a8c:	48 01 d0             	add    rax,rdx
+     a8f:	8b 40 10             	mov    eax,DWORD PTR [rax+0x10]
+     a92:	89 c2                	mov    edx,eax
+     a94:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+     a98:	48 01 d0             	add    rax,rdx
+     a9b:	48 89 45 e8          	mov    QWORD PTR [rbp-0x18],rax
 		size_t i, ct = shdr[rel].sh_size / shdr[rel].sh_entsize;
-     a95:	0f b7 55 9c          	movzx  edx,WORD PTR [rbp-0x64]
-     a99:	48 89 d0             	mov    rax,rdx
-     a9c:	48 c1 e0 02          	shl    rax,0x2
-     aa0:	48 01 d0             	add    rax,rdx
-     aa3:	48 c1 e0 03          	shl    rax,0x3
-     aa7:	48 89 c2             	mov    rdx,rax
-     aaa:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
-     aae:	48 01 d0             	add    rax,rdx
-     ab1:	8b 48 14             	mov    ecx,DWORD PTR [rax+0x14]
-     ab4:	0f b7 55 9c          	movzx  edx,WORD PTR [rbp-0x64]
-     ab8:	48 89 d0             	mov    rax,rdx
-     abb:	48 c1 e0 02          	shl    rax,0x2
-     abf:	48 01 d0             	add    rax,rdx
-     ac2:	48 c1 e0 03          	shl    rax,0x3
-     ac6:	48 89 c2             	mov    rdx,rax
-     ac9:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
-     acd:	48 01 d0             	add    rax,rdx
-     ad0:	8b 78 24             	mov    edi,DWORD PTR [rax+0x24]
-     ad3:	89 c8                	mov    eax,ecx
-     ad5:	ba 00 00 00 00       	mov    edx,0x0
-     ada:	f7 f7                	div    edi
-     adc:	89 c0                	mov    eax,eax
-     ade:	48 89 45 e0          	mov    QWORD PTR [rbp-0x20],rax
+     a9f:	0f b7 55 9c          	movzx  edx,WORD PTR [rbp-0x64]
+     aa3:	48 89 d0             	mov    rax,rdx
+     aa6:	48 c1 e0 02          	shl    rax,0x2
+     aaa:	48 01 d0             	add    rax,rdx
+     aad:	48 c1 e0 03          	shl    rax,0x3
+     ab1:	48 89 c2             	mov    rdx,rax
+     ab4:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
+     ab8:	48 01 d0             	add    rax,rdx
+     abb:	8b 48 14             	mov    ecx,DWORD PTR [rax+0x14]
+     abe:	0f b7 55 9c          	movzx  edx,WORD PTR [rbp-0x64]
+     ac2:	48 89 d0             	mov    rax,rdx
+     ac5:	48 c1 e0 02          	shl    rax,0x2
+     ac9:	48 01 d0             	add    rax,rdx
+     acc:	48 c1 e0 03          	shl    rax,0x3
+     ad0:	48 89 c2             	mov    rdx,rax
+     ad3:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
+     ad7:	48 01 d0             	add    rax,rdx
+     ada:	8b 78 24             	mov    edi,DWORD PTR [rax+0x24]
+     add:	89 c8                	mov    eax,ecx
+     adf:	ba 00 00 00 00       	mov    edx,0x0
+     ae4:	f7 f7                	div    edi
+     ae6:	89 c0                	mov    eax,eax
+     ae8:	48 89 45 e0          	mov    QWORD PTR [rbp-0x20],rax
 		if (!ct)
-     ae2:	48 83 7d e0 00       	cmp    QWORD PTR [rbp-0x20],0x0
-     ae7:	0f 84 cb 02 00 00    	je     db8 <elf_relocate_section+0x365>
+     aec:	48 83 7d e0 00       	cmp    QWORD PTR [rbp-0x20],0x0
+     af1:	0f 84 cb 02 00 00    	je     dc2 <elf_relocate_section+0x365>
 		sptr = (void*)shdr[shdr[rel].sh_info].sh_addr; /* vma */
-     aed:	0f b7 55 9c          	movzx  edx,WORD PTR [rbp-0x64]
-     af1:	48 89 d0             	mov    rax,rdx
-     af4:	48 c1 e0 02          	shl    rax,0x2
-     af8:	48 01 d0             	add    rax,rdx
-     afb:	48 c1 e0 03          	shl    rax,0x3
-     aff:	48 89 c2             	mov    rdx,rax
-     b02:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
-     b06:	48 01 d0             	add    rax,rdx
-     b09:	8b 40 1c             	mov    eax,DWORD PTR [rax+0x1c]
-     b0c:	89 c2                	mov    edx,eax
-     b0e:	48 89 d0             	mov    rax,rdx
-     b11:	48 c1 e0 02          	shl    rax,0x2
-     b15:	48 01 d0             	add    rax,rdx
-     b18:	48 c1 e0 03          	shl    rax,0x3
-     b1c:	48 89 c2             	mov    rdx,rax
-     b1f:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
-     b23:	48 01 d0             	add    rax,rdx
-     b26:	8b 40 0c             	mov    eax,DWORD PTR [rax+0xc]
-     b29:	89 c0                	mov    eax,eax
-     b2b:	48 89 45 d8          	mov    QWORD PTR [rbp-0x28],rax
+     af7:	0f b7 55 9c          	movzx  edx,WORD PTR [rbp-0x64]
+     afb:	48 89 d0             	mov    rax,rdx
+     afe:	48 c1 e0 02          	shl    rax,0x2
+     b02:	48 01 d0             	add    rax,rdx
+     b05:	48 c1 e0 03          	shl    rax,0x3
+     b09:	48 89 c2             	mov    rdx,rax
+     b0c:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
+     b10:	48 01 d0             	add    rax,rdx
+     b13:	8b 40 1c             	mov    eax,DWORD PTR [rax+0x1c]
+     b16:	89 c2                	mov    edx,eax
+     b18:	48 89 d0             	mov    rax,rdx
+     b1b:	48 c1 e0 02          	shl    rax,0x2
+     b1f:	48 01 d0             	add    rax,rdx
+     b22:	48 c1 e0 03          	shl    rax,0x3
+     b26:	48 89 c2             	mov    rdx,rax
+     b29:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
+     b2d:	48 01 d0             	add    rax,rdx
+     b30:	8b 40 0c             	mov    eax,DWORD PTR [rax+0xc]
+     b33:	89 c0                	mov    eax,eax
+     b35:	48 89 45 d8          	mov    QWORD PTR [rbp-0x28],rax
 		stptr = (void*)hdr + shdr[shdr[rel].sh_link].sh_offset;
-     b2f:	0f b7 55 9c          	movzx  edx,WORD PTR [rbp-0x64]
-     b33:	48 89 d0             	mov    rax,rdx
-     b36:	48 c1 e0 02          	shl    rax,0x2
-     b3a:	48 01 d0             	add    rax,rdx
-     b3d:	48 c1 e0 03          	shl    rax,0x3
-     b41:	48 89 c2             	mov    rdx,rax
-     b44:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
-     b48:	48 01 d0             	add    rax,rdx
-     b4b:	8b 40 18             	mov    eax,DWORD PTR [rax+0x18]
-     b4e:	89 c2                	mov    edx,eax
-     b50:	48 89 d0             	mov    rax,rdx
-     b53:	48 c1 e0 02          	shl    rax,0x2
-     b57:	48 01 d0             	add    rax,rdx
-     b5a:	48 c1 e0 03          	shl    rax,0x3
-     b5e:	48 89 c2             	mov    rdx,rax
-     b61:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
-     b65:	48 01 d0             	add    rax,rdx
-     b68:	8b 40 10             	mov    eax,DWORD PTR [rax+0x10]
-     b6b:	89 c2                	mov    edx,eax
-     b6d:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-     b71:	48 01 d0             	add    rax,rdx
-     b74:	48 89 45 d0          	mov    QWORD PTR [rbp-0x30],rax
+     b39:	0f b7 55 9c          	movzx  edx,WORD PTR [rbp-0x64]
+     b3d:	48 89 d0             	mov    rax,rdx
+     b40:	48 c1 e0 02          	shl    rax,0x2
+     b44:	48 01 d0             	add    rax,rdx
+     b47:	48 c1 e0 03          	shl    rax,0x3
+     b4b:	48 89 c2             	mov    rdx,rax
+     b4e:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
+     b52:	48 01 d0             	add    rax,rdx
+     b55:	8b 40 18             	mov    eax,DWORD PTR [rax+0x18]
+     b58:	89 c2                	mov    edx,eax
+     b5a:	48 89 d0             	mov    rax,rdx
+     b5d:	48 c1 e0 02          	shl    rax,0x2
+     b61:	48 01 d0             	add    rax,rdx
+     b64:	48 c1 e0 03          	shl    rax,0x3
+     b68:	48 89 c2             	mov    rdx,rax
+     b6b:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
+     b6f:	48 01 d0             	add    rax,rdx
+     b72:	8b 40 10             	mov    eax,DWORD PTR [rax+0x10]
+     b75:	89 c2                	mov    edx,eax
+     b77:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+     b7b:	48 01 d0             	add    rax,rdx
+     b7e:	48 89 45 d0          	mov    QWORD PTR [rbp-0x30],rax
 		stb = shdr + shdr[rel].sh_link;
-     b78:	0f b7 55 9c          	movzx  edx,WORD PTR [rbp-0x64]
-     b7c:	48 89 d0             	mov    rax,rdx
-     b7f:	48 c1 e0 02          	shl    rax,0x2
-     b83:	48 01 d0             	add    rax,rdx
-     b86:	48 c1 e0 03          	shl    rax,0x3
-     b8a:	48 89 c2             	mov    rdx,rax
-     b8d:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
-     b91:	48 01 d0             	add    rax,rdx
-     b94:	8b 40 18             	mov    eax,DWORD PTR [rax+0x18]
-     b97:	89 c2                	mov    edx,eax
-     b99:	48 89 d0             	mov    rax,rdx
-     b9c:	48 c1 e0 02          	shl    rax,0x2
-     ba0:	48 01 d0             	add    rax,rdx
-     ba3:	48 c1 e0 03          	shl    rax,0x3
-     ba7:	48 89 c2             	mov    rdx,rax
-     baa:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
-     bae:	48 01 d0             	add    rax,rdx
-     bb1:	48 89 45 c8          	mov    QWORD PTR [rbp-0x38],rax
+     b82:	0f b7 55 9c          	movzx  edx,WORD PTR [rbp-0x64]
+     b86:	48 89 d0             	mov    rax,rdx
+     b89:	48 c1 e0 02          	shl    rax,0x2
+     b8d:	48 01 d0             	add    rax,rdx
+     b90:	48 c1 e0 03          	shl    rax,0x3
+     b94:	48 89 c2             	mov    rdx,rax
+     b97:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
+     b9b:	48 01 d0             	add    rax,rdx
+     b9e:	8b 40 18             	mov    eax,DWORD PTR [rax+0x18]
+     ba1:	89 c2                	mov    edx,eax
+     ba3:	48 89 d0             	mov    rax,rdx
+     ba6:	48 c1 e0 02          	shl    rax,0x2
+     baa:	48 01 d0             	add    rax,rdx
+     bad:	48 c1 e0 03          	shl    rax,0x3
+     bb1:	48 89 c2             	mov    rdx,rax
+     bb4:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
+     bb8:	48 01 d0             	add    rax,rdx
+     bbb:	48 89 45 c8          	mov    QWORD PTR [rbp-0x38],rax
 			shdr, hdr->e_shstrndx, shdr[shdr[rel].sh_info].sh_name));
-     bb5:	0f b7 55 9c          	movzx  edx,WORD PTR [rbp-0x64]
-     bb9:	48 89 d0             	mov    rax,rdx
-     bbc:	48 c1 e0 02          	shl    rax,0x2
-     bc0:	48 01 d0             	add    rax,rdx
-     bc3:	48 c1 e0 03          	shl    rax,0x3
-     bc7:	48 89 c2             	mov    rdx,rax
-     bca:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
-     bce:	48 01 d0             	add    rax,rdx
-     bd1:	8b 40 1c             	mov    eax,DWORD PTR [rax+0x1c]
-     bd4:	89 c2                	mov    edx,eax
-     bd6:	48 89 d0             	mov    rax,rdx
-     bd9:	48 c1 e0 02          	shl    rax,0x2
-     bdd:	48 01 d0             	add    rax,rdx
-     be0:	48 c1 e0 03          	shl    rax,0x3
-     be4:	48 89 c2             	mov    rdx,rax
-     be7:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
-     beb:	48 01 d0             	add    rax,rdx
+     bbf:	0f b7 55 9c          	movzx  edx,WORD PTR [rbp-0x64]
+     bc3:	48 89 d0             	mov    rax,rdx
+     bc6:	48 c1 e0 02          	shl    rax,0x2
+     bca:	48 01 d0             	add    rax,rdx
+     bcd:	48 c1 e0 03          	shl    rax,0x3
+     bd1:	48 89 c2             	mov    rdx,rax
+     bd4:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
+     bd8:	48 01 d0             	add    rax,rdx
+     bdb:	8b 40 1c             	mov    eax,DWORD PTR [rax+0x1c]
+     bde:	89 c2                	mov    edx,eax
+     be0:	48 89 d0             	mov    rax,rdx
+     be3:	48 c1 e0 02          	shl    rax,0x2
+     be7:	48 01 d0             	add    rax,rdx
+     bea:	48 c1 e0 03          	shl    rax,0x3
+     bee:	48 89 c2             	mov    rdx,rax
+     bf1:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
+     bf5:	48 01 d0             	add    rax,rdx
 		sbprintf("%lu relocations apply to section %s\n", ct, elf_fetch_string(hdr,
-     bee:	8b 08                	mov    ecx,DWORD PTR [rax]
+     bf8:	8b 08                	mov    ecx,DWORD PTR [rax]
 			shdr, hdr->e_shstrndx, shdr[shdr[rel].sh_info].sh_name));
-     bf0:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-     bf4:	0f b7 40 32          	movzx  eax,WORD PTR [rax+0x32]
+     bfa:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+     bfe:	0f b7 40 32          	movzx  eax,WORD PTR [rax+0x32]
 		sbprintf("%lu relocations apply to section %s\n", ct, elf_fetch_string(hdr,
-     bf8:	0f b7 d0             	movzx  edx,ax
-     bfb:	48 8b 75 a0          	mov    rsi,QWORD PTR [rbp-0x60]
-     bff:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-     c03:	48 89 c7             	mov    rdi,rax
-     c06:	e8 00 00 00 00       	call   c0b <elf_relocate_section+0x1b8>
-     c0b:	48 89 c2             	mov    rdx,rax
-     c0e:	48 8b 45 e0          	mov    rax,QWORD PTR [rbp-0x20]
-     c12:	48 89 c6             	mov    rsi,rax
-     c15:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-     c1c:	b8 00 00 00 00       	mov    eax,0x0
-     c21:	e8 00 00 00 00       	call   c26 <elf_relocate_section+0x1d3>
+     c02:	0f b7 d0             	movzx  edx,ax
+     c05:	48 8b 75 a0          	mov    rsi,QWORD PTR [rbp-0x60]
+     c09:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+     c0d:	48 89 c7             	mov    rdi,rax
+     c10:	e8 00 00 00 00       	call   c15 <elf_relocate_section+0x1b8>
+     c15:	48 89 c2             	mov    rdx,rax
+     c18:	48 8b 45 e0          	mov    rax,QWORD PTR [rbp-0x20]
+     c1c:	48 89 c6             	mov    rsi,rax
+     c1f:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+     c26:	b8 00 00 00 00       	mov    eax,0x0
+     c2b:	e8 00 00 00 00       	call   c30 <elf_relocate_section+0x1d3>
 		for (i = 0; i < ct; i++) {
-     c26:	48 c7 45 f8 00 00 00 00 	mov    QWORD PTR [rbp-0x8],0x0
-     c2e:	e9 75 01 00 00       	jmp    da8 <elf_relocate_section+0x355>
+     c30:	48 c7 45 f8 00 00 00 00 	mov    QWORD PTR [rbp-0x8],0x0
+     c38:	e9 75 01 00 00       	jmp    db2 <elf_relocate_section+0x355>
 				Elf32_Addr val = 0;
-     c33:	c7 45 c4 00 00 00 00 	mov    DWORD PTR [rbp-0x3c],0x0
+     c3d:	c7 45 c4 00 00 00 00 	mov    DWORD PTR [rbp-0x3c],0x0
 				Elf32_Rela* r = (ptr + i * shdr[rel].sh_entsize);
-     c3a:	0f b7 55 9c          	movzx  edx,WORD PTR [rbp-0x64]
-     c3e:	48 89 d0             	mov    rax,rdx
-     c41:	48 c1 e0 02          	shl    rax,0x2
-     c45:	48 01 d0             	add    rax,rdx
-     c48:	48 c1 e0 03          	shl    rax,0x3
-     c4c:	48 89 c2             	mov    rdx,rax
-     c4f:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
-     c53:	48 01 d0             	add    rax,rdx
-     c56:	8b 40 24             	mov    eax,DWORD PTR [rax+0x24]
-     c59:	89 c0                	mov    eax,eax
-     c5b:	48 0f af 45 f8       	imul   rax,QWORD PTR [rbp-0x8]
-     c60:	48 89 c2             	mov    rdx,rax
-     c63:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
-     c67:	48 01 d0             	add    rax,rdx
-     c6a:	48 89 45 b8          	mov    QWORD PTR [rbp-0x48],rax
+     c44:	0f b7 55 9c          	movzx  edx,WORD PTR [rbp-0x64]
+     c48:	48 89 d0             	mov    rax,rdx
+     c4b:	48 c1 e0 02          	shl    rax,0x2
+     c4f:	48 01 d0             	add    rax,rdx
+     c52:	48 c1 e0 03          	shl    rax,0x3
+     c56:	48 89 c2             	mov    rdx,rax
+     c59:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
+     c5d:	48 01 d0             	add    rax,rdx
+     c60:	8b 40 24             	mov    eax,DWORD PTR [rax+0x24]
+     c63:	89 c0                	mov    eax,eax
+     c65:	48 0f af 45 f8       	imul   rax,QWORD PTR [rbp-0x8]
+     c6a:	48 89 c2             	mov    rdx,rax
+     c6d:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+     c71:	48 01 d0             	add    rax,rdx
+     c74:	48 89 45 b8          	mov    QWORD PTR [rbp-0x48],rax
 				void** pptr = (void**)(sptr + r->r_offset);
-     c6e:	48 8b 45 b8          	mov    rax,QWORD PTR [rbp-0x48]
-     c72:	8b 00                	mov    eax,DWORD PTR [rax]
-     c74:	89 c2                	mov    edx,eax
-     c76:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
-     c7a:	48 01 d0             	add    rax,rdx
-     c7d:	48 89 45 b0          	mov    QWORD PTR [rbp-0x50],rax
+     c78:	48 8b 45 b8          	mov    rax,QWORD PTR [rbp-0x48]
+     c7c:	8b 00                	mov    eax,DWORD PTR [rax]
+     c7e:	89 c2                	mov    edx,eax
+     c80:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
+     c84:	48 01 d0             	add    rax,rdx
+     c87:	48 89 45 b0          	mov    QWORD PTR [rbp-0x50],rax
 				Elf32_Sym* s = (stptr + ELF32_R_SYM(r->r_info) * stb->sh_entsize);
-     c81:	48 8b 45 b8          	mov    rax,QWORD PTR [rbp-0x48]
-     c85:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
-     c88:	c1 e8 08             	shr    eax,0x8
-     c8b:	89 c2                	mov    edx,eax
-     c8d:	48 8b 45 c8          	mov    rax,QWORD PTR [rbp-0x38]
-     c91:	8b 40 24             	mov    eax,DWORD PTR [rax+0x24]
-     c94:	0f af c2             	imul   eax,edx
-     c97:	89 c2                	mov    edx,eax
-     c99:	48 8b 45 d0          	mov    rax,QWORD PTR [rbp-0x30]
-     c9d:	48 01 d0             	add    rax,rdx
-     ca0:	48 89 45 f0          	mov    QWORD PTR [rbp-0x10],rax
+     c8b:	48 8b 45 b8          	mov    rax,QWORD PTR [rbp-0x48]
+     c8f:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
+     c92:	c1 e8 08             	shr    eax,0x8
+     c95:	89 c2                	mov    edx,eax
+     c97:	48 8b 45 c8          	mov    rax,QWORD PTR [rbp-0x38]
+     c9b:	8b 40 24             	mov    eax,DWORD PTR [rax+0x24]
+     c9e:	0f af c2             	imul   eax,edx
+     ca1:	89 c2                	mov    edx,eax
+     ca3:	48 8b 45 d0          	mov    rax,QWORD PTR [rbp-0x30]
+     ca7:	48 01 d0             	add    rax,rdx
+     caa:	48 89 45 f0          	mov    QWORD PTR [rbp-0x10],rax
 				if (ELF32_R_SYM(r->r_info) == 0/*STN_UNDEF*/)
-     ca4:	48 8b 45 b8          	mov    rax,QWORD PTR [rbp-0x48]
-     ca8:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
-     cab:	c1 e8 08             	shr    eax,0x8
-     cae:	85 c0                	test   eax,eax
-     cb0:	75 08                	jne    cba <elf_relocate_section+0x267>
+     cae:	48 8b 45 b8          	mov    rax,QWORD PTR [rbp-0x48]
+     cb2:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
+     cb5:	c1 e8 08             	shr    eax,0x8
+     cb8:	85 c0                	test   eax,eax
+     cba:	75 08                	jne    cc4 <elf_relocate_section+0x267>
 						s = NULL;
-     cb2:	48 c7 45 f0 00 00 00 00 	mov    QWORD PTR [rbp-0x10],0x0
+     cbc:	48 c7 45 f0 00 00 00 00 	mov    QWORD PTR [rbp-0x10],0x0
 				if (s && !s->st_value) {
-     cba:	48 83 7d f0 00       	cmp    QWORD PTR [rbp-0x10],0x0
-     cbf:	74 24                	je     ce5 <elf_relocate_section+0x292>
-     cc1:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
-     cc5:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
-     cc8:	85 c0                	test   eax,eax
-     cca:	75 19                	jne    ce5 <elf_relocate_section+0x292>
+     cc4:	48 83 7d f0 00       	cmp    QWORD PTR [rbp-0x10],0x0
+     cc9:	74 24                	je     cef <elf_relocate_section+0x292>
+     ccb:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
+     ccf:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
+     cd2:	85 c0                	test   eax,eax
+     cd4:	75 19                	jne    cef <elf_relocate_section+0x292>
 						cprintf(KFMT_ERROR, "tried to relocate reference to undefined symbol\n");
-     ccc:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
-     cd3:	bf 0c 00 00 00       	mov    edi,0xc
-     cd8:	b8 00 00 00 00       	mov    eax,0x0
-     cdd:	e8 00 00 00 00       	call   ce2 <elf_relocate_section+0x28f>
+     cd6:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
+     cdd:	bf 0c 00 00 00       	mov    edi,0xc
+     ce2:	b8 00 00 00 00       	mov    eax,0x0
+     ce7:	e8 00 00 00 00       	call   cec <elf_relocate_section+0x28f>
 						while (1);
-     ce2:	90                   	nop
-     ce3:	eb fd                	jmp    ce2 <elf_relocate_section+0x28f>
+     cec:	90                   	nop
+     ced:	eb fd                	jmp    cec <elf_relocate_section+0x28f>
 						val = s->st_value;
-     ce5:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
-     ce9:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
-     cec:	89 45 c4             	mov    DWORD PTR [rbp-0x3c],eax
+     cef:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
+     cf3:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
+     cf6:	89 45 c4             	mov    DWORD PTR [rbp-0x3c],eax
 				if (shdr[rel].sh_type == SHT_RELA) {
-     cef:	0f b7 55 9c          	movzx  edx,WORD PTR [rbp-0x64]
-     cf3:	48 89 d0             	mov    rax,rdx
-     cf6:	48 c1 e0 02          	shl    rax,0x2
-     cfa:	48 01 d0             	add    rax,rdx
-     cfd:	48 c1 e0 03          	shl    rax,0x3
-     d01:	48 89 c2             	mov    rdx,rax
-     d04:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
-     d08:	48 01 d0             	add    rax,rdx
-     d0b:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
-     d0e:	83 f8 04             	cmp    eax,0x4
-     d11:	75 19                	jne    d2c <elf_relocate_section+0x2d9>
+     cf9:	0f b7 55 9c          	movzx  edx,WORD PTR [rbp-0x64]
+     cfd:	48 89 d0             	mov    rax,rdx
+     d00:	48 c1 e0 02          	shl    rax,0x2
+     d04:	48 01 d0             	add    rax,rdx
+     d07:	48 c1 e0 03          	shl    rax,0x3
+     d0b:	48 89 c2             	mov    rdx,rax
+     d0e:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
+     d12:	48 01 d0             	add    rax,rdx
+     d15:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
+     d18:	83 f8 04             	cmp    eax,0x4
+     d1b:	75 19                	jne    d36 <elf_relocate_section+0x2d9>
 						cprintf(KFMT_ERROR, "RELA relocations not implemented\n");
-     d13:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
-     d1a:	bf 0c 00 00 00       	mov    edi,0xc
-     d1f:	b8 00 00 00 00       	mov    eax,0x0
-     d24:	e8 00 00 00 00       	call   d29 <elf_relocate_section+0x2d6>
+     d1d:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
+     d24:	bf 0c 00 00 00       	mov    edi,0xc
+     d29:	b8 00 00 00 00       	mov    eax,0x0
+     d2e:	e8 00 00 00 00       	call   d33 <elf_relocate_section+0x2d6>
 						while (1);
-     d29:	90                   	nop
-     d2a:	eb fd                	jmp    d29 <elf_relocate_section+0x2d6>
+     d33:	90                   	nop
+     d34:	eb fd                	jmp    d33 <elf_relocate_section+0x2d6>
 						switch (ELF32_R_TYPE(r->r_info)) {
-     d2c:	48 8b 45 b8          	mov    rax,QWORD PTR [rbp-0x48]
-     d30:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
-     d33:	0f b6 c0             	movzx  eax,al
-     d36:	83 f8 06             	cmp    eax,0x6
-     d39:	77 4e                	ja     d89 <elf_relocate_section+0x336>
-     d3b:	89 c0                	mov    eax,eax
-     d3d:	48 8b 04 c5 00 00 00 00 	mov    rax,QWORD PTR [rax*8+0x0]
-     d45:	ff e0                	jmp    rax
+     d36:	48 8b 45 b8          	mov    rax,QWORD PTR [rbp-0x48]
+     d3a:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
+     d3d:	0f b6 c0             	movzx  eax,al
+     d40:	83 f8 06             	cmp    eax,0x6
+     d43:	77 4e                	ja     d93 <elf_relocate_section+0x336>
+     d45:	89 c0                	mov    eax,eax
+     d47:	48 8b 04 c5 00 00 00 00 	mov    rax,QWORD PTR [rax*8+0x0]
+     d4f:	ff e0                	jmp    rax
 								*pptr = (size_t)val + *pptr;
-     d47:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-     d4b:	48 8b 10             	mov    rdx,QWORD PTR [rax]
-     d4e:	8b 45 c4             	mov    eax,DWORD PTR [rbp-0x3c]
-     d51:	48 01 c2             	add    rdx,rax
-     d54:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-     d58:	48 89 10             	mov    QWORD PTR [rax],rdx
+     d51:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+     d55:	48 8b 10             	mov    rdx,QWORD PTR [rax]
+     d58:	8b 45 c4             	mov    eax,DWORD PTR [rbp-0x3c]
+     d5b:	48 01 c2             	add    rdx,rax
+     d5e:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+     d62:	48 89 10             	mov    QWORD PTR [rax],rdx
 								break;
-     d5b:	eb 46                	jmp    da3 <elf_relocate_section+0x350>
+     d65:	eb 46                	jmp    dad <elf_relocate_section+0x350>
 								*pptr = (size_t)val + *pptr - (size_t)pptr;
-     d5d:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-     d61:	48 8b 10             	mov    rdx,QWORD PTR [rax]
-     d64:	8b 4d c4             	mov    ecx,DWORD PTR [rbp-0x3c]
      d67:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-     d6b:	48 29 c1             	sub    rcx,rax
-     d6e:	48 01 ca             	add    rdx,rcx
+     d6b:	48 8b 10             	mov    rdx,QWORD PTR [rax]
+     d6e:	8b 4d c4             	mov    ecx,DWORD PTR [rbp-0x3c]
      d71:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-     d75:	48 89 10             	mov    QWORD PTR [rax],rdx
+     d75:	48 29 c1             	sub    rcx,rax
+     d78:	48 01 ca             	add    rdx,rcx
+     d7b:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+     d7f:	48 89 10             	mov    QWORD PTR [rax],rdx
 								break;
-     d78:	eb 29                	jmp    da3 <elf_relocate_section+0x350>
+     d82:	eb 29                	jmp    dad <elf_relocate_section+0x350>
 								*pptr = (void*)val;
-     d7a:	8b 45 c4             	mov    eax,DWORD PTR [rbp-0x3c]
-     d7d:	48 89 c2             	mov    rdx,rax
-     d80:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-     d84:	48 89 10             	mov    QWORD PTR [rax],rdx
+     d84:	8b 45 c4             	mov    eax,DWORD PTR [rbp-0x3c]
+     d87:	48 89 c2             	mov    rdx,rax
+     d8a:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+     d8e:	48 89 10             	mov    QWORD PTR [rax],rdx
 								break;
-     d87:	eb 1a                	jmp    da3 <elf_relocate_section+0x350>
+     d91:	eb 1a                	jmp    dad <elf_relocate_section+0x350>
 								cprintf(KFMT_ERROR, "relocation type not implemented\n");
-     d89:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
-     d90:	bf 0c 00 00 00       	mov    edi,0xc
-     d95:	b8 00 00 00 00       	mov    eax,0x0
-     d9a:	e8 00 00 00 00       	call   d9f <elf_relocate_section+0x34c>
+     d93:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
+     d9a:	bf 0c 00 00 00       	mov    edi,0xc
+     d9f:	b8 00 00 00 00       	mov    eax,0x0
+     da4:	e8 00 00 00 00       	call   da9 <elf_relocate_section+0x34c>
 								while (1);
-     d9f:	90                   	nop
-     da0:	eb fd                	jmp    d9f <elf_relocate_section+0x34c>
+     da9:	90                   	nop
+     daa:	eb fd                	jmp    da9 <elf_relocate_section+0x34c>
 								break;
-     da2:	90                   	nop
+     dac:	90                   	nop
 		for (i = 0; i < ct; i++) {
-     da3:	48 83 45 f8 01       	add    QWORD PTR [rbp-0x8],0x1
-     da8:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-     dac:	48 3b 45 e0          	cmp    rax,QWORD PTR [rbp-0x20]
-     db0:	0f 82 7d fe ff ff    	jb     c33 <elf_relocate_section+0x1e0>
-     db6:	eb 01                	jmp    db9 <elf_relocate_section+0x366>
+     dad:	48 83 45 f8 01       	add    QWORD PTR [rbp-0x8],0x1
+     db2:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+     db6:	48 3b 45 e0          	cmp    rax,QWORD PTR [rbp-0x20]
+     dba:	0f 82 7d fe ff ff    	jb     c3d <elf_relocate_section+0x1e0>
+     dc0:	eb 01                	jmp    dc3 <elf_relocate_section+0x366>
 				return;
-     db8:	90                   	nop
+     dc2:	90                   	nop
 }
-     db9:	c9                   	leave
-     dba:	c3                   	ret
+     dc3:	c9                   	leave
+     dc4:	c3                   	ret
 
-0000000000000dbb <get_section_type_string>:
+0000000000000dc5 <get_section_type_string>:
 {
-     dbb:	55                   	push   rbp
-     dbc:	48 89 e5             	mov    rbp,rsp
-     dbf:	48 83 ec 08          	sub    rsp,0x8
-     dc3:	89 7d fc             	mov    DWORD PTR [rbp-0x4],edi
+     dc5:	55                   	push   rbp
+     dc6:	48 89 e5             	mov    rbp,rsp
+     dc9:	48 83 ec 08          	sub    rsp,0x8
+     dcd:	89 7d fc             	mov    DWORD PTR [rbp-0x4],edi
 		if (tp == SHT_PROGBITS)
-     dc6:	83 7d fc 01          	cmp    DWORD PTR [rbp-0x4],0x1
-     dca:	75 0c                	jne    dd8 <get_section_type_string+0x1d>
+     dd0:	83 7d fc 01          	cmp    DWORD PTR [rbp-0x4],0x1
+     dd4:	75 0c                	jne    de2 <get_section_type_string+0x1d>
 				return "PROGBITS";
-     dcc:	48 c7 c0 00 00 00 00 	mov    rax,0x0
-     dd3:	e9 d2 00 00 00       	jmp    eaa <get_section_type_string+0xef>
+     dd6:	48 c7 c0 00 00 00 00 	mov    rax,0x0
+     ddd:	e9 d2 00 00 00       	jmp    eb4 <get_section_type_string+0xef>
 		else if (tp == SHT_SYMTAB)
-     dd8:	83 7d fc 02          	cmp    DWORD PTR [rbp-0x4],0x2
-     ddc:	75 0c                	jne    dea <get_section_type_string+0x2f>
+     de2:	83 7d fc 02          	cmp    DWORD PTR [rbp-0x4],0x2
+     de6:	75 0c                	jne    df4 <get_section_type_string+0x2f>
 				return "SYMTAB";
-     dde:	48 c7 c0 00 00 00 00 	mov    rax,0x0
-     de5:	e9 c0 00 00 00       	jmp    eaa <get_section_type_string+0xef>
+     de8:	48 c7 c0 00 00 00 00 	mov    rax,0x0
+     def:	e9 c0 00 00 00       	jmp    eb4 <get_section_type_string+0xef>
 		else if (tp == SHT_DYNSYM)
-     dea:	83 7d fc 0b          	cmp    DWORD PTR [rbp-0x4],0xb
-     dee:	75 0c                	jne    dfc <get_section_type_string+0x41>
+     df4:	83 7d fc 0b          	cmp    DWORD PTR [rbp-0x4],0xb
+     df8:	75 0c                	jne    e06 <get_section_type_string+0x41>
 				return "DYNSYM";
-     df0:	48 c7 c0 00 00 00 00 	mov    rax,0x0
-     df7:	e9 ae 00 00 00       	jmp    eaa <get_section_type_string+0xef>
+     dfa:	48 c7 c0 00 00 00 00 	mov    rax,0x0
+     e01:	e9 ae 00 00 00       	jmp    eb4 <get_section_type_string+0xef>
 		else if (tp == SHT_STRTAB)
-     dfc:	83 7d fc 03          	cmp    DWORD PTR [rbp-0x4],0x3
-     e00:	75 0c                	jne    e0e <get_section_type_string+0x53>
+     e06:	83 7d fc 03          	cmp    DWORD PTR [rbp-0x4],0x3
+     e0a:	75 0c                	jne    e18 <get_section_type_string+0x53>
 				return "STRTAB";
-     e02:	48 c7 c0 00 00 00 00 	mov    rax,0x0
-     e09:	e9 9c 00 00 00       	jmp    eaa <get_section_type_string+0xef>
+     e0c:	48 c7 c0 00 00 00 00 	mov    rax,0x0
+     e13:	e9 9c 00 00 00       	jmp    eb4 <get_section_type_string+0xef>
 		else if (tp == SHT_RELA)
-     e0e:	83 7d fc 04          	cmp    DWORD PTR [rbp-0x4],0x4
-     e12:	75 0c                	jne    e20 <get_section_type_string+0x65>
+     e18:	83 7d fc 04          	cmp    DWORD PTR [rbp-0x4],0x4
+     e1c:	75 0c                	jne    e2a <get_section_type_string+0x65>
 				return "RELA";
-     e14:	48 c7 c0 00 00 00 00 	mov    rax,0x0
-     e1b:	e9 8a 00 00 00       	jmp    eaa <get_section_type_string+0xef>
+     e1e:	48 c7 c0 00 00 00 00 	mov    rax,0x0
+     e25:	e9 8a 00 00 00       	jmp    eb4 <get_section_type_string+0xef>
 		else if (tp == SHT_HASH)
-     e20:	83 7d fc 05          	cmp    DWORD PTR [rbp-0x4],0x5
-     e24:	75 09                	jne    e2f <get_section_type_string+0x74>
+     e2a:	83 7d fc 05          	cmp    DWORD PTR [rbp-0x4],0x5
+     e2e:	75 09                	jne    e39 <get_section_type_string+0x74>
 				return "HASH";
-     e26:	48 c7 c0 00 00 00 00 	mov    rax,0x0
-     e2d:	eb 7b                	jmp    eaa <get_section_type_string+0xef>
+     e30:	48 c7 c0 00 00 00 00 	mov    rax,0x0
+     e37:	eb 7b                	jmp    eb4 <get_section_type_string+0xef>
 		else if (tp == SHT_DYNAMIC)
-     e2f:	83 7d fc 06          	cmp    DWORD PTR [rbp-0x4],0x6
-     e33:	75 09                	jne    e3e <get_section_type_string+0x83>
+     e39:	83 7d fc 06          	cmp    DWORD PTR [rbp-0x4],0x6
+     e3d:	75 09                	jne    e48 <get_section_type_string+0x83>
 				return "DYNAMIC";
-     e35:	48 c7 c0 00 00 00 00 	mov    rax,0x0
-     e3c:	eb 6c                	jmp    eaa <get_section_type_string+0xef>
+     e3f:	48 c7 c0 00 00 00 00 	mov    rax,0x0
+     e46:	eb 6c                	jmp    eb4 <get_section_type_string+0xef>
 		else if (tp == SHT_NOTE)
-     e3e:	83 7d fc 07          	cmp    DWORD PTR [rbp-0x4],0x7
-     e42:	75 09                	jne    e4d <get_section_type_string+0x92>
+     e48:	83 7d fc 07          	cmp    DWORD PTR [rbp-0x4],0x7
+     e4c:	75 09                	jne    e57 <get_section_type_string+0x92>
 				return "NOTE";
-     e44:	48 c7 c0 00 00 00 00 	mov    rax,0x0
-     e4b:	eb 5d                	jmp    eaa <get_section_type_string+0xef>
+     e4e:	48 c7 c0 00 00 00 00 	mov    rax,0x0
+     e55:	eb 5d                	jmp    eb4 <get_section_type_string+0xef>
 		else if (tp == SHT_NOBITS)
-     e4d:	83 7d fc 08          	cmp    DWORD PTR [rbp-0x4],0x8
-     e51:	75 09                	jne    e5c <get_section_type_string+0xa1>
+     e57:	83 7d fc 08          	cmp    DWORD PTR [rbp-0x4],0x8
+     e5b:	75 09                	jne    e66 <get_section_type_string+0xa1>
 				return "NOBITS";
-     e53:	48 c7 c0 00 00 00 00 	mov    rax,0x0
-     e5a:	eb 4e                	jmp    eaa <get_section_type_string+0xef>
+     e5d:	48 c7 c0 00 00 00 00 	mov    rax,0x0
+     e64:	eb 4e                	jmp    eb4 <get_section_type_string+0xef>
 		else if (tp == SHT_REL)
-     e5c:	83 7d fc 09          	cmp    DWORD PTR [rbp-0x4],0x9
-     e60:	75 09                	jne    e6b <get_section_type_string+0xb0>
+     e66:	83 7d fc 09          	cmp    DWORD PTR [rbp-0x4],0x9
+     e6a:	75 09                	jne    e75 <get_section_type_string+0xb0>
 				return "REL";
-     e62:	48 c7 c0 00 00 00 00 	mov    rax,0x0
-     e69:	eb 3f                	jmp    eaa <get_section_type_string+0xef>
+     e6c:	48 c7 c0 00 00 00 00 	mov    rax,0x0
+     e73:	eb 3f                	jmp    eb4 <get_section_type_string+0xef>
 		else if (tp == SHT_SHLIB)
-     e6b:	83 7d fc 0a          	cmp    DWORD PTR [rbp-0x4],0xa
-     e6f:	75 09                	jne    e7a <get_section_type_string+0xbf>
+     e75:	83 7d fc 0a          	cmp    DWORD PTR [rbp-0x4],0xa
+     e79:	75 09                	jne    e84 <get_section_type_string+0xbf>
 				return "SHLIB";
-     e71:	48 c7 c0 00 00 00 00 	mov    rax,0x0
-     e78:	eb 30                	jmp    eaa <get_section_type_string+0xef>
+     e7b:	48 c7 c0 00 00 00 00 	mov    rax,0x0
+     e82:	eb 30                	jmp    eb4 <get_section_type_string+0xef>
 		else if (tp >= SHT_LOPROC && tp <= SHT_HIPROC)
-     e7a:	81 7d fc ff ff ff 6f 	cmp    DWORD PTR [rbp-0x4],0x6fffffff
-     e81:	76 10                	jbe    e93 <get_section_type_string+0xd8>
-     e83:	8b 45 fc             	mov    eax,DWORD PTR [rbp-0x4]
-     e86:	85 c0                	test   eax,eax
-     e88:	78 09                	js     e93 <get_section_type_string+0xd8>
+     e84:	81 7d fc ff ff ff 6f 	cmp    DWORD PTR [rbp-0x4],0x6fffffff
+     e8b:	76 10                	jbe    e9d <get_section_type_string+0xd8>
+     e8d:	8b 45 fc             	mov    eax,DWORD PTR [rbp-0x4]
+     e90:	85 c0                	test   eax,eax
+     e92:	78 09                	js     e9d <get_section_type_string+0xd8>
 				return "PROC";
-     e8a:	48 c7 c0 00 00 00 00 	mov    rax,0x0
-     e91:	eb 17                	jmp    eaa <get_section_type_string+0xef>
+     e94:	48 c7 c0 00 00 00 00 	mov    rax,0x0
+     e9b:	eb 17                	jmp    eb4 <get_section_type_string+0xef>
 		else if (tp >= SHT_LOUSER && tp <= SHT_HIUSER)
-     e93:	8b 45 fc             	mov    eax,DWORD PTR [rbp-0x4]
-     e96:	85 c0                	test   eax,eax
-     e98:	79 09                	jns    ea3 <get_section_type_string+0xe8>
+     e9d:	8b 45 fc             	mov    eax,DWORD PTR [rbp-0x4]
+     ea0:	85 c0                	test   eax,eax
+     ea2:	79 09                	jns    ead <get_section_type_string+0xe8>
 				return "USER";
-     e9a:	48 c7 c0 00 00 00 00 	mov    rax,0x0
-     ea1:	eb 07                	jmp    eaa <get_section_type_string+0xef>
+     ea4:	48 c7 c0 00 00 00 00 	mov    rax,0x0
+     eab:	eb 07                	jmp    eb4 <get_section_type_string+0xef>
 		else
 				return "RESERVED";
-     ea3:	48 c7 c0 00 00 00 00 	mov    rax,0x0
+     ead:	48 c7 c0 00 00 00 00 	mov    rax,0x0
 }
-     eaa:	c9                   	leave
-     eab:	c3                   	ret
+     eb4:	c9                   	leave
+     eb5:	c3                   	ret
 
-0000000000000eac <elf_store_global_symbol>:
+0000000000000eb6 <elf_store_global_symbol>:
 
 void elf_store_global_symbol(const char* name, void* vma, char type, int is_weak)
 {
-     eac:	55                   	push   rbp
-     ead:	48 89 e5             	mov    rbp,rsp
-     eb0:	48 83 ec 40          	sub    rsp,0x40
-     eb4:	48 89 7d d8          	mov    QWORD PTR [rbp-0x28],rdi
-     eb8:	48 89 75 d0          	mov    QWORD PTR [rbp-0x30],rsi
-     ebc:	89 d0                	mov    eax,edx
-     ebe:	89 4d c8             	mov    DWORD PTR [rbp-0x38],ecx
-     ec1:	88 45 cc             	mov    BYTE PTR [rbp-0x34],al
+     eb6:	55                   	push   rbp
+     eb7:	48 89 e5             	mov    rbp,rsp
+     eba:	48 83 ec 40          	sub    rsp,0x40
+     ebe:	48 89 7d d8          	mov    QWORD PTR [rbp-0x28],rdi
+     ec2:	48 89 75 d0          	mov    QWORD PTR [rbp-0x30],rsi
+     ec6:	89 d0                	mov    eax,edx
+     ec8:	89 4d c8             	mov    DWORD PTR [rbp-0x38],ecx
+     ecb:	88 45 cc             	mov    BYTE PTR [rbp-0x34],al
 		struct symbol_list* sl = gs_lst;
-     ec4:	48 8b 05 00 00 00 00 	mov    rax,QWORD PTR [rip+0x0]        # ecb <elf_store_global_symbol+0x1f>
-     ecb:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
+     ece:	48 8b 05 00 00 00 00 	mov    rax,QWORD PTR [rip+0x0]        # ed5 <elf_store_global_symbol+0x1f>
+     ed5:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
 		size_t i = 0; int wrt = 0;
-     ecf:	48 c7 45 f0 00 00 00 00 	mov    QWORD PTR [rbp-0x10],0x0
-     ed7:	c7 45 ec 00 00 00 00 	mov    DWORD PTR [rbp-0x14],0x0
+     ed9:	48 c7 45 f0 00 00 00 00 	mov    QWORD PTR [rbp-0x10],0x0
+     ee1:	c7 45 ec 00 00 00 00 	mov    DWORD PTR [rbp-0x14],0x0
 		if (!sl)
-     ede:	48 83 7d f8 00       	cmp    QWORD PTR [rbp-0x8],0x0
-     ee3:	0f 84 a1 02 00 00    	je     118a <elf_store_global_symbol+0x2de>
+     ee8:	48 83 7d f8 00       	cmp    QWORD PTR [rbp-0x8],0x0
+     eed:	0f 84 a1 02 00 00    	je     1194 <elf_store_global_symbol+0x2de>
 				return;
 
 		if (!name) {
-     ee9:	48 83 7d d8 00       	cmp    QWORD PTR [rbp-0x28],0x0
-     eee:	0f 85 c2 01 00 00    	jne    10b6 <elf_store_global_symbol+0x20a>
+     ef3:	48 83 7d d8 00       	cmp    QWORD PTR [rbp-0x28],0x0
+     ef8:	0f 85 c2 01 00 00    	jne    10c0 <elf_store_global_symbol+0x20a>
 				cprintf(KFMT_WARN, "elf_store_global_symbol called for symbol "
-     ef4:	0f be 45 cc          	movsx  eax,BYTE PTR [rbp-0x34]
-     ef8:	48 8b 55 d0          	mov    rdx,QWORD PTR [rbp-0x30]
-     efc:	48 89 d1             	mov    rcx,rdx
-     eff:	89 c2                	mov    edx,eax
-     f01:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
-     f08:	bf 0e 00 00 00       	mov    edi,0xe
-     f0d:	b8 00 00 00 00       	mov    eax,0x0
-     f12:	e8 00 00 00 00       	call   f17 <elf_store_global_symbol+0x6b>
+     efe:	0f be 45 cc          	movsx  eax,BYTE PTR [rbp-0x34]
+     f02:	48 8b 55 d0          	mov    rdx,QWORD PTR [rbp-0x30]
+     f06:	48 89 d1             	mov    rcx,rdx
+     f09:	89 c2                	mov    edx,eax
+     f0b:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
+     f12:	bf 0e 00 00 00       	mov    edi,0xe
+     f17:	b8 00 00 00 00       	mov    eax,0x0
+     f1c:	e8 00 00 00 00       	call   f21 <elf_store_global_symbol+0x6b>
 								"of type %c with name \"\" at %p\n", type, vma);
 		}
 
 		/* search for existng definition and give an offset to which to write to */
 		while (sl) {
-     f17:	e9 9a 01 00 00       	jmp    10b6 <elf_store_global_symbol+0x20a>
+     f21:	e9 9a 01 00 00       	jmp    10c0 <elf_store_global_symbol+0x20a>
 				if (!sl->entries[i].name)
-     f1c:	48 8b 4d f8          	mov    rcx,QWORD PTR [rbp-0x8]
-     f20:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
-     f24:	48 89 d0             	mov    rax,rdx
-     f27:	48 01 c0             	add    rax,rax
-     f2a:	48 01 d0             	add    rax,rdx
-     f2d:	48 c1 e0 03          	shl    rax,0x3
-     f31:	48 01 c8             	add    rax,rcx
-     f34:	48 83 c0 08          	add    rax,0x8
-     f38:	48 8b 00             	mov    rax,QWORD PTR [rax]
-     f3b:	48 85 c0             	test   rax,rax
-     f3e:	0f 84 7f 01 00 00    	je     10c3 <elf_store_global_symbol+0x217>
+     f26:	48 8b 4d f8          	mov    rcx,QWORD PTR [rbp-0x8]
+     f2a:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
+     f2e:	48 89 d0             	mov    rax,rdx
+     f31:	48 01 c0             	add    rax,rax
+     f34:	48 01 d0             	add    rax,rdx
+     f37:	48 c1 e0 03          	shl    rax,0x3
+     f3b:	48 01 c8             	add    rax,rcx
+     f3e:	48 83 c0 08          	add    rax,0x8
+     f42:	48 8b 00             	mov    rax,QWORD PTR [rax]
+     f45:	48 85 c0             	test   rax,rax
+     f48:	0f 84 7f 01 00 00    	je     10cd <elf_store_global_symbol+0x217>
 						break;
 				if (strcmp(name, sl->entries[i].name) == 0) {
-     f44:	48 8b 4d f8          	mov    rcx,QWORD PTR [rbp-0x8]
-     f48:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
-     f4c:	48 89 d0             	mov    rax,rdx
-     f4f:	48 01 c0             	add    rax,rax
-     f52:	48 01 d0             	add    rax,rdx
-     f55:	48 c1 e0 03          	shl    rax,0x3
-     f59:	48 01 c8             	add    rax,rcx
-     f5c:	48 83 c0 08          	add    rax,0x8
-     f60:	48 8b 10             	mov    rdx,QWORD PTR [rax]
-     f63:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
-     f67:	48 89 d6             	mov    rsi,rdx
-     f6a:	48 89 c7             	mov    rdi,rax
-     f6d:	e8 00 00 00 00       	call   f72 <elf_store_global_symbol+0xc6>
-     f72:	85 c0                	test   eax,eax
-     f74:	0f 85 bf 00 00 00    	jne    1039 <elf_store_global_symbol+0x18d>
+     f4e:	48 8b 4d f8          	mov    rcx,QWORD PTR [rbp-0x8]
+     f52:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
+     f56:	48 89 d0             	mov    rax,rdx
+     f59:	48 01 c0             	add    rax,rax
+     f5c:	48 01 d0             	add    rax,rdx
+     f5f:	48 c1 e0 03          	shl    rax,0x3
+     f63:	48 01 c8             	add    rax,rcx
+     f66:	48 83 c0 08          	add    rax,0x8
+     f6a:	48 8b 10             	mov    rdx,QWORD PTR [rax]
+     f6d:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
+     f71:	48 89 d6             	mov    rsi,rdx
+     f74:	48 89 c7             	mov    rdi,rax
+     f77:	e8 00 00 00 00       	call   f7c <elf_store_global_symbol+0xc6>
+     f7c:	85 c0                	test   eax,eax
+     f7e:	0f 85 bf 00 00 00    	jne    1043 <elf_store_global_symbol+0x18d>
 						/* found a first match */
 						if (sl->entries[i].type == type) {
-     f7a:	48 8b 4d f8          	mov    rcx,QWORD PTR [rbp-0x8]
-     f7e:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
-     f82:	48 89 d0             	mov    rax,rdx
-     f85:	48 01 c0             	add    rax,rax
-     f88:	48 01 d0             	add    rax,rdx
-     f8b:	48 c1 e0 03          	shl    rax,0x3
-     f8f:	48 01 c8             	add    rax,rcx
-     f92:	48 83 c0 10          	add    rax,0x10
-     f96:	0f b6 00             	movzx  eax,BYTE PTR [rax]
-     f99:	38 45 cc             	cmp    BYTE PTR [rbp-0x34],al
-     f9c:	0f 85 97 00 00 00    	jne    1039 <elf_store_global_symbol+0x18d>
+     f84:	48 8b 4d f8          	mov    rcx,QWORD PTR [rbp-0x8]
+     f88:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
+     f8c:	48 89 d0             	mov    rax,rdx
+     f8f:	48 01 c0             	add    rax,rax
+     f92:	48 01 d0             	add    rax,rdx
+     f95:	48 c1 e0 03          	shl    rax,0x3
+     f99:	48 01 c8             	add    rax,rcx
+     f9c:	48 83 c0 10          	add    rax,0x10
+     fa0:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+     fa3:	38 45 cc             	cmp    BYTE PTR [rbp-0x34],al
+     fa6:	0f 85 97 00 00 00    	jne    1043 <elf_store_global_symbol+0x18d>
 								if (is_weak) /* use existing symbol definition */
-     fa2:	83 7d c8 00          	cmp    DWORD PTR [rbp-0x38],0x0
-     fa6:	0f 85 e1 01 00 00    	jne    118d <elf_store_global_symbol+0x2e1>
+     fac:	83 7d c8 00          	cmp    DWORD PTR [rbp-0x38],0x0
+     fb0:	0f 85 e1 01 00 00    	jne    1197 <elf_store_global_symbol+0x2e1>
 										return;
 								cprintf(KFMT_WARN, "overwriting symbol %s defined at %p with "
-     fac:	48 8b 4d f8          	mov    rcx,QWORD PTR [rbp-0x8]
-     fb0:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
-     fb4:	48 89 d0             	mov    rax,rdx
-     fb7:	48 01 c0             	add    rax,rax
-     fba:	48 01 d0             	add    rax,rdx
-     fbd:	48 c1 e0 03          	shl    rax,0x3
-     fc1:	48 01 c8             	add    rax,rcx
-     fc4:	48 8b 08             	mov    rcx,QWORD PTR [rax]
-     fc7:	48 8b 75 f8          	mov    rsi,QWORD PTR [rbp-0x8]
-     fcb:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
-     fcf:	48 89 d0             	mov    rax,rdx
-     fd2:	48 01 c0             	add    rax,rax
-     fd5:	48 01 d0             	add    rax,rdx
-     fd8:	48 c1 e0 03          	shl    rax,0x3
-     fdc:	48 01 f0             	add    rax,rsi
-     fdf:	48 83 c0 08          	add    rax,0x8
-     fe3:	48 8b 00             	mov    rax,QWORD PTR [rax]
-     fe6:	48 8b 55 d0          	mov    rdx,QWORD PTR [rbp-0x30]
-     fea:	49 89 d0             	mov    r8,rdx
-     fed:	48 89 c2             	mov    rdx,rax
-     ff0:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
-     ff7:	bf 0e 00 00 00       	mov    edi,0xe
-     ffc:	b8 00 00 00 00       	mov    eax,0x0
-    1001:	e8 00 00 00 00       	call   1006 <elf_store_global_symbol+0x15a>
+     fb6:	48 8b 4d f8          	mov    rcx,QWORD PTR [rbp-0x8]
+     fba:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
+     fbe:	48 89 d0             	mov    rax,rdx
+     fc1:	48 01 c0             	add    rax,rax
+     fc4:	48 01 d0             	add    rax,rdx
+     fc7:	48 c1 e0 03          	shl    rax,0x3
+     fcb:	48 01 c8             	add    rax,rcx
+     fce:	48 8b 08             	mov    rcx,QWORD PTR [rax]
+     fd1:	48 8b 75 f8          	mov    rsi,QWORD PTR [rbp-0x8]
+     fd5:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
+     fd9:	48 89 d0             	mov    rax,rdx
+     fdc:	48 01 c0             	add    rax,rax
+     fdf:	48 01 d0             	add    rax,rdx
+     fe2:	48 c1 e0 03          	shl    rax,0x3
+     fe6:	48 01 f0             	add    rax,rsi
+     fe9:	48 83 c0 08          	add    rax,0x8
+     fed:	48 8b 00             	mov    rax,QWORD PTR [rax]
+     ff0:	48 8b 55 d0          	mov    rdx,QWORD PTR [rbp-0x30]
+     ff4:	49 89 d0             	mov    r8,rdx
+     ff7:	48 89 c2             	mov    rdx,rax
+     ffa:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
+    1001:	bf 0e 00 00 00       	mov    edi,0xe
+    1006:	b8 00 00 00 00       	mov    eax,0x0
+    100b:	e8 00 00 00 00       	call   1010 <elf_store_global_symbol+0x15a>
 									"symbol at %p\n", sl->entries[i].name, sl->entries[i].vma, vma);
 								kfree(sl->entries[i].name); /* just in case */
-    1006:	48 8b 4d f8          	mov    rcx,QWORD PTR [rbp-0x8]
-    100a:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
-    100e:	48 89 d0             	mov    rax,rdx
-    1011:	48 01 c0             	add    rax,rax
-    1014:	48 01 d0             	add    rax,rdx
-    1017:	48 c1 e0 03          	shl    rax,0x3
-    101b:	48 01 c8             	add    rax,rcx
-    101e:	48 83 c0 08          	add    rax,0x8
-    1022:	48 8b 00             	mov    rax,QWORD PTR [rax]
-    1025:	48 89 c7             	mov    rdi,rax
-    1028:	e8 00 00 00 00       	call   102d <elf_store_global_symbol+0x181>
+    1010:	48 8b 4d f8          	mov    rcx,QWORD PTR [rbp-0x8]
+    1014:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
+    1018:	48 89 d0             	mov    rax,rdx
+    101b:	48 01 c0             	add    rax,rax
+    101e:	48 01 d0             	add    rax,rdx
+    1021:	48 c1 e0 03          	shl    rax,0x3
+    1025:	48 01 c8             	add    rax,rcx
+    1028:	48 83 c0 08          	add    rax,0x8
+    102c:	48 8b 00             	mov    rax,QWORD PTR [rax]
+    102f:	48 89 c7             	mov    rdi,rax
+    1032:	e8 00 00 00 00       	call   1037 <elf_store_global_symbol+0x181>
 								wrt = 1;
-    102d:	c7 45 ec 01 00 00 00 	mov    DWORD PTR [rbp-0x14],0x1
+    1037:	c7 45 ec 01 00 00 00 	mov    DWORD PTR [rbp-0x14],0x1
 								break; /* only overwrite full matches */
-    1034:	e9 8b 00 00 00       	jmp    10c4 <elf_store_global_symbol+0x218>
+    103e:	e9 8b 00 00 00       	jmp    10ce <elf_store_global_symbol+0x218>
 						}
 				}
 				if (++i == 64) {
-    1039:	48 83 45 f0 01       	add    QWORD PTR [rbp-0x10],0x1
-    103e:	48 83 7d f0 40       	cmp    QWORD PTR [rbp-0x10],0x40
-    1043:	75 71                	jne    10b6 <elf_store_global_symbol+0x20a>
+    1043:	48 83 45 f0 01       	add    QWORD PTR [rbp-0x10],0x1
+    1048:	48 83 7d f0 40       	cmp    QWORD PTR [rbp-0x10],0x40
+    104d:	75 71                	jne    10c0 <elf_store_global_symbol+0x20a>
 						if (sl->next) {
-    1045:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-    1049:	48 8b 80 00 06 00 00 	mov    rax,QWORD PTR [rax+0x600]
-    1050:	48 85 c0             	test   rax,rax
-    1053:	74 19                	je     106e <elf_store_global_symbol+0x1c2>
+    104f:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    1053:	48 8b 80 00 06 00 00 	mov    rax,QWORD PTR [rax+0x600]
+    105a:	48 85 c0             	test   rax,rax
+    105d:	74 19                	je     1078 <elf_store_global_symbol+0x1c2>
 								sl = sl->next;
-    1055:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-    1059:	48 8b 80 00 06 00 00 	mov    rax,QWORD PTR [rax+0x600]
-    1060:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
+    105f:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    1063:	48 8b 80 00 06 00 00 	mov    rax,QWORD PTR [rax+0x600]
+    106a:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
 								i = 0;
-    1064:	48 c7 45 f0 00 00 00 00 	mov    QWORD PTR [rbp-0x10],0x0
-    106c:	eb 48                	jmp    10b6 <elf_store_global_symbol+0x20a>
+    106e:	48 c7 45 f0 00 00 00 00 	mov    QWORD PTR [rbp-0x10],0x0
+    1076:	eb 48                	jmp    10c0 <elf_store_global_symbol+0x20a>
 						} else {
 								/* allocate space for the next one and quit the loop */
 								i = 0;
-    106e:	48 c7 45 f0 00 00 00 00 	mov    QWORD PTR [rbp-0x10],0x0
+    1078:	48 c7 45 f0 00 00 00 00 	mov    QWORD PTR [rbp-0x10],0x0
 								sl = sl->next = kmalloc(sizeof(struct symbol_list));
-    1076:	bf 08 06 00 00       	mov    edi,0x608
-    107b:	e8 00 00 00 00       	call   1080 <elf_store_global_symbol+0x1d4>
-    1080:	48 8b 55 f8          	mov    rdx,QWORD PTR [rbp-0x8]
-    1084:	48 89 82 00 06 00 00 	mov    QWORD PTR [rdx+0x600],rax
-    108b:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-    108f:	48 8b 80 00 06 00 00 	mov    rax,QWORD PTR [rax+0x600]
-    1096:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
+    1080:	bf 08 06 00 00       	mov    edi,0x608
+    1085:	e8 00 00 00 00       	call   108a <elf_store_global_symbol+0x1d4>
+    108a:	48 8b 55 f8          	mov    rdx,QWORD PTR [rbp-0x8]
+    108e:	48 89 82 00 06 00 00 	mov    QWORD PTR [rdx+0x600],rax
+    1095:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    1099:	48 8b 80 00 06 00 00 	mov    rax,QWORD PTR [rax+0x600]
+    10a0:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
 								if (!sl)
-    109a:	48 83 7d f8 00       	cmp    QWORD PTR [rbp-0x8],0x0
-    109f:	0f 84 eb 00 00 00    	je     1190 <elf_store_global_symbol+0x2e4>
+    10a4:	48 83 7d f8 00       	cmp    QWORD PTR [rbp-0x8],0x0
+    10a9:	0f 84 eb 00 00 00    	je     119a <elf_store_global_symbol+0x2e4>
 										return;
 								sl->next = NULL; /* IMPORTANT! as kmalloc != cmalloc */
-    10a5:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-    10a9:	48 c7 80 00 06 00 00 00 00 00 00 	mov    QWORD PTR [rax+0x600],0x0
+    10af:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    10b3:	48 c7 80 00 06 00 00 00 00 00 00 	mov    QWORD PTR [rax+0x600],0x0
 								break;
-    10b4:	eb 0e                	jmp    10c4 <elf_store_global_symbol+0x218>
+    10be:	eb 0e                	jmp    10ce <elf_store_global_symbol+0x218>
 		while (sl) {
-    10b6:	48 83 7d f8 00       	cmp    QWORD PTR [rbp-0x8],0x0
-    10bb:	0f 85 5b fe ff ff    	jne    f1c <elf_store_global_symbol+0x70>
-    10c1:	eb 01                	jmp    10c4 <elf_store_global_symbol+0x218>
+    10c0:	48 83 7d f8 00       	cmp    QWORD PTR [rbp-0x8],0x0
+    10c5:	0f 85 5b fe ff ff    	jne    f26 <elf_store_global_symbol+0x70>
+    10cb:	eb 01                	jmp    10ce <elf_store_global_symbol+0x218>
 						break;
-    10c3:	90                   	nop
+    10cd:	90                   	nop
 						}
 				}
 		}
 
 		/* now write the new definition */
 		sl->entries[i].name = strdup(name);
-    10c4:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
-    10c8:	48 89 c7             	mov    rdi,rax
-    10cb:	e8 00 00 00 00       	call   10d0 <elf_store_global_symbol+0x224>
-    10d0:	48 89 c1             	mov    rcx,rax
-    10d3:	48 8b 75 f8          	mov    rsi,QWORD PTR [rbp-0x8]
-    10d7:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
-    10db:	48 89 d0             	mov    rax,rdx
-    10de:	48 01 c0             	add    rax,rax
-    10e1:	48 01 d0             	add    rax,rdx
-    10e4:	48 c1 e0 03          	shl    rax,0x3
-    10e8:	48 01 f0             	add    rax,rsi
-    10eb:	48 83 c0 08          	add    rax,0x8
-    10ef:	48 89 08             	mov    QWORD PTR [rax],rcx
+    10ce:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
+    10d2:	48 89 c7             	mov    rdi,rax
+    10d5:	e8 00 00 00 00       	call   10da <elf_store_global_symbol+0x224>
+    10da:	48 89 c1             	mov    rcx,rax
+    10dd:	48 8b 75 f8          	mov    rsi,QWORD PTR [rbp-0x8]
+    10e1:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
+    10e5:	48 89 d0             	mov    rax,rdx
+    10e8:	48 01 c0             	add    rax,rax
+    10eb:	48 01 d0             	add    rax,rdx
+    10ee:	48 c1 e0 03          	shl    rax,0x3
+    10f2:	48 01 f0             	add    rax,rsi
+    10f5:	48 83 c0 08          	add    rax,0x8
+    10f9:	48 89 08             	mov    QWORD PTR [rax],rcx
 		sl->entries[i].type = type;
-    10f2:	48 8b 4d f8          	mov    rcx,QWORD PTR [rbp-0x8]
-    10f6:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
-    10fa:	48 89 d0             	mov    rax,rdx
-    10fd:	48 01 c0             	add    rax,rax
-    1100:	48 01 d0             	add    rax,rdx
-    1103:	48 c1 e0 03          	shl    rax,0x3
-    1107:	48 01 c8             	add    rax,rcx
-    110a:	48 8d 50 10          	lea    rdx,[rax+0x10]
-    110e:	0f b6 45 cc          	movzx  eax,BYTE PTR [rbp-0x34]
-    1112:	88 02                	mov    BYTE PTR [rdx],al
+    10fc:	48 8b 4d f8          	mov    rcx,QWORD PTR [rbp-0x8]
+    1100:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
+    1104:	48 89 d0             	mov    rax,rdx
+    1107:	48 01 c0             	add    rax,rax
+    110a:	48 01 d0             	add    rax,rdx
+    110d:	48 c1 e0 03          	shl    rax,0x3
+    1111:	48 01 c8             	add    rax,rcx
+    1114:	48 8d 50 10          	lea    rdx,[rax+0x10]
+    1118:	0f b6 45 cc          	movzx  eax,BYTE PTR [rbp-0x34]
+    111c:	88 02                	mov    BYTE PTR [rdx],al
 		sl->entries[i].vma = vma;
-    1114:	48 8b 4d f8          	mov    rcx,QWORD PTR [rbp-0x8]
-    1118:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
-    111c:	48 89 d0             	mov    rax,rdx
-    111f:	48 01 c0             	add    rax,rax
-    1122:	48 01 d0             	add    rax,rdx
-    1125:	48 c1 e0 03          	shl    rax,0x3
-    1129:	48 8d 14 01          	lea    rdx,[rcx+rax*1]
-    112d:	48 8b 45 d0          	mov    rax,QWORD PTR [rbp-0x30]
-    1131:	48 89 02             	mov    QWORD PTR [rdx],rax
+    111e:	48 8b 4d f8          	mov    rcx,QWORD PTR [rbp-0x8]
+    1122:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
+    1126:	48 89 d0             	mov    rax,rdx
+    1129:	48 01 c0             	add    rax,rax
+    112c:	48 01 d0             	add    rax,rdx
+    112f:	48 c1 e0 03          	shl    rax,0x3
+    1133:	48 8d 14 01          	lea    rdx,[rcx+rax*1]
+    1137:	48 8b 45 d0          	mov    rax,QWORD PTR [rbp-0x30]
+    113b:	48 89 02             	mov    QWORD PTR [rdx],rax
 		/* and null-terminate if last */
 		if (++i < 64 && !wrt) {
-    1134:	48 83 45 f0 01       	add    QWORD PTR [rbp-0x10],0x1
-    1139:	48 83 7d f0 3f       	cmp    QWORD PTR [rbp-0x10],0x3f
-    113e:	77 51                	ja     1191 <elf_store_global_symbol+0x2e5>
-    1140:	83 7d ec 00          	cmp    DWORD PTR [rbp-0x14],0x0
-    1144:	75 4b                	jne    1191 <elf_store_global_symbol+0x2e5>
+    113e:	48 83 45 f0 01       	add    QWORD PTR [rbp-0x10],0x1
+    1143:	48 83 7d f0 3f       	cmp    QWORD PTR [rbp-0x10],0x3f
+    1148:	77 51                	ja     119b <elf_store_global_symbol+0x2e5>
+    114a:	83 7d ec 00          	cmp    DWORD PTR [rbp-0x14],0x0
+    114e:	75 4b                	jne    119b <elf_store_global_symbol+0x2e5>
 				sl->entries[i].name = NULL;
-    1146:	48 8b 4d f8          	mov    rcx,QWORD PTR [rbp-0x8]
-    114a:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
-    114e:	48 89 d0             	mov    rax,rdx
-    1151:	48 01 c0             	add    rax,rax
-    1154:	48 01 d0             	add    rax,rdx
-    1157:	48 c1 e0 03          	shl    rax,0x3
-    115b:	48 01 c8             	add    rax,rcx
-    115e:	48 83 c0 08          	add    rax,0x8
-    1162:	48 c7 00 00 00 00 00 	mov    QWORD PTR [rax],0x0
+    1150:	48 8b 4d f8          	mov    rcx,QWORD PTR [rbp-0x8]
+    1154:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
+    1158:	48 89 d0             	mov    rax,rdx
+    115b:	48 01 c0             	add    rax,rax
+    115e:	48 01 d0             	add    rax,rdx
+    1161:	48 c1 e0 03          	shl    rax,0x3
+    1165:	48 01 c8             	add    rax,rcx
+    1168:	48 83 c0 08          	add    rax,0x8
+    116c:	48 c7 00 00 00 00 00 	mov    QWORD PTR [rax],0x0
 				sl->entries[i].vma = NULL;
-    1169:	48 8b 4d f8          	mov    rcx,QWORD PTR [rbp-0x8]
-    116d:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
-    1171:	48 89 d0             	mov    rax,rdx
-    1174:	48 01 c0             	add    rax,rax
-    1177:	48 01 d0             	add    rax,rdx
-    117a:	48 c1 e0 03          	shl    rax,0x3
-    117e:	48 01 c8             	add    rax,rcx
-    1181:	48 c7 00 00 00 00 00 	mov    QWORD PTR [rax],0x0
-    1188:	eb 07                	jmp    1191 <elf_store_global_symbol+0x2e5>
+    1173:	48 8b 4d f8          	mov    rcx,QWORD PTR [rbp-0x8]
+    1177:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
+    117b:	48 89 d0             	mov    rax,rdx
+    117e:	48 01 c0             	add    rax,rax
+    1181:	48 01 d0             	add    rax,rdx
+    1184:	48 c1 e0 03          	shl    rax,0x3
+    1188:	48 01 c8             	add    rax,rcx
+    118b:	48 c7 00 00 00 00 00 	mov    QWORD PTR [rax],0x0
+    1192:	eb 07                	jmp    119b <elf_store_global_symbol+0x2e5>
 				return;
-    118a:	90                   	nop
-    118b:	eb 04                	jmp    1191 <elf_store_global_symbol+0x2e5>
+    1194:	90                   	nop
+    1195:	eb 04                	jmp    119b <elf_store_global_symbol+0x2e5>
 										return;
-    118d:	90                   	nop
-    118e:	eb 01                	jmp    1191 <elf_store_global_symbol+0x2e5>
+    1197:	90                   	nop
+    1198:	eb 01                	jmp    119b <elf_store_global_symbol+0x2e5>
 										return;
-    1190:	90                   	nop
+    119a:	90                   	nop
 		}
 }
-    1191:	c9                   	leave
-    1192:	c3                   	ret
+    119b:	c9                   	leave
+    119c:	c3                   	ret
 
-0000000000001193 <elf_locate_global_symbol>:
+000000000000119d <elf_locate_global_symbol>:
 
 Elf32_Addr elf_locate_global_symbol(const char* name, char type)
 {
-    1193:	55                   	push   rbp
-    1194:	48 89 e5             	mov    rbp,rsp
-    1197:	48 83 ec 20          	sub    rsp,0x20
-    119b:	48 89 7d e8          	mov    QWORD PTR [rbp-0x18],rdi
-    119f:	89 f0                	mov    eax,esi
-    11a1:	88 45 e4             	mov    BYTE PTR [rbp-0x1c],al
+    119d:	55                   	push   rbp
+    119e:	48 89 e5             	mov    rbp,rsp
+    11a1:	48 83 ec 20          	sub    rsp,0x20
+    11a5:	48 89 7d e8          	mov    QWORD PTR [rbp-0x18],rdi
+    11a9:	89 f0                	mov    eax,esi
+    11ab:	88 45 e4             	mov    BYTE PTR [rbp-0x1c],al
 		struct symbol_list* sl = gs_lst;
-    11a4:	48 8b 05 00 00 00 00 	mov    rax,QWORD PTR [rip+0x0]        # 11ab <elf_locate_global_symbol+0x18>
-    11ab:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
+    11ae:	48 8b 05 00 00 00 00 	mov    rax,QWORD PTR [rip+0x0]        # 11b5 <elf_locate_global_symbol+0x18>
+    11b5:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
 		size_t i = 0;
-    11af:	48 c7 45 f0 00 00 00 00 	mov    QWORD PTR [rbp-0x10],0x0
+    11b9:	48 c7 45 f0 00 00 00 00 	mov    QWORD PTR [rbp-0x10],0x0
 		if (!sl)
-    11b7:	48 83 7d f8 00       	cmp    QWORD PTR [rbp-0x8],0x0
-    11bc:	0f 85 12 01 00 00    	jne    12d4 <elf_locate_global_symbol+0x141>
+    11c1:	48 83 7d f8 00       	cmp    QWORD PTR [rbp-0x8],0x0
+    11c6:	0f 85 12 01 00 00    	jne    12de <elf_locate_global_symbol+0x141>
 				return (Elf32_Addr)NULL;
-    11c2:	b8 00 00 00 00       	mov    eax,0x0
-    11c7:	e9 1b 01 00 00       	jmp    12e7 <elf_locate_global_symbol+0x154>
+    11cc:	b8 00 00 00 00       	mov    eax,0x0
+    11d1:	e9 1b 01 00 00       	jmp    12f1 <elf_locate_global_symbol+0x154>
 
 		while (sl) {
 				if (!sl->entries[i].name)
-    11cc:	48 8b 4d f8          	mov    rcx,QWORD PTR [rbp-0x8]
-    11d0:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
-    11d4:	48 89 d0             	mov    rax,rdx
-    11d7:	48 01 c0             	add    rax,rax
-    11da:	48 01 d0             	add    rax,rdx
-    11dd:	48 c1 e0 03          	shl    rax,0x3
-    11e1:	48 01 c8             	add    rax,rcx
-    11e4:	48 83 c0 08          	add    rax,0x8
-    11e8:	48 8b 00             	mov    rax,QWORD PTR [rax]
-    11eb:	48 85 c0             	test   rax,rax
-    11ee:	0f 84 ed 00 00 00    	je     12e1 <elf_locate_global_symbol+0x14e>
+    11d6:	48 8b 4d f8          	mov    rcx,QWORD PTR [rbp-0x8]
+    11da:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
+    11de:	48 89 d0             	mov    rax,rdx
+    11e1:	48 01 c0             	add    rax,rax
+    11e4:	48 01 d0             	add    rax,rdx
+    11e7:	48 c1 e0 03          	shl    rax,0x3
+    11eb:	48 01 c8             	add    rax,rcx
+    11ee:	48 83 c0 08          	add    rax,0x8
+    11f2:	48 8b 00             	mov    rax,QWORD PTR [rax]
+    11f5:	48 85 c0             	test   rax,rax
+    11f8:	0f 84 ed 00 00 00    	je     12eb <elf_locate_global_symbol+0x14e>
 						break; /* end of list */
 				if (strcmp(sl->entries[i].name, name) == 0) {
-    11f4:	48 8b 4d f8          	mov    rcx,QWORD PTR [rbp-0x8]
-    11f8:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
-    11fc:	48 89 d0             	mov    rax,rdx
-    11ff:	48 01 c0             	add    rax,rax
-    1202:	48 01 d0             	add    rax,rdx
-    1205:	48 c1 e0 03          	shl    rax,0x3
-    1209:	48 01 c8             	add    rax,rcx
-    120c:	48 83 c0 08          	add    rax,0x8
-    1210:	48 8b 00             	mov    rax,QWORD PTR [rax]
-    1213:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
-    1217:	48 89 d6             	mov    rsi,rdx
-    121a:	48 89 c7             	mov    rdi,rax
-    121d:	e8 00 00 00 00       	call   1222 <elf_locate_global_symbol+0x8f>
-    1222:	85 c0                	test   eax,eax
-    1224:	0f 85 87 00 00 00    	jne    12b1 <elf_locate_global_symbol+0x11e>
+    11fe:	48 8b 4d f8          	mov    rcx,QWORD PTR [rbp-0x8]
+    1202:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
+    1206:	48 89 d0             	mov    rax,rdx
+    1209:	48 01 c0             	add    rax,rax
+    120c:	48 01 d0             	add    rax,rdx
+    120f:	48 c1 e0 03          	shl    rax,0x3
+    1213:	48 01 c8             	add    rax,rcx
+    1216:	48 83 c0 08          	add    rax,0x8
+    121a:	48 8b 00             	mov    rax,QWORD PTR [rax]
+    121d:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
+    1221:	48 89 d6             	mov    rsi,rdx
+    1224:	48 89 c7             	mov    rdi,rax
+    1227:	e8 00 00 00 00       	call   122c <elf_locate_global_symbol+0x8f>
+    122c:	85 c0                	test   eax,eax
+    122e:	0f 85 87 00 00 00    	jne    12bb <elf_locate_global_symbol+0x11e>
 						/* found a match candidate */
 						if (sl->entries[i].type == type) /* exact match */
-    122a:	48 8b 4d f8          	mov    rcx,QWORD PTR [rbp-0x8]
-    122e:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
-    1232:	48 89 d0             	mov    rax,rdx
-    1235:	48 01 c0             	add    rax,rax
-    1238:	48 01 d0             	add    rax,rdx
-    123b:	48 c1 e0 03          	shl    rax,0x3
-    123f:	48 01 c8             	add    rax,rcx
-    1242:	48 83 c0 10          	add    rax,0x10
-    1246:	0f b6 00             	movzx  eax,BYTE PTR [rax]
-    1249:	38 45 e4             	cmp    BYTE PTR [rbp-0x1c],al
-    124c:	75 1d                	jne    126b <elf_locate_global_symbol+0xd8>
+    1234:	48 8b 4d f8          	mov    rcx,QWORD PTR [rbp-0x8]
+    1238:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
+    123c:	48 89 d0             	mov    rax,rdx
+    123f:	48 01 c0             	add    rax,rax
+    1242:	48 01 d0             	add    rax,rdx
+    1245:	48 c1 e0 03          	shl    rax,0x3
+    1249:	48 01 c8             	add    rax,rcx
+    124c:	48 83 c0 10          	add    rax,0x10
+    1250:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+    1253:	38 45 e4             	cmp    BYTE PTR [rbp-0x1c],al
+    1256:	75 1d                	jne    1275 <elf_locate_global_symbol+0xd8>
 								return (Elf32_Addr)sl->entries[i].vma;
-    124e:	48 8b 4d f8          	mov    rcx,QWORD PTR [rbp-0x8]
-    1252:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
-    1256:	48 89 d0             	mov    rax,rdx
-    1259:	48 01 c0             	add    rax,rax
-    125c:	48 01 d0             	add    rax,rdx
-    125f:	48 c1 e0 03          	shl    rax,0x3
-    1263:	48 01 c8             	add    rax,rcx
-    1266:	48 8b 00             	mov    rax,QWORD PTR [rax]
-    1269:	eb 7c                	jmp    12e7 <elf_locate_global_symbol+0x154>
+    1258:	48 8b 4d f8          	mov    rcx,QWORD PTR [rbp-0x8]
+    125c:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
+    1260:	48 89 d0             	mov    rax,rdx
+    1263:	48 01 c0             	add    rax,rax
+    1266:	48 01 d0             	add    rax,rdx
+    1269:	48 c1 e0 03          	shl    rax,0x3
+    126d:	48 01 c8             	add    rax,rcx
+    1270:	48 8b 00             	mov    rax,QWORD PTR [rax]
+    1273:	eb 7c                	jmp    12f1 <elf_locate_global_symbol+0x154>
 						else if (sl->entries[i].type == 'B' && type == 'D')
-    126b:	48 8b 4d f8          	mov    rcx,QWORD PTR [rbp-0x8]
-    126f:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
-    1273:	48 89 d0             	mov    rax,rdx
-    1276:	48 01 c0             	add    rax,rax
-    1279:	48 01 d0             	add    rax,rdx
-    127c:	48 c1 e0 03          	shl    rax,0x3
-    1280:	48 01 c8             	add    rax,rcx
-    1283:	48 83 c0 10          	add    rax,0x10
-    1287:	0f b6 00             	movzx  eax,BYTE PTR [rax]
-    128a:	3c 42                	cmp    al,0x42
-    128c:	75 23                	jne    12b1 <elf_locate_global_symbol+0x11e>
-    128e:	80 7d e4 44          	cmp    BYTE PTR [rbp-0x1c],0x44
-    1292:	75 1d                	jne    12b1 <elf_locate_global_symbol+0x11e>
+    1275:	48 8b 4d f8          	mov    rcx,QWORD PTR [rbp-0x8]
+    1279:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
+    127d:	48 89 d0             	mov    rax,rdx
+    1280:	48 01 c0             	add    rax,rax
+    1283:	48 01 d0             	add    rax,rdx
+    1286:	48 c1 e0 03          	shl    rax,0x3
+    128a:	48 01 c8             	add    rax,rcx
+    128d:	48 83 c0 10          	add    rax,0x10
+    1291:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+    1294:	3c 42                	cmp    al,0x42
+    1296:	75 23                	jne    12bb <elf_locate_global_symbol+0x11e>
+    1298:	80 7d e4 44          	cmp    BYTE PTR [rbp-0x1c],0x44
+    129c:	75 1d                	jne    12bb <elf_locate_global_symbol+0x11e>
 								return (Elf32_Addr)sl->entries[i].vma; /* compatible */
-    1294:	48 8b 4d f8          	mov    rcx,QWORD PTR [rbp-0x8]
-    1298:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
-    129c:	48 89 d0             	mov    rax,rdx
-    129f:	48 01 c0             	add    rax,rax
-    12a2:	48 01 d0             	add    rax,rdx
-    12a5:	48 c1 e0 03          	shl    rax,0x3
-    12a9:	48 01 c8             	add    rax,rcx
-    12ac:	48 8b 00             	mov    rax,QWORD PTR [rax]
-    12af:	eb 36                	jmp    12e7 <elf_locate_global_symbol+0x154>
+    129e:	48 8b 4d f8          	mov    rcx,QWORD PTR [rbp-0x8]
+    12a2:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
+    12a6:	48 89 d0             	mov    rax,rdx
+    12a9:	48 01 c0             	add    rax,rax
+    12ac:	48 01 d0             	add    rax,rdx
+    12af:	48 c1 e0 03          	shl    rax,0x3
+    12b3:	48 01 c8             	add    rax,rcx
+    12b6:	48 8b 00             	mov    rax,QWORD PTR [rax]
+    12b9:	eb 36                	jmp    12f1 <elf_locate_global_symbol+0x154>
 				}
 
 				if (++i == 64) {
-    12b1:	48 83 45 f0 01       	add    QWORD PTR [rbp-0x10],0x1
-    12b6:	48 83 7d f0 40       	cmp    QWORD PTR [rbp-0x10],0x40
-    12bb:	75 17                	jne    12d4 <elf_locate_global_symbol+0x141>
+    12bb:	48 83 45 f0 01       	add    QWORD PTR [rbp-0x10],0x1
+    12c0:	48 83 7d f0 40       	cmp    QWORD PTR [rbp-0x10],0x40
+    12c5:	75 17                	jne    12de <elf_locate_global_symbol+0x141>
 						sl = sl->next;
-    12bd:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-    12c1:	48 8b 80 00 06 00 00 	mov    rax,QWORD PTR [rax+0x600]
-    12c8:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
+    12c7:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    12cb:	48 8b 80 00 06 00 00 	mov    rax,QWORD PTR [rax+0x600]
+    12d2:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
 						i = 0;
-    12cc:	48 c7 45 f0 00 00 00 00 	mov    QWORD PTR [rbp-0x10],0x0
+    12d6:	48 c7 45 f0 00 00 00 00 	mov    QWORD PTR [rbp-0x10],0x0
 		while (sl) {
-    12d4:	48 83 7d f8 00       	cmp    QWORD PTR [rbp-0x8],0x0
-    12d9:	0f 85 ed fe ff ff    	jne    11cc <elf_locate_global_symbol+0x39>
-    12df:	eb 01                	jmp    12e2 <elf_locate_global_symbol+0x14f>
+    12de:	48 83 7d f8 00       	cmp    QWORD PTR [rbp-0x8],0x0
+    12e3:	0f 85 ed fe ff ff    	jne    11d6 <elf_locate_global_symbol+0x39>
+    12e9:	eb 01                	jmp    12ec <elf_locate_global_symbol+0x14f>
 						break; /* end of list */
-    12e1:	90                   	nop
+    12eb:	90                   	nop
 				}
 		}
 
 		/* no match found */
 		return (Elf32_Addr)NULL;
-    12e2:	b8 00 00 00 00       	mov    eax,0x0
+    12ec:	b8 00 00 00 00       	mov    eax,0x0
 }
-    12e7:	c9                   	leave
-    12e8:	c3                   	ret
+    12f1:	c9                   	leave
+    12f2:	c3                   	ret
 
-00000000000012e9 <locate_module_function>:
+00000000000012f3 <locate_module_function>:
 
 void* locate_module_function(char* name)
 {
-    12e9:	55                   	push   rbp
-    12ea:	48 89 e5             	mov    rbp,rsp
-    12ed:	48 83 ec 30          	sub    rsp,0x30
-    12f1:	48 89 7d d8          	mov    QWORD PTR [rbp-0x28],rdi
+    12f3:	55                   	push   rbp
+    12f4:	48 89 e5             	mov    rbp,rsp
+    12f7:	48 83 ec 30          	sub    rsp,0x30
+    12fb:	48 89 7d d8          	mov    QWORD PTR [rbp-0x28],rdi
 		Elf32_Addr rv;
 		rv = elf_locate_global_symbol(name, 'T');
-    12f5:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
-    12f9:	be 54 00 00 00       	mov    esi,0x54
-    12fe:	48 89 c7             	mov    rdi,rax
-    1301:	e8 00 00 00 00       	call   1306 <locate_module_function+0x1d>
-    1306:	89 45 fc             	mov    DWORD PTR [rbp-0x4],eax
+    12ff:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
+    1303:	be 54 00 00 00       	mov    esi,0x54
+    1308:	48 89 c7             	mov    rdi,rax
+    130b:	e8 00 00 00 00       	call   1310 <locate_module_function+0x1d>
+    1310:	89 45 fc             	mov    DWORD PTR [rbp-0x4],eax
 		if (!rv)
-    1309:	83 7d fc 00          	cmp    DWORD PTR [rbp-0x4],0x0
-    130d:	75 14                	jne    1323 <locate_module_function+0x3a>
+    1313:	83 7d fc 00          	cmp    DWORD PTR [rbp-0x4],0x0
+    1317:	75 14                	jne    132d <locate_module_function+0x3a>
 				rv = elf_locate_global_symbol(name, 'D');
-    130f:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
-    1313:	be 44 00 00 00       	mov    esi,0x44
-    1318:	48 89 c7             	mov    rdi,rax
-    131b:	e8 00 00 00 00       	call   1320 <locate_module_function+0x37>
-    1320:	89 45 fc             	mov    DWORD PTR [rbp-0x4],eax
+    1319:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
+    131d:	be 44 00 00 00       	mov    esi,0x44
+    1322:	48 89 c7             	mov    rdi,rax
+    1325:	e8 00 00 00 00       	call   132a <locate_module_function+0x37>
+    132a:	89 45 fc             	mov    DWORD PTR [rbp-0x4],eax
 		if (!rv) {
-    1323:	83 7d fc 00          	cmp    DWORD PTR [rbp-0x4],0x0
-    1327:	0f 85 9a 00 00 00    	jne    13c7 <locate_module_function+0xde>
+    132d:	83 7d fc 00          	cmp    DWORD PTR [rbp-0x4],0x0
+    1331:	0f 85 9a 00 00 00    	jne    13d1 <locate_module_function+0xde>
 				struct symbol_list* sl = gs_lst;
-    132d:	48 8b 05 00 00 00 00 	mov    rax,QWORD PTR [rip+0x0]        # 1334 <locate_module_function+0x4b>
-    1334:	48 89 45 f0          	mov    QWORD PTR [rbp-0x10],rax
+    1337:	48 8b 05 00 00 00 00 	mov    rax,QWORD PTR [rip+0x0]        # 133e <locate_module_function+0x4b>
+    133e:	48 89 45 f0          	mov    QWORD PTR [rbp-0x10],rax
 				size_t i = 0;
-    1338:	48 c7 45 e8 00 00 00 00 	mov    QWORD PTR [rbp-0x18],0x0
+    1342:	48 c7 45 e8 00 00 00 00 	mov    QWORD PTR [rbp-0x18],0x0
 				while (sl) {
-    1340:	eb 7a                	jmp    13bc <locate_module_function+0xd3>
+    134a:	eb 7a                	jmp    13c6 <locate_module_function+0xd3>
 						printf("%s %c\n", sl->entries[i].name, sl->entries[i].type);
-    1342:	48 8b 4d f0          	mov    rcx,QWORD PTR [rbp-0x10]
-    1346:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
-    134a:	48 89 d0             	mov    rax,rdx
-    134d:	48 01 c0             	add    rax,rax
-    1350:	48 01 d0             	add    rax,rdx
-    1353:	48 c1 e0 03          	shl    rax,0x3
-    1357:	48 01 c8             	add    rax,rcx
-    135a:	48 83 c0 10          	add    rax,0x10
-    135e:	0f b6 00             	movzx  eax,BYTE PTR [rax]
-    1361:	0f be c8             	movsx  ecx,al
-    1364:	48 8b 75 f0          	mov    rsi,QWORD PTR [rbp-0x10]
-    1368:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
-    136c:	48 89 d0             	mov    rax,rdx
-    136f:	48 01 c0             	add    rax,rax
-    1372:	48 01 d0             	add    rax,rdx
-    1375:	48 c1 e0 03          	shl    rax,0x3
-    1379:	48 01 f0             	add    rax,rsi
-    137c:	48 83 c0 08          	add    rax,0x8
-    1380:	48 8b 00             	mov    rax,QWORD PTR [rax]
-    1383:	89 ca                	mov    edx,ecx
-    1385:	48 89 c6             	mov    rsi,rax
-    1388:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-    138f:	b8 00 00 00 00       	mov    eax,0x0
-    1394:	e8 00 00 00 00       	call   1399 <locate_module_function+0xb0>
+    134c:	48 8b 4d f0          	mov    rcx,QWORD PTR [rbp-0x10]
+    1350:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
+    1354:	48 89 d0             	mov    rax,rdx
+    1357:	48 01 c0             	add    rax,rax
+    135a:	48 01 d0             	add    rax,rdx
+    135d:	48 c1 e0 03          	shl    rax,0x3
+    1361:	48 01 c8             	add    rax,rcx
+    1364:	48 83 c0 10          	add    rax,0x10
+    1368:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+    136b:	0f be c8             	movsx  ecx,al
+    136e:	48 8b 75 f0          	mov    rsi,QWORD PTR [rbp-0x10]
+    1372:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
+    1376:	48 89 d0             	mov    rax,rdx
+    1379:	48 01 c0             	add    rax,rax
+    137c:	48 01 d0             	add    rax,rdx
+    137f:	48 c1 e0 03          	shl    rax,0x3
+    1383:	48 01 f0             	add    rax,rsi
+    1386:	48 83 c0 08          	add    rax,0x8
+    138a:	48 8b 00             	mov    rax,QWORD PTR [rax]
+    138d:	89 ca                	mov    edx,ecx
+    138f:	48 89 c6             	mov    rsi,rax
+    1392:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+    1399:	b8 00 00 00 00       	mov    eax,0x0
+    139e:	e8 00 00 00 00       	call   13a3 <locate_module_function+0xb0>
 						if (++i == 64) {
-    1399:	48 83 45 e8 01       	add    QWORD PTR [rbp-0x18],0x1
-    139e:	48 83 7d e8 40       	cmp    QWORD PTR [rbp-0x18],0x40
-    13a3:	75 17                	jne    13bc <locate_module_function+0xd3>
+    13a3:	48 83 45 e8 01       	add    QWORD PTR [rbp-0x18],0x1
+    13a8:	48 83 7d e8 40       	cmp    QWORD PTR [rbp-0x18],0x40
+    13ad:	75 17                	jne    13c6 <locate_module_function+0xd3>
 								sl = sl->next;
-    13a5:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
-    13a9:	48 8b 80 00 06 00 00 	mov    rax,QWORD PTR [rax+0x600]
-    13b0:	48 89 45 f0          	mov    QWORD PTR [rbp-0x10],rax
+    13af:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
+    13b3:	48 8b 80 00 06 00 00 	mov    rax,QWORD PTR [rax+0x600]
+    13ba:	48 89 45 f0          	mov    QWORD PTR [rbp-0x10],rax
 								i = 0;
-    13b4:	48 c7 45 e8 00 00 00 00 	mov    QWORD PTR [rbp-0x18],0x0
+    13be:	48 c7 45 e8 00 00 00 00 	mov    QWORD PTR [rbp-0x18],0x0
 				while (sl) {
-    13bc:	48 83 7d f0 00       	cmp    QWORD PTR [rbp-0x10],0x0
-    13c1:	0f 85 7b ff ff ff    	jne    1342 <locate_module_function+0x59>
+    13c6:	48 83 7d f0 00       	cmp    QWORD PTR [rbp-0x10],0x0
+    13cb:	0f 85 7b ff ff ff    	jne    134c <locate_module_function+0x59>
 						}
 				}
 		}
 		return (void*)rv;
-    13c7:	8b 45 fc             	mov    eax,DWORD PTR [rbp-0x4]
+    13d1:	8b 45 fc             	mov    eax,DWORD PTR [rbp-0x4]
 }
-    13ca:	c9                   	leave
-    13cb:	c3                   	ret
+    13d4:	c9                   	leave
+    13d5:	c3                   	ret
 
-00000000000013cc <store_module_info>:
+00000000000013d6 <store_module_info>:
 
 void store_module_info(struct module_info* mi)
 {
-    13cc:	55                   	push   rbp
-    13cd:	48 89 e5             	mov    rbp,rsp
-    13d0:	48 83 ec 20          	sub    rsp,0x20
-    13d4:	48 89 7d e8          	mov    QWORD PTR [rbp-0x18],rdi
+    13d6:	55                   	push   rbp
+    13d7:	48 89 e5             	mov    rbp,rsp
+    13da:	48 83 ec 20          	sub    rsp,0x20
+    13de:	48 89 7d e8          	mov    QWORD PTR [rbp-0x18],rdi
 		struct module_info_container* mc;
 		mc = mod_tbl.mt_mic;
-    13d8:	48 8b 05 00 00 00 00 	mov    rax,QWORD PTR [rip+0x0]        # 13df <store_module_info+0x13>
-    13df:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
+    13e2:	48 8b 05 00 00 00 00 	mov    rax,QWORD PTR [rip+0x0]        # 13e9 <store_module_info+0x13>
+    13e9:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
 		do {
 				for (int i = 0; i < 7; i++)
-    13e3:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [rbp-0xc],0x0
-    13ea:	e9 b9 00 00 00       	jmp    14a8 <store_module_info+0xdc>
+    13ed:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [rbp-0xc],0x0
+    13f4:	e9 b9 00 00 00       	jmp    14b2 <store_module_info+0xdc>
 						if (!mc->ptrs[i]) {
-    13ef:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-    13f3:	8b 55 f4             	mov    edx,DWORD PTR [rbp-0xc]
-    13f6:	48 63 d2             	movsxd rdx,edx
-    13f9:	48 8b 04 d0          	mov    rax,QWORD PTR [rax+rdx*8]
-    13fd:	48 85 c0             	test   rax,rax
-    1400:	0f 85 9e 00 00 00    	jne    14a4 <store_module_info+0xd8>
+    13f9:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    13fd:	8b 55 f4             	mov    edx,DWORD PTR [rbp-0xc]
+    1400:	48 63 d2             	movsxd rdx,edx
+    1403:	48 8b 04 d0          	mov    rax,QWORD PTR [rax+rdx*8]
+    1407:	48 85 c0             	test   rax,rax
+    140a:	0f 85 9e 00 00 00    	jne    14ae <store_module_info+0xd8>
 								mc->ptrs[i] = kmalloc(sizeof(struct module_info));
-    1406:	bf 68 00 00 00       	mov    edi,0x68
-    140b:	e8 00 00 00 00       	call   1410 <store_module_info+0x44>
-    1410:	48 8b 55 f8          	mov    rdx,QWORD PTR [rbp-0x8]
-    1414:	8b 4d f4             	mov    ecx,DWORD PTR [rbp-0xc]
-    1417:	48 63 c9             	movsxd rcx,ecx
-    141a:	48 89 04 ca          	mov    QWORD PTR [rdx+rcx*8],rax
+    1410:	bf 68 00 00 00       	mov    edi,0x68
+    1415:	e8 00 00 00 00       	call   141a <store_module_info+0x44>
+    141a:	48 8b 55 f8          	mov    rdx,QWORD PTR [rbp-0x8]
+    141e:	8b 4d f4             	mov    ecx,DWORD PTR [rbp-0xc]
+    1421:	48 63 c9             	movsxd rcx,ecx
+    1424:	48 89 04 ca          	mov    QWORD PTR [rdx+rcx*8],rax
 								if (!mc->ptrs[i])
-    141e:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-    1422:	8b 55 f4             	mov    edx,DWORD PTR [rbp-0xc]
-    1425:	48 63 d2             	movsxd rdx,edx
-    1428:	48 8b 04 d0          	mov    rax,QWORD PTR [rax+rdx*8]
-    142c:	48 85 c0             	test   rax,rax
-    142f:	0f 84 d7 00 00 00    	je     150c <store_module_info+0x140>
+    1428:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    142c:	8b 55 f4             	mov    edx,DWORD PTR [rbp-0xc]
+    142f:	48 63 d2             	movsxd rdx,edx
+    1432:	48 8b 04 d0          	mov    rax,QWORD PTR [rax+rdx*8]
+    1436:	48 85 c0             	test   rax,rax
+    1439:	0f 84 d7 00 00 00    	je     1516 <store_module_info+0x140>
 										return;
 								memcpy(mc->ptrs[i], mi, sizeof(struct module_info));
-    1435:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-    1439:	8b 55 f4             	mov    edx,DWORD PTR [rbp-0xc]
-    143c:	48 63 d2             	movsxd rdx,edx
-    143f:	48 8b 04 d0          	mov    rax,QWORD PTR [rax+rdx*8]
-    1443:	48 8b 4d e8          	mov    rcx,QWORD PTR [rbp-0x18]
-    1447:	ba 68 00 00 00       	mov    edx,0x68
-    144c:	48 89 ce             	mov    rsi,rcx
-    144f:	48 89 c7             	mov    rdi,rax
-    1452:	e8 a9 eb ff ff       	call   0 <memcpy>
+    143f:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    1443:	8b 55 f4             	mov    edx,DWORD PTR [rbp-0xc]
+    1446:	48 63 d2             	movsxd rdx,edx
+    1449:	48 8b 04 d0          	mov    rax,QWORD PTR [rax+rdx*8]
+    144d:	48 8b 4d e8          	mov    rcx,QWORD PTR [rbp-0x18]
+    1451:	ba 68 00 00 00       	mov    edx,0x68
+    1456:	48 89 ce             	mov    rsi,rcx
+    1459:	48 89 c7             	mov    rdi,rax
+    145c:	e8 9f eb ff ff       	call   0 <memcpy>
 								for (int j = 0; j < 4; j++)
-    1457:	c7 45 f0 00 00 00 00 	mov    DWORD PTR [rbp-0x10],0x0
-    145e:	eb 3c                	jmp    149c <store_module_info+0xd0>
+    1461:	c7 45 f0 00 00 00 00 	mov    DWORD PTR [rbp-0x10],0x0
+    1468:	eb 3c                	jmp    14a6 <store_module_info+0xd0>
 										mod_tbl.sz_secs[j] += mi->sz_secs[j];
-    1460:	8b 45 f0             	mov    eax,DWORD PTR [rbp-0x10]
-    1463:	48 98                	cdqe
-    1465:	48 83 c0 04          	add    rax,0x4
-    1469:	48 8b 14 c5 00 00 00 00 	mov    rdx,QWORD PTR [rax*8+0x0]
-    1471:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
-    1475:	8b 4d f0             	mov    ecx,DWORD PTR [rbp-0x10]
-    1478:	48 63 c9             	movsxd rcx,ecx
-    147b:	48 83 c1 08          	add    rcx,0x8
-    147f:	48 8b 44 c8 08       	mov    rax,QWORD PTR [rax+rcx*8+0x8]
-    1484:	48 01 c2             	add    rdx,rax
-    1487:	8b 45 f0             	mov    eax,DWORD PTR [rbp-0x10]
-    148a:	48 98                	cdqe
-    148c:	48 83 c0 04          	add    rax,0x4
-    1490:	48 89 14 c5 00 00 00 00 	mov    QWORD PTR [rax*8+0x0],rdx
+    146a:	8b 45 f0             	mov    eax,DWORD PTR [rbp-0x10]
+    146d:	48 98                	cdqe
+    146f:	48 83 c0 04          	add    rax,0x4
+    1473:	48 8b 14 c5 00 00 00 00 	mov    rdx,QWORD PTR [rax*8+0x0]
+    147b:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+    147f:	8b 4d f0             	mov    ecx,DWORD PTR [rbp-0x10]
+    1482:	48 63 c9             	movsxd rcx,ecx
+    1485:	48 83 c1 08          	add    rcx,0x8
+    1489:	48 8b 44 c8 08       	mov    rax,QWORD PTR [rax+rcx*8+0x8]
+    148e:	48 01 c2             	add    rdx,rax
+    1491:	8b 45 f0             	mov    eax,DWORD PTR [rbp-0x10]
+    1494:	48 98                	cdqe
+    1496:	48 83 c0 04          	add    rax,0x4
+    149a:	48 89 14 c5 00 00 00 00 	mov    QWORD PTR [rax*8+0x0],rdx
 								for (int j = 0; j < 4; j++)
-    1498:	83 45 f0 01          	add    DWORD PTR [rbp-0x10],0x1
-    149c:	83 7d f0 03          	cmp    DWORD PTR [rbp-0x10],0x3
-    14a0:	7e be                	jle    1460 <store_module_info+0x94>
+    14a2:	83 45 f0 01          	add    DWORD PTR [rbp-0x10],0x1
+    14a6:	83 7d f0 03          	cmp    DWORD PTR [rbp-0x10],0x3
+    14aa:	7e be                	jle    146a <store_module_info+0x94>
 								return;
-    14a2:	eb 69                	jmp    150d <store_module_info+0x141>
+    14ac:	eb 69                	jmp    1517 <store_module_info+0x141>
 				for (int i = 0; i < 7; i++)
-    14a4:	83 45 f4 01          	add    DWORD PTR [rbp-0xc],0x1
-    14a8:	83 7d f4 06          	cmp    DWORD PTR [rbp-0xc],0x6
-    14ac:	0f 8e 3d ff ff ff    	jle    13ef <store_module_info+0x23>
+    14ae:	83 45 f4 01          	add    DWORD PTR [rbp-0xc],0x1
+    14b2:	83 7d f4 06          	cmp    DWORD PTR [rbp-0xc],0x6
+    14b6:	0f 8e 3d ff ff ff    	jle    13f9 <store_module_info+0x23>
 						}
 				if (!mc->next) {
-    14b2:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-    14b6:	48 8b 40 38          	mov    rax,QWORD PTR [rax+0x38]
-    14ba:	48 85 c0             	test   rax,rax
-    14bd:	75 34                	jne    14f3 <store_module_info+0x127>
+    14bc:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    14c0:	48 8b 40 38          	mov    rax,QWORD PTR [rax+0x38]
+    14c4:	48 85 c0             	test   rax,rax
+    14c7:	75 34                	jne    14fd <store_module_info+0x127>
 						mc->next = kmalloc(sizeof(struct module_info_container));
-    14bf:	bf 40 00 00 00       	mov    edi,0x40
-    14c4:	e8 00 00 00 00       	call   14c9 <store_module_info+0xfd>
-    14c9:	48 8b 55 f8          	mov    rdx,QWORD PTR [rbp-0x8]
-    14cd:	48 89 42 38          	mov    QWORD PTR [rdx+0x38],rax
+    14c9:	bf 40 00 00 00       	mov    edi,0x40
+    14ce:	e8 00 00 00 00       	call   14d3 <store_module_info+0xfd>
+    14d3:	48 8b 55 f8          	mov    rdx,QWORD PTR [rbp-0x8]
+    14d7:	48 89 42 38          	mov    QWORD PTR [rdx+0x38],rax
 						if (mc->next)
-    14d1:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-    14d5:	48 8b 40 38          	mov    rax,QWORD PTR [rax+0x38]
-    14d9:	48 85 c0             	test   rax,rax
-    14dc:	74 15                	je     14f3 <store_module_info+0x127>
+    14db:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    14df:	48 8b 40 38          	mov    rax,QWORD PTR [rax+0x38]
+    14e3:	48 85 c0             	test   rax,rax
+    14e6:	74 15                	je     14fd <store_module_info+0x127>
 								bzero(mc->next, sizeof(struct module_info_container));
-    14de:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-    14e2:	48 8b 40 38          	mov    rax,QWORD PTR [rax+0x38]
-    14e6:	be 40 00 00 00       	mov    esi,0x40
-    14eb:	48 89 c7             	mov    rdi,rax
-    14ee:	e8 00 00 00 00       	call   14f3 <store_module_info+0x127>
+    14e8:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    14ec:	48 8b 40 38          	mov    rax,QWORD PTR [rax+0x38]
+    14f0:	be 40 00 00 00       	mov    esi,0x40
+    14f5:	48 89 c7             	mov    rdi,rax
+    14f8:	e8 00 00 00 00       	call   14fd <store_module_info+0x127>
 				}
 		} while ((mc = mc->next));
-    14f3:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-    14f7:	48 8b 40 38          	mov    rax,QWORD PTR [rax+0x38]
-    14fb:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
-    14ff:	48 83 7d f8 00       	cmp    QWORD PTR [rbp-0x8],0x0
-    1504:	0f 85 d9 fe ff ff    	jne    13e3 <store_module_info+0x17>
-    150a:	eb 01                	jmp    150d <store_module_info+0x141>
+    14fd:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    1501:	48 8b 40 38          	mov    rax,QWORD PTR [rax+0x38]
+    1505:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
+    1509:	48 83 7d f8 00       	cmp    QWORD PTR [rbp-0x8],0x0
+    150e:	0f 85 d9 fe ff ff    	jne    13ed <store_module_info+0x17>
+    1514:	eb 01                	jmp    1517 <store_module_info+0x141>
 										return;
-    150c:	90                   	nop
+    1516:	90                   	nop
 }
-    150d:	c9                   	leave
-    150e:	c3                   	ret
+    1517:	c9                   	leave
+    1518:	c3                   	ret
 
-000000000000150f <list_modules>:
+0000000000001519 <list_modules>:
 
 void list_modules()
 {
-    150f:	55                   	push   rbp
-    1510:	48 89 e5             	mov    rbp,rsp
-    1513:	48 83 ec 20          	sub    rsp,0x20
+    1519:	55                   	push   rbp
+    151a:	48 89 e5             	mov    rbp,rsp
+    151d:	48 83 ec 20          	sub    rsp,0x20
 		struct module_info_container* mc;
 		mc = mod_tbl.mt_mic;
-    1517:	48 8b 05 00 00 00 00 	mov    rax,QWORD PTR [rip+0x0]        # 151e <list_modules+0xf>
-    151e:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
+    1521:	48 8b 05 00 00 00 00 	mov    rax,QWORD PTR [rip+0x0]        # 1528 <list_modules+0xf>
+    1528:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
 		printf("Module                     Size\n");
-    1522:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-    1529:	b8 00 00 00 00       	mov    eax,0x0
-    152e:	e8 00 00 00 00       	call   1533 <list_modules+0x24>
+    152c:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+    1533:	b8 00 00 00 00       	mov    eax,0x0
+    1538:	e8 00 00 00 00       	call   153d <list_modules+0x24>
 		do {
 				for (int i = 0; i < 7; i++)
-    1533:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [rbp-0xc],0x0
-    153a:	eb 6a                	jmp    15a6 <list_modules+0x97>
+    153d:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [rbp-0xc],0x0
+    1544:	eb 6a                	jmp    15b0 <list_modules+0x97>
 						if (mc->ptrs[i]) {
-    153c:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-    1540:	8b 55 f4             	mov    edx,DWORD PTR [rbp-0xc]
-    1543:	48 63 d2             	movsxd rdx,edx
-    1546:	48 8b 04 d0          	mov    rax,QWORD PTR [rax+rdx*8]
-    154a:	48 85 c0             	test   rax,rax
-    154d:	74 5f                	je     15ae <list_modules+0x9f>
+    1546:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    154a:	8b 55 f4             	mov    edx,DWORD PTR [rbp-0xc]
+    154d:	48 63 d2             	movsxd rdx,edx
+    1550:	48 8b 04 d0          	mov    rax,QWORD PTR [rax+rdx*8]
+    1554:	48 85 c0             	test   rax,rax
+    1557:	74 5f                	je     15b8 <list_modules+0x9f>
 								struct module_info* mi = mc->ptrs[i];
-    154f:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-    1553:	8b 55 f4             	mov    edx,DWORD PTR [rbp-0xc]
-    1556:	48 63 d2             	movsxd rdx,edx
-    1559:	48 8b 04 d0          	mov    rax,QWORD PTR [rax+rdx*8]
-    155d:	48 89 45 e8          	mov    QWORD PTR [rbp-0x18],rax
+    1559:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    155d:	8b 55 f4             	mov    edx,DWORD PTR [rbp-0xc]
+    1560:	48 63 d2             	movsxd rdx,edx
+    1563:	48 8b 04 d0          	mov    rax,QWORD PTR [rax+rdx*8]
+    1567:	48 89 45 e8          	mov    QWORD PTR [rbp-0x18],rax
 								printf("%20s %10lu\n", mi->mi_name, mi->sz_secs[0] +
-    1561:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
-    1565:	48 8b 50 48          	mov    rdx,QWORD PTR [rax+0x48]
+    156b:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+    156f:	48 8b 50 48          	mov    rdx,QWORD PTR [rax+0x48]
 											mi->sz_secs[1] + mi->sz_secs[2] + mi->sz_secs[3]);
-    1569:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
-    156d:	48 8b 40 50          	mov    rax,QWORD PTR [rax+0x50]
+    1573:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+    1577:	48 8b 40 50          	mov    rax,QWORD PTR [rax+0x50]
 								printf("%20s %10lu\n", mi->mi_name, mi->sz_secs[0] +
-    1571:	48 01 c2             	add    rdx,rax
+    157b:	48 01 c2             	add    rdx,rax
 											mi->sz_secs[1] + mi->sz_secs[2] + mi->sz_secs[3]);
-    1574:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
-    1578:	48 8b 40 58          	mov    rax,QWORD PTR [rax+0x58]
-    157c:	48 01 c2             	add    rdx,rax
-    157f:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
-    1583:	48 8b 40 60          	mov    rax,QWORD PTR [rax+0x60]
+    157e:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+    1582:	48 8b 40 58          	mov    rax,QWORD PTR [rax+0x58]
+    1586:	48 01 c2             	add    rdx,rax
+    1589:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+    158d:	48 8b 40 60          	mov    rax,QWORD PTR [rax+0x60]
 								printf("%20s %10lu\n", mi->mi_name, mi->sz_secs[0] +
-    1587:	48 01 c2             	add    rdx,rax
-    158a:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
-    158e:	48 89 c6             	mov    rsi,rax
-    1591:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-    1598:	b8 00 00 00 00       	mov    eax,0x0
-    159d:	e8 00 00 00 00       	call   15a2 <list_modules+0x93>
+    1591:	48 01 c2             	add    rdx,rax
+    1594:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+    1598:	48 89 c6             	mov    rsi,rax
+    159b:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+    15a2:	b8 00 00 00 00       	mov    eax,0x0
+    15a7:	e8 00 00 00 00       	call   15ac <list_modules+0x93>
 				for (int i = 0; i < 7; i++)
-    15a2:	83 45 f4 01          	add    DWORD PTR [rbp-0xc],0x1
-    15a6:	83 7d f4 06          	cmp    DWORD PTR [rbp-0xc],0x6
-    15aa:	7e 90                	jle    153c <list_modules+0x2d>
-    15ac:	eb 01                	jmp    15af <list_modules+0xa0>
+    15ac:	83 45 f4 01          	add    DWORD PTR [rbp-0xc],0x1
+    15b0:	83 7d f4 06          	cmp    DWORD PTR [rbp-0xc],0x6
+    15b4:	7e 90                	jle    1546 <list_modules+0x2d>
+    15b6:	eb 01                	jmp    15b9 <list_modules+0xa0>
 						} else
 								break;
-    15ae:	90                   	nop
+    15b8:	90                   	nop
 		} while ((mc = mc->next));
-    15af:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-    15b3:	48 8b 40 38          	mov    rax,QWORD PTR [rax+0x38]
-    15b7:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
-    15bb:	48 83 7d f8 00       	cmp    QWORD PTR [rbp-0x8],0x0
-    15c0:	0f 85 6d ff ff ff    	jne    1533 <list_modules+0x24>
+    15b9:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    15bd:	48 8b 40 38          	mov    rax,QWORD PTR [rax+0x38]
+    15c1:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
+    15c5:	48 83 7d f8 00       	cmp    QWORD PTR [rbp-0x8],0x0
+    15ca:	0f 85 6d ff ff ff    	jne    153d <list_modules+0x24>
 		printf("TOTAL                %10lu\n", mod_tbl.sz_secs[0] +
-    15c6:	48 8b 15 00 00 00 00 	mov    rdx,QWORD PTR [rip+0x0]        # 15cd <list_modules+0xbe>
+    15d0:	48 8b 15 00 00 00 00 	mov    rdx,QWORD PTR [rip+0x0]        # 15d7 <list_modules+0xbe>
 						mod_tbl.sz_secs[1] + mod_tbl.sz_secs[2] + mod_tbl.sz_secs[3]);
-    15cd:	48 8b 05 00 00 00 00 	mov    rax,QWORD PTR [rip+0x0]        # 15d4 <list_modules+0xc5>
+    15d7:	48 8b 05 00 00 00 00 	mov    rax,QWORD PTR [rip+0x0]        # 15de <list_modules+0xc5>
 		printf("TOTAL                %10lu\n", mod_tbl.sz_secs[0] +
-    15d4:	48 01 c2             	add    rdx,rax
-						mod_tbl.sz_secs[1] + mod_tbl.sz_secs[2] + mod_tbl.sz_secs[3]);
-    15d7:	48 8b 05 00 00 00 00 	mov    rax,QWORD PTR [rip+0x0]        # 15de <list_modules+0xcf>
     15de:	48 01 c2             	add    rdx,rax
-    15e1:	48 8b 05 00 00 00 00 	mov    rax,QWORD PTR [rip+0x0]        # 15e8 <list_modules+0xd9>
+						mod_tbl.sz_secs[1] + mod_tbl.sz_secs[2] + mod_tbl.sz_secs[3]);
+    15e1:	48 8b 05 00 00 00 00 	mov    rax,QWORD PTR [rip+0x0]        # 15e8 <list_modules+0xcf>
+    15e8:	48 01 c2             	add    rdx,rax
+    15eb:	48 8b 05 00 00 00 00 	mov    rax,QWORD PTR [rip+0x0]        # 15f2 <list_modules+0xd9>
 		printf("TOTAL                %10lu\n", mod_tbl.sz_secs[0] +
-    15e8:	48 01 d0             	add    rax,rdx
-    15eb:	48 89 c6             	mov    rsi,rax
-    15ee:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-    15f5:	b8 00 00 00 00       	mov    eax,0x0
-    15fa:	e8 00 00 00 00       	call   15ff <list_modules+0xf0>
+    15f2:	48 01 d0             	add    rax,rdx
+    15f5:	48 89 c6             	mov    rsi,rax
+    15f8:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+    15ff:	b8 00 00 00 00       	mov    eax,0x0
+    1604:	e8 00 00 00 00       	call   1609 <list_modules+0xf0>
 }
-    15ff:	90                   	nop
-    1600:	c9                   	leave
-    1601:	c3                   	ret
+    1609:	90                   	nop
+    160a:	c9                   	leave
+    160b:	c3                   	ret
 
-0000000000001602 <list_module_info>:
+000000000000160c <list_module_info>:
 
 void list_module_info(const char* name)
 {
-    1602:	55                   	push   rbp
-    1603:	48 89 e5             	mov    rbp,rsp
-    1606:	48 83 ec 30          	sub    rsp,0x30
-    160a:	48 89 7d d8          	mov    QWORD PTR [rbp-0x28],rdi
+    160c:	55                   	push   rbp
+    160d:	48 89 e5             	mov    rbp,rsp
+    1610:	48 83 ec 30          	sub    rsp,0x30
+    1614:	48 89 7d d8          	mov    QWORD PTR [rbp-0x28],rdi
 		struct module_info_container* mc;
 		mc = mod_tbl.mt_mic;
-    160e:	48 8b 05 00 00 00 00 	mov    rax,QWORD PTR [rip+0x0]        # 1615 <list_module_info+0x13>
-    1615:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
+    1618:	48 8b 05 00 00 00 00 	mov    rax,QWORD PTR [rip+0x0]        # 161f <list_module_info+0x13>
+    161f:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
 		do {
 				for (int i = 0; i < 7; i++)
-    1619:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [rbp-0xc],0x0
-    1620:	e9 2a 01 00 00       	jmp    174f <list_module_info+0x14d>
+    1623:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [rbp-0xc],0x0
+    162a:	e9 2a 01 00 00       	jmp    1759 <list_module_info+0x14d>
 						if (mc->ptrs[i]) {
-    1625:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-    1629:	8b 55 f4             	mov    edx,DWORD PTR [rbp-0xc]
-    162c:	48 63 d2             	movsxd rdx,edx
-    162f:	48 8b 04 d0          	mov    rax,QWORD PTR [rax+rdx*8]
-    1633:	48 85 c0             	test   rax,rax
-    1636:	0f 84 1f 01 00 00    	je     175b <list_module_info+0x159>
+    162f:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    1633:	8b 55 f4             	mov    edx,DWORD PTR [rbp-0xc]
+    1636:	48 63 d2             	movsxd rdx,edx
+    1639:	48 8b 04 d0          	mov    rax,QWORD PTR [rax+rdx*8]
+    163d:	48 85 c0             	test   rax,rax
+    1640:	0f 84 1f 01 00 00    	je     1765 <list_module_info+0x159>
 								struct module_info* mi = mc->ptrs[i];
-    163c:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-    1640:	8b 55 f4             	mov    edx,DWORD PTR [rbp-0xc]
-    1643:	48 63 d2             	movsxd rdx,edx
-    1646:	48 8b 04 d0          	mov    rax,QWORD PTR [rax+rdx*8]
-    164a:	48 89 45 e8          	mov    QWORD PTR [rbp-0x18],rax
+    1646:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    164a:	8b 55 f4             	mov    edx,DWORD PTR [rbp-0xc]
+    164d:	48 63 d2             	movsxd rdx,edx
+    1650:	48 8b 04 d0          	mov    rax,QWORD PTR [rax+rdx*8]
+    1654:	48 89 45 e8          	mov    QWORD PTR [rbp-0x18],rax
 								if (strcmp(mi->mi_name, name) == 0) {
-    164e:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
-    1652:	48 8b 55 d8          	mov    rdx,QWORD PTR [rbp-0x28]
-    1656:	48 89 d6             	mov    rsi,rdx
-    1659:	48 89 c7             	mov    rdi,rax
-    165c:	e8 00 00 00 00       	call   1661 <list_module_info+0x5f>
-    1661:	85 c0                	test   eax,eax
-    1663:	0f 85 e2 00 00 00    	jne    174b <list_module_info+0x149>
+    1658:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+    165c:	48 8b 55 d8          	mov    rdx,QWORD PTR [rbp-0x28]
+    1660:	48 89 d6             	mov    rsi,rdx
+    1663:	48 89 c7             	mov    rdi,rax
+    1666:	e8 00 00 00 00       	call   166b <list_module_info+0x5f>
+    166b:	85 c0                	test   eax,eax
+    166d:	0f 85 e2 00 00 00    	jne    1755 <list_module_info+0x149>
 										printf("module %s resides at:\n", name);
-    1669:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
-    166d:	48 89 c6             	mov    rsi,rax
-    1670:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-    1677:	b8 00 00 00 00       	mov    eax,0x0
-    167c:	e8 00 00 00 00       	call   1681 <list_module_info+0x7f>
+    1673:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
+    1677:	48 89 c6             	mov    rsi,rax
+    167a:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+    1681:	b8 00 00 00 00       	mov    eax,0x0
+    1686:	e8 00 00 00 00       	call   168b <list_module_info+0x7f>
 										printf("SECTION     .text    .data  .rodata     .bss\n");
-    1681:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-    1688:	b8 00 00 00 00       	mov    eax,0x0
-    168d:	e8 00 00 00 00       	call   1692 <list_module_info+0x90>
+    168b:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+    1692:	b8 00 00 00 00       	mov    eax,0x0
+    1697:	e8 00 00 00 00       	call   169c <list_module_info+0x90>
 										printf("OFFSET   %p %p %p %p\n", mi->vm_ofs[0],
-    1692:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
-    1696:	48 8b 70 40          	mov    rsi,QWORD PTR [rax+0x40]
-    169a:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
-    169e:	48 8b 48 38          	mov    rcx,QWORD PTR [rax+0x38]
-    16a2:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
-    16a6:	48 8b 50 30          	mov    rdx,QWORD PTR [rax+0x30]
-    16aa:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
-    16ae:	48 8b 40 28          	mov    rax,QWORD PTR [rax+0x28]
-    16b2:	49 89 f0             	mov    r8,rsi
-    16b5:	48 89 c6             	mov    rsi,rax
-    16b8:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-    16bf:	b8 00 00 00 00       	mov    eax,0x0
-    16c4:	e8 00 00 00 00       	call   16c9 <list_module_info+0xc7>
+    169c:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+    16a0:	48 8b 70 40          	mov    rsi,QWORD PTR [rax+0x40]
+    16a4:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+    16a8:	48 8b 48 38          	mov    rcx,QWORD PTR [rax+0x38]
+    16ac:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+    16b0:	48 8b 50 30          	mov    rdx,QWORD PTR [rax+0x30]
+    16b4:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+    16b8:	48 8b 40 28          	mov    rax,QWORD PTR [rax+0x28]
+    16bc:	49 89 f0             	mov    r8,rsi
+    16bf:	48 89 c6             	mov    rsi,rax
+    16c2:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+    16c9:	b8 00 00 00 00       	mov    eax,0x0
+    16ce:	e8 00 00 00 00       	call   16d3 <list_module_info+0xc7>
 												mi->vm_ofs[1], mi->vm_ofs[2], mi->vm_ofs[3]);
 										printf("SIZE     %8lu %8lu %8lu %8lu\n", mi->sz_secs[0],
-    16c9:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
-    16cd:	48 8b 70 60          	mov    rsi,QWORD PTR [rax+0x60]
-    16d1:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
-    16d5:	48 8b 48 58          	mov    rcx,QWORD PTR [rax+0x58]
-    16d9:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
-    16dd:	48 8b 50 50          	mov    rdx,QWORD PTR [rax+0x50]
-    16e1:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
-    16e5:	48 8b 40 48          	mov    rax,QWORD PTR [rax+0x48]
-    16e9:	49 89 f0             	mov    r8,rsi
-    16ec:	48 89 c6             	mov    rsi,rax
-    16ef:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-    16f6:	b8 00 00 00 00       	mov    eax,0x0
-    16fb:	e8 00 00 00 00       	call   1700 <list_module_info+0xfe>
+    16d3:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+    16d7:	48 8b 70 60          	mov    rsi,QWORD PTR [rax+0x60]
+    16db:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+    16df:	48 8b 48 58          	mov    rcx,QWORD PTR [rax+0x58]
+    16e3:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+    16e7:	48 8b 50 50          	mov    rdx,QWORD PTR [rax+0x50]
+    16eb:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+    16ef:	48 8b 40 48          	mov    rax,QWORD PTR [rax+0x48]
+    16f3:	49 89 f0             	mov    r8,rsi
+    16f6:	48 89 c6             	mov    rsi,rax
+    16f9:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+    1700:	b8 00 00 00 00       	mov    eax,0x0
+    1705:	e8 00 00 00 00       	call   170a <list_module_info+0xfe>
 												mi->sz_secs[1], mi->sz_secs[2], mi->sz_secs[3]);
 										printf("with the two functions\n");
-    1700:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-    1707:	b8 00 00 00 00       	mov    eax,0x0
-    170c:	e8 00 00 00 00       	call   1711 <list_module_info+0x10f>
+    170a:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+    1711:	b8 00 00 00 00       	mov    eax,0x0
+    1716:	e8 00 00 00 00       	call   171b <list_module_info+0x10f>
 										printf("module_init     at %p and\n", mi->mi_init);
-    1711:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
-    1715:	48 8b 40 18          	mov    rax,QWORD PTR [rax+0x18]
-    1719:	48 89 c6             	mov    rsi,rax
-    171c:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-    1723:	b8 00 00 00 00       	mov    eax,0x0
-    1728:	e8 00 00 00 00       	call   172d <list_module_info+0x12b>
+    171b:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+    171f:	48 8b 40 18          	mov    rax,QWORD PTR [rax+0x18]
+    1723:	48 89 c6             	mov    rsi,rax
+    1726:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+    172d:	b8 00 00 00 00       	mov    eax,0x0
+    1732:	e8 00 00 00 00       	call   1737 <list_module_info+0x12b>
 										printf("module_cleanup  at %p\n", mi->mi_cleanup);
-    172d:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
-    1731:	48 8b 40 20          	mov    rax,QWORD PTR [rax+0x20]
-    1735:	48 89 c6             	mov    rsi,rax
-    1738:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-    173f:	b8 00 00 00 00       	mov    eax,0x0
-    1744:	e8 00 00 00 00       	call   1749 <list_module_info+0x147>
+    1737:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+    173b:	48 8b 40 20          	mov    rax,QWORD PTR [rax+0x20]
+    173f:	48 89 c6             	mov    rsi,rax
+    1742:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+    1749:	b8 00 00 00 00       	mov    eax,0x0
+    174e:	e8 00 00 00 00       	call   1753 <list_module_info+0x147>
 										return;
-    1749:	eb 40                	jmp    178b <list_module_info+0x189>
+    1753:	eb 40                	jmp    1795 <list_module_info+0x189>
 				for (int i = 0; i < 7; i++)
-    174b:	83 45 f4 01          	add    DWORD PTR [rbp-0xc],0x1
-    174f:	83 7d f4 06          	cmp    DWORD PTR [rbp-0xc],0x6
-    1753:	0f 8e cc fe ff ff    	jle    1625 <list_module_info+0x23>
-    1759:	eb 01                	jmp    175c <list_module_info+0x15a>
+    1755:	83 45 f4 01          	add    DWORD PTR [rbp-0xc],0x1
+    1759:	83 7d f4 06          	cmp    DWORD PTR [rbp-0xc],0x6
+    175d:	0f 8e cc fe ff ff    	jle    162f <list_module_info+0x23>
+    1763:	eb 01                	jmp    1766 <list_module_info+0x15a>
 								}
 						} else
 								break;
-    175b:	90                   	nop
+    1765:	90                   	nop
 		} while ((mc = mc->next));
-    175c:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-    1760:	48 8b 40 38          	mov    rax,QWORD PTR [rax+0x38]
-    1764:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
-    1768:	48 83 7d f8 00       	cmp    QWORD PTR [rbp-0x8],0x0
-    176d:	0f 85 a6 fe ff ff    	jne    1619 <list_module_info+0x17>
+    1766:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    176a:	48 8b 40 38          	mov    rax,QWORD PTR [rax+0x38]
+    176e:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
+    1772:	48 83 7d f8 00       	cmp    QWORD PTR [rbp-0x8],0x0
+    1777:	0f 85 a6 fe ff ff    	jne    1623 <list_module_info+0x17>
 		printf("modinfo: ERROR: Module %s not found.\n", name);
-    1773:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
-    1777:	48 89 c6             	mov    rsi,rax
-    177a:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-    1781:	b8 00 00 00 00       	mov    eax,0x0
-    1786:	e8 00 00 00 00       	call   178b <list_module_info+0x189>
+    177d:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
+    1781:	48 89 c6             	mov    rsi,rax
+    1784:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+    178b:	b8 00 00 00 00       	mov    eax,0x0
+    1790:	e8 00 00 00 00       	call   1795 <list_module_info+0x189>
 }
-    178b:	c9                   	leave
-    178c:	c3                   	ret
+    1795:	c9                   	leave
+    1796:	c3                   	ret
 
-000000000000178d <elf_get_closest_symbol>:
+0000000000001797 <elf_get_closest_symbol>:
 
 const char* elf_get_closest_symbol(void* ptr, size_t* offset)
 {
-    178d:	55                   	push   rbp
-    178e:	48 89 e5             	mov    rbp,rsp
-    1791:	48 83 ec 30          	sub    rsp,0x30
-    1795:	48 89 7d d8          	mov    QWORD PTR [rbp-0x28],rdi
-    1799:	48 89 75 d0          	mov    QWORD PTR [rbp-0x30],rsi
+    1797:	55                   	push   rbp
+    1798:	48 89 e5             	mov    rbp,rsp
+    179b:	48 83 ec 30          	sub    rsp,0x30
+    179f:	48 89 7d d8          	mov    QWORD PTR [rbp-0x28],rdi
+    17a3:	48 89 75 d0          	mov    QWORD PTR [rbp-0x30],rsi
 		struct symbol_list* sl = gs_lst;
-    179d:	48 8b 05 00 00 00 00 	mov    rax,QWORD PTR [rip+0x0]        # 17a4 <elf_get_closest_symbol+0x17>
-    17a4:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
+    17a7:	48 8b 05 00 00 00 00 	mov    rax,QWORD PTR [rip+0x0]        # 17ae <elf_get_closest_symbol+0x17>
+    17ae:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
 		size_t i = 0; const char* rv = ""; void* base = NULL;
-    17a8:	48 c7 45 f0 00 00 00 00 	mov    QWORD PTR [rbp-0x10],0x0
-    17b0:	48 c7 45 e8 00 00 00 00 	mov    QWORD PTR [rbp-0x18],0x0
-    17b8:	48 c7 45 e0 00 00 00 00 	mov    QWORD PTR [rbp-0x20],0x0
+    17b2:	48 c7 45 f0 00 00 00 00 	mov    QWORD PTR [rbp-0x10],0x0
+    17ba:	48 c7 45 e8 00 00 00 00 	mov    QWORD PTR [rbp-0x18],0x0
+    17c2:	48 c7 45 e0 00 00 00 00 	mov    QWORD PTR [rbp-0x20],0x0
 		if (!sl) {
-    17c0:	48 83 7d f8 00       	cmp    QWORD PTR [rbp-0x8],0x0
-    17c5:	0f 85 c8 00 00 00    	jne    1893 <elf_get_closest_symbol+0x106>
+    17ca:	48 83 7d f8 00       	cmp    QWORD PTR [rbp-0x8],0x0
+    17cf:	0f 85 c8 00 00 00    	jne    189d <elf_get_closest_symbol+0x106>
 				*offset = (size_t)ptr;
-    17cb:	48 8b 55 d8          	mov    rdx,QWORD PTR [rbp-0x28]
-    17cf:	48 8b 45 d0          	mov    rax,QWORD PTR [rbp-0x30]
-    17d3:	48 89 10             	mov    QWORD PTR [rax],rdx
+    17d5:	48 8b 55 d8          	mov    rdx,QWORD PTR [rbp-0x28]
+    17d9:	48 8b 45 d0          	mov    rax,QWORD PTR [rbp-0x30]
+    17dd:	48 89 10             	mov    QWORD PTR [rax],rdx
 				return "";
-    17d6:	48 c7 c0 00 00 00 00 	mov    rax,0x0
-    17dd:	e9 d5 00 00 00       	jmp    18b7 <elf_get_closest_symbol+0x12a>
+    17e0:	48 c7 c0 00 00 00 00 	mov    rax,0x0
+    17e7:	e9 d5 00 00 00       	jmp    18c1 <elf_get_closest_symbol+0x12a>
 		}
 
 		while (sl) {
 				if (sl->entries[i].vma <= ptr && sl->entries[i].vma > base) {
-    17e2:	48 8b 4d f8          	mov    rcx,QWORD PTR [rbp-0x8]
-    17e6:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
-    17ea:	48 89 d0             	mov    rax,rdx
-    17ed:	48 01 c0             	add    rax,rax
-    17f0:	48 01 d0             	add    rax,rdx
-    17f3:	48 c1 e0 03          	shl    rax,0x3
-    17f7:	48 01 c8             	add    rax,rcx
-    17fa:	48 8b 00             	mov    rax,QWORD PTR [rax]
-    17fd:	48 39 45 d8          	cmp    QWORD PTR [rbp-0x28],rax
-    1801:	72 6d                	jb     1870 <elf_get_closest_symbol+0xe3>
-    1803:	48 8b 4d f8          	mov    rcx,QWORD PTR [rbp-0x8]
-    1807:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
-    180b:	48 89 d0             	mov    rax,rdx
-    180e:	48 01 c0             	add    rax,rax
-    1811:	48 01 d0             	add    rax,rdx
-    1814:	48 c1 e0 03          	shl    rax,0x3
-    1818:	48 01 c8             	add    rax,rcx
-    181b:	48 8b 00             	mov    rax,QWORD PTR [rax]
-    181e:	48 39 45 e0          	cmp    QWORD PTR [rbp-0x20],rax
-    1822:	73 4c                	jae    1870 <elf_get_closest_symbol+0xe3>
+    17ec:	48 8b 4d f8          	mov    rcx,QWORD PTR [rbp-0x8]
+    17f0:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
+    17f4:	48 89 d0             	mov    rax,rdx
+    17f7:	48 01 c0             	add    rax,rax
+    17fa:	48 01 d0             	add    rax,rdx
+    17fd:	48 c1 e0 03          	shl    rax,0x3
+    1801:	48 01 c8             	add    rax,rcx
+    1804:	48 8b 00             	mov    rax,QWORD PTR [rax]
+    1807:	48 39 45 d8          	cmp    QWORD PTR [rbp-0x28],rax
+    180b:	72 6d                	jb     187a <elf_get_closest_symbol+0xe3>
+    180d:	48 8b 4d f8          	mov    rcx,QWORD PTR [rbp-0x8]
+    1811:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
+    1815:	48 89 d0             	mov    rax,rdx
+    1818:	48 01 c0             	add    rax,rax
+    181b:	48 01 d0             	add    rax,rdx
+    181e:	48 c1 e0 03          	shl    rax,0x3
+    1822:	48 01 c8             	add    rax,rcx
+    1825:	48 8b 00             	mov    rax,QWORD PTR [rax]
+    1828:	48 39 45 e0          	cmp    QWORD PTR [rbp-0x20],rax
+    182c:	73 4c                	jae    187a <elf_get_closest_symbol+0xe3>
 						/* found a new one */
 						rv = sl->entries[i].name;
-    1824:	48 8b 4d f8          	mov    rcx,QWORD PTR [rbp-0x8]
-    1828:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
-    182c:	48 89 d0             	mov    rax,rdx
-    182f:	48 01 c0             	add    rax,rax
-    1832:	48 01 d0             	add    rax,rdx
-    1835:	48 c1 e0 03          	shl    rax,0x3
-    1839:	48 01 c8             	add    rax,rcx
-    183c:	48 83 c0 08          	add    rax,0x8
-    1840:	48 8b 00             	mov    rax,QWORD PTR [rax]
-    1843:	48 89 45 e8          	mov    QWORD PTR [rbp-0x18],rax
+    182e:	48 8b 4d f8          	mov    rcx,QWORD PTR [rbp-0x8]
+    1832:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
+    1836:	48 89 d0             	mov    rax,rdx
+    1839:	48 01 c0             	add    rax,rax
+    183c:	48 01 d0             	add    rax,rdx
+    183f:	48 c1 e0 03          	shl    rax,0x3
+    1843:	48 01 c8             	add    rax,rcx
+    1846:	48 83 c0 08          	add    rax,0x8
+    184a:	48 8b 00             	mov    rax,QWORD PTR [rax]
+    184d:	48 89 45 e8          	mov    QWORD PTR [rbp-0x18],rax
 						base = sl->entries[i].vma;
-    1847:	48 8b 4d f8          	mov    rcx,QWORD PTR [rbp-0x8]
-    184b:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
-    184f:	48 89 d0             	mov    rax,rdx
-    1852:	48 01 c0             	add    rax,rax
-    1855:	48 01 d0             	add    rax,rdx
-    1858:	48 c1 e0 03          	shl    rax,0x3
-    185c:	48 01 c8             	add    rax,rcx
-    185f:	48 8b 00             	mov    rax,QWORD PTR [rax]
-    1862:	48 89 45 e0          	mov    QWORD PTR [rbp-0x20],rax
+    1851:	48 8b 4d f8          	mov    rcx,QWORD PTR [rbp-0x8]
+    1855:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
+    1859:	48 89 d0             	mov    rax,rdx
+    185c:	48 01 c0             	add    rax,rax
+    185f:	48 01 d0             	add    rax,rdx
+    1862:	48 c1 e0 03          	shl    rax,0x3
+    1866:	48 01 c8             	add    rax,rcx
+    1869:	48 8b 00             	mov    rax,QWORD PTR [rax]
+    186c:	48 89 45 e0          	mov    QWORD PTR [rbp-0x20],rax
 						if (base == ptr) /* abort on first exact match */
-    1866:	48 8b 45 e0          	mov    rax,QWORD PTR [rbp-0x20]
-    186a:	48 3b 45 d8          	cmp    rax,QWORD PTR [rbp-0x28]
-    186e:	74 30                	je     18a0 <elf_get_closest_symbol+0x113>
+    1870:	48 8b 45 e0          	mov    rax,QWORD PTR [rbp-0x20]
+    1874:	48 3b 45 d8          	cmp    rax,QWORD PTR [rbp-0x28]
+    1878:	74 30                	je     18aa <elf_get_closest_symbol+0x113>
 								break;
 				}
 				if (++i == 64) {
-    1870:	48 83 45 f0 01       	add    QWORD PTR [rbp-0x10],0x1
-    1875:	48 83 7d f0 40       	cmp    QWORD PTR [rbp-0x10],0x40
-    187a:	75 17                	jne    1893 <elf_get_closest_symbol+0x106>
+    187a:	48 83 45 f0 01       	add    QWORD PTR [rbp-0x10],0x1
+    187f:	48 83 7d f0 40       	cmp    QWORD PTR [rbp-0x10],0x40
+    1884:	75 17                	jne    189d <elf_get_closest_symbol+0x106>
 						sl = sl->next;
-    187c:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-    1880:	48 8b 80 00 06 00 00 	mov    rax,QWORD PTR [rax+0x600]
-    1887:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
+    1886:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    188a:	48 8b 80 00 06 00 00 	mov    rax,QWORD PTR [rax+0x600]
+    1891:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
 						i = 0;
-    188b:	48 c7 45 f0 00 00 00 00 	mov    QWORD PTR [rbp-0x10],0x0
+    1895:	48 c7 45 f0 00 00 00 00 	mov    QWORD PTR [rbp-0x10],0x0
 		while (sl) {
-    1893:	48 83 7d f8 00       	cmp    QWORD PTR [rbp-0x8],0x0
-    1898:	0f 85 44 ff ff ff    	jne    17e2 <elf_get_closest_symbol+0x55>
-    189e:	eb 01                	jmp    18a1 <elf_get_closest_symbol+0x114>
+    189d:	48 83 7d f8 00       	cmp    QWORD PTR [rbp-0x8],0x0
+    18a2:	0f 85 44 ff ff ff    	jne    17ec <elf_get_closest_symbol+0x55>
+    18a8:	eb 01                	jmp    18ab <elf_get_closest_symbol+0x114>
 								break;
-    18a0:	90                   	nop
+    18aa:	90                   	nop
 				}
 		}
 
 		*offset = ptr - base;
-    18a1:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
-    18a5:	48 2b 45 e0          	sub    rax,QWORD PTR [rbp-0x20]
-    18a9:	48 89 c2             	mov    rdx,rax
-    18ac:	48 8b 45 d0          	mov    rax,QWORD PTR [rbp-0x30]
-    18b0:	48 89 10             	mov    QWORD PTR [rax],rdx
+    18ab:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
+    18af:	48 2b 45 e0          	sub    rax,QWORD PTR [rbp-0x20]
+    18b3:	48 89 c2             	mov    rdx,rax
+    18b6:	48 8b 45 d0          	mov    rax,QWORD PTR [rbp-0x30]
+    18ba:	48 89 10             	mov    QWORD PTR [rax],rdx
 		return rv;
-    18b3:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+    18bd:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
 }
-    18b7:	c9                   	leave
-    18b8:	c3                   	ret
+    18c1:	c9                   	leave
+    18c2:	c3                   	ret
 
-00000000000018b9 <elf_resolve_symbols>:
+00000000000018c3 <elf_resolve_symbols>:
 
 /* bss_vmem is in/out parameter which points to the top of bss after call */
 void elf_resolve_symbols(Elf32_Ehdr* hdr, Elf32_Shdr* shdr, Elf32_Half symtab, void** bss_vmem, struct module_info* mi)
 {
-    18b9:	55                   	push   rbp
-    18ba:	48 89 e5             	mov    rbp,rsp
-    18bd:	41 54                	push   r12
-    18bf:	53                   	push   rbx
-    18c0:	48 81 ec 90 00 00 00 	sub    rsp,0x90
-    18c7:	48 89 7d 88          	mov    QWORD PTR [rbp-0x78],rdi
-    18cb:	48 89 75 80          	mov    QWORD PTR [rbp-0x80],rsi
-    18cf:	89 d0                	mov    eax,edx
-    18d1:	48 89 8d 70 ff ff ff 	mov    QWORD PTR [rbp-0x90],rcx
-    18d8:	4c 89 85 68 ff ff ff 	mov    QWORD PTR [rbp-0x98],r8
-    18df:	66 89 85 7c ff ff ff 	mov    WORD PTR [rbp-0x84],ax
+    18c3:	55                   	push   rbp
+    18c4:	48 89 e5             	mov    rbp,rsp
+    18c7:	41 54                	push   r12
+    18c9:	53                   	push   rbx
+    18ca:	48 81 ec 90 00 00 00 	sub    rsp,0x90
+    18d1:	48 89 7d 88          	mov    QWORD PTR [rbp-0x78],rdi
+    18d5:	48 89 75 80          	mov    QWORD PTR [rbp-0x80],rsi
+    18d9:	89 d0                	mov    eax,edx
+    18db:	48 89 8d 70 ff ff ff 	mov    QWORD PTR [rbp-0x90],rcx
+    18e2:	4c 89 85 68 ff ff ff 	mov    QWORD PTR [rbp-0x98],r8
+    18e9:	66 89 85 7c ff ff ff 	mov    WORD PTR [rbp-0x84],ax
 		void* ptr = ((void*)hdr + shdr[symtab].sh_offset);
-    18e6:	0f b7 95 7c ff ff ff 	movzx  edx,WORD PTR [rbp-0x84]
-    18ed:	48 89 d0             	mov    rax,rdx
-    18f0:	48 c1 e0 02          	shl    rax,0x2
-    18f4:	48 01 d0             	add    rax,rdx
-    18f7:	48 c1 e0 03          	shl    rax,0x3
-    18fb:	48 89 c2             	mov    rdx,rax
-    18fe:	48 8b 45 80          	mov    rax,QWORD PTR [rbp-0x80]
-    1902:	48 01 d0             	add    rax,rdx
-    1905:	8b 40 10             	mov    eax,DWORD PTR [rax+0x10]
-    1908:	89 c2                	mov    edx,eax
-    190a:	48 8b 45 88          	mov    rax,QWORD PTR [rbp-0x78]
-    190e:	48 01 d0             	add    rax,rdx
-    1911:	48 89 45 d0          	mov    QWORD PTR [rbp-0x30],rax
+    18f0:	0f b7 95 7c ff ff ff 	movzx  edx,WORD PTR [rbp-0x84]
+    18f7:	48 89 d0             	mov    rax,rdx
+    18fa:	48 c1 e0 02          	shl    rax,0x2
+    18fe:	48 01 d0             	add    rax,rdx
+    1901:	48 c1 e0 03          	shl    rax,0x3
+    1905:	48 89 c2             	mov    rdx,rax
+    1908:	48 8b 45 80          	mov    rax,QWORD PTR [rbp-0x80]
+    190c:	48 01 d0             	add    rax,rdx
+    190f:	8b 40 10             	mov    eax,DWORD PTR [rax+0x10]
+    1912:	89 c2                	mov    edx,eax
+    1914:	48 8b 45 88          	mov    rax,QWORD PTR [rbp-0x78]
+    1918:	48 01 d0             	add    rax,rdx
+    191b:	48 89 45 d0          	mov    QWORD PTR [rbp-0x30],rax
 		size_t i, ct = shdr[symtab].sh_size / shdr[symtab].sh_entsize;
-    1915:	0f b7 95 7c ff ff ff 	movzx  edx,WORD PTR [rbp-0x84]
-    191c:	48 89 d0             	mov    rax,rdx
-    191f:	48 c1 e0 02          	shl    rax,0x2
-    1923:	48 01 d0             	add    rax,rdx
-    1926:	48 c1 e0 03          	shl    rax,0x3
-    192a:	48 89 c2             	mov    rdx,rax
-    192d:	48 8b 45 80          	mov    rax,QWORD PTR [rbp-0x80]
-    1931:	48 01 d0             	add    rax,rdx
-    1934:	8b 48 14             	mov    ecx,DWORD PTR [rax+0x14]
-    1937:	0f b7 95 7c ff ff ff 	movzx  edx,WORD PTR [rbp-0x84]
-    193e:	48 89 d0             	mov    rax,rdx
-    1941:	48 c1 e0 02          	shl    rax,0x2
-    1945:	48 01 d0             	add    rax,rdx
-    1948:	48 c1 e0 03          	shl    rax,0x3
-    194c:	48 89 c2             	mov    rdx,rax
-    194f:	48 8b 45 80          	mov    rax,QWORD PTR [rbp-0x80]
-    1953:	48 01 d0             	add    rax,rdx
-    1956:	8b 58 24             	mov    ebx,DWORD PTR [rax+0x24]
-    1959:	89 c8                	mov    eax,ecx
-    195b:	ba 00 00 00 00       	mov    edx,0x0
-    1960:	f7 f3                	div    ebx
-    1962:	89 c0                	mov    eax,eax
-    1964:	48 89 45 c8          	mov    QWORD PTR [rbp-0x38],rax
+    191f:	0f b7 95 7c ff ff ff 	movzx  edx,WORD PTR [rbp-0x84]
+    1926:	48 89 d0             	mov    rax,rdx
+    1929:	48 c1 e0 02          	shl    rax,0x2
+    192d:	48 01 d0             	add    rax,rdx
+    1930:	48 c1 e0 03          	shl    rax,0x3
+    1934:	48 89 c2             	mov    rdx,rax
+    1937:	48 8b 45 80          	mov    rax,QWORD PTR [rbp-0x80]
+    193b:	48 01 d0             	add    rax,rdx
+    193e:	8b 48 14             	mov    ecx,DWORD PTR [rax+0x14]
+    1941:	0f b7 95 7c ff ff ff 	movzx  edx,WORD PTR [rbp-0x84]
+    1948:	48 89 d0             	mov    rax,rdx
+    194b:	48 c1 e0 02          	shl    rax,0x2
+    194f:	48 01 d0             	add    rax,rdx
+    1952:	48 c1 e0 03          	shl    rax,0x3
+    1956:	48 89 c2             	mov    rdx,rax
+    1959:	48 8b 45 80          	mov    rax,QWORD PTR [rbp-0x80]
+    195d:	48 01 d0             	add    rax,rdx
+    1960:	8b 58 24             	mov    ebx,DWORD PTR [rax+0x24]
+    1963:	89 c8                	mov    eax,ecx
+    1965:	ba 00 00 00 00       	mov    edx,0x0
+    196a:	f7 f3                	div    ebx
+    196c:	89 c0                	mov    eax,eax
+    196e:	48 89 45 c8          	mov    QWORD PTR [rbp-0x38],rax
 		if (ct <= 1)
-    1968:	48 83 7d c8 01       	cmp    QWORD PTR [rbp-0x38],0x1
-    196d:	0f 86 6f 07 00 00    	jbe    20e2 <elf_resolve_symbols+0x829>
+    1972:	48 83 7d c8 01       	cmp    QWORD PTR [rbp-0x38],0x1
+    1977:	0f 86 6f 07 00 00    	jbe    20ec <elf_resolve_symbols+0x829>
 				return;
 		sbprintf("Resolving symbols in symtab with %lu entries\n", ct);
-    1973:	48 8b 45 c8          	mov    rax,QWORD PTR [rbp-0x38]
-    1977:	48 89 c6             	mov    rsi,rax
-    197a:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-    1981:	b8 00 00 00 00       	mov    eax,0x0
-    1986:	e8 00 00 00 00       	call   198b <elf_resolve_symbols+0xd2>
+    197d:	48 8b 45 c8          	mov    rax,QWORD PTR [rbp-0x38]
+    1981:	48 89 c6             	mov    rsi,rax
+    1984:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+    198b:	b8 00 00 00 00       	mov    eax,0x0
+    1990:	e8 00 00 00 00       	call   1995 <elf_resolve_symbols+0xd2>
 		for (i = 1; i < ct; i++) {
-    198b:	48 c7 45 e8 01 00 00 00 	mov    QWORD PTR [rbp-0x18],0x1
-    1993:	e9 3a 07 00 00       	jmp    20d2 <elf_resolve_symbols+0x819>
+    1995:	48 c7 45 e8 01 00 00 00 	mov    QWORD PTR [rbp-0x18],0x1
+    199d:	e9 3a 07 00 00       	jmp    20dc <elf_resolve_symbols+0x819>
 				Elf32_Sym* s = (ptr + i * shdr[symtab].sh_entsize);
-    1998:	0f b7 95 7c ff ff ff 	movzx  edx,WORD PTR [rbp-0x84]
-    199f:	48 89 d0             	mov    rax,rdx
-    19a2:	48 c1 e0 02          	shl    rax,0x2
-    19a6:	48 01 d0             	add    rax,rdx
-    19a9:	48 c1 e0 03          	shl    rax,0x3
-    19ad:	48 89 c2             	mov    rdx,rax
-    19b0:	48 8b 45 80          	mov    rax,QWORD PTR [rbp-0x80]
-    19b4:	48 01 d0             	add    rax,rdx
-    19b7:	8b 40 24             	mov    eax,DWORD PTR [rax+0x24]
-    19ba:	89 c0                	mov    eax,eax
-    19bc:	48 0f af 45 e8       	imul   rax,QWORD PTR [rbp-0x18]
-    19c1:	48 89 c2             	mov    rdx,rax
-    19c4:	48 8b 45 d0          	mov    rax,QWORD PTR [rbp-0x30]
-    19c8:	48 01 d0             	add    rax,rdx
-    19cb:	48 89 45 c0          	mov    QWORD PTR [rbp-0x40],rax
+    19a2:	0f b7 95 7c ff ff ff 	movzx  edx,WORD PTR [rbp-0x84]
+    19a9:	48 89 d0             	mov    rax,rdx
+    19ac:	48 c1 e0 02          	shl    rax,0x2
+    19b0:	48 01 d0             	add    rax,rdx
+    19b3:	48 c1 e0 03          	shl    rax,0x3
+    19b7:	48 89 c2             	mov    rdx,rax
+    19ba:	48 8b 45 80          	mov    rax,QWORD PTR [rbp-0x80]
+    19be:	48 01 d0             	add    rax,rdx
+    19c1:	8b 40 24             	mov    eax,DWORD PTR [rax+0x24]
+    19c4:	89 c0                	mov    eax,eax
+    19c6:	48 0f af 45 e8       	imul   rax,QWORD PTR [rbp-0x18]
+    19cb:	48 89 c2             	mov    rdx,rax
+    19ce:	48 8b 45 d0          	mov    rax,QWORD PTR [rbp-0x30]
+    19d2:	48 01 d0             	add    rax,rdx
+    19d5:	48 89 45 c0          	mov    QWORD PTR [rbp-0x40],rax
 				if (s->st_shndx == SHN_UNDEF) {
-    19cf:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    19d3:	0f b7 40 0e          	movzx  eax,WORD PTR [rax+0xe]
-    19d7:	66 85 c0             	test   ax,ax
-    19da:	0f 85 de 00 00 00    	jne    1abe <elf_resolve_symbols+0x205>
+    19d9:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    19dd:	0f b7 40 0e          	movzx  eax,WORD PTR [rax+0xe]
+    19e1:	66 85 c0             	test   ax,ax
+    19e4:	0f 85 de 00 00 00    	jne    1ac8 <elf_resolve_symbols+0x205>
 						char* sn, tp = 'T';
-    19e0:	c6 45 e7 54          	mov    BYTE PTR [rbp-0x19],0x54
+    19ea:	c6 45 e7 54          	mov    BYTE PTR [rbp-0x19],0x54
 						/* unresolved symbol -> find in map */
 						sbprintf("using external symbol with name %s\n",
 										(sn = elf_fetch_string(hdr, shdr, shdr[symtab].sh_link, s->st_name)));
-    19e4:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    19e8:	8b 08                	mov    ecx,DWORD PTR [rax]
-    19ea:	0f b7 95 7c ff ff ff 	movzx  edx,WORD PTR [rbp-0x84]
-    19f1:	48 89 d0             	mov    rax,rdx
-    19f4:	48 c1 e0 02          	shl    rax,0x2
-    19f8:	48 01 d0             	add    rax,rdx
-    19fb:	48 c1 e0 03          	shl    rax,0x3
-    19ff:	48 89 c2             	mov    rdx,rax
-    1a02:	48 8b 45 80          	mov    rax,QWORD PTR [rbp-0x80]
-    1a06:	48 01 d0             	add    rax,rdx
-    1a09:	8b 40 18             	mov    eax,DWORD PTR [rax+0x18]
-    1a0c:	0f b7 d0             	movzx  edx,ax
-    1a0f:	48 8b 75 80          	mov    rsi,QWORD PTR [rbp-0x80]
-    1a13:	48 8b 45 88          	mov    rax,QWORD PTR [rbp-0x78]
-    1a17:	48 89 c7             	mov    rdi,rax
-    1a1a:	e8 00 00 00 00       	call   1a1f <elf_resolve_symbols+0x166>
-    1a1f:	48 89 45 98          	mov    QWORD PTR [rbp-0x68],rax
+    19ee:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    19f2:	8b 08                	mov    ecx,DWORD PTR [rax]
+    19f4:	0f b7 95 7c ff ff ff 	movzx  edx,WORD PTR [rbp-0x84]
+    19fb:	48 89 d0             	mov    rax,rdx
+    19fe:	48 c1 e0 02          	shl    rax,0x2
+    1a02:	48 01 d0             	add    rax,rdx
+    1a05:	48 c1 e0 03          	shl    rax,0x3
+    1a09:	48 89 c2             	mov    rdx,rax
+    1a0c:	48 8b 45 80          	mov    rax,QWORD PTR [rbp-0x80]
+    1a10:	48 01 d0             	add    rax,rdx
+    1a13:	8b 40 18             	mov    eax,DWORD PTR [rax+0x18]
+    1a16:	0f b7 d0             	movzx  edx,ax
+    1a19:	48 8b 75 80          	mov    rsi,QWORD PTR [rbp-0x80]
+    1a1d:	48 8b 45 88          	mov    rax,QWORD PTR [rbp-0x78]
+    1a21:	48 89 c7             	mov    rdi,rax
+    1a24:	e8 00 00 00 00       	call   1a29 <elf_resolve_symbols+0x166>
+    1a29:	48 89 45 98          	mov    QWORD PTR [rbp-0x68],rax
 						sbprintf("using external symbol with name %s\n",
-    1a23:	48 8b 45 98          	mov    rax,QWORD PTR [rbp-0x68]
-    1a27:	48 89 c6             	mov    rsi,rax
-    1a2a:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-    1a31:	b8 00 00 00 00       	mov    eax,0x0
-    1a36:	e8 00 00 00 00       	call   1a3b <elf_resolve_symbols+0x182>
+    1a2d:	48 8b 45 98          	mov    rax,QWORD PTR [rbp-0x68]
+    1a31:	48 89 c6             	mov    rsi,rax
+    1a34:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+    1a3b:	b8 00 00 00 00       	mov    eax,0x0
+    1a40:	e8 00 00 00 00       	call   1a45 <elf_resolve_symbols+0x182>
 						if (ELF32_ST_TYPE(s->st_info) == STT_OBJECT)
-    1a3b:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1a3f:	0f b6 40 0c          	movzx  eax,BYTE PTR [rax+0xc]
-    1a43:	0f b6 c0             	movzx  eax,al
-    1a46:	83 e0 0f             	and    eax,0xf
-    1a49:	83 f8 01             	cmp    eax,0x1
-    1a4c:	75 04                	jne    1a52 <elf_resolve_symbols+0x199>
+    1a45:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    1a49:	0f b6 40 0c          	movzx  eax,BYTE PTR [rax+0xc]
+    1a4d:	0f b6 c0             	movzx  eax,al
+    1a50:	83 e0 0f             	and    eax,0xf
+    1a53:	83 f8 01             	cmp    eax,0x1
+    1a56:	75 04                	jne    1a5c <elf_resolve_symbols+0x199>
 								tp = 'D';
-    1a4e:	c6 45 e7 44          	mov    BYTE PTR [rbp-0x19],0x44
+    1a58:	c6 45 e7 44          	mov    BYTE PTR [rbp-0x19],0x44
 						s->st_value = elf_locate_global_symbol(sn, tp);
-    1a52:	0f be 55 e7          	movsx  edx,BYTE PTR [rbp-0x19]
-    1a56:	48 8b 45 98          	mov    rax,QWORD PTR [rbp-0x68]
-    1a5a:	89 d6                	mov    esi,edx
-    1a5c:	48 89 c7             	mov    rdi,rax
-    1a5f:	e8 00 00 00 00       	call   1a64 <elf_resolve_symbols+0x1ab>
-    1a64:	48 8b 55 c0          	mov    rdx,QWORD PTR [rbp-0x40]
-    1a68:	89 42 04             	mov    DWORD PTR [rdx+0x4],eax
+    1a5c:	0f be 55 e7          	movsx  edx,BYTE PTR [rbp-0x19]
+    1a60:	48 8b 45 98          	mov    rax,QWORD PTR [rbp-0x68]
+    1a64:	89 d6                	mov    esi,edx
+    1a66:	48 89 c7             	mov    rdi,rax
+    1a69:	e8 00 00 00 00       	call   1a6e <elf_resolve_symbols+0x1ab>
+    1a6e:	48 8b 55 c0          	mov    rdx,QWORD PTR [rbp-0x40]
+    1a72:	89 42 04             	mov    DWORD PTR [rdx+0x4],eax
 						if (!s->st_value) {
-    1a6b:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1a6f:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
-    1a72:	85 c0                	test   eax,eax
-    1a74:	75 26                	jne    1a9c <elf_resolve_symbols+0x1e3>
+    1a75:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    1a79:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
+    1a7c:	85 c0                	test   eax,eax
+    1a7e:	75 26                	jne    1aa6 <elf_resolve_symbols+0x1e3>
 								cprintf(KFMT_ERROR, "unresolved external symbol %c \"%s\"\n", tp, sn);
-    1a76:	0f be 45 e7          	movsx  eax,BYTE PTR [rbp-0x19]
-    1a7a:	48 8b 55 98          	mov    rdx,QWORD PTR [rbp-0x68]
-    1a7e:	48 89 d1             	mov    rcx,rdx
-    1a81:	89 c2                	mov    edx,eax
-    1a83:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
-    1a8a:	bf 0c 00 00 00       	mov    edi,0xc
-    1a8f:	b8 00 00 00 00       	mov    eax,0x0
-    1a94:	e8 00 00 00 00       	call   1a99 <elf_resolve_symbols+0x1e0>
+    1a80:	0f be 45 e7          	movsx  eax,BYTE PTR [rbp-0x19]
+    1a84:	48 8b 55 98          	mov    rdx,QWORD PTR [rbp-0x68]
+    1a88:	48 89 d1             	mov    rcx,rdx
+    1a8b:	89 c2                	mov    edx,eax
+    1a8d:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
+    1a94:	bf 0c 00 00 00       	mov    edi,0xc
+    1a99:	b8 00 00 00 00       	mov    eax,0x0
+    1a9e:	e8 00 00 00 00       	call   1aa3 <elf_resolve_symbols+0x1e0>
 								while (1);
-    1a99:	90                   	nop
-    1a9a:	eb fd                	jmp    1a99 <elf_resolve_symbols+0x1e0>
+    1aa3:	90                   	nop
+    1aa4:	eb fd                	jmp    1aa3 <elf_resolve_symbols+0x1e0>
 						} else
 								sbprintf("\twhich was resolved to %p\n", (void*)s->st_value);
-    1a9c:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1aa0:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
-    1aa3:	89 c0                	mov    eax,eax
-    1aa5:	48 89 c6             	mov    rsi,rax
-    1aa8:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-    1aaf:	b8 00 00 00 00       	mov    eax,0x0
-    1ab4:	e8 00 00 00 00       	call   1ab9 <elf_resolve_symbols+0x200>
-    1ab9:	e9 0f 06 00 00       	jmp    20cd <elf_resolve_symbols+0x814>
+    1aa6:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    1aaa:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
+    1aad:	89 c0                	mov    eax,eax
+    1aaf:	48 89 c6             	mov    rsi,rax
+    1ab2:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+    1ab9:	b8 00 00 00 00       	mov    eax,0x0
+    1abe:	e8 00 00 00 00       	call   1ac3 <elf_resolve_symbols+0x200>
+    1ac3:	e9 0f 06 00 00       	jmp    20d7 <elf_resolve_symbols+0x814>
 				} else if (s->st_shndx == SHN_COMMON) {
-    1abe:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1ac2:	0f b7 40 0e          	movzx  eax,WORD PTR [rax+0xe]
-    1ac6:	66 83 f8 f2          	cmp    ax,0xfff2
-    1aca:	0f 85 04 02 00 00    	jne    1cd4 <elf_resolve_symbols+0x41b>
+    1ac8:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    1acc:	0f b7 40 0e          	movzx  eax,WORD PTR [rax+0xe]
+    1ad0:	66 83 f8 f2          	cmp    ax,0xfff2
+    1ad4:	0f 85 04 02 00 00    	jne    1cde <elf_resolve_symbols+0x41b>
 						char* sn, tp = 'D'; Elf32_Addr ad = (Elf32_Addr)NULL;
-    1ad0:	c6 45 af 44          	mov    BYTE PTR [rbp-0x51],0x44
-    1ad4:	c7 45 e0 00 00 00 00 	mov    DWORD PTR [rbp-0x20],0x0
+    1ada:	c6 45 af 44          	mov    BYTE PTR [rbp-0x51],0x44
+    1ade:	c7 45 e0 00 00 00 00 	mov    DWORD PTR [rbp-0x20],0x0
 						sbprintf("Common symbol with size %u and alignment %u with name %s\n",
 										s->st_size, s->st_value,
 										(sn = elf_fetch_string(hdr, shdr, shdr[symtab].sh_link, s->st_name)));
-    1adb:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1adf:	8b 08                	mov    ecx,DWORD PTR [rax]
-    1ae1:	0f b7 95 7c ff ff ff 	movzx  edx,WORD PTR [rbp-0x84]
-    1ae8:	48 89 d0             	mov    rax,rdx
-    1aeb:	48 c1 e0 02          	shl    rax,0x2
-    1aef:	48 01 d0             	add    rax,rdx
-    1af2:	48 c1 e0 03          	shl    rax,0x3
-    1af6:	48 89 c2             	mov    rdx,rax
-    1af9:	48 8b 45 80          	mov    rax,QWORD PTR [rbp-0x80]
-    1afd:	48 01 d0             	add    rax,rdx
-    1b00:	8b 40 18             	mov    eax,DWORD PTR [rax+0x18]
-    1b03:	0f b7 d0             	movzx  edx,ax
-    1b06:	48 8b 75 80          	mov    rsi,QWORD PTR [rbp-0x80]
-    1b0a:	48 8b 45 88          	mov    rax,QWORD PTR [rbp-0x78]
-    1b0e:	48 89 c7             	mov    rdi,rax
-    1b11:	e8 00 00 00 00       	call   1b16 <elf_resolve_symbols+0x25d>
-    1b16:	48 89 45 a0          	mov    QWORD PTR [rbp-0x60],rax
+    1ae5:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    1ae9:	8b 08                	mov    ecx,DWORD PTR [rax]
+    1aeb:	0f b7 95 7c ff ff ff 	movzx  edx,WORD PTR [rbp-0x84]
+    1af2:	48 89 d0             	mov    rax,rdx
+    1af5:	48 c1 e0 02          	shl    rax,0x2
+    1af9:	48 01 d0             	add    rax,rdx
+    1afc:	48 c1 e0 03          	shl    rax,0x3
+    1b00:	48 89 c2             	mov    rdx,rax
+    1b03:	48 8b 45 80          	mov    rax,QWORD PTR [rbp-0x80]
+    1b07:	48 01 d0             	add    rax,rdx
+    1b0a:	8b 40 18             	mov    eax,DWORD PTR [rax+0x18]
+    1b0d:	0f b7 d0             	movzx  edx,ax
+    1b10:	48 8b 75 80          	mov    rsi,QWORD PTR [rbp-0x80]
+    1b14:	48 8b 45 88          	mov    rax,QWORD PTR [rbp-0x78]
+    1b18:	48 89 c7             	mov    rdi,rax
+    1b1b:	e8 00 00 00 00       	call   1b20 <elf_resolve_symbols+0x25d>
+    1b20:	48 89 45 a0          	mov    QWORD PTR [rbp-0x60],rax
 						sbprintf("Common symbol with size %u and alignment %u with name %s\n",
-    1b1a:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1b1e:	8b 50 04             	mov    edx,DWORD PTR [rax+0x4]
-    1b21:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1b25:	8b 40 08             	mov    eax,DWORD PTR [rax+0x8]
-    1b28:	48 8b 4d a0          	mov    rcx,QWORD PTR [rbp-0x60]
-    1b2c:	89 c6                	mov    esi,eax
-    1b2e:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-    1b35:	b8 00 00 00 00       	mov    eax,0x0
-    1b3a:	e8 00 00 00 00       	call   1b3f <elf_resolve_symbols+0x286>
+    1b24:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    1b28:	8b 50 04             	mov    edx,DWORD PTR [rax+0x4]
+    1b2b:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    1b2f:	8b 40 08             	mov    eax,DWORD PTR [rax+0x8]
+    1b32:	48 8b 4d a0          	mov    rcx,QWORD PTR [rbp-0x60]
+    1b36:	89 c6                	mov    esi,eax
+    1b38:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+    1b3f:	b8 00 00 00 00       	mov    eax,0x0
+    1b44:	e8 00 00 00 00       	call   1b49 <elf_resolve_symbols+0x286>
 						if (ELF32_ST_BIND(s->st_info) == STB_GLOBAL ||
-    1b3f:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1b43:	0f b6 40 0c          	movzx  eax,BYTE PTR [rax+0xc]
-    1b47:	c0 e8 04             	shr    al,0x4
-    1b4a:	3c 01                	cmp    al,0x1
-    1b4c:	74 0f                	je     1b5d <elf_resolve_symbols+0x2a4>
+    1b49:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    1b4d:	0f b6 40 0c          	movzx  eax,BYTE PTR [rax+0xc]
+    1b51:	c0 e8 04             	shr    al,0x4
+    1b54:	3c 01                	cmp    al,0x1
+    1b56:	74 0f                	je     1b67 <elf_resolve_symbols+0x2a4>
 										ELF32_ST_BIND(s->st_info) == STB_WEAK) {
-    1b4e:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1b52:	0f b6 40 0c          	movzx  eax,BYTE PTR [rax+0xc]
-    1b56:	c0 e8 04             	shr    al,0x4
+    1b58:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    1b5c:	0f b6 40 0c          	movzx  eax,BYTE PTR [rax+0xc]
+    1b60:	c0 e8 04             	shr    al,0x4
 						if (ELF32_ST_BIND(s->st_info) == STB_GLOBAL ||
-    1b59:	3c 02                	cmp    al,0x2
-    1b5b:	75 32                	jne    1b8f <elf_resolve_symbols+0x2d6>
+    1b63:	3c 02                	cmp    al,0x2
+    1b65:	75 32                	jne    1b99 <elf_resolve_symbols+0x2d6>
 								/* lookup on global symtab */
 								ad = elf_locate_global_symbol(sn, tp);
-    1b5d:	0f be 55 af          	movsx  edx,BYTE PTR [rbp-0x51]
-    1b61:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
-    1b65:	89 d6                	mov    esi,edx
-    1b67:	48 89 c7             	mov    rdi,rax
-    1b6a:	e8 00 00 00 00       	call   1b6f <elf_resolve_symbols+0x2b6>
-    1b6f:	89 45 e0             	mov    DWORD PTR [rbp-0x20],eax
+    1b67:	0f be 55 af          	movsx  edx,BYTE PTR [rbp-0x51]
+    1b6b:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
+    1b6f:	89 d6                	mov    esi,edx
+    1b71:	48 89 c7             	mov    rdi,rax
+    1b74:	e8 00 00 00 00       	call   1b79 <elf_resolve_symbols+0x2b6>
+    1b79:	89 45 e0             	mov    DWORD PTR [rbp-0x20],eax
 								if (ad)
-    1b72:	83 7d e0 00          	cmp    DWORD PTR [rbp-0x20],0x0
-    1b76:	74 17                	je     1b8f <elf_resolve_symbols+0x2d6>
+    1b7c:	83 7d e0 00          	cmp    DWORD PTR [rbp-0x20],0x0
+    1b80:	74 17                	je     1b99 <elf_resolve_symbols+0x2d6>
 										sbprintf("global definition found at %p\n", (void*)ad);
-    1b78:	8b 45 e0             	mov    eax,DWORD PTR [rbp-0x20]
-    1b7b:	48 89 c6             	mov    rsi,rax
-    1b7e:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-    1b85:	b8 00 00 00 00       	mov    eax,0x0
-    1b8a:	e8 00 00 00 00       	call   1b8f <elf_resolve_symbols+0x2d6>
+    1b82:	8b 45 e0             	mov    eax,DWORD PTR [rbp-0x20]
+    1b85:	48 89 c6             	mov    rsi,rax
+    1b88:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+    1b8f:	b8 00 00 00 00       	mov    eax,0x0
+    1b94:	e8 00 00 00 00       	call   1b99 <elf_resolve_symbols+0x2d6>
 						}
 						/* lookup on symtab or else allocate */
 						if (!ad) {
-    1b8f:	83 7d e0 00          	cmp    DWORD PTR [rbp-0x20],0x0
-    1b93:	0f 85 2c 01 00 00    	jne    1cc5 <elf_resolve_symbols+0x40c>
+    1b99:	83 7d e0 00          	cmp    DWORD PTR [rbp-0x20],0x0
+    1b9d:	0f 85 2c 01 00 00    	jne    1ccf <elf_resolve_symbols+0x40c>
 								/* allocate rw bss (dumb align) */
 								if ((size_t)*bss_vmem % (size_t)s->st_value) {
-    1b99:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
-    1ba0:	48 8b 00             	mov    rax,QWORD PTR [rax]
-    1ba3:	48 89 c2             	mov    rdx,rax
-    1ba6:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1baa:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
-    1bad:	89 c1                	mov    ecx,eax
-    1baf:	48 89 d0             	mov    rax,rdx
-    1bb2:	ba 00 00 00 00       	mov    edx,0x0
-    1bb7:	48 f7 f1             	div    rcx
-    1bba:	48 89 d0             	mov    rax,rdx
-    1bbd:	48 85 c0             	test   rax,rax
-    1bc0:	0f 84 98 00 00 00    	je     1c5e <elf_resolve_symbols+0x3a5>
+    1ba3:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
+    1baa:	48 8b 00             	mov    rax,QWORD PTR [rax]
+    1bad:	48 89 c2             	mov    rdx,rax
+    1bb0:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    1bb4:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
+    1bb7:	89 c1                	mov    ecx,eax
+    1bb9:	48 89 d0             	mov    rax,rdx
+    1bbc:	ba 00 00 00 00       	mov    edx,0x0
+    1bc1:	48 f7 f1             	div    rcx
+    1bc4:	48 89 d0             	mov    rax,rdx
+    1bc7:	48 85 c0             	test   rax,rax
+    1bca:	0f 84 98 00 00 00    	je     1c68 <elf_resolve_symbols+0x3a5>
 										*bss_vmem += s->st_value - ((size_t)*bss_vmem % s->st_value);
-    1bc6:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
-    1bcd:	48 8b 08             	mov    rcx,QWORD PTR [rax]
-    1bd0:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1bd4:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
-    1bd7:	89 c6                	mov    esi,eax
-    1bd9:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
-    1be0:	48 8b 00             	mov    rax,QWORD PTR [rax]
-    1be3:	48 89 c2             	mov    rdx,rax
-    1be6:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1bea:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
-    1bed:	89 c7                	mov    edi,eax
-    1bef:	48 89 d0             	mov    rax,rdx
-    1bf2:	ba 00 00 00 00       	mov    edx,0x0
-    1bf7:	48 f7 f7             	div    rdi
-    1bfa:	48 89 f0             	mov    rax,rsi
-    1bfd:	48 29 d0             	sub    rax,rdx
-    1c00:	48 8d 14 01          	lea    rdx,[rcx+rax*1]
-    1c04:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
-    1c0b:	48 89 10             	mov    QWORD PTR [rax],rdx
-										s->st_value = (Elf32_Addr)*bss_vmem;
+    1bd0:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
+    1bd7:	48 8b 08             	mov    rcx,QWORD PTR [rax]
+    1bda:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    1bde:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
+    1be1:	89 c6                	mov    esi,eax
+    1be3:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
+    1bea:	48 8b 00             	mov    rax,QWORD PTR [rax]
+    1bed:	48 89 c2             	mov    rdx,rax
+    1bf0:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    1bf4:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
+    1bf7:	89 c7                	mov    edi,eax
+    1bf9:	48 89 d0             	mov    rax,rdx
+    1bfc:	ba 00 00 00 00       	mov    edx,0x0
+    1c01:	48 f7 f7             	div    rdi
+    1c04:	48 89 f0             	mov    rax,rsi
+    1c07:	48 29 d0             	sub    rax,rdx
+    1c0a:	48 8d 14 01          	lea    rdx,[rcx+rax*1]
     1c0e:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
-    1c15:	48 8b 00             	mov    rax,QWORD PTR [rax]
-    1c18:	89 c2                	mov    edx,eax
-    1c1a:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1c1e:	89 50 04             	mov    DWORD PTR [rax+0x4],edx
+    1c15:	48 89 10             	mov    QWORD PTR [rax],rdx
+										s->st_value = (Elf32_Addr)*bss_vmem;
+    1c18:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
+    1c1f:	48 8b 00             	mov    rax,QWORD PTR [rax]
+    1c22:	89 c2                	mov    edx,eax
+    1c24:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    1c28:	89 50 04             	mov    DWORD PTR [rax+0x4],edx
 										*bss_vmem += s->st_size;
-    1c21:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
-    1c28:	48 8b 10             	mov    rdx,QWORD PTR [rax]
-    1c2b:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1c2f:	8b 40 08             	mov    eax,DWORD PTR [rax+0x8]
-    1c32:	89 c0                	mov    eax,eax
-    1c34:	48 01 c2             	add    rdx,rax
-    1c37:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
-    1c3e:	48 89 10             	mov    QWORD PTR [rax],rdx
+    1c2b:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
+    1c32:	48 8b 10             	mov    rdx,QWORD PTR [rax]
+    1c35:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    1c39:	8b 40 08             	mov    eax,DWORD PTR [rax+0x8]
+    1c3c:	89 c0                	mov    eax,eax
+    1c3e:	48 01 c2             	add    rdx,rax
+    1c41:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
+    1c48:	48 89 10             	mov    QWORD PTR [rax],rdx
 										sbprintf("will be allocated at %p\n", (void*)s->st_value);
-    1c41:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1c45:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
-    1c48:	89 c0                	mov    eax,eax
-    1c4a:	48 89 c6             	mov    rsi,rax
-    1c4d:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-    1c54:	b8 00 00 00 00       	mov    eax,0x0
-    1c59:	e8 00 00 00 00       	call   1c5e <elf_resolve_symbols+0x3a5>
+    1c4b:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    1c4f:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
+    1c52:	89 c0                	mov    eax,eax
+    1c54:	48 89 c6             	mov    rsi,rax
+    1c57:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+    1c5e:	b8 00 00 00 00       	mov    eax,0x0
+    1c63:	e8 00 00 00 00       	call   1c68 <elf_resolve_symbols+0x3a5>
 								}
 								/* publish the location if applicable */
 								if (ELF32_ST_BIND(s->st_info) == STB_GLOBAL ||
-    1c5e:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1c62:	0f b6 40 0c          	movzx  eax,BYTE PTR [rax+0xc]
-    1c66:	c0 e8 04             	shr    al,0x4
-    1c69:	3c 01                	cmp    al,0x1
-    1c6b:	74 13                	je     1c80 <elf_resolve_symbols+0x3c7>
+    1c68:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    1c6c:	0f b6 40 0c          	movzx  eax,BYTE PTR [rax+0xc]
+    1c70:	c0 e8 04             	shr    al,0x4
+    1c73:	3c 01                	cmp    al,0x1
+    1c75:	74 13                	je     1c8a <elf_resolve_symbols+0x3c7>
 												ELF32_ST_BIND(s->st_info) == STB_WEAK) {
-    1c6d:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1c71:	0f b6 40 0c          	movzx  eax,BYTE PTR [rax+0xc]
-    1c75:	c0 e8 04             	shr    al,0x4
+    1c77:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    1c7b:	0f b6 40 0c          	movzx  eax,BYTE PTR [rax+0xc]
+    1c7f:	c0 e8 04             	shr    al,0x4
 								if (ELF32_ST_BIND(s->st_info) == STB_GLOBAL ||
-    1c78:	3c 02                	cmp    al,0x2
-    1c7a:	0f 85 4d 04 00 00    	jne    20cd <elf_resolve_symbols+0x814>
+    1c82:	3c 02                	cmp    al,0x2
+    1c84:	0f 85 4d 04 00 00    	jne    20d7 <elf_resolve_symbols+0x814>
 										elf_store_global_symbol(sn, (void*)s->st_value, tp,
 													   	(ELF32_ST_BIND(s->st_info) == STB_WEAK));
-    1c80:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1c84:	0f b6 40 0c          	movzx  eax,BYTE PTR [rax+0xc]
+    1c8a:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    1c8e:	0f b6 40 0c          	movzx  eax,BYTE PTR [rax+0xc]
 										elf_store_global_symbol(sn, (void*)s->st_value, tp,
-    1c88:	c0 e8 04             	shr    al,0x4
-    1c8b:	3c 02                	cmp    al,0x2
-    1c8d:	0f 94 c0             	sete   al
-    1c90:	0f b6 c8             	movzx  ecx,al
-    1c93:	0f be 55 af          	movsx  edx,BYTE PTR [rbp-0x51]
-    1c97:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1c9b:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
-    1c9e:	89 c0                	mov    eax,eax
-    1ca0:	48 89 c6             	mov    rsi,rax
-    1ca3:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
-    1ca7:	48 89 c7             	mov    rdi,rax
-    1caa:	e8 00 00 00 00       	call   1caf <elf_resolve_symbols+0x3f6>
+    1c92:	c0 e8 04             	shr    al,0x4
+    1c95:	3c 02                	cmp    al,0x2
+    1c97:	0f 94 c0             	sete   al
+    1c9a:	0f b6 c8             	movzx  ecx,al
+    1c9d:	0f be 55 af          	movsx  edx,BYTE PTR [rbp-0x51]
+    1ca1:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    1ca5:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
+    1ca8:	89 c0                	mov    eax,eax
+    1caa:	48 89 c6             	mov    rsi,rax
+    1cad:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
+    1cb1:	48 89 c7             	mov    rdi,rax
+    1cb4:	e8 00 00 00 00       	call   1cb9 <elf_resolve_symbols+0x3f6>
 										sbprintf("and is global\n");
-    1caf:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-    1cb6:	b8 00 00 00 00       	mov    eax,0x0
-    1cbb:	e8 00 00 00 00       	call   1cc0 <elf_resolve_symbols+0x407>
-    1cc0:	e9 08 04 00 00       	jmp    20cd <elf_resolve_symbols+0x814>
+    1cb9:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+    1cc0:	b8 00 00 00 00       	mov    eax,0x0
+    1cc5:	e8 00 00 00 00       	call   1cca <elf_resolve_symbols+0x407>
+    1cca:	e9 08 04 00 00       	jmp    20d7 <elf_resolve_symbols+0x814>
 								}
 						} else
 								s->st_value = ad;
-    1cc5:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1cc9:	8b 55 e0             	mov    edx,DWORD PTR [rbp-0x20]
-    1ccc:	89 50 04             	mov    DWORD PTR [rax+0x4],edx
-    1ccf:	e9 f9 03 00 00       	jmp    20cd <elf_resolve_symbols+0x814>
+    1ccf:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    1cd3:	8b 55 e0             	mov    edx,DWORD PTR [rbp-0x20]
+    1cd6:	89 50 04             	mov    DWORD PTR [rax+0x4],edx
+    1cd9:	e9 f9 03 00 00       	jmp    20d7 <elf_resolve_symbols+0x814>
 				} else if (s->st_shndx < SHN_LORESERVE) {
-    1cd4:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1cd8:	0f b7 40 0e          	movzx  eax,WORD PTR [rax+0xe]
-    1cdc:	66 3d ff fe          	cmp    ax,0xfeff
-    1ce0:	0f 87 c9 02 00 00    	ja     1faf <elf_resolve_symbols+0x6f6>
+    1cde:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    1ce2:	0f b7 40 0e          	movzx  eax,WORD PTR [rax+0xe]
+    1ce6:	66 3d ff fe          	cmp    ax,0xfeff
+    1cea:	0f 87 c9 02 00 00    	ja     1fb9 <elf_resolve_symbols+0x6f6>
 						/* local symbol so get virtual address for relocations */
 						if (!(shdr[s->st_shndx].sh_flags & SHF_ALLOC))
-    1ce6:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1cea:	0f b7 40 0e          	movzx  eax,WORD PTR [rax+0xe]
-    1cee:	0f b7 d0             	movzx  edx,ax
-    1cf1:	48 89 d0             	mov    rax,rdx
-    1cf4:	48 c1 e0 02          	shl    rax,0x2
-    1cf8:	48 01 d0             	add    rax,rdx
-    1cfb:	48 c1 e0 03          	shl    rax,0x3
-    1cff:	48 89 c2             	mov    rdx,rax
-    1d02:	48 8b 45 80          	mov    rax,QWORD PTR [rbp-0x80]
-    1d06:	48 01 d0             	add    rax,rdx
-    1d09:	8b 40 08             	mov    eax,DWORD PTR [rax+0x8]
-    1d0c:	83 e0 02             	and    eax,0x2
-    1d0f:	85 c0                	test   eax,eax
-    1d11:	0f 84 b5 03 00 00    	je     20cc <elf_resolve_symbols+0x813>
+    1cf0:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    1cf4:	0f b7 40 0e          	movzx  eax,WORD PTR [rax+0xe]
+    1cf8:	0f b7 d0             	movzx  edx,ax
+    1cfb:	48 89 d0             	mov    rax,rdx
+    1cfe:	48 c1 e0 02          	shl    rax,0x2
+    1d02:	48 01 d0             	add    rax,rdx
+    1d05:	48 c1 e0 03          	shl    rax,0x3
+    1d09:	48 89 c2             	mov    rdx,rax
+    1d0c:	48 8b 45 80          	mov    rax,QWORD PTR [rbp-0x80]
+    1d10:	48 01 d0             	add    rax,rdx
+    1d13:	8b 40 08             	mov    eax,DWORD PTR [rax+0x8]
+    1d16:	83 e0 02             	and    eax,0x2
+    1d19:	85 c0                	test   eax,eax
+    1d1b:	0f 84 b5 03 00 00    	je     20d6 <elf_resolve_symbols+0x813>
 								continue; /* skip symbols in unused sections */
 						s->st_value += shdr[s->st_shndx].sh_addr;
-    1d17:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1d1b:	8b 48 04             	mov    ecx,DWORD PTR [rax+0x4]
-    1d1e:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1d22:	0f b7 40 0e          	movzx  eax,WORD PTR [rax+0xe]
-    1d26:	0f b7 d0             	movzx  edx,ax
-    1d29:	48 89 d0             	mov    rax,rdx
-    1d2c:	48 c1 e0 02          	shl    rax,0x2
-    1d30:	48 01 d0             	add    rax,rdx
-    1d33:	48 c1 e0 03          	shl    rax,0x3
-    1d37:	48 89 c2             	mov    rdx,rax
-    1d3a:	48 8b 45 80          	mov    rax,QWORD PTR [rbp-0x80]
-    1d3e:	48 01 d0             	add    rax,rdx
-    1d41:	8b 40 0c             	mov    eax,DWORD PTR [rax+0xc]
-    1d44:	8d 14 01             	lea    edx,[rcx+rax*1]
-    1d47:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1d4b:	89 50 04             	mov    DWORD PTR [rax+0x4],edx
+    1d21:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    1d25:	8b 48 04             	mov    ecx,DWORD PTR [rax+0x4]
+    1d28:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    1d2c:	0f b7 40 0e          	movzx  eax,WORD PTR [rax+0xe]
+    1d30:	0f b7 d0             	movzx  edx,ax
+    1d33:	48 89 d0             	mov    rax,rdx
+    1d36:	48 c1 e0 02          	shl    rax,0x2
+    1d3a:	48 01 d0             	add    rax,rdx
+    1d3d:	48 c1 e0 03          	shl    rax,0x3
+    1d41:	48 89 c2             	mov    rdx,rax
+    1d44:	48 8b 45 80          	mov    rax,QWORD PTR [rbp-0x80]
+    1d48:	48 01 d0             	add    rax,rdx
+    1d4b:	8b 40 0c             	mov    eax,DWORD PTR [rax+0xc]
+    1d4e:	8d 14 01             	lea    edx,[rcx+rax*1]
+    1d51:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    1d55:	89 50 04             	mov    DWORD PTR [rax+0x4],edx
 						sbprintf("symbol %s from %s defined at vmem=%p\n",
 										elf_fetch_string(hdr, shdr, shdr[symtab].sh_link, s->st_name),
 										elf_fetch_string(hdr, shdr, hdr->e_shstrndx, shdr[s->st_shndx].sh_name),
 							  			(void*)s->st_value);
-    1d4e:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1d52:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
-    1d55:	89 c0                	mov    eax,eax
+    1d58:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    1d5c:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
+    1d5f:	89 c0                	mov    eax,eax
 						sbprintf("symbol %s from %s defined at vmem=%p\n",
-    1d57:	49 89 c4             	mov    r12,rax
+    1d61:	49 89 c4             	mov    r12,rax
 										elf_fetch_string(hdr, shdr, hdr->e_shstrndx, shdr[s->st_shndx].sh_name),
-    1d5a:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1d5e:	0f b7 40 0e          	movzx  eax,WORD PTR [rax+0xe]
-    1d62:	0f b7 d0             	movzx  edx,ax
-    1d65:	48 89 d0             	mov    rax,rdx
-    1d68:	48 c1 e0 02          	shl    rax,0x2
-    1d6c:	48 01 d0             	add    rax,rdx
-    1d6f:	48 c1 e0 03          	shl    rax,0x3
-    1d73:	48 89 c2             	mov    rdx,rax
-    1d76:	48 8b 45 80          	mov    rax,QWORD PTR [rbp-0x80]
-    1d7a:	48 01 d0             	add    rax,rdx
+    1d64:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    1d68:	0f b7 40 0e          	movzx  eax,WORD PTR [rax+0xe]
+    1d6c:	0f b7 d0             	movzx  edx,ax
+    1d6f:	48 89 d0             	mov    rax,rdx
+    1d72:	48 c1 e0 02          	shl    rax,0x2
+    1d76:	48 01 d0             	add    rax,rdx
+    1d79:	48 c1 e0 03          	shl    rax,0x3
+    1d7d:	48 89 c2             	mov    rdx,rax
+    1d80:	48 8b 45 80          	mov    rax,QWORD PTR [rbp-0x80]
+    1d84:	48 01 d0             	add    rax,rdx
 						sbprintf("symbol %s from %s defined at vmem=%p\n",
-    1d7d:	8b 08                	mov    ecx,DWORD PTR [rax]
+    1d87:	8b 08                	mov    ecx,DWORD PTR [rax]
 										elf_fetch_string(hdr, shdr, hdr->e_shstrndx, shdr[s->st_shndx].sh_name),
-    1d7f:	48 8b 45 88          	mov    rax,QWORD PTR [rbp-0x78]
-    1d83:	0f b7 40 32          	movzx  eax,WORD PTR [rax+0x32]
+    1d89:	48 8b 45 88          	mov    rax,QWORD PTR [rbp-0x78]
+    1d8d:	0f b7 40 32          	movzx  eax,WORD PTR [rax+0x32]
 						sbprintf("symbol %s from %s defined at vmem=%p\n",
-    1d87:	0f b7 d0             	movzx  edx,ax
-    1d8a:	48 8b 75 80          	mov    rsi,QWORD PTR [rbp-0x80]
-    1d8e:	48 8b 45 88          	mov    rax,QWORD PTR [rbp-0x78]
-    1d92:	48 89 c7             	mov    rdi,rax
-    1d95:	e8 00 00 00 00       	call   1d9a <elf_resolve_symbols+0x4e1>
-    1d9a:	48 89 c3             	mov    rbx,rax
-    1d9d:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1da1:	8b 08                	mov    ecx,DWORD PTR [rax]
+    1d91:	0f b7 d0             	movzx  edx,ax
+    1d94:	48 8b 75 80          	mov    rsi,QWORD PTR [rbp-0x80]
+    1d98:	48 8b 45 88          	mov    rax,QWORD PTR [rbp-0x78]
+    1d9c:	48 89 c7             	mov    rdi,rax
+    1d9f:	e8 00 00 00 00       	call   1da4 <elf_resolve_symbols+0x4e1>
+    1da4:	48 89 c3             	mov    rbx,rax
+    1da7:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    1dab:	8b 08                	mov    ecx,DWORD PTR [rax]
 										elf_fetch_string(hdr, shdr, shdr[symtab].sh_link, s->st_name),
-    1da3:	0f b7 95 7c ff ff ff 	movzx  edx,WORD PTR [rbp-0x84]
-    1daa:	48 89 d0             	mov    rax,rdx
-    1dad:	48 c1 e0 02          	shl    rax,0x2
-    1db1:	48 01 d0             	add    rax,rdx
-    1db4:	48 c1 e0 03          	shl    rax,0x3
-    1db8:	48 89 c2             	mov    rdx,rax
-    1dbb:	48 8b 45 80          	mov    rax,QWORD PTR [rbp-0x80]
-    1dbf:	48 01 d0             	add    rax,rdx
-    1dc2:	8b 40 18             	mov    eax,DWORD PTR [rax+0x18]
+    1dad:	0f b7 95 7c ff ff ff 	movzx  edx,WORD PTR [rbp-0x84]
+    1db4:	48 89 d0             	mov    rax,rdx
+    1db7:	48 c1 e0 02          	shl    rax,0x2
+    1dbb:	48 01 d0             	add    rax,rdx
+    1dbe:	48 c1 e0 03          	shl    rax,0x3
+    1dc2:	48 89 c2             	mov    rdx,rax
+    1dc5:	48 8b 45 80          	mov    rax,QWORD PTR [rbp-0x80]
+    1dc9:	48 01 d0             	add    rax,rdx
+    1dcc:	8b 40 18             	mov    eax,DWORD PTR [rax+0x18]
 						sbprintf("symbol %s from %s defined at vmem=%p\n",
-    1dc5:	0f b7 d0             	movzx  edx,ax
-    1dc8:	48 8b 75 80          	mov    rsi,QWORD PTR [rbp-0x80]
-    1dcc:	48 8b 45 88          	mov    rax,QWORD PTR [rbp-0x78]
-    1dd0:	48 89 c7             	mov    rdi,rax
-    1dd3:	e8 00 00 00 00       	call   1dd8 <elf_resolve_symbols+0x51f>
-    1dd8:	4c 89 e1             	mov    rcx,r12
-    1ddb:	48 89 da             	mov    rdx,rbx
-    1dde:	48 89 c6             	mov    rsi,rax
-    1de1:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-    1de8:	b8 00 00 00 00       	mov    eax,0x0
-    1ded:	e8 00 00 00 00       	call   1df2 <elf_resolve_symbols+0x539>
+    1dcf:	0f b7 d0             	movzx  edx,ax
+    1dd2:	48 8b 75 80          	mov    rsi,QWORD PTR [rbp-0x80]
+    1dd6:	48 8b 45 88          	mov    rax,QWORD PTR [rbp-0x78]
+    1dda:	48 89 c7             	mov    rdi,rax
+    1ddd:	e8 00 00 00 00       	call   1de2 <elf_resolve_symbols+0x51f>
+    1de2:	4c 89 e1             	mov    rcx,r12
+    1de5:	48 89 da             	mov    rdx,rbx
+    1de8:	48 89 c6             	mov    rsi,rax
+    1deb:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+    1df2:	b8 00 00 00 00       	mov    eax,0x0
+    1df7:	e8 00 00 00 00       	call   1dfc <elf_resolve_symbols+0x539>
 						if (strcmp(elf_fetch_string(hdr, shdr, shdr[symtab].sh_link, s->st_name), "module_init") == 0) {
-    1df2:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1df6:	8b 08                	mov    ecx,DWORD PTR [rax]
-    1df8:	0f b7 95 7c ff ff ff 	movzx  edx,WORD PTR [rbp-0x84]
-    1dff:	48 89 d0             	mov    rax,rdx
-    1e02:	48 c1 e0 02          	shl    rax,0x2
-    1e06:	48 01 d0             	add    rax,rdx
-    1e09:	48 c1 e0 03          	shl    rax,0x3
-    1e0d:	48 89 c2             	mov    rdx,rax
-    1e10:	48 8b 45 80          	mov    rax,QWORD PTR [rbp-0x80]
-    1e14:	48 01 d0             	add    rax,rdx
-    1e17:	8b 40 18             	mov    eax,DWORD PTR [rax+0x18]
-    1e1a:	0f b7 d0             	movzx  edx,ax
-    1e1d:	48 8b 75 80          	mov    rsi,QWORD PTR [rbp-0x80]
-    1e21:	48 8b 45 88          	mov    rax,QWORD PTR [rbp-0x78]
-    1e25:	48 89 c7             	mov    rdi,rax
-    1e28:	e8 00 00 00 00       	call   1e2d <elf_resolve_symbols+0x574>
-    1e2d:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
-    1e34:	48 89 c7             	mov    rdi,rax
-    1e37:	e8 00 00 00 00       	call   1e3c <elf_resolve_symbols+0x583>
-    1e3c:	85 c0                	test   eax,eax
-    1e3e:	75 3b                	jne    1e7b <elf_resolve_symbols+0x5c2>
+    1dfc:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    1e00:	8b 08                	mov    ecx,DWORD PTR [rax]
+    1e02:	0f b7 95 7c ff ff ff 	movzx  edx,WORD PTR [rbp-0x84]
+    1e09:	48 89 d0             	mov    rax,rdx
+    1e0c:	48 c1 e0 02          	shl    rax,0x2
+    1e10:	48 01 d0             	add    rax,rdx
+    1e13:	48 c1 e0 03          	shl    rax,0x3
+    1e17:	48 89 c2             	mov    rdx,rax
+    1e1a:	48 8b 45 80          	mov    rax,QWORD PTR [rbp-0x80]
+    1e1e:	48 01 d0             	add    rax,rdx
+    1e21:	8b 40 18             	mov    eax,DWORD PTR [rax+0x18]
+    1e24:	0f b7 d0             	movzx  edx,ax
+    1e27:	48 8b 75 80          	mov    rsi,QWORD PTR [rbp-0x80]
+    1e2b:	48 8b 45 88          	mov    rax,QWORD PTR [rbp-0x78]
+    1e2f:	48 89 c7             	mov    rdi,rax
+    1e32:	e8 00 00 00 00       	call   1e37 <elf_resolve_symbols+0x574>
+    1e37:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
+    1e3e:	48 89 c7             	mov    rdi,rax
+    1e41:	e8 00 00 00 00       	call   1e46 <elf_resolve_symbols+0x583>
+    1e46:	85 c0                	test   eax,eax
+    1e48:	75 3b                	jne    1e85 <elf_resolve_symbols+0x5c2>
 								mi->mi_init = (mod_init)s->st_value;
-    1e40:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1e44:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
-    1e47:	89 c0                	mov    eax,eax
-    1e49:	48 89 c2             	mov    rdx,rax
-    1e4c:	48 8b 85 68 ff ff ff 	mov    rax,QWORD PTR [rbp-0x98]
-    1e53:	48 89 50 18          	mov    QWORD PTR [rax+0x18],rdx
+    1e4a:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    1e4e:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
+    1e51:	89 c0                	mov    eax,eax
+    1e53:	48 89 c2             	mov    rdx,rax
+    1e56:	48 8b 85 68 ff ff ff 	mov    rax,QWORD PTR [rbp-0x98]
+    1e5d:	48 89 50 18          	mov    QWORD PTR [rax+0x18],rdx
 								sbprintf("found global entry module_init at %p\n", mi->mi_init);
-    1e57:	48 8b 85 68 ff ff ff 	mov    rax,QWORD PTR [rbp-0x98]
-    1e5e:	48 8b 40 18          	mov    rax,QWORD PTR [rax+0x18]
-    1e62:	48 89 c6             	mov    rsi,rax
-    1e65:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-    1e6c:	b8 00 00 00 00       	mov    eax,0x0
-    1e71:	e8 00 00 00 00       	call   1e76 <elf_resolve_symbols+0x5bd>
-    1e76:	e9 84 00 00 00       	jmp    1eff <elf_resolve_symbols+0x646>
+    1e61:	48 8b 85 68 ff ff ff 	mov    rax,QWORD PTR [rbp-0x98]
+    1e68:	48 8b 40 18          	mov    rax,QWORD PTR [rax+0x18]
+    1e6c:	48 89 c6             	mov    rsi,rax
+    1e6f:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+    1e76:	b8 00 00 00 00       	mov    eax,0x0
+    1e7b:	e8 00 00 00 00       	call   1e80 <elf_resolve_symbols+0x5bd>
+    1e80:	e9 84 00 00 00       	jmp    1f09 <elf_resolve_symbols+0x646>
 						} else if (strcmp(elf_fetch_string(hdr, shdr, shdr[symtab].sh_link, s->st_name), "module_cleanup") == 0) {
-    1e7b:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1e7f:	8b 08                	mov    ecx,DWORD PTR [rax]
-    1e81:	0f b7 95 7c ff ff ff 	movzx  edx,WORD PTR [rbp-0x84]
-    1e88:	48 89 d0             	mov    rax,rdx
-    1e8b:	48 c1 e0 02          	shl    rax,0x2
-    1e8f:	48 01 d0             	add    rax,rdx
-    1e92:	48 c1 e0 03          	shl    rax,0x3
-    1e96:	48 89 c2             	mov    rdx,rax
-    1e99:	48 8b 45 80          	mov    rax,QWORD PTR [rbp-0x80]
-    1e9d:	48 01 d0             	add    rax,rdx
-    1ea0:	8b 40 18             	mov    eax,DWORD PTR [rax+0x18]
-    1ea3:	0f b7 d0             	movzx  edx,ax
-    1ea6:	48 8b 75 80          	mov    rsi,QWORD PTR [rbp-0x80]
-    1eaa:	48 8b 45 88          	mov    rax,QWORD PTR [rbp-0x78]
-    1eae:	48 89 c7             	mov    rdi,rax
-    1eb1:	e8 00 00 00 00       	call   1eb6 <elf_resolve_symbols+0x5fd>
-    1eb6:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
-    1ebd:	48 89 c7             	mov    rdi,rax
-    1ec0:	e8 00 00 00 00       	call   1ec5 <elf_resolve_symbols+0x60c>
-    1ec5:	85 c0                	test   eax,eax
-    1ec7:	75 36                	jne    1eff <elf_resolve_symbols+0x646>
+    1e85:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    1e89:	8b 08                	mov    ecx,DWORD PTR [rax]
+    1e8b:	0f b7 95 7c ff ff ff 	movzx  edx,WORD PTR [rbp-0x84]
+    1e92:	48 89 d0             	mov    rax,rdx
+    1e95:	48 c1 e0 02          	shl    rax,0x2
+    1e99:	48 01 d0             	add    rax,rdx
+    1e9c:	48 c1 e0 03          	shl    rax,0x3
+    1ea0:	48 89 c2             	mov    rdx,rax
+    1ea3:	48 8b 45 80          	mov    rax,QWORD PTR [rbp-0x80]
+    1ea7:	48 01 d0             	add    rax,rdx
+    1eaa:	8b 40 18             	mov    eax,DWORD PTR [rax+0x18]
+    1ead:	0f b7 d0             	movzx  edx,ax
+    1eb0:	48 8b 75 80          	mov    rsi,QWORD PTR [rbp-0x80]
+    1eb4:	48 8b 45 88          	mov    rax,QWORD PTR [rbp-0x78]
+    1eb8:	48 89 c7             	mov    rdi,rax
+    1ebb:	e8 00 00 00 00       	call   1ec0 <elf_resolve_symbols+0x5fd>
+    1ec0:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
+    1ec7:	48 89 c7             	mov    rdi,rax
+    1eca:	e8 00 00 00 00       	call   1ecf <elf_resolve_symbols+0x60c>
+    1ecf:	85 c0                	test   eax,eax
+    1ed1:	75 36                	jne    1f09 <elf_resolve_symbols+0x646>
 								mi->mi_cleanup = (mod_cleanup)s->st_value;
-    1ec9:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1ecd:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
-    1ed0:	89 c0                	mov    eax,eax
-    1ed2:	48 89 c2             	mov    rdx,rax
-    1ed5:	48 8b 85 68 ff ff ff 	mov    rax,QWORD PTR [rbp-0x98]
-    1edc:	48 89 50 20          	mov    QWORD PTR [rax+0x20],rdx
+    1ed3:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    1ed7:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
+    1eda:	89 c0                	mov    eax,eax
+    1edc:	48 89 c2             	mov    rdx,rax
+    1edf:	48 8b 85 68 ff ff ff 	mov    rax,QWORD PTR [rbp-0x98]
+    1ee6:	48 89 50 20          	mov    QWORD PTR [rax+0x20],rdx
 								sbprintf("found global exit module_cleanup at %p\n", mi->mi_cleanup);
-    1ee0:	48 8b 85 68 ff ff ff 	mov    rax,QWORD PTR [rbp-0x98]
-    1ee7:	48 8b 40 20          	mov    rax,QWORD PTR [rax+0x20]
-    1eeb:	48 89 c6             	mov    rsi,rax
-    1eee:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-    1ef5:	b8 00 00 00 00       	mov    eax,0x0
-    1efa:	e8 00 00 00 00       	call   1eff <elf_resolve_symbols+0x646>
+    1eea:	48 8b 85 68 ff ff ff 	mov    rax,QWORD PTR [rbp-0x98]
+    1ef1:	48 8b 40 20          	mov    rax,QWORD PTR [rax+0x20]
+    1ef5:	48 89 c6             	mov    rsi,rax
+    1ef8:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+    1eff:	b8 00 00 00 00       	mov    eax,0x0
+    1f04:	e8 00 00 00 00       	call   1f09 <elf_resolve_symbols+0x646>
 						}
 						if (ELF32_ST_BIND(s->st_info) == STB_GLOBAL ||
-    1eff:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1f03:	0f b6 40 0c          	movzx  eax,BYTE PTR [rax+0xc]
-    1f07:	c0 e8 04             	shr    al,0x4
-    1f0a:	3c 01                	cmp    al,0x1
-    1f0c:	74 13                	je     1f21 <elf_resolve_symbols+0x668>
+    1f09:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    1f0d:	0f b6 40 0c          	movzx  eax,BYTE PTR [rax+0xc]
+    1f11:	c0 e8 04             	shr    al,0x4
+    1f14:	3c 01                	cmp    al,0x1
+    1f16:	74 13                	je     1f2b <elf_resolve_symbols+0x668>
 										ELF32_ST_BIND(s->st_info) == STB_WEAK) {
-    1f0e:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1f12:	0f b6 40 0c          	movzx  eax,BYTE PTR [rax+0xc]
-    1f16:	c0 e8 04             	shr    al,0x4
+    1f18:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    1f1c:	0f b6 40 0c          	movzx  eax,BYTE PTR [rax+0xc]
+    1f20:	c0 e8 04             	shr    al,0x4
 						if (ELF32_ST_BIND(s->st_info) == STB_GLOBAL ||
-    1f19:	3c 02                	cmp    al,0x2
-    1f1b:	0f 85 ac 01 00 00    	jne    20cd <elf_resolve_symbols+0x814>
+    1f23:	3c 02                	cmp    al,0x2
+    1f25:	0f 85 ac 01 00 00    	jne    20d7 <elf_resolve_symbols+0x814>
 								/* exported symbol -> to global symtab */
 								char tp = 'T', *sn;
-    1f21:	c6 45 df 54          	mov    BYTE PTR [rbp-0x21],0x54
+    1f2b:	c6 45 df 54          	mov    BYTE PTR [rbp-0x21],0x54
 								if (ELF32_ST_TYPE(s->st_info) == STT_OBJECT)
-    1f25:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1f29:	0f b6 40 0c          	movzx  eax,BYTE PTR [rax+0xc]
-    1f2d:	0f b6 c0             	movzx  eax,al
-    1f30:	83 e0 0f             	and    eax,0xf
-    1f33:	83 f8 01             	cmp    eax,0x1
-    1f36:	75 04                	jne    1f3c <elf_resolve_symbols+0x683>
+    1f2f:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    1f33:	0f b6 40 0c          	movzx  eax,BYTE PTR [rax+0xc]
+    1f37:	0f b6 c0             	movzx  eax,al
+    1f3a:	83 e0 0f             	and    eax,0xf
+    1f3d:	83 f8 01             	cmp    eax,0x1
+    1f40:	75 04                	jne    1f46 <elf_resolve_symbols+0x683>
 										tp = 'D';
-    1f38:	c6 45 df 44          	mov    BYTE PTR [rbp-0x21],0x44
+    1f42:	c6 45 df 44          	mov    BYTE PTR [rbp-0x21],0x44
 								sn = elf_fetch_string(hdr, shdr, shdr[symtab].sh_link, s->st_name);
-    1f3c:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1f40:	8b 08                	mov    ecx,DWORD PTR [rax]
-    1f42:	0f b7 95 7c ff ff ff 	movzx  edx,WORD PTR [rbp-0x84]
-    1f49:	48 89 d0             	mov    rax,rdx
-    1f4c:	48 c1 e0 02          	shl    rax,0x2
-    1f50:	48 01 d0             	add    rax,rdx
-    1f53:	48 c1 e0 03          	shl    rax,0x3
-    1f57:	48 89 c2             	mov    rdx,rax
-    1f5a:	48 8b 45 80          	mov    rax,QWORD PTR [rbp-0x80]
-    1f5e:	48 01 d0             	add    rax,rdx
-    1f61:	8b 40 18             	mov    eax,DWORD PTR [rax+0x18]
-    1f64:	0f b7 d0             	movzx  edx,ax
-    1f67:	48 8b 75 80          	mov    rsi,QWORD PTR [rbp-0x80]
-    1f6b:	48 8b 45 88          	mov    rax,QWORD PTR [rbp-0x78]
-    1f6f:	48 89 c7             	mov    rdi,rax
-    1f72:	e8 00 00 00 00       	call   1f77 <elf_resolve_symbols+0x6be>
-    1f77:	48 89 45 b0          	mov    QWORD PTR [rbp-0x50],rax
+    1f46:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    1f4a:	8b 08                	mov    ecx,DWORD PTR [rax]
+    1f4c:	0f b7 95 7c ff ff ff 	movzx  edx,WORD PTR [rbp-0x84]
+    1f53:	48 89 d0             	mov    rax,rdx
+    1f56:	48 c1 e0 02          	shl    rax,0x2
+    1f5a:	48 01 d0             	add    rax,rdx
+    1f5d:	48 c1 e0 03          	shl    rax,0x3
+    1f61:	48 89 c2             	mov    rdx,rax
+    1f64:	48 8b 45 80          	mov    rax,QWORD PTR [rbp-0x80]
+    1f68:	48 01 d0             	add    rax,rdx
+    1f6b:	8b 40 18             	mov    eax,DWORD PTR [rax+0x18]
+    1f6e:	0f b7 d0             	movzx  edx,ax
+    1f71:	48 8b 75 80          	mov    rsi,QWORD PTR [rbp-0x80]
+    1f75:	48 8b 45 88          	mov    rax,QWORD PTR [rbp-0x78]
+    1f79:	48 89 c7             	mov    rdi,rax
+    1f7c:	e8 00 00 00 00       	call   1f81 <elf_resolve_symbols+0x6be>
+    1f81:	48 89 45 b0          	mov    QWORD PTR [rbp-0x50],rax
 								elf_store_global_symbol(sn, (void*)s->st_value, tp, ELF32_ST_BIND(s->st_info) == STB_WEAK);
-    1f7b:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1f7f:	0f b6 40 0c          	movzx  eax,BYTE PTR [rax+0xc]
-    1f83:	c0 e8 04             	shr    al,0x4
-    1f86:	3c 02                	cmp    al,0x2
-    1f88:	0f 94 c0             	sete   al
-    1f8b:	0f b6 c8             	movzx  ecx,al
-    1f8e:	0f be 55 df          	movsx  edx,BYTE PTR [rbp-0x21]
-    1f92:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1f96:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
-    1f99:	89 c0                	mov    eax,eax
-    1f9b:	48 89 c6             	mov    rsi,rax
-    1f9e:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    1fa2:	48 89 c7             	mov    rdi,rax
-    1fa5:	e8 00 00 00 00       	call   1faa <elf_resolve_symbols+0x6f1>
-    1faa:	e9 1e 01 00 00       	jmp    20cd <elf_resolve_symbols+0x814>
+    1f85:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    1f89:	0f b6 40 0c          	movzx  eax,BYTE PTR [rax+0xc]
+    1f8d:	c0 e8 04             	shr    al,0x4
+    1f90:	3c 02                	cmp    al,0x2
+    1f92:	0f 94 c0             	sete   al
+    1f95:	0f b6 c8             	movzx  ecx,al
+    1f98:	0f be 55 df          	movsx  edx,BYTE PTR [rbp-0x21]
+    1f9c:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    1fa0:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
+    1fa3:	89 c0                	mov    eax,eax
+    1fa5:	48 89 c6             	mov    rsi,rax
+    1fa8:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    1fac:	48 89 c7             	mov    rdi,rax
+    1faf:	e8 00 00 00 00       	call   1fb4 <elf_resolve_symbols+0x6f1>
+    1fb4:	e9 1e 01 00 00       	jmp    20d7 <elf_resolve_symbols+0x814>
 						}
 				} else if (s->st_shndx == SHN_ABS) {
-    1faf:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1fb3:	0f b7 40 0e          	movzx  eax,WORD PTR [rax+0xe]
-    1fb7:	66 83 f8 f1          	cmp    ax,0xfff1
-    1fbb:	0f 85 0c 01 00 00    	jne    20cd <elf_resolve_symbols+0x814>
+    1fb9:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    1fbd:	0f b7 40 0e          	movzx  eax,WORD PTR [rax+0xe]
+    1fc1:	66 83 f8 f1          	cmp    ax,0xfff1
+    1fc5:	0f 85 0c 01 00 00    	jne    20d7 <elf_resolve_symbols+0x814>
 						sbprintf("absolute symbol with name %s and value %p\n",
 										elf_fetch_string(hdr, shdr, shdr[symtab].sh_link, s->st_name),
 							  			(void*)s->st_value);
-    1fc1:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1fc5:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
-    1fc8:	89 c0                	mov    eax,eax
+    1fcb:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    1fcf:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
+    1fd2:	89 c0                	mov    eax,eax
 						sbprintf("absolute symbol with name %s and value %p\n",
-    1fca:	48 89 c3             	mov    rbx,rax
-    1fcd:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    1fd1:	8b 08                	mov    ecx,DWORD PTR [rax]
+    1fd4:	48 89 c3             	mov    rbx,rax
+    1fd7:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    1fdb:	8b 08                	mov    ecx,DWORD PTR [rax]
 										elf_fetch_string(hdr, shdr, shdr[symtab].sh_link, s->st_name),
-    1fd3:	0f b7 95 7c ff ff ff 	movzx  edx,WORD PTR [rbp-0x84]
-    1fda:	48 89 d0             	mov    rax,rdx
-    1fdd:	48 c1 e0 02          	shl    rax,0x2
-    1fe1:	48 01 d0             	add    rax,rdx
-    1fe4:	48 c1 e0 03          	shl    rax,0x3
-    1fe8:	48 89 c2             	mov    rdx,rax
-    1feb:	48 8b 45 80          	mov    rax,QWORD PTR [rbp-0x80]
-    1fef:	48 01 d0             	add    rax,rdx
-    1ff2:	8b 40 18             	mov    eax,DWORD PTR [rax+0x18]
+    1fdd:	0f b7 95 7c ff ff ff 	movzx  edx,WORD PTR [rbp-0x84]
+    1fe4:	48 89 d0             	mov    rax,rdx
+    1fe7:	48 c1 e0 02          	shl    rax,0x2
+    1feb:	48 01 d0             	add    rax,rdx
+    1fee:	48 c1 e0 03          	shl    rax,0x3
+    1ff2:	48 89 c2             	mov    rdx,rax
+    1ff5:	48 8b 45 80          	mov    rax,QWORD PTR [rbp-0x80]
+    1ff9:	48 01 d0             	add    rax,rdx
+    1ffc:	8b 40 18             	mov    eax,DWORD PTR [rax+0x18]
 						sbprintf("absolute symbol with name %s and value %p\n",
-    1ff5:	0f b7 d0             	movzx  edx,ax
-    1ff8:	48 8b 75 80          	mov    rsi,QWORD PTR [rbp-0x80]
-    1ffc:	48 8b 45 88          	mov    rax,QWORD PTR [rbp-0x78]
-    2000:	48 89 c7             	mov    rdi,rax
-    2003:	e8 00 00 00 00       	call   2008 <elf_resolve_symbols+0x74f>
-    2008:	48 89 da             	mov    rdx,rbx
-    200b:	48 89 c6             	mov    rsi,rax
-    200e:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-    2015:	b8 00 00 00 00       	mov    eax,0x0
-    201a:	e8 00 00 00 00       	call   201f <elf_resolve_symbols+0x766>
+    1fff:	0f b7 d0             	movzx  edx,ax
+    2002:	48 8b 75 80          	mov    rsi,QWORD PTR [rbp-0x80]
+    2006:	48 8b 45 88          	mov    rax,QWORD PTR [rbp-0x78]
+    200a:	48 89 c7             	mov    rdi,rax
+    200d:	e8 00 00 00 00       	call   2012 <elf_resolve_symbols+0x74f>
+    2012:	48 89 da             	mov    rdx,rbx
+    2015:	48 89 c6             	mov    rsi,rax
+    2018:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+    201f:	b8 00 00 00 00       	mov    eax,0x0
+    2024:	e8 00 00 00 00       	call   2029 <elf_resolve_symbols+0x766>
 						if (ELF32_ST_BIND(s->st_info) == STB_GLOBAL ||
-    201f:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    2023:	0f b6 40 0c          	movzx  eax,BYTE PTR [rax+0xc]
-    2027:	c0 e8 04             	shr    al,0x4
-    202a:	3c 01                	cmp    al,0x1
-    202c:	74 13                	je     2041 <elf_resolve_symbols+0x788>
+    2029:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    202d:	0f b6 40 0c          	movzx  eax,BYTE PTR [rax+0xc]
+    2031:	c0 e8 04             	shr    al,0x4
+    2034:	3c 01                	cmp    al,0x1
+    2036:	74 13                	je     204b <elf_resolve_symbols+0x788>
 										ELF32_ST_BIND(s->st_info) == STB_WEAK) {
-    202e:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    2032:	0f b6 40 0c          	movzx  eax,BYTE PTR [rax+0xc]
-    2036:	c0 e8 04             	shr    al,0x4
+    2038:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    203c:	0f b6 40 0c          	movzx  eax,BYTE PTR [rax+0xc]
+    2040:	c0 e8 04             	shr    al,0x4
 						if (ELF32_ST_BIND(s->st_info) == STB_GLOBAL ||
-    2039:	3c 02                	cmp    al,0x2
-    203b:	0f 85 8c 00 00 00    	jne    20cd <elf_resolve_symbols+0x814>
+    2043:	3c 02                	cmp    al,0x2
+    2045:	0f 85 8c 00 00 00    	jne    20d7 <elf_resolve_symbols+0x814>
 								char tp = 'T', *sn;
-    2041:	c6 45 de 54          	mov    BYTE PTR [rbp-0x22],0x54
+    204b:	c6 45 de 54          	mov    BYTE PTR [rbp-0x22],0x54
 								if (ELF32_ST_TYPE(s->st_info) == STT_OBJECT)
-    2045:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    2049:	0f b6 40 0c          	movzx  eax,BYTE PTR [rax+0xc]
-    204d:	0f b6 c0             	movzx  eax,al
-    2050:	83 e0 0f             	and    eax,0xf
-    2053:	83 f8 01             	cmp    eax,0x1
-    2056:	75 04                	jne    205c <elf_resolve_symbols+0x7a3>
+    204f:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    2053:	0f b6 40 0c          	movzx  eax,BYTE PTR [rax+0xc]
+    2057:	0f b6 c0             	movzx  eax,al
+    205a:	83 e0 0f             	and    eax,0xf
+    205d:	83 f8 01             	cmp    eax,0x1
+    2060:	75 04                	jne    2066 <elf_resolve_symbols+0x7a3>
 										tp = 'D';
-    2058:	c6 45 de 44          	mov    BYTE PTR [rbp-0x22],0x44
+    2062:	c6 45 de 44          	mov    BYTE PTR [rbp-0x22],0x44
 								sn = elf_fetch_string(hdr, shdr, shdr[symtab].sh_link, s->st_name);
-    205c:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    2060:	8b 08                	mov    ecx,DWORD PTR [rax]
-    2062:	0f b7 95 7c ff ff ff 	movzx  edx,WORD PTR [rbp-0x84]
-    2069:	48 89 d0             	mov    rax,rdx
-    206c:	48 c1 e0 02          	shl    rax,0x2
-    2070:	48 01 d0             	add    rax,rdx
-    2073:	48 c1 e0 03          	shl    rax,0x3
-    2077:	48 89 c2             	mov    rdx,rax
-    207a:	48 8b 45 80          	mov    rax,QWORD PTR [rbp-0x80]
-    207e:	48 01 d0             	add    rax,rdx
-    2081:	8b 40 18             	mov    eax,DWORD PTR [rax+0x18]
-    2084:	0f b7 d0             	movzx  edx,ax
-    2087:	48 8b 75 80          	mov    rsi,QWORD PTR [rbp-0x80]
-    208b:	48 8b 45 88          	mov    rax,QWORD PTR [rbp-0x78]
-    208f:	48 89 c7             	mov    rdi,rax
-    2092:	e8 00 00 00 00       	call   2097 <elf_resolve_symbols+0x7de>
-    2097:	48 89 45 b8          	mov    QWORD PTR [rbp-0x48],rax
+    2066:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    206a:	8b 08                	mov    ecx,DWORD PTR [rax]
+    206c:	0f b7 95 7c ff ff ff 	movzx  edx,WORD PTR [rbp-0x84]
+    2073:	48 89 d0             	mov    rax,rdx
+    2076:	48 c1 e0 02          	shl    rax,0x2
+    207a:	48 01 d0             	add    rax,rdx
+    207d:	48 c1 e0 03          	shl    rax,0x3
+    2081:	48 89 c2             	mov    rdx,rax
+    2084:	48 8b 45 80          	mov    rax,QWORD PTR [rbp-0x80]
+    2088:	48 01 d0             	add    rax,rdx
+    208b:	8b 40 18             	mov    eax,DWORD PTR [rax+0x18]
+    208e:	0f b7 d0             	movzx  edx,ax
+    2091:	48 8b 75 80          	mov    rsi,QWORD PTR [rbp-0x80]
+    2095:	48 8b 45 88          	mov    rax,QWORD PTR [rbp-0x78]
+    2099:	48 89 c7             	mov    rdi,rax
+    209c:	e8 00 00 00 00       	call   20a1 <elf_resolve_symbols+0x7de>
+    20a1:	48 89 45 b8          	mov    QWORD PTR [rbp-0x48],rax
 								elf_store_global_symbol(sn, (void*)s->st_value, tp, ELF32_ST_BIND(s->st_info) == STB_WEAK);
-    209b:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    209f:	0f b6 40 0c          	movzx  eax,BYTE PTR [rax+0xc]
-    20a3:	c0 e8 04             	shr    al,0x4
-    20a6:	3c 02                	cmp    al,0x2
-    20a8:	0f 94 c0             	sete   al
-    20ab:	0f b6 c8             	movzx  ecx,al
-    20ae:	0f be 55 de          	movsx  edx,BYTE PTR [rbp-0x22]
-    20b2:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
-    20b6:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
-    20b9:	89 c0                	mov    eax,eax
-    20bb:	48 89 c6             	mov    rsi,rax
-    20be:	48 8b 45 b8          	mov    rax,QWORD PTR [rbp-0x48]
-    20c2:	48 89 c7             	mov    rdi,rax
-    20c5:	e8 00 00 00 00       	call   20ca <elf_resolve_symbols+0x811>
-    20ca:	eb 01                	jmp    20cd <elf_resolve_symbols+0x814>
+    20a5:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    20a9:	0f b6 40 0c          	movzx  eax,BYTE PTR [rax+0xc]
+    20ad:	c0 e8 04             	shr    al,0x4
+    20b0:	3c 02                	cmp    al,0x2
+    20b2:	0f 94 c0             	sete   al
+    20b5:	0f b6 c8             	movzx  ecx,al
+    20b8:	0f be 55 de          	movsx  edx,BYTE PTR [rbp-0x22]
+    20bc:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
+    20c0:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
+    20c3:	89 c0                	mov    eax,eax
+    20c5:	48 89 c6             	mov    rsi,rax
+    20c8:	48 8b 45 b8          	mov    rax,QWORD PTR [rbp-0x48]
+    20cc:	48 89 c7             	mov    rdi,rax
+    20cf:	e8 00 00 00 00       	call   20d4 <elf_resolve_symbols+0x811>
+    20d4:	eb 01                	jmp    20d7 <elf_resolve_symbols+0x814>
 								continue; /* skip symbols in unused sections */
-    20cc:	90                   	nop
+    20d6:	90                   	nop
 		for (i = 1; i < ct; i++) {
-    20cd:	48 83 45 e8 01       	add    QWORD PTR [rbp-0x18],0x1
-    20d2:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
-    20d6:	48 3b 45 c8          	cmp    rax,QWORD PTR [rbp-0x38]
-    20da:	0f 82 b8 f8 ff ff    	jb     1998 <elf_resolve_symbols+0xdf>
-    20e0:	eb 01                	jmp    20e3 <elf_resolve_symbols+0x82a>
+    20d7:	48 83 45 e8 01       	add    QWORD PTR [rbp-0x18],0x1
+    20dc:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+    20e0:	48 3b 45 c8          	cmp    rax,QWORD PTR [rbp-0x38]
+    20e4:	0f 82 b8 f8 ff ff    	jb     19a2 <elf_resolve_symbols+0xdf>
+    20ea:	eb 01                	jmp    20ed <elf_resolve_symbols+0x82a>
 				return;
-    20e2:	90                   	nop
+    20ec:	90                   	nop
 						}
 				}
 		}
 }
-    20e3:	48 81 c4 90 00 00 00 	add    rsp,0x90
-    20ea:	5b                   	pop    rbx
-    20eb:	41 5c                	pop    r12
-    20ed:	5d                   	pop    rbp
-    20ee:	c3                   	ret
+    20ed:	48 81 c4 90 00 00 00 	add    rsp,0x90
+    20f4:	5b                   	pop    rbx
+    20f5:	41 5c                	pop    r12
+    20f7:	5d                   	pop    rbp
+    20f8:	c3                   	ret
 
-00000000000020ef <load_elf>:
+00000000000020f9 <load_elf>:
 
 /*#define ELF_DIAG*/
 
 enum elferr load_elf(void* mem, uint32_t sz, struct module_info* mi)
 {
-    20ef:	55                   	push   rbp
-    20f0:	48 89 e5             	mov    rbp,rsp
-    20f3:	53                   	push   rbx
-    20f4:	48 81 ec 68 01 00 00 	sub    rsp,0x168
-    20fb:	48 89 bd a8 fe ff ff 	mov    QWORD PTR [rbp-0x158],rdi
-    2102:	89 b5 a4 fe ff ff    	mov    DWORD PTR [rbp-0x15c],esi
-    2108:	48 89 95 98 fe ff ff 	mov    QWORD PTR [rbp-0x168],rdx
+    20f9:	55                   	push   rbp
+    20fa:	48 89 e5             	mov    rbp,rsp
+    20fd:	53                   	push   rbx
+    20fe:	48 81 ec 68 01 00 00 	sub    rsp,0x168
+    2105:	48 89 bd a8 fe ff ff 	mov    QWORD PTR [rbp-0x158],rdi
+    210c:	89 b5 a4 fe ff ff    	mov    DWORD PTR [rbp-0x15c],esi
+    2112:	48 89 95 98 fe ff ff 	mov    QWORD PTR [rbp-0x168],rdx
 		Elf32_Ehdr* hdr = (Elf32_Ehdr*)mem;
-    210f:	48 8b 85 a8 fe ff ff 	mov    rax,QWORD PTR [rbp-0x158]
-    2116:	48 89 45 b0          	mov    QWORD PTR [rbp-0x50],rax
+    2119:	48 8b 85 a8 fe ff ff 	mov    rax,QWORD PTR [rbp-0x158]
+    2120:	48 89 45 b0          	mov    QWORD PTR [rbp-0x50],rax
 		Elf32_Shdr* shdr; size_t i;
 
 		/* perform basic checks */
 		if (strncmp((const char*)hdr->e_ident, ELFMAG, 4) != 0)
-    211a:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    211e:	ba 04 00 00 00       	mov    edx,0x4
-    2123:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
-    212a:	48 89 c7             	mov    rdi,rax
-    212d:	e8 00 00 00 00       	call   2132 <load_elf+0x43>
-    2132:	85 c0                	test   eax,eax
-    2134:	74 0a                	je     2140 <load_elf+0x51>
+    2124:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    2128:	ba 04 00 00 00       	mov    edx,0x4
+    212d:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
+    2134:	48 89 c7             	mov    rdi,rax
+    2137:	e8 00 00 00 00       	call   213c <load_elf+0x43>
+    213c:	85 c0                	test   eax,eax
+    213e:	74 0a                	je     214a <load_elf+0x51>
 				return ELF_WRONG_MAGIC;
-    2136:	b8 01 00 00 00       	mov    eax,0x1
-    213b:	e9 78 0e 00 00       	jmp    2fb8 <load_elf+0xec9>
+    2140:	b8 01 00 00 00       	mov    eax,0x1
+    2145:	e9 78 0e 00 00       	jmp    2fc2 <load_elf+0xec9>
 		if (hdr->e_ident[EI_CLASS] != ELFCLASS32)
-    2140:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    2144:	0f b6 40 04          	movzx  eax,BYTE PTR [rax+0x4]
-    2148:	3c 01                	cmp    al,0x1
-    214a:	74 0a                	je     2156 <load_elf+0x67>
+    214a:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    214e:	0f b6 40 04          	movzx  eax,BYTE PTR [rax+0x4]
+    2152:	3c 01                	cmp    al,0x1
+    2154:	74 0a                	je     2160 <load_elf+0x67>
 				return ELF_NOT_CLASS32;
-    214c:	b8 02 00 00 00       	mov    eax,0x2
-    2151:	e9 62 0e 00 00       	jmp    2fb8 <load_elf+0xec9>
+    2156:	b8 02 00 00 00       	mov    eax,0x2
+    215b:	e9 62 0e 00 00       	jmp    2fc2 <load_elf+0xec9>
 		if (hdr->e_ident[EI_DATA] != ELFDATA2LSB)
-    2156:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    215a:	0f b6 40 05          	movzx  eax,BYTE PTR [rax+0x5]
-    215e:	3c 01                	cmp    al,0x1
-    2160:	74 0a                	je     216c <load_elf+0x7d>
+    2160:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    2164:	0f b6 40 05          	movzx  eax,BYTE PTR [rax+0x5]
+    2168:	3c 01                	cmp    al,0x1
+    216a:	74 0a                	je     2176 <load_elf+0x7d>
 				return ELF_NOT_LE;
-    2162:	b8 03 00 00 00       	mov    eax,0x3
-    2167:	e9 4c 0e 00 00       	jmp    2fb8 <load_elf+0xec9>
+    216c:	b8 03 00 00 00       	mov    eax,0x3
+    2171:	e9 4c 0e 00 00       	jmp    2fc2 <load_elf+0xec9>
 		if (hdr->e_ident[EI_VERSION] != EV_CURRENT)
-    216c:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    2170:	0f b6 40 06          	movzx  eax,BYTE PTR [rax+0x6]
-    2174:	3c 01                	cmp    al,0x1
-    2176:	74 0a                	je     2182 <load_elf+0x93>
+    2176:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    217a:	0f b6 40 06          	movzx  eax,BYTE PTR [rax+0x6]
+    217e:	3c 01                	cmp    al,0x1
+    2180:	74 0a                	je     218c <load_elf+0x93>
 				return ELF_VERSION_NOT_SUPPORTED;
-    2178:	b8 05 00 00 00       	mov    eax,0x5
-    217d:	e9 36 0e 00 00       	jmp    2fb8 <load_elf+0xec9>
+    2182:	b8 05 00 00 00       	mov    eax,0x5
+    2187:	e9 36 0e 00 00       	jmp    2fc2 <load_elf+0xec9>
 		if (hdr->e_ident[EI_OSABI] != ELFOSABI_NONE)
-    2182:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    2186:	0f b6 40 07          	movzx  eax,BYTE PTR [rax+0x7]
-    218a:	84 c0                	test   al,al
-    218c:	74 0a                	je     2198 <load_elf+0xa9>
+    218c:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    2190:	0f b6 40 07          	movzx  eax,BYTE PTR [rax+0x7]
+    2194:	84 c0                	test   al,al
+    2196:	74 0a                	je     21a2 <load_elf+0xa9>
 				return ELF_WRONG_OSABI;
-    218e:	b8 06 00 00 00       	mov    eax,0x6
-    2193:	e9 20 0e 00 00       	jmp    2fb8 <load_elf+0xec9>
+    2198:	b8 06 00 00 00       	mov    eax,0x6
+    219d:	e9 20 0e 00 00       	jmp    2fc2 <load_elf+0xec9>
 
 		/* matching ELF32 found -> check for object file */
 		if (hdr->e_type != ET_REL)
-    2198:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    219c:	0f b7 40 10          	movzx  eax,WORD PTR [rax+0x10]
-    21a0:	66 83 f8 01          	cmp    ax,0x1
-    21a4:	74 0a                	je     21b0 <load_elf+0xc1>
+    21a2:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    21a6:	0f b7 40 10          	movzx  eax,WORD PTR [rax+0x10]
+    21aa:	66 83 f8 01          	cmp    ax,0x1
+    21ae:	74 0a                	je     21ba <load_elf+0xc1>
 				return ELF_NOT_REL;
-    21a6:	b8 07 00 00 00       	mov    eax,0x7
-    21ab:	e9 08 0e 00 00       	jmp    2fb8 <load_elf+0xec9>
+    21b0:	b8 07 00 00 00       	mov    eax,0x7
+    21b5:	e9 08 0e 00 00       	jmp    2fc2 <load_elf+0xec9>
 		if (hdr->e_machine != EM_386)
-    21b0:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    21b4:	0f b7 40 12          	movzx  eax,WORD PTR [rax+0x12]
-    21b8:	66 83 f8 03          	cmp    ax,0x3
-    21bc:	74 0a                	je     21c8 <load_elf+0xd9>
+    21ba:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    21be:	0f b7 40 12          	movzx  eax,WORD PTR [rax+0x12]
+    21c2:	66 83 f8 03          	cmp    ax,0x3
+    21c6:	74 0a                	je     21d2 <load_elf+0xd9>
 				return ELF_NOT_386;
-    21be:	b8 08 00 00 00       	mov    eax,0x8
-    21c3:	e9 f0 0d 00 00       	jmp    2fb8 <load_elf+0xec9>
+    21c8:	b8 08 00 00 00       	mov    eax,0x8
+    21cd:	e9 f0 0d 00 00       	jmp    2fc2 <load_elf+0xec9>
 		if (hdr->e_ehsize != sizeof(*hdr))
-    21c8:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    21cc:	0f b7 40 28          	movzx  eax,WORD PTR [rax+0x28]
-    21d0:	66 83 f8 34          	cmp    ax,0x34
-    21d4:	74 0a                	je     21e0 <load_elf+0xf1>
+    21d2:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    21d6:	0f b7 40 28          	movzx  eax,WORD PTR [rax+0x28]
+    21da:	66 83 f8 34          	cmp    ax,0x34
+    21de:	74 0a                	je     21ea <load_elf+0xf1>
 				return ELF_INCOMPATIBLE_HEADER;
-    21d6:	b8 09 00 00 00       	mov    eax,0x9
-    21db:	e9 d8 0d 00 00       	jmp    2fb8 <load_elf+0xec9>
+    21e0:	b8 09 00 00 00       	mov    eax,0x9
+    21e5:	e9 d8 0d 00 00       	jmp    2fc2 <load_elf+0xec9>
 		if (hdr->e_phnum)
-    21e0:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    21e4:	0f b7 40 2c          	movzx  eax,WORD PTR [rax+0x2c]
-    21e8:	66 85 c0             	test   ax,ax
-    21eb:	74 0a                	je     21f7 <load_elf+0x108>
+    21ea:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    21ee:	0f b7 40 2c          	movzx  eax,WORD PTR [rax+0x2c]
+    21f2:	66 85 c0             	test   ax,ax
+    21f5:	74 0a                	je     2201 <load_elf+0x108>
 				return ELF_CONTAINS_PROG_HEADERS;
-    21ed:	b8 0a 00 00 00       	mov    eax,0xa
-    21f2:	e9 c1 0d 00 00       	jmp    2fb8 <load_elf+0xec9>
+    21f7:	b8 0a 00 00 00       	mov    eax,0xa
+    21fc:	e9 c1 0d 00 00       	jmp    2fc2 <load_elf+0xec9>
 		if (!hdr->e_shnum)
-    21f7:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    21fb:	0f b7 40 30          	movzx  eax,WORD PTR [rax+0x30]
-    21ff:	66 85 c0             	test   ax,ax
-    2202:	75 0a                	jne    220e <load_elf+0x11f>
+    2201:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    2205:	0f b7 40 30          	movzx  eax,WORD PTR [rax+0x30]
+    2209:	66 85 c0             	test   ax,ax
+    220c:	75 0a                	jne    2218 <load_elf+0x11f>
 				return ELF_NO_SECTIONS_DEFINED;
-    2204:	b8 0b 00 00 00       	mov    eax,0xb
-    2209:	e9 aa 0d 00 00       	jmp    2fb8 <load_elf+0xec9>
+    220e:	b8 0b 00 00 00       	mov    eax,0xb
+    2213:	e9 aa 0d 00 00       	jmp    2fc2 <load_elf+0xec9>
 		if (hdr->e_shentsize != sizeof(Elf32_Shdr))
-    220e:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    2212:	0f b7 40 2e          	movzx  eax,WORD PTR [rax+0x2e]
-    2216:	66 83 f8 28          	cmp    ax,0x28
-    221a:	74 0a                	je     2226 <load_elf+0x137>
+    2218:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    221c:	0f b7 40 2e          	movzx  eax,WORD PTR [rax+0x2e]
+    2220:	66 83 f8 28          	cmp    ax,0x28
+    2224:	74 0a                	je     2230 <load_elf+0x137>
 				return ELF_WRONG_SHDR_SIZE;
-    221c:	b8 0c 00 00 00       	mov    eax,0xc
-    2221:	e9 92 0d 00 00       	jmp    2fb8 <load_elf+0xec9>
+    2226:	b8 0c 00 00 00       	mov    eax,0xc
+    222b:	e9 92 0d 00 00       	jmp    2fc2 <load_elf+0xec9>
 		if (hdr->e_shstrndx == SHN_UNDEF)
-    2226:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    222a:	0f b7 40 32          	movzx  eax,WORD PTR [rax+0x32]
-    222e:	66 85 c0             	test   ax,ax
-    2231:	75 0a                	jne    223d <load_elf+0x14e>
+    2230:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    2234:	0f b7 40 32          	movzx  eax,WORD PTR [rax+0x32]
+    2238:	66 85 c0             	test   ax,ax
+    223b:	75 0a                	jne    2247 <load_elf+0x14e>
 				return ELF_NO_SECTION_STRTAB;
-    2233:	b8 0d 00 00 00       	mov    eax,0xd
-    2238:	e9 7b 0d 00 00       	jmp    2fb8 <load_elf+0xec9>
+    223d:	b8 0d 00 00 00       	mov    eax,0xd
+    2242:	e9 7b 0d 00 00       	jmp    2fc2 <load_elf+0xec9>
 
 		/* set the initial offsets */
 		for (i = 0; i < 4; i++)
-    223d:	48 c7 45 e8 00 00 00 00 	mov    QWORD PTR [rbp-0x18],0x0
-    2245:	eb 25                	jmp    226c <load_elf+0x17d>
+    2247:	48 c7 45 e8 00 00 00 00 	mov    QWORD PTR [rbp-0x18],0x0
+    224f:	eb 25                	jmp    2276 <load_elf+0x17d>
 				mi->vm_ofs[i] = mod_tbl.vm_ofs[i];
-    2247:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
-    224b:	48 8b 14 c5 00 00 00 00 	mov    rdx,QWORD PTR [rax*8+0x0]
-    2253:	48 8b 85 98 fe ff ff 	mov    rax,QWORD PTR [rbp-0x168]
-    225a:	48 8b 4d e8          	mov    rcx,QWORD PTR [rbp-0x18]
-    225e:	48 83 c1 04          	add    rcx,0x4
-    2262:	48 89 54 c8 08       	mov    QWORD PTR [rax+rcx*8+0x8],rdx
+    2251:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+    2255:	48 8b 14 c5 00 00 00 00 	mov    rdx,QWORD PTR [rax*8+0x0]
+    225d:	48 8b 85 98 fe ff ff 	mov    rax,QWORD PTR [rbp-0x168]
+    2264:	48 8b 4d e8          	mov    rcx,QWORD PTR [rbp-0x18]
+    2268:	48 83 c1 04          	add    rcx,0x4
+    226c:	48 89 54 c8 08       	mov    QWORD PTR [rax+rcx*8+0x8],rdx
 		for (i = 0; i < 4; i++)
-    2267:	48 83 45 e8 01       	add    QWORD PTR [rbp-0x18],0x1
-    226c:	48 83 7d e8 03       	cmp    QWORD PTR [rbp-0x18],0x3
-    2271:	76 d4                	jbe    2247 <load_elf+0x158>
+    2271:	48 83 45 e8 01       	add    QWORD PTR [rbp-0x18],0x1
+    2276:	48 83 7d e8 03       	cmp    QWORD PTR [rbp-0x18],0x3
+    227b:	76 d4                	jbe    2251 <load_elf+0x158>
 
 		/* now first allocate the sections in memory */
 		shdr = mem + hdr->e_shoff;
-    2273:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    2277:	8b 40 20             	mov    eax,DWORD PTR [rax+0x20]
-    227a:	89 c2                	mov    edx,eax
-    227c:	48 8b 85 a8 fe ff ff 	mov    rax,QWORD PTR [rbp-0x158]
-    2283:	48 01 d0             	add    rax,rdx
-    2286:	48 89 45 a8          	mov    QWORD PTR [rbp-0x58],rax
+    227d:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    2281:	8b 40 20             	mov    eax,DWORD PTR [rax+0x20]
+    2284:	89 c2                	mov    edx,eax
+    2286:	48 8b 85 a8 fe ff ff 	mov    rax,QWORD PTR [rbp-0x158]
+    228d:	48 01 d0             	add    rax,rdx
+    2290:	48 89 45 a8          	mov    QWORD PTR [rbp-0x58],rax
 		for (i = 0; i < hdr->e_shnum; i++) {
-    228a:	48 c7 45 e8 00 00 00 00 	mov    QWORD PTR [rbp-0x18],0x0
-    2292:	e9 a6 07 00 00       	jmp    2a3d <load_elf+0x94e>
+    2294:	48 c7 45 e8 00 00 00 00 	mov    QWORD PTR [rbp-0x18],0x0
+    229c:	e9 a6 07 00 00       	jmp    2a47 <load_elf+0x94e>
 				if (shdr[i].sh_type == SHT_NULL)
-    2297:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
-    229b:	48 89 d0             	mov    rax,rdx
-    229e:	48 c1 e0 02          	shl    rax,0x2
-    22a2:	48 01 d0             	add    rax,rdx
-    22a5:	48 c1 e0 03          	shl    rax,0x3
-    22a9:	48 89 c2             	mov    rdx,rax
-    22ac:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    22b0:	48 01 d0             	add    rax,rdx
-    22b3:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
-    22b6:	85 c0                	test   eax,eax
-    22b8:	0f 84 79 07 00 00    	je     2a37 <load_elf+0x948>
+    22a1:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
+    22a5:	48 89 d0             	mov    rax,rdx
+    22a8:	48 c1 e0 02          	shl    rax,0x2
+    22ac:	48 01 d0             	add    rax,rdx
+    22af:	48 c1 e0 03          	shl    rax,0x3
+    22b3:	48 89 c2             	mov    rdx,rax
+    22b6:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    22ba:	48 01 d0             	add    rax,rdx
+    22bd:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
+    22c0:	85 c0                	test   eax,eax
+    22c2:	0f 84 79 07 00 00    	je     2a41 <load_elf+0x948>
 						continue;
 
 				/* only allocate alloc section */
 				if (shdr[i].sh_flags & SHF_ALLOC) {
-    22be:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
-    22c2:	48 89 d0             	mov    rax,rdx
-    22c5:	48 c1 e0 02          	shl    rax,0x2
-    22c9:	48 01 d0             	add    rax,rdx
-    22cc:	48 c1 e0 03          	shl    rax,0x3
-    22d0:	48 89 c2             	mov    rdx,rax
-    22d3:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    22d7:	48 01 d0             	add    rax,rdx
-    22da:	8b 40 08             	mov    eax,DWORD PTR [rax+0x8]
-    22dd:	83 e0 02             	and    eax,0x2
-    22e0:	85 c0                	test   eax,eax
-    22e2:	0f 84 50 07 00 00    	je     2a38 <load_elf+0x949>
+    22c8:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
+    22cc:	48 89 d0             	mov    rax,rdx
+    22cf:	48 c1 e0 02          	shl    rax,0x2
+    22d3:	48 01 d0             	add    rax,rdx
+    22d6:	48 c1 e0 03          	shl    rax,0x3
+    22da:	48 89 c2             	mov    rdx,rax
+    22dd:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    22e1:	48 01 d0             	add    rax,rdx
+    22e4:	8b 40 08             	mov    eax,DWORD PTR [rax+0x8]
+    22e7:	83 e0 02             	and    eax,0x2
+    22ea:	85 c0                	test   eax,eax
+    22ec:	0f 84 50 07 00 00    	je     2a42 <load_elf+0x949>
 						size_t pg_ct; struct page_range pr[10];
 						Elf32_Word algn = shdr[i].sh_addralign;
-    22e8:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
-    22ec:	48 89 d0             	mov    rax,rdx
-    22ef:	48 c1 e0 02          	shl    rax,0x2
-    22f3:	48 01 d0             	add    rax,rdx
-    22f6:	48 c1 e0 03          	shl    rax,0x3
-    22fa:	48 89 c2             	mov    rdx,rax
-    22fd:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    2301:	48 01 d0             	add    rax,rdx
-    2304:	8b 40 20             	mov    eax,DWORD PTR [rax+0x20]
-    2307:	89 45 84             	mov    DWORD PTR [rbp-0x7c],eax
+    22f2:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
+    22f6:	48 89 d0             	mov    rax,rdx
+    22f9:	48 c1 e0 02          	shl    rax,0x2
+    22fd:	48 01 d0             	add    rax,rdx
+    2300:	48 c1 e0 03          	shl    rax,0x3
+    2304:	48 89 c2             	mov    rdx,rax
+    2307:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    230b:	48 01 d0             	add    rax,rdx
+    230e:	8b 40 20             	mov    eax,DWORD PTR [rax+0x20]
+    2311:	89 45 84             	mov    DWORD PTR [rbp-0x7c],eax
 						Elf32_Addr addr; void* mapaddr; int reuse = 0;
-    230a:	c7 45 cc 00 00 00 00 	mov    DWORD PTR [rbp-0x34],0x0
+    2314:	c7 45 cc 00 00 00 00 	mov    DWORD PTR [rbp-0x34],0x0
 						Elf32_Off ofs = shdr[i].sh_offset;
-    2311:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
-    2315:	48 89 d0             	mov    rax,rdx
-    2318:	48 c1 e0 02          	shl    rax,0x2
-    231c:	48 01 d0             	add    rax,rdx
-    231f:	48 c1 e0 03          	shl    rax,0x3
-    2323:	48 89 c2             	mov    rdx,rax
-    2326:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    232a:	48 01 d0             	add    rax,rdx
-    232d:	8b 40 10             	mov    eax,DWORD PTR [rax+0x10]
-    2330:	89 45 c8             	mov    DWORD PTR [rbp-0x38],eax
+    231b:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
+    231f:	48 89 d0             	mov    rax,rdx
+    2322:	48 c1 e0 02          	shl    rax,0x2
+    2326:	48 01 d0             	add    rax,rdx
+    2329:	48 c1 e0 03          	shl    rax,0x3
+    232d:	48 89 c2             	mov    rdx,rax
+    2330:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    2334:	48 01 d0             	add    rax,rdx
+    2337:	8b 40 10             	mov    eax,DWORD PTR [rax+0x10]
+    233a:	89 45 c8             	mov    DWORD PTR [rbp-0x38],eax
 						enum mt_sec sct;
 
 						pg_ct = shdr[i].sh_size / 4096 + ((shdr[i].sh_size % 4096) ? 1 : 0);
-    2333:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
-    2337:	48 89 d0             	mov    rax,rdx
-    233a:	48 c1 e0 02          	shl    rax,0x2
-    233e:	48 01 d0             	add    rax,rdx
-    2341:	48 c1 e0 03          	shl    rax,0x3
-    2345:	48 89 c2             	mov    rdx,rax
-    2348:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    234c:	48 01 d0             	add    rax,rdx
-    234f:	8b 40 14             	mov    eax,DWORD PTR [rax+0x14]
-    2352:	c1 e8 0c             	shr    eax,0xc
-    2355:	89 c1                	mov    ecx,eax
-    2357:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
-    235b:	48 89 d0             	mov    rax,rdx
-    235e:	48 c1 e0 02          	shl    rax,0x2
-    2362:	48 01 d0             	add    rax,rdx
-    2365:	48 c1 e0 03          	shl    rax,0x3
-    2369:	48 89 c2             	mov    rdx,rax
-    236c:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    2370:	48 01 d0             	add    rax,rdx
-    2373:	8b 40 14             	mov    eax,DWORD PTR [rax+0x14]
-    2376:	25 ff 0f 00 00       	and    eax,0xfff
-    237b:	85 c0                	test   eax,eax
-    237d:	74 07                	je     2386 <load_elf+0x297>
-    237f:	b8 01 00 00 00       	mov    eax,0x1
-    2384:	eb 05                	jmp    238b <load_elf+0x29c>
-    2386:	b8 00 00 00 00       	mov    eax,0x0
-    238b:	01 c8                	add    eax,ecx
-    238d:	89 c0                	mov    eax,eax
-    238f:	48 89 45 e0          	mov    QWORD PTR [rbp-0x20],rax
+    233d:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
+    2341:	48 89 d0             	mov    rax,rdx
+    2344:	48 c1 e0 02          	shl    rax,0x2
+    2348:	48 01 d0             	add    rax,rdx
+    234b:	48 c1 e0 03          	shl    rax,0x3
+    234f:	48 89 c2             	mov    rdx,rax
+    2352:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    2356:	48 01 d0             	add    rax,rdx
+    2359:	8b 40 14             	mov    eax,DWORD PTR [rax+0x14]
+    235c:	c1 e8 0c             	shr    eax,0xc
+    235f:	89 c1                	mov    ecx,eax
+    2361:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
+    2365:	48 89 d0             	mov    rax,rdx
+    2368:	48 c1 e0 02          	shl    rax,0x2
+    236c:	48 01 d0             	add    rax,rdx
+    236f:	48 c1 e0 03          	shl    rax,0x3
+    2373:	48 89 c2             	mov    rdx,rax
+    2376:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    237a:	48 01 d0             	add    rax,rdx
+    237d:	8b 40 14             	mov    eax,DWORD PTR [rax+0x14]
+    2380:	25 ff 0f 00 00       	and    eax,0xfff
+    2385:	85 c0                	test   eax,eax
+    2387:	74 07                	je     2390 <load_elf+0x297>
+    2389:	b8 01 00 00 00       	mov    eax,0x1
+    238e:	eb 05                	jmp    2395 <load_elf+0x29c>
+    2390:	b8 00 00 00 00       	mov    eax,0x0
+    2395:	01 c8                	add    eax,ecx
+    2397:	89 c0                	mov    eax,eax
+    2399:	48 89 45 e0          	mov    QWORD PTR [rbp-0x20],rax
 						/* get the section type */
 						if (shdr[i].sh_flags & SHF_WRITE) {
-    2393:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
-    2397:	48 89 d0             	mov    rax,rdx
-    239a:	48 c1 e0 02          	shl    rax,0x2
-    239e:	48 01 d0             	add    rax,rdx
-    23a1:	48 c1 e0 03          	shl    rax,0x3
-    23a5:	48 89 c2             	mov    rdx,rax
-    23a8:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    23ac:	48 01 d0             	add    rax,rdx
-    23af:	8b 40 08             	mov    eax,DWORD PTR [rax+0x8]
-    23b2:	83 e0 01             	and    eax,0x1
-    23b5:	85 c0                	test   eax,eax
-    23b7:	74 66                	je     241f <load_elf+0x330>
+    239d:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
+    23a1:	48 89 d0             	mov    rax,rdx
+    23a4:	48 c1 e0 02          	shl    rax,0x2
+    23a8:	48 01 d0             	add    rax,rdx
+    23ab:	48 c1 e0 03          	shl    rax,0x3
+    23af:	48 89 c2             	mov    rdx,rax
+    23b2:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    23b6:	48 01 d0             	add    rax,rdx
+    23b9:	8b 40 08             	mov    eax,DWORD PTR [rax+0x8]
+    23bc:	83 e0 01             	and    eax,0x1
+    23bf:	85 c0                	test   eax,eax
+    23c1:	74 66                	je     2429 <load_elf+0x330>
 								/* TODO: C-o-w bss */
 								if (shdr[i].sh_flags & SHF_EXECINSTR)
-    23b9:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
-    23bd:	48 89 d0             	mov    rax,rdx
-    23c0:	48 c1 e0 02          	shl    rax,0x2
-    23c4:	48 01 d0             	add    rax,rdx
-    23c7:	48 c1 e0 03          	shl    rax,0x3
-    23cb:	48 89 c2             	mov    rdx,rax
-    23ce:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    23d2:	48 01 d0             	add    rax,rdx
-    23d5:	8b 40 08             	mov    eax,DWORD PTR [rax+0x8]
-    23d8:	83 e0 04             	and    eax,0x4
-    23db:	85 c0                	test   eax,eax
-    23dd:	74 0a                	je     23e9 <load_elf+0x2fa>
+    23c3:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
+    23c7:	48 89 d0             	mov    rax,rdx
+    23ca:	48 c1 e0 02          	shl    rax,0x2
+    23ce:	48 01 d0             	add    rax,rdx
+    23d1:	48 c1 e0 03          	shl    rax,0x3
+    23d5:	48 89 c2             	mov    rdx,rax
+    23d8:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    23dc:	48 01 d0             	add    rax,rdx
+    23df:	8b 40 08             	mov    eax,DWORD PTR [rax+0x8]
+    23e2:	83 e0 04             	and    eax,0x4
+    23e5:	85 c0                	test   eax,eax
+    23e7:	74 0a                	je     23f3 <load_elf+0x2fa>
 										return ELF_SECTION_RWX;
-    23df:	b8 0e 00 00 00       	mov    eax,0xe
-    23e4:	e9 cf 0b 00 00       	jmp    2fb8 <load_elf+0xec9>
+    23e9:	b8 0e 00 00 00       	mov    eax,0xe
+    23ee:	e9 cf 0b 00 00       	jmp    2fc2 <load_elf+0xec9>
 								if (shdr[i].sh_type == SHT_NOBITS)
-    23e9:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
-    23ed:	48 89 d0             	mov    rax,rdx
-    23f0:	48 c1 e0 02          	shl    rax,0x2
-    23f4:	48 01 d0             	add    rax,rdx
-    23f7:	48 c1 e0 03          	shl    rax,0x3
-    23fb:	48 89 c2             	mov    rdx,rax
-    23fe:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    2402:	48 01 d0             	add    rax,rdx
-    2405:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
-    2408:	83 f8 08             	cmp    eax,0x8
-    240b:	75 09                	jne    2416 <load_elf+0x327>
+    23f3:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
+    23f7:	48 89 d0             	mov    rax,rdx
+    23fa:	48 c1 e0 02          	shl    rax,0x2
+    23fe:	48 01 d0             	add    rax,rdx
+    2401:	48 c1 e0 03          	shl    rax,0x3
+    2405:	48 89 c2             	mov    rdx,rax
+    2408:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    240c:	48 01 d0             	add    rax,rdx
+    240f:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
+    2412:	83 f8 08             	cmp    eax,0x8
+    2415:	75 09                	jne    2420 <load_elf+0x327>
 										sct = MT_SEC_BSS;
-    240d:	c7 45 c4 03 00 00 00 	mov    DWORD PTR [rbp-0x3c],0x3
-    2414:	eb 77                	jmp    248d <load_elf+0x39e>
+    2417:	c7 45 c4 03 00 00 00 	mov    DWORD PTR [rbp-0x3c],0x3
+    241e:	eb 77                	jmp    2497 <load_elf+0x39e>
 								else
 										sct = MT_SEC_DATA;
-    2416:	c7 45 c4 01 00 00 00 	mov    DWORD PTR [rbp-0x3c],0x1
-    241d:	eb 6e                	jmp    248d <load_elf+0x39e>
+    2420:	c7 45 c4 01 00 00 00 	mov    DWORD PTR [rbp-0x3c],0x1
+    2427:	eb 6e                	jmp    2497 <load_elf+0x39e>
 						} else if (shdr[i].sh_flags & SHF_EXECINSTR)
-    241f:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
-    2423:	48 89 d0             	mov    rax,rdx
-    2426:	48 c1 e0 02          	shl    rax,0x2
-    242a:	48 01 d0             	add    rax,rdx
-    242d:	48 c1 e0 03          	shl    rax,0x3
-    2431:	48 89 c2             	mov    rdx,rax
-    2434:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    2438:	48 01 d0             	add    rax,rdx
-    243b:	8b 40 08             	mov    eax,DWORD PTR [rax+0x8]
-    243e:	83 e0 04             	and    eax,0x4
-    2441:	85 c0                	test   eax,eax
-    2443:	74 09                	je     244e <load_elf+0x35f>
+    2429:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
+    242d:	48 89 d0             	mov    rax,rdx
+    2430:	48 c1 e0 02          	shl    rax,0x2
+    2434:	48 01 d0             	add    rax,rdx
+    2437:	48 c1 e0 03          	shl    rax,0x3
+    243b:	48 89 c2             	mov    rdx,rax
+    243e:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    2442:	48 01 d0             	add    rax,rdx
+    2445:	8b 40 08             	mov    eax,DWORD PTR [rax+0x8]
+    2448:	83 e0 04             	and    eax,0x4
+    244b:	85 c0                	test   eax,eax
+    244d:	74 09                	je     2458 <load_elf+0x35f>
 								sct = MT_SEC_TEXT;
-    2445:	c7 45 c4 00 00 00 00 	mov    DWORD PTR [rbp-0x3c],0x0
-    244c:	eb 3f                	jmp    248d <load_elf+0x39e>
+    244f:	c7 45 c4 00 00 00 00 	mov    DWORD PTR [rbp-0x3c],0x0
+    2456:	eb 3f                	jmp    2497 <load_elf+0x39e>
 						else {
 								/* rodata, robss? */
 								if (shdr[i].sh_type == SHT_NOBITS) {
-    244e:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
-    2452:	48 89 d0             	mov    rax,rdx
-    2455:	48 c1 e0 02          	shl    rax,0x2
-    2459:	48 01 d0             	add    rax,rdx
-    245c:	48 c1 e0 03          	shl    rax,0x3
-    2460:	48 89 c2             	mov    rdx,rax
-    2463:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    2467:	48 01 d0             	add    rax,rdx
-    246a:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
-    246d:	83 f8 08             	cmp    eax,0x8
-    2470:	75 14                	jne    2486 <load_elf+0x397>
+    2458:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
+    245c:	48 89 d0             	mov    rax,rdx
+    245f:	48 c1 e0 02          	shl    rax,0x2
+    2463:	48 01 d0             	add    rax,rdx
+    2466:	48 c1 e0 03          	shl    rax,0x3
+    246a:	48 89 c2             	mov    rdx,rax
+    246d:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    2471:	48 01 d0             	add    rax,rdx
+    2474:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
+    2477:	83 f8 08             	cmp    eax,0x8
+    247a:	75 14                	jne    2490 <load_elf+0x397>
 										printf("Implement zero page!\n");
-    2472:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-    2479:	b8 00 00 00 00       	mov    eax,0x0
-    247e:	e8 00 00 00 00       	call   2483 <load_elf+0x394>
+    247c:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+    2483:	b8 00 00 00 00       	mov    eax,0x0
+    2488:	e8 00 00 00 00       	call   248d <load_elf+0x394>
 										while (1); /* c-o-w? nope! */
-    2483:	90                   	nop
-    2484:	eb fd                	jmp    2483 <load_elf+0x394>
+    248d:	90                   	nop
+    248e:	eb fd                	jmp    248d <load_elf+0x394>
 								}
 								sct = MT_SEC_RODATA;
-    2486:	c7 45 c4 02 00 00 00 	mov    DWORD PTR [rbp-0x3c],0x2
+    2490:	c7 45 c4 02 00 00 00 	mov    DWORD PTR [rbp-0x3c],0x2
 						}
 						/* get the raw (unaligned) address */
 						addr = (Elf32_Addr)mod_tbl.vm_ofs[sct] + mi->sz_secs[sct];
-    248d:	8b 45 c4             	mov    eax,DWORD PTR [rbp-0x3c]
-    2490:	48 8b 04 c5 00 00 00 00 	mov    rax,QWORD PTR [rax*8+0x0]
-    2498:	89 c1                	mov    ecx,eax
-    249a:	48 8b 85 98 fe ff ff 	mov    rax,QWORD PTR [rbp-0x168]
-    24a1:	8b 55 c4             	mov    edx,DWORD PTR [rbp-0x3c]
-    24a4:	48 83 c2 08          	add    rdx,0x8
-    24a8:	48 8b 44 d0 08       	mov    rax,QWORD PTR [rax+rdx*8+0x8]
-    24ad:	01 c8                	add    eax,ecx
-    24af:	89 45 dc             	mov    DWORD PTR [rbp-0x24],eax
+    2497:	8b 45 c4             	mov    eax,DWORD PTR [rbp-0x3c]
+    249a:	48 8b 04 c5 00 00 00 00 	mov    rax,QWORD PTR [rax*8+0x0]
+    24a2:	89 c1                	mov    ecx,eax
+    24a4:	48 8b 85 98 fe ff ff 	mov    rax,QWORD PTR [rbp-0x168]
+    24ab:	8b 55 c4             	mov    edx,DWORD PTR [rbp-0x3c]
+    24ae:	48 83 c2 08          	add    rdx,0x8
+    24b2:	48 8b 44 d0 08       	mov    rax,QWORD PTR [rax+rdx*8+0x8]
+    24b7:	01 c8                	add    eax,ecx
+    24b9:	89 45 dc             	mov    DWORD PTR [rbp-0x24],eax
 						mbprintf("unaligned address for %s: %p\n", elf_fetch_string(hdr, shdr, hdr->e_shstrndx, shdr[i].sh_name), (void*)addr);
-    24b2:	8b 45 dc             	mov    eax,DWORD PTR [rbp-0x24]
-    24b5:	48 89 c3             	mov    rbx,rax
-    24b8:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
-    24bc:	48 89 d0             	mov    rax,rdx
-    24bf:	48 c1 e0 02          	shl    rax,0x2
-    24c3:	48 01 d0             	add    rax,rdx
-    24c6:	48 c1 e0 03          	shl    rax,0x3
-    24ca:	48 89 c2             	mov    rdx,rax
-    24cd:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    24d1:	48 01 d0             	add    rax,rdx
-    24d4:	8b 08                	mov    ecx,DWORD PTR [rax]
-    24d6:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    24da:	0f b7 40 32          	movzx  eax,WORD PTR [rax+0x32]
-    24de:	0f b7 d0             	movzx  edx,ax
-    24e1:	48 8b 75 a8          	mov    rsi,QWORD PTR [rbp-0x58]
-    24e5:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    24e9:	48 89 c7             	mov    rdi,rax
-    24ec:	e8 00 00 00 00       	call   24f1 <load_elf+0x402>
-    24f1:	48 89 da             	mov    rdx,rbx
-    24f4:	48 89 c6             	mov    rsi,rax
-    24f7:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-    24fe:	b8 00 00 00 00       	mov    eax,0x0
-    2503:	e8 00 00 00 00       	call   2508 <load_elf+0x419>
+    24bc:	8b 45 dc             	mov    eax,DWORD PTR [rbp-0x24]
+    24bf:	48 89 c3             	mov    rbx,rax
+    24c2:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
+    24c6:	48 89 d0             	mov    rax,rdx
+    24c9:	48 c1 e0 02          	shl    rax,0x2
+    24cd:	48 01 d0             	add    rax,rdx
+    24d0:	48 c1 e0 03          	shl    rax,0x3
+    24d4:	48 89 c2             	mov    rdx,rax
+    24d7:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    24db:	48 01 d0             	add    rax,rdx
+    24de:	8b 08                	mov    ecx,DWORD PTR [rax]
+    24e0:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    24e4:	0f b7 40 32          	movzx  eax,WORD PTR [rax+0x32]
+    24e8:	0f b7 d0             	movzx  edx,ax
+    24eb:	48 8b 75 a8          	mov    rsi,QWORD PTR [rbp-0x58]
+    24ef:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    24f3:	48 89 c7             	mov    rdi,rax
+    24f6:	e8 00 00 00 00       	call   24fb <load_elf+0x402>
+    24fb:	48 89 da             	mov    rdx,rbx
+    24fe:	48 89 c6             	mov    rsi,rax
+    2501:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+    2508:	b8 00 00 00 00       	mov    eax,0x0
+    250d:	e8 00 00 00 00       	call   2512 <load_elf+0x419>
 
 						/* now do the alignment calculations */
 						if (addr % algn)
-    2508:	8b 45 dc             	mov    eax,DWORD PTR [rbp-0x24]
-    250b:	ba 00 00 00 00       	mov    edx,0x0
-    2510:	f7 75 84             	div    DWORD PTR [rbp-0x7c]
-    2513:	89 d0                	mov    eax,edx
-    2515:	85 c0                	test   eax,eax
-    2517:	74 13                	je     252c <load_elf+0x43d>
+    2512:	8b 45 dc             	mov    eax,DWORD PTR [rbp-0x24]
+    2515:	ba 00 00 00 00       	mov    edx,0x0
+    251a:	f7 75 84             	div    DWORD PTR [rbp-0x7c]
+    251d:	89 d0                	mov    eax,edx
+    251f:	85 c0                	test   eax,eax
+    2521:	74 13                	je     2536 <load_elf+0x43d>
 								addr += algn - addr % algn;
-    2519:	8b 45 dc             	mov    eax,DWORD PTR [rbp-0x24]
-    251c:	ba 00 00 00 00       	mov    edx,0x0
-    2521:	f7 75 84             	div    DWORD PTR [rbp-0x7c]
-    2524:	8b 45 84             	mov    eax,DWORD PTR [rbp-0x7c]
-    2527:	29 d0                	sub    eax,edx
-    2529:	01 45 dc             	add    DWORD PTR [rbp-0x24],eax
+    2523:	8b 45 dc             	mov    eax,DWORD PTR [rbp-0x24]
+    2526:	ba 00 00 00 00       	mov    edx,0x0
+    252b:	f7 75 84             	div    DWORD PTR [rbp-0x7c]
+    252e:	8b 45 84             	mov    eax,DWORD PTR [rbp-0x7c]
+    2531:	29 d0                	sub    eax,edx
+    2533:	01 45 dc             	add    DWORD PTR [rbp-0x24],eax
 						if (algn < 0x1000 && (addr % 4096)) {
-    252c:	81 7d 84 ff 0f 00 00 	cmp    DWORD PTR [rbp-0x7c],0xfff
-    2533:	77 7a                	ja     25af <load_elf+0x4c0>
-    2535:	8b 45 dc             	mov    eax,DWORD PTR [rbp-0x24]
-    2538:	25 ff 0f 00 00       	and    eax,0xfff
-    253d:	85 c0                	test   eax,eax
-    253f:	74 6e                	je     25af <load_elf+0x4c0>
+    2536:	81 7d 84 ff 0f 00 00 	cmp    DWORD PTR [rbp-0x7c],0xfff
+    253d:	77 7a                	ja     25b9 <load_elf+0x4c0>
+    253f:	8b 45 dc             	mov    eax,DWORD PTR [rbp-0x24]
+    2542:	25 ff 0f 00 00       	and    eax,0xfff
+    2547:	85 c0                	test   eax,eax
+    2549:	74 6e                	je     25b9 <load_elf+0x4c0>
 								/* maybe save up to a single page by reusing an existing one of the same module */
 								size_t ovs = shdr[i].sh_size % 4096; /* "oversize" */
-    2541:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
-    2545:	48 89 d0             	mov    rax,rdx
-    2548:	48 c1 e0 02          	shl    rax,0x2
-    254c:	48 01 d0             	add    rax,rdx
-    254f:	48 c1 e0 03          	shl    rax,0x3
-    2553:	48 89 c2             	mov    rdx,rax
-    2556:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    255a:	48 01 d0             	add    rax,rdx
-    255d:	8b 40 14             	mov    eax,DWORD PTR [rax+0x14]
-    2560:	89 c0                	mov    eax,eax
-    2562:	25 ff 0f 00 00       	and    eax,0xfff
-    2567:	48 89 85 78 ff ff ff 	mov    QWORD PTR [rbp-0x88],rax
+    254b:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
+    254f:	48 89 d0             	mov    rax,rdx
+    2552:	48 c1 e0 02          	shl    rax,0x2
+    2556:	48 01 d0             	add    rax,rdx
+    2559:	48 c1 e0 03          	shl    rax,0x3
+    255d:	48 89 c2             	mov    rdx,rax
+    2560:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    2564:	48 01 d0             	add    rax,rdx
+    2567:	8b 40 14             	mov    eax,DWORD PTR [rax+0x14]
+    256a:	89 c0                	mov    eax,eax
+    256c:	25 ff 0f 00 00       	and    eax,0xfff
+    2571:	48 89 85 78 ff ff ff 	mov    QWORD PTR [rbp-0x88],rax
 								if (ovs && ovs < (4096 - (addr % 4096))) {
-    256e:	48 83 bd 78 ff ff ff 00 	cmp    QWORD PTR [rbp-0x88],0x0
-    2576:	74 37                	je     25af <load_elf+0x4c0>
-    2578:	8b 45 dc             	mov    eax,DWORD PTR [rbp-0x24]
-    257b:	25 ff 0f 00 00       	and    eax,0xfff
-    2580:	ba 00 10 00 00       	mov    edx,0x1000
-    2585:	29 c2                	sub    edx,eax
-    2587:	89 d0                	mov    eax,edx
-    2589:	48 39 85 78 ff ff ff 	cmp    QWORD PTR [rbp-0x88],rax
-    2590:	73 1d                	jae    25af <load_elf+0x4c0>
+    2578:	48 83 bd 78 ff ff ff 00 	cmp    QWORD PTR [rbp-0x88],0x0
+    2580:	74 37                	je     25b9 <load_elf+0x4c0>
+    2582:	8b 45 dc             	mov    eax,DWORD PTR [rbp-0x24]
+    2585:	25 ff 0f 00 00       	and    eax,0xfff
+    258a:	ba 00 10 00 00       	mov    edx,0x1000
+    258f:	29 c2                	sub    edx,eax
+    2591:	89 d0                	mov    eax,edx
+    2593:	48 39 85 78 ff ff ff 	cmp    QWORD PTR [rbp-0x88],rax
+    259a:	73 1d                	jae    25b9 <load_elf+0x4c0>
 										/* oversize fits into existing page */
 										mbprintf("reuse\n");
-    2592:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-    2599:	b8 00 00 00 00       	mov    eax,0x0
-    259e:	e8 00 00 00 00       	call   25a3 <load_elf+0x4b4>
+    259c:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+    25a3:	b8 00 00 00 00       	mov    eax,0x0
+    25a8:	e8 00 00 00 00       	call   25ad <load_elf+0x4b4>
 										pg_ct--;
-    25a3:	48 83 6d e0 01       	sub    QWORD PTR [rbp-0x20],0x1
+    25ad:	48 83 6d e0 01       	sub    QWORD PTR [rbp-0x20],0x1
 										reuse = 1;
-    25a8:	c7 45 cc 01 00 00 00 	mov    DWORD PTR [rbp-0x34],0x1
+    25b2:	c7 45 cc 01 00 00 00 	mov    DWORD PTR [rbp-0x34],0x1
 								}
 						}
 						if (addr % 4096)
-    25af:	8b 45 dc             	mov    eax,DWORD PTR [rbp-0x24]
-    25b2:	25 ff 0f 00 00       	and    eax,0xfff
-    25b7:	85 c0                	test   eax,eax
-    25b9:	74 6a                	je     2625 <load_elf+0x536>
+    25b9:	8b 45 dc             	mov    eax,DWORD PTR [rbp-0x24]
+    25bc:	25 ff 0f 00 00       	and    eax,0xfff
+    25c1:	85 c0                	test   eax,eax
+    25c3:	74 6a                	je     262f <load_elf+0x536>
 								if (reuse) /* first use partially present page */
-    25bb:	83 7d cc 00          	cmp    DWORD PTR [rbp-0x34],0x0
-    25bf:	74 15                	je     25d6 <load_elf+0x4e7>
+    25c5:	83 7d cc 00          	cmp    DWORD PTR [rbp-0x34],0x0
+    25c9:	74 15                	je     25e0 <load_elf+0x4e7>
 										mapaddr = (void*)(addr + 4096 - addr % 4096);
-    25c1:	8b 45 dc             	mov    eax,DWORD PTR [rbp-0x24]
-    25c4:	25 00 f0 ff ff       	and    eax,0xfffff000
-    25c9:	05 00 10 00 00       	add    eax,0x1000
-    25ce:	89 c0                	mov    eax,eax
-    25d0:	48 89 45 d0          	mov    QWORD PTR [rbp-0x30],rax
-    25d4:	eb 56                	jmp    262c <load_elf+0x53d>
+    25cb:	8b 45 dc             	mov    eax,DWORD PTR [rbp-0x24]
+    25ce:	25 00 f0 ff ff       	and    eax,0xfffff000
+    25d3:	05 00 10 00 00       	add    eax,0x1000
+    25d8:	89 c0                	mov    eax,eax
+    25da:	48 89 45 d0          	mov    QWORD PTR [rbp-0x30],rax
+    25de:	eb 56                	jmp    2636 <load_elf+0x53d>
 								else { /* alignment leaves page partially unused */
 										mapaddr = (void*)(addr - addr % 4096);
-    25d6:	8b 45 dc             	mov    eax,DWORD PTR [rbp-0x24]
-    25d9:	25 00 f0 ff ff       	and    eax,0xfffff000
-    25de:	48 89 45 d0          	mov    QWORD PTR [rbp-0x30],rax
+    25e0:	8b 45 dc             	mov    eax,DWORD PTR [rbp-0x24]
+    25e3:	25 00 f0 ff ff       	and    eax,0xfffff000
+    25e8:	48 89 45 d0          	mov    QWORD PTR [rbp-0x30],rax
 										if (pg_ct * 4096 < shdr[i].sh_size + addr % 4096)
-    25e2:	48 8b 45 e0          	mov    rax,QWORD PTR [rbp-0x20]
-    25e6:	48 c1 e0 0c          	shl    rax,0xc
-    25ea:	48 89 c1             	mov    rcx,rax
-    25ed:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
-    25f1:	48 89 d0             	mov    rax,rdx
-    25f4:	48 c1 e0 02          	shl    rax,0x2
-    25f8:	48 01 d0             	add    rax,rdx
-    25fb:	48 c1 e0 03          	shl    rax,0x3
-    25ff:	48 89 c2             	mov    rdx,rax
-    2602:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    2606:	48 01 d0             	add    rax,rdx
-    2609:	8b 40 14             	mov    eax,DWORD PTR [rax+0x14]
-    260c:	8b 55 dc             	mov    edx,DWORD PTR [rbp-0x24]
-    260f:	81 e2 ff 0f 00 00    	and    edx,0xfff
-    2615:	01 d0                	add    eax,edx
-    2617:	89 c0                	mov    eax,eax
-    2619:	48 39 c1             	cmp    rcx,rax
-    261c:	73 0e                	jae    262c <load_elf+0x53d>
+    25ec:	48 8b 45 e0          	mov    rax,QWORD PTR [rbp-0x20]
+    25f0:	48 c1 e0 0c          	shl    rax,0xc
+    25f4:	48 89 c1             	mov    rcx,rax
+    25f7:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
+    25fb:	48 89 d0             	mov    rax,rdx
+    25fe:	48 c1 e0 02          	shl    rax,0x2
+    2602:	48 01 d0             	add    rax,rdx
+    2605:	48 c1 e0 03          	shl    rax,0x3
+    2609:	48 89 c2             	mov    rdx,rax
+    260c:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    2610:	48 01 d0             	add    rax,rdx
+    2613:	8b 40 14             	mov    eax,DWORD PTR [rax+0x14]
+    2616:	8b 55 dc             	mov    edx,DWORD PTR [rbp-0x24]
+    2619:	81 e2 ff 0f 00 00    	and    edx,0xfff
+    261f:	01 d0                	add    eax,edx
+    2621:	89 c0                	mov    eax,eax
+    2623:	48 39 c1             	cmp    rcx,rax
+    2626:	73 0e                	jae    2636 <load_elf+0x53d>
 												pg_ct++; /* adjust space accordingly */
-    261e:	48 83 45 e0 01       	add    QWORD PTR [rbp-0x20],0x1
-    2623:	eb 07                	jmp    262c <load_elf+0x53d>
+    2628:	48 83 45 e0 01       	add    QWORD PTR [rbp-0x20],0x1
+    262d:	eb 07                	jmp    2636 <load_elf+0x53d>
 								}
 						else
 								mapaddr = (void*)addr;
-    2625:	8b 45 dc             	mov    eax,DWORD PTR [rbp-0x24]
-    2628:	48 89 45 d0          	mov    QWORD PTR [rbp-0x30],rax
+    262f:	8b 45 dc             	mov    eax,DWORD PTR [rbp-0x24]
+    2632:	48 89 45 d0          	mov    QWORD PTR [rbp-0x30],rax
 
 						shdr[i].sh_addr = addr;
-    262c:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
-    2630:	48 89 d0             	mov    rax,rdx
-    2633:	48 c1 e0 02          	shl    rax,0x2
-    2637:	48 01 d0             	add    rax,rdx
-    263a:	48 c1 e0 03          	shl    rax,0x3
-    263e:	48 89 c2             	mov    rdx,rax
-    2641:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    2645:	48 01 c2             	add    rdx,rax
-    2648:	8b 45 dc             	mov    eax,DWORD PTR [rbp-0x24]
-    264b:	89 42 0c             	mov    DWORD PTR [rdx+0xc],eax
+    2636:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
+    263a:	48 89 d0             	mov    rax,rdx
+    263d:	48 c1 e0 02          	shl    rax,0x2
+    2641:	48 01 d0             	add    rax,rdx
+    2644:	48 c1 e0 03          	shl    rax,0x3
+    2648:	48 89 c2             	mov    rdx,rax
+    264b:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    264f:	48 01 c2             	add    rdx,rax
+    2652:	8b 45 dc             	mov    eax,DWORD PTR [rbp-0x24]
+    2655:	89 42 0c             	mov    DWORD PTR [rdx+0xc],eax
 						mbprintf("aligned address: %p\n", (void*)addr);
-    264e:	8b 45 dc             	mov    eax,DWORD PTR [rbp-0x24]
-    2651:	48 89 c6             	mov    rsi,rax
-    2654:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-    265b:	b8 00 00 00 00       	mov    eax,0x0
-    2660:	e8 00 00 00 00       	call   2665 <load_elf+0x576>
+    2658:	8b 45 dc             	mov    eax,DWORD PTR [rbp-0x24]
+    265b:	48 89 c6             	mov    rsi,rax
+    265e:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+    2665:	b8 00 00 00 00       	mov    eax,0x0
+    266a:	e8 00 00 00 00       	call   266f <load_elf+0x576>
 						if (!mi->vm_ofs[sct])
-    2665:	48 8b 85 98 fe ff ff 	mov    rax,QWORD PTR [rbp-0x168]
-    266c:	8b 55 c4             	mov    edx,DWORD PTR [rbp-0x3c]
-    266f:	48 83 c2 04          	add    rdx,0x4
-    2673:	48 8b 44 d0 08       	mov    rax,QWORD PTR [rax+rdx*8+0x8]
-    2678:	48 85 c0             	test   rax,rax
-    267b:	75 19                	jne    2696 <load_elf+0x5a7>
+    266f:	48 8b 85 98 fe ff ff 	mov    rax,QWORD PTR [rbp-0x168]
+    2676:	8b 55 c4             	mov    edx,DWORD PTR [rbp-0x3c]
+    2679:	48 83 c2 04          	add    rdx,0x4
+    267d:	48 8b 44 d0 08       	mov    rax,QWORD PTR [rax+rdx*8+0x8]
+    2682:	48 85 c0             	test   rax,rax
+    2685:	75 19                	jne    26a0 <load_elf+0x5a7>
 								mi->vm_ofs[sct] = (void*)addr;
-    267d:	8b 45 dc             	mov    eax,DWORD PTR [rbp-0x24]
-    2680:	48 89 c1             	mov    rcx,rax
-    2683:	48 8b 85 98 fe ff ff 	mov    rax,QWORD PTR [rbp-0x168]
-    268a:	8b 55 c4             	mov    edx,DWORD PTR [rbp-0x3c]
-    268d:	48 83 c2 04          	add    rdx,0x4
-    2691:	48 89 4c d0 08       	mov    QWORD PTR [rax+rdx*8+0x8],rcx
+    2687:	8b 45 dc             	mov    eax,DWORD PTR [rbp-0x24]
+    268a:	48 89 c1             	mov    rcx,rax
+    268d:	48 8b 85 98 fe ff ff 	mov    rax,QWORD PTR [rbp-0x168]
+    2694:	8b 55 c4             	mov    edx,DWORD PTR [rbp-0x3c]
+    2697:	48 83 c2 04          	add    rdx,0x4
+    269b:	48 89 4c d0 08       	mov    QWORD PTR [rax+rdx*8+0x8],rcx
 						mi->sz_secs[sct] += shdr[i].sh_size;
-    2696:	48 8b 85 98 fe ff ff 	mov    rax,QWORD PTR [rbp-0x168]
-    269d:	8b 55 c4             	mov    edx,DWORD PTR [rbp-0x3c]
-    26a0:	48 83 c2 08          	add    rdx,0x8
-    26a4:	48 8b 4c d0 08       	mov    rcx,QWORD PTR [rax+rdx*8+0x8]
-    26a9:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
-    26ad:	48 89 d0             	mov    rax,rdx
-    26b0:	48 c1 e0 02          	shl    rax,0x2
-    26b4:	48 01 d0             	add    rax,rdx
-    26b7:	48 c1 e0 03          	shl    rax,0x3
-    26bb:	48 89 c2             	mov    rdx,rax
-    26be:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    26c2:	48 01 d0             	add    rax,rdx
-    26c5:	8b 40 14             	mov    eax,DWORD PTR [rax+0x14]
-    26c8:	89 c0                	mov    eax,eax
-    26ca:	48 01 c1             	add    rcx,rax
-    26cd:	48 8b 85 98 fe ff ff 	mov    rax,QWORD PTR [rbp-0x168]
-    26d4:	8b 55 c4             	mov    edx,DWORD PTR [rbp-0x3c]
-    26d7:	48 83 c2 08          	add    rdx,0x8
-    26db:	48 89 4c d0 08       	mov    QWORD PTR [rax+rdx*8+0x8],rcx
+    26a0:	48 8b 85 98 fe ff ff 	mov    rax,QWORD PTR [rbp-0x168]
+    26a7:	8b 55 c4             	mov    edx,DWORD PTR [rbp-0x3c]
+    26aa:	48 83 c2 08          	add    rdx,0x8
+    26ae:	48 8b 4c d0 08       	mov    rcx,QWORD PTR [rax+rdx*8+0x8]
+    26b3:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
+    26b7:	48 89 d0             	mov    rax,rdx
+    26ba:	48 c1 e0 02          	shl    rax,0x2
+    26be:	48 01 d0             	add    rax,rdx
+    26c1:	48 c1 e0 03          	shl    rax,0x3
+    26c5:	48 89 c2             	mov    rdx,rax
+    26c8:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    26cc:	48 01 d0             	add    rax,rdx
+    26cf:	8b 40 14             	mov    eax,DWORD PTR [rax+0x14]
+    26d2:	89 c0                	mov    eax,eax
+    26d4:	48 01 c1             	add    rcx,rax
+    26d7:	48 8b 85 98 fe ff ff 	mov    rax,QWORD PTR [rbp-0x168]
+    26de:	8b 55 c4             	mov    edx,DWORD PTR [rbp-0x3c]
+    26e1:	48 83 c2 08          	add    rdx,0x8
+    26e5:	48 89 4c d0 08       	mov    QWORD PTR [rax+rdx*8+0x8],rcx
 
 						/* fill the half-used page (if PROGBITS) */
 						if (((void*)addr < mapaddr) && (shdr[i].sh_type != SHT_NOBITS)) {
-    26e0:	8b 45 dc             	mov    eax,DWORD PTR [rbp-0x24]
-    26e3:	48 3b 45 d0          	cmp    rax,QWORD PTR [rbp-0x30]
-    26e7:	0f 83 a2 00 00 00    	jae    278f <load_elf+0x6a0>
-    26ed:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
-    26f1:	48 89 d0             	mov    rax,rdx
-    26f4:	48 c1 e0 02          	shl    rax,0x2
-    26f8:	48 01 d0             	add    rax,rdx
-    26fb:	48 c1 e0 03          	shl    rax,0x3
-    26ff:	48 89 c2             	mov    rdx,rax
-    2702:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    2706:	48 01 d0             	add    rax,rdx
-    2709:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
-    270c:	83 f8 08             	cmp    eax,0x8
-    270f:	74 7e                	je     278f <load_elf+0x6a0>
+    26ea:	8b 45 dc             	mov    eax,DWORD PTR [rbp-0x24]
+    26ed:	48 3b 45 d0          	cmp    rax,QWORD PTR [rbp-0x30]
+    26f1:	0f 83 a2 00 00 00    	jae    2799 <load_elf+0x6a0>
+    26f7:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
+    26fb:	48 89 d0             	mov    rax,rdx
+    26fe:	48 c1 e0 02          	shl    rax,0x2
+    2702:	48 01 d0             	add    rax,rdx
+    2705:	48 c1 e0 03          	shl    rax,0x3
+    2709:	48 89 c2             	mov    rdx,rax
+    270c:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    2710:	48 01 d0             	add    rax,rdx
+    2713:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
+    2716:	83 f8 08             	cmp    eax,0x8
+    2719:	74 7e                	je     2799 <load_elf+0x6a0>
 								size_t n = (size_t)mapaddr - (size_t)addr;
-    2711:	48 8b 55 d0          	mov    rdx,QWORD PTR [rbp-0x30]
-    2715:	8b 45 dc             	mov    eax,DWORD PTR [rbp-0x24]
-    2718:	48 29 c2             	sub    rdx,rax
-    271b:	48 89 95 70 ff ff ff 	mov    QWORD PTR [rbp-0x90],rdx
+    271b:	48 8b 55 d0          	mov    rdx,QWORD PTR [rbp-0x30]
+    271f:	8b 45 dc             	mov    eax,DWORD PTR [rbp-0x24]
+    2722:	48 29 c2             	sub    rdx,rax
+    2725:	48 89 95 70 ff ff ff 	mov    QWORD PTR [rbp-0x90],rdx
 								n = min(n, shdr[i].sh_size);
-    2722:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
-    2726:	48 89 d0             	mov    rax,rdx
-    2729:	48 c1 e0 02          	shl    rax,0x2
-    272d:	48 01 d0             	add    rax,rdx
-    2730:	48 c1 e0 03          	shl    rax,0x3
-    2734:	48 89 c2             	mov    rdx,rax
-    2737:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    273b:	48 01 d0             	add    rax,rdx
-    273e:	8b 40 14             	mov    eax,DWORD PTR [rax+0x14]
-    2741:	89 c2                	mov    edx,eax
-    2743:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
-    274a:	48 39 d0             	cmp    rax,rdx
-    274d:	48 0f 47 c2          	cmova  rax,rdx
-    2751:	48 89 85 70 ff ff ff 	mov    QWORD PTR [rbp-0x90],rax
+    272c:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
+    2730:	48 89 d0             	mov    rax,rdx
+    2733:	48 c1 e0 02          	shl    rax,0x2
+    2737:	48 01 d0             	add    rax,rdx
+    273a:	48 c1 e0 03          	shl    rax,0x3
+    273e:	48 89 c2             	mov    rdx,rax
+    2741:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    2745:	48 01 d0             	add    rax,rdx
+    2748:	8b 40 14             	mov    eax,DWORD PTR [rax+0x14]
+    274b:	89 c2                	mov    edx,eax
+    274d:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
+    2754:	48 39 d0             	cmp    rax,rdx
+    2757:	48 0f 47 c2          	cmova  rax,rdx
+    275b:	48 89 85 70 ff ff ff 	mov    QWORD PTR [rbp-0x90],rax
 								memcpy((void*)addr, (void*)hdr + ofs, n);
-    2758:	8b 55 c8             	mov    edx,DWORD PTR [rbp-0x38]
-    275b:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    275f:	48 8d 0c 02          	lea    rcx,[rdx+rax*1]
-    2763:	8b 45 dc             	mov    eax,DWORD PTR [rbp-0x24]
-    2766:	48 89 c7             	mov    rdi,rax
-    2769:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
-    2770:	48 89 c2             	mov    rdx,rax
-    2773:	48 89 ce             	mov    rsi,rcx
-    2776:	e8 85 d8 ff ff       	call   0 <memcpy>
+    2762:	8b 55 c8             	mov    edx,DWORD PTR [rbp-0x38]
+    2765:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    2769:	48 8d 0c 02          	lea    rcx,[rdx+rax*1]
+    276d:	8b 45 dc             	mov    eax,DWORD PTR [rbp-0x24]
+    2770:	48 89 c7             	mov    rdi,rax
+    2773:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
+    277a:	48 89 c2             	mov    rdx,rax
+    277d:	48 89 ce             	mov    rsi,rcx
+    2780:	e8 7b d8 ff ff       	call   0 <memcpy>
 								ofs += n;
-    277b:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
-    2782:	01 45 c8             	add    DWORD PTR [rbp-0x38],eax
-								addr += n;
     2785:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
-    278c:	01 45 dc             	add    DWORD PTR [rbp-0x24],eax
+    278c:	01 45 c8             	add    DWORD PTR [rbp-0x38],eax
+								addr += n;
+    278f:	48 8b 85 70 ff ff ff 	mov    rax,QWORD PTR [rbp-0x90]
+    2796:	01 45 dc             	add    DWORD PTR [rbp-0x24],eax
 						}
 						/* allocate the physical memory and map it to virtual memory */
 						mbprintf("allocating %lu pages for size=%u\n", pg_ct, shdr[i].sh_size);
-    278f:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
-    2793:	48 89 d0             	mov    rax,rdx
-    2796:	48 c1 e0 02          	shl    rax,0x2
-    279a:	48 01 d0             	add    rax,rdx
-    279d:	48 c1 e0 03          	shl    rax,0x3
-    27a1:	48 89 c2             	mov    rdx,rax
-    27a4:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    27a8:	48 01 d0             	add    rax,rdx
-    27ab:	8b 50 14             	mov    edx,DWORD PTR [rax+0x14]
-    27ae:	48 8b 45 e0          	mov    rax,QWORD PTR [rbp-0x20]
-    27b2:	48 89 c6             	mov    rsi,rax
-    27b5:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-    27bc:	b8 00 00 00 00       	mov    eax,0x0
-    27c1:	e8 00 00 00 00       	call   27c6 <load_elf+0x6d7>
+    2799:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
+    279d:	48 89 d0             	mov    rax,rdx
+    27a0:	48 c1 e0 02          	shl    rax,0x2
+    27a4:	48 01 d0             	add    rax,rdx
+    27a7:	48 c1 e0 03          	shl    rax,0x3
+    27ab:	48 89 c2             	mov    rdx,rax
+    27ae:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    27b2:	48 01 d0             	add    rax,rdx
+    27b5:	8b 50 14             	mov    edx,DWORD PTR [rax+0x14]
+    27b8:	48 8b 45 e0          	mov    rax,QWORD PTR [rbp-0x20]
+    27bc:	48 89 c6             	mov    rsi,rax
+    27bf:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+    27c6:	b8 00 00 00 00       	mov    eax,0x0
+    27cb:	e8 00 00 00 00       	call   27d0 <load_elf+0x6d7>
 						while (pg_ct) {
-    27c6:	e9 5f 02 00 00       	jmp    2a2a <load_elf+0x93b>
+    27d0:	e9 5f 02 00 00       	jmp    2a34 <load_elf+0x93b>
 								int flags = MMGR_MAP_KERNEL, remap = 0;
-    27cb:	c7 45 c0 08 00 00 00 	mov    DWORD PTR [rbp-0x40],0x8
-    27d2:	c7 85 6c ff ff ff 00 00 00 00 	mov    DWORD PTR [rbp-0x94],0x0
+    27d5:	c7 45 c0 08 00 00 00 	mov    DWORD PTR [rbp-0x40],0x8
+    27dc:	c7 85 6c ff ff ff 00 00 00 00 	mov    DWORD PTR [rbp-0x94],0x0
 								size_t np = mm_alloc_pm(pg_ct, pr, countof(pr));
-    27dc:	48 8b 45 e0          	mov    rax,QWORD PTR [rbp-0x20]
-    27e0:	89 c1                	mov    ecx,eax
-    27e2:	48 8d 85 b0 fe ff ff 	lea    rax,[rbp-0x150]
-    27e9:	ba 0a 00 00 00       	mov    edx,0xa
-    27ee:	48 89 c6             	mov    rsi,rax
-    27f1:	89 cf                	mov    edi,ecx
-    27f3:	e8 00 00 00 00       	call   27f8 <load_elf+0x709>
-    27f8:	89 c0                	mov    eax,eax
-    27fa:	48 89 85 60 ff ff ff 	mov    QWORD PTR [rbp-0xa0],rax
+    27e6:	48 8b 45 e0          	mov    rax,QWORD PTR [rbp-0x20]
+    27ea:	89 c1                	mov    ecx,eax
+    27ec:	48 8d 85 b0 fe ff ff 	lea    rax,[rbp-0x150]
+    27f3:	ba 0a 00 00 00       	mov    edx,0xa
+    27f8:	48 89 c6             	mov    rsi,rax
+    27fb:	89 cf                	mov    edi,ecx
+    27fd:	e8 00 00 00 00       	call   2802 <load_elf+0x709>
+    2802:	89 c0                	mov    eax,eax
+    2804:	48 89 85 60 ff ff ff 	mov    QWORD PTR [rbp-0xa0],rax
 								if (shdr[i].sh_flags & SHF_EXECINSTR)
-    2801:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
-    2805:	48 89 d0             	mov    rax,rdx
-    2808:	48 c1 e0 02          	shl    rax,0x2
-    280c:	48 01 d0             	add    rax,rdx
-    280f:	48 c1 e0 03          	shl    rax,0x3
-    2813:	48 89 c2             	mov    rdx,rax
-    2816:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    281a:	48 01 d0             	add    rax,rdx
-    281d:	8b 40 08             	mov    eax,DWORD PTR [rax+0x8]
-    2820:	83 e0 04             	and    eax,0x4
-    2823:	85 c0                	test   eax,eax
-    2825:	74 04                	je     282b <load_elf+0x73c>
+    280b:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
+    280f:	48 89 d0             	mov    rax,rdx
+    2812:	48 c1 e0 02          	shl    rax,0x2
+    2816:	48 01 d0             	add    rax,rdx
+    2819:	48 c1 e0 03          	shl    rax,0x3
+    281d:	48 89 c2             	mov    rdx,rax
+    2820:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    2824:	48 01 d0             	add    rax,rdx
+    2827:	8b 40 08             	mov    eax,DWORD PTR [rax+0x8]
+    282a:	83 e0 04             	and    eax,0x4
+    282d:	85 c0                	test   eax,eax
+    282f:	74 04                	je     2835 <load_elf+0x73c>
 										flags |= MMGR_MAP_EXECUTE;
-    2827:	83 4d c0 02          	or     DWORD PTR [rbp-0x40],0x2
+    2831:	83 4d c0 02          	or     DWORD PTR [rbp-0x40],0x2
 								if (shdr[i].sh_flags & SHF_WRITE)
-    282b:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
-    282f:	48 89 d0             	mov    rax,rdx
-    2832:	48 c1 e0 02          	shl    rax,0x2
-    2836:	48 01 d0             	add    rax,rdx
-    2839:	48 c1 e0 03          	shl    rax,0x3
-    283d:	48 89 c2             	mov    rdx,rax
-    2840:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    2844:	48 01 d0             	add    rax,rdx
-    2847:	8b 40 08             	mov    eax,DWORD PTR [rax+0x8]
-    284a:	83 e0 01             	and    eax,0x1
-    284d:	85 c0                	test   eax,eax
-    284f:	74 06                	je     2857 <load_elf+0x768>
+    2835:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
+    2839:	48 89 d0             	mov    rax,rdx
+    283c:	48 c1 e0 02          	shl    rax,0x2
+    2840:	48 01 d0             	add    rax,rdx
+    2843:	48 c1 e0 03          	shl    rax,0x3
+    2847:	48 89 c2             	mov    rdx,rax
+    284a:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    284e:	48 01 d0             	add    rax,rdx
+    2851:	8b 40 08             	mov    eax,DWORD PTR [rax+0x8]
+    2854:	83 e0 01             	and    eax,0x1
+    2857:	85 c0                	test   eax,eax
+    2859:	74 06                	je     2861 <load_elf+0x768>
 										flags |= MMGR_MAP_WRITE;
-    2851:	83 4d c0 04          	or     DWORD PTR [rbp-0x40],0x4
-    2855:	eb 28                	jmp    287f <load_elf+0x790>
+    285b:	83 4d c0 04          	or     DWORD PTR [rbp-0x40],0x4
+    285f:	eb 28                	jmp    2889 <load_elf+0x790>
 								else if (shdr[i].sh_type != SHT_NOBITS) {
-    2857:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
-    285b:	48 89 d0             	mov    rax,rdx
-    285e:	48 c1 e0 02          	shl    rax,0x2
-    2862:	48 01 d0             	add    rax,rdx
-    2865:	48 c1 e0 03          	shl    rax,0x3
-    2869:	48 89 c2             	mov    rdx,rax
-    286c:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    2870:	48 01 d0             	add    rax,rdx
-    2873:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
-    2876:	83 f8 08             	cmp    eax,0x8
-    2879:	74 04                	je     287f <load_elf+0x790>
+    2861:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
+    2865:	48 89 d0             	mov    rax,rdx
+    2868:	48 c1 e0 02          	shl    rax,0x2
+    286c:	48 01 d0             	add    rax,rdx
+    286f:	48 c1 e0 03          	shl    rax,0x3
+    2873:	48 89 c2             	mov    rdx,rax
+    2876:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    287a:	48 01 d0             	add    rax,rdx
+    287d:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
+    2880:	83 f8 08             	cmp    eax,0x8
+    2883:	74 04                	je     2889 <load_elf+0x790>
 										flags |= MMGR_MAP_WRITE;
-    287b:	83 4d c0 04          	or     DWORD PTR [rbp-0x40],0x4
+    2885:	83 4d c0 04          	or     DWORD PTR [rbp-0x40],0x4
 								}
 
 								mbprintf("mapping %lu pages to %p\n", np, mapaddr);
-    287f:	48 8b 55 d0          	mov    rdx,QWORD PTR [rbp-0x30]
-    2883:	48 8b 85 60 ff ff ff 	mov    rax,QWORD PTR [rbp-0xa0]
-    288a:	48 89 c6             	mov    rsi,rax
-    288d:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-    2894:	b8 00 00 00 00       	mov    eax,0x0
-    2899:	e8 00 00 00 00       	call   289e <load_elf+0x7af>
+    2889:	48 8b 55 d0          	mov    rdx,QWORD PTR [rbp-0x30]
+    288d:	48 8b 85 60 ff ff ff 	mov    rax,QWORD PTR [rbp-0xa0]
+    2894:	48 89 c6             	mov    rsi,rax
+    2897:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+    289e:	b8 00 00 00 00       	mov    eax,0x0
+    28a3:	e8 00 00 00 00       	call   28a8 <load_elf+0x7af>
 								if (mm_map(&mm_kernel, mapaddr, pr, countof(pr), flags) != mapaddr) {
-    289e:	8b 4d c0             	mov    ecx,DWORD PTR [rbp-0x40]
-    28a1:	48 8d 95 b0 fe ff ff 	lea    rdx,[rbp-0x150]
-    28a8:	48 8b 45 d0          	mov    rax,QWORD PTR [rbp-0x30]
-    28ac:	41 89 c8             	mov    r8d,ecx
-    28af:	b9 0a 00 00 00       	mov    ecx,0xa
-    28b4:	48 89 c6             	mov    rsi,rax
-    28b7:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-    28be:	e8 00 00 00 00       	call   28c3 <load_elf+0x7d4>
-    28c3:	48 39 45 d0          	cmp    QWORD PTR [rbp-0x30],rax
-    28c7:	74 14                	je     28dd <load_elf+0x7ee>
+    28a8:	8b 4d c0             	mov    ecx,DWORD PTR [rbp-0x40]
+    28ab:	48 8d 95 b0 fe ff ff 	lea    rdx,[rbp-0x150]
+    28b2:	48 8b 45 d0          	mov    rax,QWORD PTR [rbp-0x30]
+    28b6:	41 89 c8             	mov    r8d,ecx
+    28b9:	b9 0a 00 00 00       	mov    ecx,0xa
+    28be:	48 89 c6             	mov    rsi,rax
+    28c1:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+    28c8:	e8 00 00 00 00       	call   28cd <load_elf+0x7d4>
+    28cd:	48 39 45 d0          	cmp    QWORD PTR [rbp-0x30],rax
+    28d1:	74 14                	je     28e7 <load_elf+0x7ee>
 										printf("unexpected error mapping pmem to vmem\n");
-    28c9:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-    28d0:	b8 00 00 00 00       	mov    eax,0x0
-    28d5:	e8 00 00 00 00       	call   28da <load_elf+0x7eb>
+    28d3:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+    28da:	b8 00 00 00 00       	mov    eax,0x0
+    28df:	e8 00 00 00 00       	call   28e4 <load_elf+0x7eb>
 										while (1);
-    28da:	90                   	nop
-    28db:	eb fd                	jmp    28da <load_elf+0x7eb>
+    28e4:	90                   	nop
+    28e5:	eb fd                	jmp    28e4 <load_elf+0x7eb>
 								}
 								/* copy data if present */
 								if (shdr[i].sh_type != SHT_NOBITS) {
-    28dd:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
-    28e1:	48 89 d0             	mov    rax,rdx
-    28e4:	48 c1 e0 02          	shl    rax,0x2
-    28e8:	48 01 d0             	add    rax,rdx
-    28eb:	48 c1 e0 03          	shl    rax,0x3
-    28ef:	48 89 c2             	mov    rdx,rax
-    28f2:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    28f6:	48 01 d0             	add    rax,rdx
-    28f9:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
-    28fc:	83 f8 08             	cmp    eax,0x8
-    28ff:	0f 84 0b 01 00 00    	je     2a10 <load_elf+0x921>
+    28e7:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
+    28eb:	48 89 d0             	mov    rax,rdx
+    28ee:	48 c1 e0 02          	shl    rax,0x2
+    28f2:	48 01 d0             	add    rax,rdx
+    28f5:	48 c1 e0 03          	shl    rax,0x3
+    28f9:	48 89 c2             	mov    rdx,rax
+    28fc:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    2900:	48 01 d0             	add    rax,rdx
+    2903:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
+    2906:	83 f8 08             	cmp    eax,0x8
+    2909:	0f 84 0b 01 00 00    	je     2a1a <load_elf+0x921>
 										size_t n = min(np * 4096, shdr[i].sh_size - (ofs - shdr[i].sh_offset));
-    2905:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
-    2909:	48 89 d0             	mov    rax,rdx
-    290c:	48 c1 e0 02          	shl    rax,0x2
-    2910:	48 01 d0             	add    rax,rdx
-    2913:	48 c1 e0 03          	shl    rax,0x3
-    2917:	48 89 c2             	mov    rdx,rax
-    291a:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    291e:	48 01 d0             	add    rax,rdx
-    2921:	8b 48 14             	mov    ecx,DWORD PTR [rax+0x14]
-    2924:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
-    2928:	48 89 d0             	mov    rax,rdx
-    292b:	48 c1 e0 02          	shl    rax,0x2
-    292f:	48 01 d0             	add    rax,rdx
-    2932:	48 c1 e0 03          	shl    rax,0x3
-    2936:	48 89 c2             	mov    rdx,rax
-    2939:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    293d:	48 01 d0             	add    rax,rdx
-    2940:	8b 40 10             	mov    eax,DWORD PTR [rax+0x10]
-    2943:	2b 45 c8             	sub    eax,DWORD PTR [rbp-0x38]
-    2946:	01 c8                	add    eax,ecx
-    2948:	89 c2                	mov    edx,eax
-    294a:	48 8b 85 60 ff ff ff 	mov    rax,QWORD PTR [rbp-0xa0]
-    2951:	48 c1 e0 0c          	shl    rax,0xc
-    2955:	48 39 c2             	cmp    rdx,rax
-    2958:	48 0f 46 c2          	cmovbe rax,rdx
-    295c:	48 89 45 b8          	mov    QWORD PTR [rbp-0x48],rax
+    290f:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
+    2913:	48 89 d0             	mov    rax,rdx
+    2916:	48 c1 e0 02          	shl    rax,0x2
+    291a:	48 01 d0             	add    rax,rdx
+    291d:	48 c1 e0 03          	shl    rax,0x3
+    2921:	48 89 c2             	mov    rdx,rax
+    2924:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    2928:	48 01 d0             	add    rax,rdx
+    292b:	8b 48 14             	mov    ecx,DWORD PTR [rax+0x14]
+    292e:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
+    2932:	48 89 d0             	mov    rax,rdx
+    2935:	48 c1 e0 02          	shl    rax,0x2
+    2939:	48 01 d0             	add    rax,rdx
+    293c:	48 c1 e0 03          	shl    rax,0x3
+    2940:	48 89 c2             	mov    rdx,rax
+    2943:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    2947:	48 01 d0             	add    rax,rdx
+    294a:	8b 40 10             	mov    eax,DWORD PTR [rax+0x10]
+    294d:	2b 45 c8             	sub    eax,DWORD PTR [rbp-0x38]
+    2950:	01 c8                	add    eax,ecx
+    2952:	89 c2                	mov    edx,eax
+    2954:	48 8b 85 60 ff ff ff 	mov    rax,QWORD PTR [rbp-0xa0]
+    295b:	48 c1 e0 0c          	shl    rax,0xc
+    295f:	48 39 c2             	cmp    rdx,rax
+    2962:	48 0f 46 c2          	cmovbe rax,rdx
+    2966:	48 89 45 b8          	mov    QWORD PTR [rbp-0x48],rax
 										mbprintf("n=%lu, ofs=%u\n", n, ofs);
-    2960:	8b 55 c8             	mov    edx,DWORD PTR [rbp-0x38]
-    2963:	48 8b 45 b8          	mov    rax,QWORD PTR [rbp-0x48]
-    2967:	48 89 c6             	mov    rsi,rax
-    296a:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-    2971:	b8 00 00 00 00       	mov    eax,0x0
-    2976:	e8 00 00 00 00       	call   297b <load_elf+0x88c>
+    296a:	8b 55 c8             	mov    edx,DWORD PTR [rbp-0x38]
+    296d:	48 8b 45 b8          	mov    rax,QWORD PTR [rbp-0x48]
+    2971:	48 89 c6             	mov    rsi,rax
+    2974:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+    297b:	b8 00 00 00 00       	mov    eax,0x0
+    2980:	e8 00 00 00 00       	call   2985 <load_elf+0x88c>
 										if ((void*)addr > mapaddr)
-    297b:	8b 45 dc             	mov    eax,DWORD PTR [rbp-0x24]
-    297e:	48 39 45 d0          	cmp    QWORD PTR [rbp-0x30],rax
-    2982:	73 0e                	jae    2992 <load_elf+0x8a3>
+    2985:	8b 45 dc             	mov    eax,DWORD PTR [rbp-0x24]
+    2988:	48 39 45 d0          	cmp    QWORD PTR [rbp-0x30],rax
+    298c:	73 0e                	jae    299c <load_elf+0x8a3>
 												n -= (size_t)addr - (size_t)mapaddr;
-    2984:	48 8b 55 d0          	mov    rdx,QWORD PTR [rbp-0x30]
-    2988:	8b 45 dc             	mov    eax,DWORD PTR [rbp-0x24]
-    298b:	48 29 c2             	sub    rdx,rax
-    298e:	48 01 55 b8          	add    QWORD PTR [rbp-0x48],rdx
+    298e:	48 8b 55 d0          	mov    rdx,QWORD PTR [rbp-0x30]
+    2992:	8b 45 dc             	mov    eax,DWORD PTR [rbp-0x24]
+    2995:	48 29 c2             	sub    rdx,rax
+    2998:	48 01 55 b8          	add    QWORD PTR [rbp-0x48],rdx
 										memcpy((void*)addr, (void*)hdr + ofs, n);
-    2992:	8b 55 c8             	mov    edx,DWORD PTR [rbp-0x38]
-    2995:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    2999:	48 8d 0c 02          	lea    rcx,[rdx+rax*1]
-    299d:	8b 45 dc             	mov    eax,DWORD PTR [rbp-0x24]
-    29a0:	48 89 c7             	mov    rdi,rax
-    29a3:	48 8b 45 b8          	mov    rax,QWORD PTR [rbp-0x48]
-    29a7:	48 89 c2             	mov    rdx,rax
-    29aa:	48 89 ce             	mov    rsi,rcx
-    29ad:	e8 4e d6 ff ff       	call   0 <memcpy>
+    299c:	8b 55 c8             	mov    edx,DWORD PTR [rbp-0x38]
+    299f:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    29a3:	48 8d 0c 02          	lea    rcx,[rdx+rax*1]
+    29a7:	8b 45 dc             	mov    eax,DWORD PTR [rbp-0x24]
+    29aa:	48 89 c7             	mov    rdi,rax
+    29ad:	48 8b 45 b8          	mov    rax,QWORD PTR [rbp-0x48]
+    29b1:	48 89 c2             	mov    rdx,rax
+    29b4:	48 89 ce             	mov    rsi,rcx
+    29b7:	e8 44 d6 ff ff       	call   0 <memcpy>
 										mbprintf("copying %lu bytes to %p\n", n, (void*)addr);
-    29b2:	8b 45 dc             	mov    eax,DWORD PTR [rbp-0x24]
-    29b5:	48 89 c2             	mov    rdx,rax
-    29b8:	48 8b 45 b8          	mov    rax,QWORD PTR [rbp-0x48]
-    29bc:	48 89 c6             	mov    rsi,rax
-    29bf:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-    29c6:	b8 00 00 00 00       	mov    eax,0x0
-    29cb:	e8 00 00 00 00       	call   29d0 <load_elf+0x8e1>
+    29bc:	8b 45 dc             	mov    eax,DWORD PTR [rbp-0x24]
+    29bf:	48 89 c2             	mov    rdx,rax
+    29c2:	48 8b 45 b8          	mov    rax,QWORD PTR [rbp-0x48]
+    29c6:	48 89 c6             	mov    rsi,rax
+    29c9:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+    29d0:	b8 00 00 00 00       	mov    eax,0x0
+    29d5:	e8 00 00 00 00       	call   29da <load_elf+0x8e1>
 										ofs += n;
-    29d0:	48 8b 45 b8          	mov    rax,QWORD PTR [rbp-0x48]
-    29d4:	01 45 c8             	add    DWORD PTR [rbp-0x38],eax
+    29da:	48 8b 45 b8          	mov    rax,QWORD PTR [rbp-0x48]
+    29de:	01 45 c8             	add    DWORD PTR [rbp-0x38],eax
 										addr += n;
-    29d7:	48 8b 45 b8          	mov    rax,QWORD PTR [rbp-0x48]
-    29db:	01 45 dc             	add    DWORD PTR [rbp-0x24],eax
+    29e1:	48 8b 45 b8          	mov    rax,QWORD PTR [rbp-0x48]
+    29e5:	01 45 dc             	add    DWORD PTR [rbp-0x24],eax
 										if (remap) {
-    29de:	83 bd 6c ff ff ff 00 	cmp    DWORD PTR [rbp-0x94],0x0
-    29e5:	74 29                	je     2a10 <load_elf+0x921>
+    29e8:	83 bd 6c ff ff ff 00 	cmp    DWORD PTR [rbp-0x94],0x0
+    29ef:	74 29                	je     2a1a <load_elf+0x921>
 												flags &= ~MMGR_MAP_WRITE;
-    29e7:	83 65 c0 fb          	and    DWORD PTR [rbp-0x40],0xfffffffb
+    29f1:	83 65 c0 fb          	and    DWORD PTR [rbp-0x40],0xfffffffb
 												mm_map(&mm_kernel, mapaddr, pr, countof(pr), flags);
-    29eb:	8b 4d c0             	mov    ecx,DWORD PTR [rbp-0x40]
-    29ee:	48 8d 95 b0 fe ff ff 	lea    rdx,[rbp-0x150]
-    29f5:	48 8b 45 d0          	mov    rax,QWORD PTR [rbp-0x30]
-    29f9:	41 89 c8             	mov    r8d,ecx
-    29fc:	b9 0a 00 00 00       	mov    ecx,0xa
-    2a01:	48 89 c6             	mov    rsi,rax
-    2a04:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-    2a0b:	e8 00 00 00 00       	call   2a10 <load_elf+0x921>
+    29f5:	8b 4d c0             	mov    ecx,DWORD PTR [rbp-0x40]
+    29f8:	48 8d 95 b0 fe ff ff 	lea    rdx,[rbp-0x150]
+    29ff:	48 8b 45 d0          	mov    rax,QWORD PTR [rbp-0x30]
+    2a03:	41 89 c8             	mov    r8d,ecx
+    2a06:	b9 0a 00 00 00       	mov    ecx,0xa
+    2a0b:	48 89 c6             	mov    rsi,rax
+    2a0e:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+    2a15:	e8 00 00 00 00       	call   2a1a <load_elf+0x921>
 										}
 								}
 								mapaddr += np * 4096;
-    2a10:	48 8b 85 60 ff ff ff 	mov    rax,QWORD PTR [rbp-0xa0]
-    2a17:	48 c1 e0 0c          	shl    rax,0xc
-    2a1b:	48 01 45 d0          	add    QWORD PTR [rbp-0x30],rax
+    2a1a:	48 8b 85 60 ff ff ff 	mov    rax,QWORD PTR [rbp-0xa0]
+    2a21:	48 c1 e0 0c          	shl    rax,0xc
+    2a25:	48 01 45 d0          	add    QWORD PTR [rbp-0x30],rax
 								pg_ct -= np;
-    2a1f:	48 8b 85 60 ff ff ff 	mov    rax,QWORD PTR [rbp-0xa0]
-    2a26:	48 29 45 e0          	sub    QWORD PTR [rbp-0x20],rax
+    2a29:	48 8b 85 60 ff ff ff 	mov    rax,QWORD PTR [rbp-0xa0]
+    2a30:	48 29 45 e0          	sub    QWORD PTR [rbp-0x20],rax
 						while (pg_ct) {
-    2a2a:	48 83 7d e0 00       	cmp    QWORD PTR [rbp-0x20],0x0
-    2a2f:	0f 85 96 fd ff ff    	jne    27cb <load_elf+0x6dc>
-    2a35:	eb 01                	jmp    2a38 <load_elf+0x949>
+    2a34:	48 83 7d e0 00       	cmp    QWORD PTR [rbp-0x20],0x0
+    2a39:	0f 85 96 fd ff ff    	jne    27d5 <load_elf+0x6dc>
+    2a3f:	eb 01                	jmp    2a42 <load_elf+0x949>
 						continue;
-    2a37:	90                   	nop
+    2a41:	90                   	nop
 		for (i = 0; i < hdr->e_shnum; i++) {
-    2a38:	48 83 45 e8 01       	add    QWORD PTR [rbp-0x18],0x1
-    2a3d:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    2a41:	0f b7 40 30          	movzx  eax,WORD PTR [rax+0x30]
-    2a45:	0f b7 c0             	movzx  eax,ax
-    2a48:	48 39 45 e8          	cmp    QWORD PTR [rbp-0x18],rax
-    2a4c:	0f 82 45 f8 ff ff    	jb     2297 <load_elf+0x1a8>
+    2a42:	48 83 45 e8 01       	add    QWORD PTR [rbp-0x18],0x1
+    2a47:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    2a4b:	0f b7 40 30          	movzx  eax,WORD PTR [rax+0x30]
+    2a4f:	0f b7 c0             	movzx  eax,ax
+    2a52:	48 39 45 e8          	cmp    QWORD PTR [rbp-0x18],rax
+    2a56:	0f 82 45 f8 ff ff    	jb     22a1 <load_elf+0x1a8>
 				}
 #endif
 		}
 
 		/* Now determine the symbol values*/
 		for (i = 0; i < hdr->e_shnum; i++)
-    2a52:	48 c7 45 e8 00 00 00 00 	mov    QWORD PTR [rbp-0x18],0x0
-    2a5a:	e9 9d 01 00 00       	jmp    2bfc <load_elf+0xb0d>
+    2a5c:	48 c7 45 e8 00 00 00 00 	mov    QWORD PTR [rbp-0x18],0x0
+    2a64:	e9 9d 01 00 00       	jmp    2c06 <load_elf+0xb0d>
 				if (shdr[i].sh_type == SHT_SYMTAB) {
-    2a5f:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
-    2a63:	48 89 d0             	mov    rax,rdx
-    2a66:	48 c1 e0 02          	shl    rax,0x2
-    2a6a:	48 01 d0             	add    rax,rdx
-    2a6d:	48 c1 e0 03          	shl    rax,0x3
-    2a71:	48 89 c2             	mov    rdx,rax
-    2a74:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    2a78:	48 01 d0             	add    rax,rdx
-    2a7b:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
-    2a7e:	83 f8 02             	cmp    eax,0x2
-    2a81:	0f 85 70 01 00 00    	jne    2bf7 <load_elf+0xb08>
+    2a69:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
+    2a6d:	48 89 d0             	mov    rax,rdx
+    2a70:	48 c1 e0 02          	shl    rax,0x2
+    2a74:	48 01 d0             	add    rax,rdx
+    2a77:	48 c1 e0 03          	shl    rax,0x3
+    2a7b:	48 89 c2             	mov    rdx,rax
+    2a7e:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    2a82:	48 01 d0             	add    rax,rdx
+    2a85:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
+    2a88:	83 f8 02             	cmp    eax,0x2
+    2a8b:	0f 85 70 01 00 00    	jne    2c01 <load_elf+0xb08>
 						void* vm_bss = mi->vm_ofs[MT_SEC_BSS] + mi->sz_secs[MT_SEC_BSS];
-    2a87:	48 8b 85 98 fe ff ff 	mov    rax,QWORD PTR [rbp-0x168]
-    2a8e:	48 8b 50 40          	mov    rdx,QWORD PTR [rax+0x40]
-    2a92:	48 8b 85 98 fe ff ff 	mov    rax,QWORD PTR [rbp-0x168]
-    2a99:	48 8b 40 60          	mov    rax,QWORD PTR [rax+0x60]
-    2a9d:	48 01 d0             	add    rax,rdx
-    2aa0:	48 89 85 58 ff ff ff 	mov    QWORD PTR [rbp-0xa8],rax
+    2a91:	48 8b 85 98 fe ff ff 	mov    rax,QWORD PTR [rbp-0x168]
+    2a98:	48 8b 50 40          	mov    rdx,QWORD PTR [rax+0x40]
+    2a9c:	48 8b 85 98 fe ff ff 	mov    rax,QWORD PTR [rbp-0x168]
+    2aa3:	48 8b 40 60          	mov    rax,QWORD PTR [rax+0x60]
+    2aa7:	48 01 d0             	add    rax,rdx
+    2aaa:	48 89 85 58 ff ff ff 	mov    QWORD PTR [rbp-0xa8],rax
 						void* vm_aold = vm_bss + (((size_t)vm_bss % 4096) ? (4096 - ((size_t)vm_bss % 4096)) : 0);
-    2aa7:	48 8b 95 58 ff ff ff 	mov    rdx,QWORD PTR [rbp-0xa8]
-    2aae:	48 8b 85 58 ff ff ff 	mov    rax,QWORD PTR [rbp-0xa8]
-    2ab5:	25 ff 0f 00 00       	and    eax,0xfff
-    2aba:	48 85 c0             	test   rax,rax
-    2abd:	74 19                	je     2ad8 <load_elf+0x9e9>
-    2abf:	48 8b 85 58 ff ff ff 	mov    rax,QWORD PTR [rbp-0xa8]
-    2ac6:	25 ff 0f 00 00       	and    eax,0xfff
-    2acb:	48 89 c1             	mov    rcx,rax
-    2ace:	b8 00 10 00 00       	mov    eax,0x1000
-    2ad3:	48 29 c8             	sub    rax,rcx
-    2ad6:	eb 05                	jmp    2add <load_elf+0x9ee>
-    2ad8:	b8 00 00 00 00       	mov    eax,0x0
-    2add:	48 01 d0             	add    rax,rdx
-    2ae0:	48 89 45 90          	mov    QWORD PTR [rbp-0x70],rax
+    2ab1:	48 8b 95 58 ff ff ff 	mov    rdx,QWORD PTR [rbp-0xa8]
+    2ab8:	48 8b 85 58 ff ff ff 	mov    rax,QWORD PTR [rbp-0xa8]
+    2abf:	25 ff 0f 00 00       	and    eax,0xfff
+    2ac4:	48 85 c0             	test   rax,rax
+    2ac7:	74 19                	je     2ae2 <load_elf+0x9e9>
+    2ac9:	48 8b 85 58 ff ff ff 	mov    rax,QWORD PTR [rbp-0xa8]
+    2ad0:	25 ff 0f 00 00       	and    eax,0xfff
+    2ad5:	48 89 c1             	mov    rcx,rax
+    2ad8:	b8 00 10 00 00       	mov    eax,0x1000
+    2add:	48 29 c8             	sub    rax,rcx
+    2ae0:	eb 05                	jmp    2ae7 <load_elf+0x9ee>
+    2ae2:	b8 00 00 00 00       	mov    eax,0x0
+    2ae7:	48 01 d0             	add    rax,rdx
+    2aea:	48 89 45 90          	mov    QWORD PTR [rbp-0x70],rax
 						elf_resolve_symbols(hdr, shdr, i, &vm_bss, mi);
-    2ae4:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
-    2ae8:	0f b7 d0             	movzx  edx,ax
-    2aeb:	48 8b bd 98 fe ff ff 	mov    rdi,QWORD PTR [rbp-0x168]
-    2af2:	48 8d 8d 58 ff ff ff 	lea    rcx,[rbp-0xa8]
-    2af9:	48 8b 75 a8          	mov    rsi,QWORD PTR [rbp-0x58]
-    2afd:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    2b01:	49 89 f8             	mov    r8,rdi
-    2b04:	48 89 c7             	mov    rdi,rax
-    2b07:	e8 00 00 00 00       	call   2b0c <load_elf+0xa1d>
+    2aee:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+    2af2:	0f b7 d0             	movzx  edx,ax
+    2af5:	48 8b bd 98 fe ff ff 	mov    rdi,QWORD PTR [rbp-0x168]
+    2afc:	48 8d 8d 58 ff ff ff 	lea    rcx,[rbp-0xa8]
+    2b03:	48 8b 75 a8          	mov    rsi,QWORD PTR [rbp-0x58]
+    2b07:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    2b0b:	49 89 f8             	mov    r8,rdi
+    2b0e:	48 89 c7             	mov    rdi,rax
+    2b11:	e8 00 00 00 00       	call   2b16 <load_elf+0xa1d>
 						if (vm_bss > vm_aold) {
-    2b0c:	48 8b 85 58 ff ff ff 	mov    rax,QWORD PTR [rbp-0xa8]
-    2b13:	48 39 45 90          	cmp    QWORD PTR [rbp-0x70],rax
-    2b17:	0f 83 da 00 00 00    	jae    2bf7 <load_elf+0xb08>
+    2b16:	48 8b 85 58 ff ff ff 	mov    rax,QWORD PTR [rbp-0xa8]
+    2b1d:	48 39 45 90          	cmp    QWORD PTR [rbp-0x70],rax
+    2b21:	0f 83 da 00 00 00    	jae    2c01 <load_elf+0xb08>
 								size_t pgc = 0; struct page_range pr[10];
-    2b1d:	48 c7 45 88 00 00 00 00 	mov    QWORD PTR [rbp-0x78],0x0
+    2b27:	48 c7 45 88 00 00 00 00 	mov    QWORD PTR [rbp-0x78],0x0
 								/* allocate new bss sections */
 								pgc = vm_bss - vm_aold;
-    2b25:	48 8b 85 58 ff ff ff 	mov    rax,QWORD PTR [rbp-0xa8]
-    2b2c:	48 2b 45 90          	sub    rax,QWORD PTR [rbp-0x70]
-    2b30:	48 89 45 88          	mov    QWORD PTR [rbp-0x78],rax
+    2b2f:	48 8b 85 58 ff ff ff 	mov    rax,QWORD PTR [rbp-0xa8]
+    2b36:	48 2b 45 90          	sub    rax,QWORD PTR [rbp-0x70]
+    2b3a:	48 89 45 88          	mov    QWORD PTR [rbp-0x78],rax
 								pgc = pgc / 4096 + (pgc % 4096) ? 1 : 0;
-    2b34:	48 8b 45 88          	mov    rax,QWORD PTR [rbp-0x78]
-    2b38:	48 c1 e8 0c          	shr    rax,0xc
-    2b3c:	48 89 c2             	mov    rdx,rax
-    2b3f:	48 8b 45 88          	mov    rax,QWORD PTR [rbp-0x78]
-    2b43:	25 ff 0f 00 00       	and    eax,0xfff
-    2b48:	48 01 d0             	add    rax,rdx
-    2b4b:	48 85 c0             	test   rax,rax
-    2b4e:	0f 95 c0             	setne  al
-    2b51:	0f b6 c0             	movzx  eax,al
-    2b54:	48 89 45 88          	mov    QWORD PTR [rbp-0x78],rax
+    2b3e:	48 8b 45 88          	mov    rax,QWORD PTR [rbp-0x78]
+    2b42:	48 c1 e8 0c          	shr    rax,0xc
+    2b46:	48 89 c2             	mov    rdx,rax
+    2b49:	48 8b 45 88          	mov    rax,QWORD PTR [rbp-0x78]
+    2b4d:	25 ff 0f 00 00       	and    eax,0xfff
+    2b52:	48 01 d0             	add    rax,rdx
+    2b55:	48 85 c0             	test   rax,rax
+    2b58:	0f 95 c0             	setne  al
+    2b5b:	0f b6 c0             	movzx  eax,al
+    2b5e:	48 89 45 88          	mov    QWORD PTR [rbp-0x78],rax
 								if (mm_alloc_pm(pgc, pr, 10) == pgc) {
-    2b58:	48 8b 45 88          	mov    rax,QWORD PTR [rbp-0x78]
-    2b5c:	89 c1                	mov    ecx,eax
-    2b5e:	48 8d 85 b0 fe ff ff 	lea    rax,[rbp-0x150]
-    2b65:	ba 0a 00 00 00       	mov    edx,0xa
-    2b6a:	48 89 c6             	mov    rsi,rax
-    2b6d:	89 cf                	mov    edi,ecx
-    2b6f:	e8 00 00 00 00       	call   2b74 <load_elf+0xa85>
-    2b74:	89 c0                	mov    eax,eax
-    2b76:	48 39 45 88          	cmp    QWORD PTR [rbp-0x78],rax
-    2b7a:	75 67                	jne    2be3 <load_elf+0xaf4>
+    2b62:	48 8b 45 88          	mov    rax,QWORD PTR [rbp-0x78]
+    2b66:	89 c1                	mov    ecx,eax
+    2b68:	48 8d 85 b0 fe ff ff 	lea    rax,[rbp-0x150]
+    2b6f:	ba 0a 00 00 00       	mov    edx,0xa
+    2b74:	48 89 c6             	mov    rsi,rax
+    2b77:	89 cf                	mov    edi,ecx
+    2b79:	e8 00 00 00 00       	call   2b7e <load_elf+0xa85>
+    2b7e:	89 c0                	mov    eax,eax
+    2b80:	48 39 45 88          	cmp    QWORD PTR [rbp-0x78],rax
+    2b84:	75 67                	jne    2bed <load_elf+0xaf4>
 										/* success */
 										if (!mm_map(&mm_kernel, vm_aold, pr, 10, MMGR_MAP_WRITE | MMGR_MAP_KERNEL)) {
-    2b7c:	48 8d 95 b0 fe ff ff 	lea    rdx,[rbp-0x150]
-    2b83:	48 8b 45 90          	mov    rax,QWORD PTR [rbp-0x70]
-    2b87:	41 b8 0c 00 00 00    	mov    r8d,0xc
-    2b8d:	b9 0a 00 00 00       	mov    ecx,0xa
-    2b92:	48 89 c6             	mov    rsi,rax
-    2b95:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-    2b9c:	e8 00 00 00 00       	call   2ba1 <load_elf+0xab2>
-    2ba1:	48 85 c0             	test   rax,rax
-    2ba4:	75 1b                	jne    2bc1 <load_elf+0xad2>
+    2b86:	48 8d 95 b0 fe ff ff 	lea    rdx,[rbp-0x150]
+    2b8d:	48 8b 45 90          	mov    rax,QWORD PTR [rbp-0x70]
+    2b91:	41 b8 0c 00 00 00    	mov    r8d,0xc
+    2b97:	b9 0a 00 00 00       	mov    ecx,0xa
+    2b9c:	48 89 c6             	mov    rsi,rax
+    2b9f:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+    2ba6:	e8 00 00 00 00       	call   2bab <load_elf+0xab2>
+    2bab:	48 85 c0             	test   rax,rax
+    2bae:	75 1b                	jne    2bcb <load_elf+0xad2>
 												printf("unable to map new bss pages to %p\n", vm_aold);
-    2ba6:	48 8b 45 90          	mov    rax,QWORD PTR [rbp-0x70]
-    2baa:	48 89 c6             	mov    rsi,rax
-    2bad:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-    2bb4:	b8 00 00 00 00       	mov    eax,0x0
-    2bb9:	e8 00 00 00 00       	call   2bbe <load_elf+0xacf>
+    2bb0:	48 8b 45 90          	mov    rax,QWORD PTR [rbp-0x70]
+    2bb4:	48 89 c6             	mov    rsi,rax
+    2bb7:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+    2bbe:	b8 00 00 00 00       	mov    eax,0x0
+    2bc3:	e8 00 00 00 00       	call   2bc8 <load_elf+0xacf>
 												while (1);
-    2bbe:	90                   	nop
-    2bbf:	eb fd                	jmp    2bbe <load_elf+0xacf>
+    2bc8:	90                   	nop
+    2bc9:	eb fd                	jmp    2bc8 <load_elf+0xacf>
 										}
 										mi->sz_secs[MT_SEC_BSS] = vm_bss - mi->vm_ofs[MT_SEC_BSS];
-    2bc1:	48 8b 95 58 ff ff ff 	mov    rdx,QWORD PTR [rbp-0xa8]
-    2bc8:	48 8b 85 98 fe ff ff 	mov    rax,QWORD PTR [rbp-0x168]
-    2bcf:	48 8b 40 40          	mov    rax,QWORD PTR [rax+0x40]
-    2bd3:	48 29 c2             	sub    rdx,rax
-    2bd6:	48 8b 85 98 fe ff ff 	mov    rax,QWORD PTR [rbp-0x168]
-    2bdd:	48 89 50 60          	mov    QWORD PTR [rax+0x60],rdx
-    2be1:	eb 14                	jmp    2bf7 <load_elf+0xb08>
+    2bcb:	48 8b 95 58 ff ff ff 	mov    rdx,QWORD PTR [rbp-0xa8]
+    2bd2:	48 8b 85 98 fe ff ff 	mov    rax,QWORD PTR [rbp-0x168]
+    2bd9:	48 8b 40 40          	mov    rax,QWORD PTR [rax+0x40]
+    2bdd:	48 29 c2             	sub    rdx,rax
+    2be0:	48 8b 85 98 fe ff ff 	mov    rax,QWORD PTR [rbp-0x168]
+    2be7:	48 89 50 60          	mov    QWORD PTR [rax+0x60],rdx
+    2beb:	eb 14                	jmp    2c01 <load_elf+0xb08>
 								} else {
 										printf("failed to extend bss section\n");
-    2be3:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-    2bea:	b8 00 00 00 00       	mov    eax,0x0
-    2bef:	e8 00 00 00 00       	call   2bf4 <load_elf+0xb05>
+    2bed:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+    2bf4:	b8 00 00 00 00       	mov    eax,0x0
+    2bf9:	e8 00 00 00 00       	call   2bfe <load_elf+0xb05>
 										while (1);
-    2bf4:	90                   	nop
-    2bf5:	eb fd                	jmp    2bf4 <load_elf+0xb05>
+    2bfe:	90                   	nop
+    2bff:	eb fd                	jmp    2bfe <load_elf+0xb05>
 		for (i = 0; i < hdr->e_shnum; i++)
-    2bf7:	48 83 45 e8 01       	add    QWORD PTR [rbp-0x18],0x1
-    2bfc:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    2c00:	0f b7 40 30          	movzx  eax,WORD PTR [rax+0x30]
-    2c04:	0f b7 c0             	movzx  eax,ax
-    2c07:	48 39 45 e8          	cmp    QWORD PTR [rbp-0x18],rax
-    2c0b:	0f 82 4e fe ff ff    	jb     2a5f <load_elf+0x970>
+    2c01:	48 83 45 e8 01       	add    QWORD PTR [rbp-0x18],0x1
+    2c06:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    2c0a:	0f b7 40 30          	movzx  eax,WORD PTR [rax+0x30]
+    2c0e:	0f b7 c0             	movzx  eax,ax
+    2c11:	48 39 45 e8          	cmp    QWORD PTR [rbp-0x18],rax
+    2c15:	0f 82 4e fe ff ff    	jb     2a69 <load_elf+0x970>
 								}
 						}
 				}
 
 		/* and perform the relocations */
 		for (i = 0; i < hdr->e_shnum; i++)
-    2c11:	48 c7 45 e8 00 00 00 00 	mov    QWORD PTR [rbp-0x18],0x0
-    2c19:	e9 a6 02 00 00       	jmp    2ec4 <load_elf+0xdd5>
+    2c1b:	48 c7 45 e8 00 00 00 00 	mov    QWORD PTR [rbp-0x18],0x0
+    2c23:	e9 a6 02 00 00       	jmp    2ece <load_elf+0xdd5>
 				if (shdr[i].sh_type == SHT_REL || shdr[i].sh_type == SHT_RELA) {
-    2c1e:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
-    2c22:	48 89 d0             	mov    rax,rdx
-    2c25:	48 c1 e0 02          	shl    rax,0x2
-    2c29:	48 01 d0             	add    rax,rdx
-    2c2c:	48 c1 e0 03          	shl    rax,0x3
-    2c30:	48 89 c2             	mov    rdx,rax
-    2c33:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    2c37:	48 01 d0             	add    rax,rdx
-    2c3a:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
-    2c3d:	83 f8 09             	cmp    eax,0x9
-    2c40:	74 28                	je     2c6a <load_elf+0xb7b>
-    2c42:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
-    2c46:	48 89 d0             	mov    rax,rdx
-    2c49:	48 c1 e0 02          	shl    rax,0x2
-    2c4d:	48 01 d0             	add    rax,rdx
-    2c50:	48 c1 e0 03          	shl    rax,0x3
-    2c54:	48 89 c2             	mov    rdx,rax
-    2c57:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    2c5b:	48 01 d0             	add    rax,rdx
-    2c5e:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
-    2c61:	83 f8 04             	cmp    eax,0x4
-    2c64:	0f 85 55 02 00 00    	jne    2ebf <load_elf+0xdd0>
+    2c28:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
+    2c2c:	48 89 d0             	mov    rax,rdx
+    2c2f:	48 c1 e0 02          	shl    rax,0x2
+    2c33:	48 01 d0             	add    rax,rdx
+    2c36:	48 c1 e0 03          	shl    rax,0x3
+    2c3a:	48 89 c2             	mov    rdx,rax
+    2c3d:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    2c41:	48 01 d0             	add    rax,rdx
+    2c44:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
+    2c47:	83 f8 09             	cmp    eax,0x9
+    2c4a:	74 28                	je     2c74 <load_elf+0xb7b>
+    2c4c:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
+    2c50:	48 89 d0             	mov    rax,rdx
+    2c53:	48 c1 e0 02          	shl    rax,0x2
+    2c57:	48 01 d0             	add    rax,rdx
+    2c5a:	48 c1 e0 03          	shl    rax,0x3
+    2c5e:	48 89 c2             	mov    rdx,rax
+    2c61:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    2c65:	48 01 d0             	add    rax,rdx
+    2c68:	8b 40 04             	mov    eax,DWORD PTR [rax+0x4]
+    2c6b:	83 f8 04             	cmp    eax,0x4
+    2c6e:	0f 85 55 02 00 00    	jne    2ec9 <load_elf+0xdd0>
 						if (shdr[shdr[i].sh_info].sh_flags & SHF_ALLOC) {
-    2c6a:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
-    2c6e:	48 89 d0             	mov    rax,rdx
-    2c71:	48 c1 e0 02          	shl    rax,0x2
-    2c75:	48 01 d0             	add    rax,rdx
-    2c78:	48 c1 e0 03          	shl    rax,0x3
-    2c7c:	48 89 c2             	mov    rdx,rax
-    2c7f:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    2c83:	48 01 d0             	add    rax,rdx
-    2c86:	8b 40 1c             	mov    eax,DWORD PTR [rax+0x1c]
-    2c89:	89 c2                	mov    edx,eax
-    2c8b:	48 89 d0             	mov    rax,rdx
-    2c8e:	48 c1 e0 02          	shl    rax,0x2
-    2c92:	48 01 d0             	add    rax,rdx
-    2c95:	48 c1 e0 03          	shl    rax,0x3
-    2c99:	48 89 c2             	mov    rdx,rax
-    2c9c:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    2ca0:	48 01 d0             	add    rax,rdx
-    2ca3:	8b 40 08             	mov    eax,DWORD PTR [rax+0x8]
-    2ca6:	83 e0 02             	and    eax,0x2
-    2ca9:	85 c0                	test   eax,eax
-    2cab:	0f 84 0e 02 00 00    	je     2ebf <load_elf+0xdd0>
+    2c74:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
+    2c78:	48 89 d0             	mov    rax,rdx
+    2c7b:	48 c1 e0 02          	shl    rax,0x2
+    2c7f:	48 01 d0             	add    rax,rdx
+    2c82:	48 c1 e0 03          	shl    rax,0x3
+    2c86:	48 89 c2             	mov    rdx,rax
+    2c89:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    2c8d:	48 01 d0             	add    rax,rdx
+    2c90:	8b 40 1c             	mov    eax,DWORD PTR [rax+0x1c]
+    2c93:	89 c2                	mov    edx,eax
+    2c95:	48 89 d0             	mov    rax,rdx
+    2c98:	48 c1 e0 02          	shl    rax,0x2
+    2c9c:	48 01 d0             	add    rax,rdx
+    2c9f:	48 c1 e0 03          	shl    rax,0x3
+    2ca3:	48 89 c2             	mov    rdx,rax
+    2ca6:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    2caa:	48 01 d0             	add    rax,rdx
+    2cad:	8b 40 08             	mov    eax,DWORD PTR [rax+0x8]
+    2cb0:	83 e0 02             	and    eax,0x2
+    2cb3:	85 c0                	test   eax,eax
+    2cb5:	0f 84 0e 02 00 00    	je     2ec9 <load_elf+0xdd0>
 								void* vm_begin = (void*)shdr[shdr[i].sh_info].sh_addr;
-    2cb1:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
-    2cb5:	48 89 d0             	mov    rax,rdx
-    2cb8:	48 c1 e0 02          	shl    rax,0x2
-    2cbc:	48 01 d0             	add    rax,rdx
-    2cbf:	48 c1 e0 03          	shl    rax,0x3
-    2cc3:	48 89 c2             	mov    rdx,rax
-    2cc6:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    2cca:	48 01 d0             	add    rax,rdx
-    2ccd:	8b 40 1c             	mov    eax,DWORD PTR [rax+0x1c]
-    2cd0:	89 c2                	mov    edx,eax
-    2cd2:	48 89 d0             	mov    rax,rdx
-    2cd5:	48 c1 e0 02          	shl    rax,0x2
-    2cd9:	48 01 d0             	add    rax,rdx
-    2cdc:	48 c1 e0 03          	shl    rax,0x3
-    2ce0:	48 89 c2             	mov    rdx,rax
-    2ce3:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    2ce7:	48 01 d0             	add    rax,rdx
-    2cea:	8b 40 0c             	mov    eax,DWORD PTR [rax+0xc]
-    2ced:	89 c0                	mov    eax,eax
-    2cef:	48 89 45 a0          	mov    QWORD PTR [rbp-0x60],rax
+    2cbb:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
+    2cbf:	48 89 d0             	mov    rax,rdx
+    2cc2:	48 c1 e0 02          	shl    rax,0x2
+    2cc6:	48 01 d0             	add    rax,rdx
+    2cc9:	48 c1 e0 03          	shl    rax,0x3
+    2ccd:	48 89 c2             	mov    rdx,rax
+    2cd0:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    2cd4:	48 01 d0             	add    rax,rdx
+    2cd7:	8b 40 1c             	mov    eax,DWORD PTR [rax+0x1c]
+    2cda:	89 c2                	mov    edx,eax
+    2cdc:	48 89 d0             	mov    rax,rdx
+    2cdf:	48 c1 e0 02          	shl    rax,0x2
+    2ce3:	48 01 d0             	add    rax,rdx
+    2ce6:	48 c1 e0 03          	shl    rax,0x3
+    2cea:	48 89 c2             	mov    rdx,rax
+    2ced:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    2cf1:	48 01 d0             	add    rax,rdx
+    2cf4:	8b 40 0c             	mov    eax,DWORD PTR [rax+0xc]
+    2cf7:	89 c0                	mov    eax,eax
+    2cf9:	48 89 45 a0          	mov    QWORD PTR [rbp-0x60],rax
 								size_t pgc = shdr[shdr[i].sh_info].sh_size;
-    2cf3:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
-    2cf7:	48 89 d0             	mov    rax,rdx
-    2cfa:	48 c1 e0 02          	shl    rax,0x2
-    2cfe:	48 01 d0             	add    rax,rdx
-    2d01:	48 c1 e0 03          	shl    rax,0x3
-    2d05:	48 89 c2             	mov    rdx,rax
-    2d08:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    2d0c:	48 01 d0             	add    rax,rdx
-    2d0f:	8b 40 1c             	mov    eax,DWORD PTR [rax+0x1c]
-    2d12:	89 c2                	mov    edx,eax
-    2d14:	48 89 d0             	mov    rax,rdx
-    2d17:	48 c1 e0 02          	shl    rax,0x2
-    2d1b:	48 01 d0             	add    rax,rdx
-    2d1e:	48 c1 e0 03          	shl    rax,0x3
-    2d22:	48 89 c2             	mov    rdx,rax
-    2d25:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    2d29:	48 01 d0             	add    rax,rdx
-    2d2c:	8b 40 14             	mov    eax,DWORD PTR [rax+0x14]
-    2d2f:	89 c0                	mov    eax,eax
-    2d31:	48 89 45 98          	mov    QWORD PTR [rbp-0x68],rax
+    2cfd:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
+    2d01:	48 89 d0             	mov    rax,rdx
+    2d04:	48 c1 e0 02          	shl    rax,0x2
+    2d08:	48 01 d0             	add    rax,rdx
+    2d0b:	48 c1 e0 03          	shl    rax,0x3
+    2d0f:	48 89 c2             	mov    rdx,rax
+    2d12:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    2d16:	48 01 d0             	add    rax,rdx
+    2d19:	8b 40 1c             	mov    eax,DWORD PTR [rax+0x1c]
+    2d1c:	89 c2                	mov    edx,eax
+    2d1e:	48 89 d0             	mov    rax,rdx
+    2d21:	48 c1 e0 02          	shl    rax,0x2
+    2d25:	48 01 d0             	add    rax,rdx
+    2d28:	48 c1 e0 03          	shl    rax,0x3
+    2d2c:	48 89 c2             	mov    rdx,rax
+    2d2f:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    2d33:	48 01 d0             	add    rax,rdx
+    2d36:	8b 40 14             	mov    eax,DWORD PTR [rax+0x14]
+    2d39:	89 c0                	mov    eax,eax
+    2d3b:	48 89 45 98          	mov    QWORD PTR [rbp-0x68],rax
 								pgc = pgc / 4096 + ((pgc % 4096) ? 1 : 0);
-    2d35:	48 8b 45 98          	mov    rax,QWORD PTR [rbp-0x68]
-    2d39:	48 c1 e8 0c          	shr    rax,0xc
-    2d3d:	48 89 c2             	mov    rdx,rax
-    2d40:	48 8b 45 98          	mov    rax,QWORD PTR [rbp-0x68]
-    2d44:	25 ff 0f 00 00       	and    eax,0xfff
-    2d49:	48 85 c0             	test   rax,rax
-    2d4c:	74 07                	je     2d55 <load_elf+0xc66>
-    2d4e:	b8 01 00 00 00       	mov    eax,0x1
-    2d53:	eb 05                	jmp    2d5a <load_elf+0xc6b>
-    2d55:	b8 00 00 00 00       	mov    eax,0x0
-    2d5a:	48 01 d0             	add    rax,rdx
-    2d5d:	48 89 45 98          	mov    QWORD PTR [rbp-0x68],rax
+    2d3f:	48 8b 45 98          	mov    rax,QWORD PTR [rbp-0x68]
+    2d43:	48 c1 e8 0c          	shr    rax,0xc
+    2d47:	48 89 c2             	mov    rdx,rax
+    2d4a:	48 8b 45 98          	mov    rax,QWORD PTR [rbp-0x68]
+    2d4e:	25 ff 0f 00 00       	and    eax,0xfff
+    2d53:	48 85 c0             	test   rax,rax
+    2d56:	74 07                	je     2d5f <load_elf+0xc66>
+    2d58:	b8 01 00 00 00       	mov    eax,0x1
+    2d5d:	eb 05                	jmp    2d64 <load_elf+0xc6b>
+    2d5f:	b8 00 00 00 00       	mov    eax,0x0
+    2d64:	48 01 d0             	add    rax,rdx
+    2d67:	48 89 45 98          	mov    QWORD PTR [rbp-0x68],rax
 								printf("performing relocations on section %s:\n",
 										elf_fetch_string(hdr, shdr, hdr->e_shstrndx, shdr[shdr[i].sh_info].sh_name));
-    2d61:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
-    2d65:	48 89 d0             	mov    rax,rdx
-    2d68:	48 c1 e0 02          	shl    rax,0x2
-    2d6c:	48 01 d0             	add    rax,rdx
-    2d6f:	48 c1 e0 03          	shl    rax,0x3
-    2d73:	48 89 c2             	mov    rdx,rax
-    2d76:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    2d7a:	48 01 d0             	add    rax,rdx
-    2d7d:	8b 40 1c             	mov    eax,DWORD PTR [rax+0x1c]
-    2d80:	89 c2                	mov    edx,eax
-    2d82:	48 89 d0             	mov    rax,rdx
-    2d85:	48 c1 e0 02          	shl    rax,0x2
-    2d89:	48 01 d0             	add    rax,rdx
-    2d8c:	48 c1 e0 03          	shl    rax,0x3
-    2d90:	48 89 c2             	mov    rdx,rax
-    2d93:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    2d97:	48 01 d0             	add    rax,rdx
+    2d6b:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
+    2d6f:	48 89 d0             	mov    rax,rdx
+    2d72:	48 c1 e0 02          	shl    rax,0x2
+    2d76:	48 01 d0             	add    rax,rdx
+    2d79:	48 c1 e0 03          	shl    rax,0x3
+    2d7d:	48 89 c2             	mov    rdx,rax
+    2d80:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    2d84:	48 01 d0             	add    rax,rdx
+    2d87:	8b 40 1c             	mov    eax,DWORD PTR [rax+0x1c]
+    2d8a:	89 c2                	mov    edx,eax
+    2d8c:	48 89 d0             	mov    rax,rdx
+    2d8f:	48 c1 e0 02          	shl    rax,0x2
+    2d93:	48 01 d0             	add    rax,rdx
+    2d96:	48 c1 e0 03          	shl    rax,0x3
+    2d9a:	48 89 c2             	mov    rdx,rax
+    2d9d:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    2da1:	48 01 d0             	add    rax,rdx
 								printf("performing relocations on section %s:\n",
-    2d9a:	8b 08                	mov    ecx,DWORD PTR [rax]
+    2da4:	8b 08                	mov    ecx,DWORD PTR [rax]
 										elf_fetch_string(hdr, shdr, hdr->e_shstrndx, shdr[shdr[i].sh_info].sh_name));
-    2d9c:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    2da0:	0f b7 40 32          	movzx  eax,WORD PTR [rax+0x32]
+    2da6:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    2daa:	0f b7 40 32          	movzx  eax,WORD PTR [rax+0x32]
 								printf("performing relocations on section %s:\n",
-    2da4:	0f b7 d0             	movzx  edx,ax
-    2da7:	48 8b 75 a8          	mov    rsi,QWORD PTR [rbp-0x58]
-    2dab:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    2daf:	48 89 c7             	mov    rdi,rax
-    2db2:	e8 00 00 00 00       	call   2db7 <load_elf+0xcc8>
-    2db7:	48 89 c6             	mov    rsi,rax
-    2dba:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-    2dc1:	b8 00 00 00 00       	mov    eax,0x0
-    2dc6:	e8 00 00 00 00       	call   2dcb <load_elf+0xcdc>
+    2dae:	0f b7 d0             	movzx  edx,ax
+    2db1:	48 8b 75 a8          	mov    rsi,QWORD PTR [rbp-0x58]
+    2db5:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    2db9:	48 89 c7             	mov    rdi,rax
+    2dbc:	e8 00 00 00 00       	call   2dc1 <load_elf+0xcc8>
+    2dc1:	48 89 c6             	mov    rsi,rax
+    2dc4:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+    2dcb:	b8 00 00 00 00       	mov    eax,0x0
+    2dd0:	e8 00 00 00 00       	call   2dd5 <load_elf+0xcdc>
 								/* unguard the section */
 								printf("modifying %lu pages at %p\n", pgc, vm_begin);
-    2dcb:	48 8b 55 a0          	mov    rdx,QWORD PTR [rbp-0x60]
-    2dcf:	48 8b 45 98          	mov    rax,QWORD PTR [rbp-0x68]
-    2dd3:	48 89 c6             	mov    rsi,rax
-    2dd6:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-    2ddd:	b8 00 00 00 00       	mov    eax,0x0
-    2de2:	e8 00 00 00 00       	call   2de7 <load_elf+0xcf8>
+    2dd5:	48 8b 55 a0          	mov    rdx,QWORD PTR [rbp-0x60]
+    2dd9:	48 8b 45 98          	mov    rax,QWORD PTR [rbp-0x68]
+    2ddd:	48 89 c6             	mov    rsi,rax
+    2de0:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+    2de7:	b8 00 00 00 00       	mov    eax,0x0
+    2dec:	e8 00 00 00 00       	call   2df1 <load_elf+0xcf8>
 								if (!(shdr[shdr[i].sh_info].sh_flags & SHF_WRITE))
-    2de7:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
-    2deb:	48 89 d0             	mov    rax,rdx
-    2dee:	48 c1 e0 02          	shl    rax,0x2
-    2df2:	48 01 d0             	add    rax,rdx
-    2df5:	48 c1 e0 03          	shl    rax,0x3
-    2df9:	48 89 c2             	mov    rdx,rax
-    2dfc:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    2e00:	48 01 d0             	add    rax,rdx
-    2e03:	8b 40 1c             	mov    eax,DWORD PTR [rax+0x1c]
-    2e06:	89 c2                	mov    edx,eax
-    2e08:	48 89 d0             	mov    rax,rdx
-    2e0b:	48 c1 e0 02          	shl    rax,0x2
-    2e0f:	48 01 d0             	add    rax,rdx
-    2e12:	48 c1 e0 03          	shl    rax,0x3
-    2e16:	48 89 c2             	mov    rdx,rax
-    2e19:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    2e1d:	48 01 d0             	add    rax,rdx
-    2e20:	8b 40 08             	mov    eax,DWORD PTR [rax+0x8]
-    2e23:	83 e0 01             	and    eax,0x1
-    2e26:	85 c0                	test   eax,eax
-    2e28:	75 1c                	jne    2e46 <load_elf+0xd57>
+    2df1:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
+    2df5:	48 89 d0             	mov    rax,rdx
+    2df8:	48 c1 e0 02          	shl    rax,0x2
+    2dfc:	48 01 d0             	add    rax,rdx
+    2dff:	48 c1 e0 03          	shl    rax,0x3
+    2e03:	48 89 c2             	mov    rdx,rax
+    2e06:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    2e0a:	48 01 d0             	add    rax,rdx
+    2e0d:	8b 40 1c             	mov    eax,DWORD PTR [rax+0x1c]
+    2e10:	89 c2                	mov    edx,eax
+    2e12:	48 89 d0             	mov    rax,rdx
+    2e15:	48 c1 e0 02          	shl    rax,0x2
+    2e19:	48 01 d0             	add    rax,rdx
+    2e1c:	48 c1 e0 03          	shl    rax,0x3
+    2e20:	48 89 c2             	mov    rdx,rax
+    2e23:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    2e27:	48 01 d0             	add    rax,rdx
+    2e2a:	8b 40 08             	mov    eax,DWORD PTR [rax+0x8]
+    2e2d:	83 e0 01             	and    eax,0x1
+    2e30:	85 c0                	test   eax,eax
+    2e32:	75 1c                	jne    2e50 <load_elf+0xd57>
 										mm_protect(&mm_kernel, vm_begin, pgc, MMGR_MAP_WRITE | MMGR_MAP_SET);
-    2e2a:	48 8b 55 98          	mov    rdx,QWORD PTR [rbp-0x68]
-    2e2e:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
-    2e32:	b9 04 10 00 00       	mov    ecx,0x1004
-    2e37:	48 89 c6             	mov    rsi,rax
-    2e3a:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-    2e41:	e8 00 00 00 00       	call   2e46 <load_elf+0xd57>
+    2e34:	48 8b 55 98          	mov    rdx,QWORD PTR [rbp-0x68]
+    2e38:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
+    2e3c:	b9 04 10 00 00       	mov    ecx,0x1004
+    2e41:	48 89 c6             	mov    rsi,rax
+    2e44:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+    2e4b:	e8 00 00 00 00       	call   2e50 <load_elf+0xd57>
 								/* relocate */
 								elf_relocate_section(hdr, shdr, i);
-    2e46:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
-    2e4a:	0f b7 d0             	movzx  edx,ax
-    2e4d:	48 8b 4d a8          	mov    rcx,QWORD PTR [rbp-0x58]
-    2e51:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    2e55:	48 89 ce             	mov    rsi,rcx
-    2e58:	48 89 c7             	mov    rdi,rax
-    2e5b:	e8 00 00 00 00       	call   2e60 <load_elf+0xd71>
+    2e50:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+    2e54:	0f b7 d0             	movzx  edx,ax
+    2e57:	48 8b 4d a8          	mov    rcx,QWORD PTR [rbp-0x58]
+    2e5b:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    2e5f:	48 89 ce             	mov    rsi,rcx
+    2e62:	48 89 c7             	mov    rdi,rax
+    2e65:	e8 00 00 00 00       	call   2e6a <load_elf+0xd71>
 								/* reguard the section */
 								if (!(shdr[shdr[i].sh_info].sh_flags & SHF_WRITE))
-    2e60:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
-    2e64:	48 89 d0             	mov    rax,rdx
-    2e67:	48 c1 e0 02          	shl    rax,0x2
-    2e6b:	48 01 d0             	add    rax,rdx
-    2e6e:	48 c1 e0 03          	shl    rax,0x3
-    2e72:	48 89 c2             	mov    rdx,rax
-    2e75:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    2e79:	48 01 d0             	add    rax,rdx
-    2e7c:	8b 40 1c             	mov    eax,DWORD PTR [rax+0x1c]
-    2e7f:	89 c2                	mov    edx,eax
-    2e81:	48 89 d0             	mov    rax,rdx
-    2e84:	48 c1 e0 02          	shl    rax,0x2
-    2e88:	48 01 d0             	add    rax,rdx
-    2e8b:	48 c1 e0 03          	shl    rax,0x3
-    2e8f:	48 89 c2             	mov    rdx,rax
-    2e92:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    2e96:	48 01 d0             	add    rax,rdx
-    2e99:	8b 40 08             	mov    eax,DWORD PTR [rax+0x8]
-    2e9c:	83 e0 01             	and    eax,0x1
-    2e9f:	85 c0                	test   eax,eax
-    2ea1:	75 1c                	jne    2ebf <load_elf+0xdd0>
+    2e6a:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
+    2e6e:	48 89 d0             	mov    rax,rdx
+    2e71:	48 c1 e0 02          	shl    rax,0x2
+    2e75:	48 01 d0             	add    rax,rdx
+    2e78:	48 c1 e0 03          	shl    rax,0x3
+    2e7c:	48 89 c2             	mov    rdx,rax
+    2e7f:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    2e83:	48 01 d0             	add    rax,rdx
+    2e86:	8b 40 1c             	mov    eax,DWORD PTR [rax+0x1c]
+    2e89:	89 c2                	mov    edx,eax
+    2e8b:	48 89 d0             	mov    rax,rdx
+    2e8e:	48 c1 e0 02          	shl    rax,0x2
+    2e92:	48 01 d0             	add    rax,rdx
+    2e95:	48 c1 e0 03          	shl    rax,0x3
+    2e99:	48 89 c2             	mov    rdx,rax
+    2e9c:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    2ea0:	48 01 d0             	add    rax,rdx
+    2ea3:	8b 40 08             	mov    eax,DWORD PTR [rax+0x8]
+    2ea6:	83 e0 01             	and    eax,0x1
+    2ea9:	85 c0                	test   eax,eax
+    2eab:	75 1c                	jne    2ec9 <load_elf+0xdd0>
 										mm_protect(&mm_kernel, vm_begin, pgc, MMGR_MAP_WRITE | MMGR_MAP_UNSET);
-    2ea3:	48 8b 55 98          	mov    rdx,QWORD PTR [rbp-0x68]
-    2ea7:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
-    2eab:	b9 04 20 00 00       	mov    ecx,0x2004
-    2eb0:	48 89 c6             	mov    rsi,rax
-    2eb3:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-    2eba:	e8 00 00 00 00       	call   2ebf <load_elf+0xdd0>
+    2ead:	48 8b 55 98          	mov    rdx,QWORD PTR [rbp-0x68]
+    2eb1:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
+    2eb5:	b9 04 20 00 00       	mov    ecx,0x2004
+    2eba:	48 89 c6             	mov    rsi,rax
+    2ebd:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+    2ec4:	e8 00 00 00 00       	call   2ec9 <load_elf+0xdd0>
 		for (i = 0; i < hdr->e_shnum; i++)
-    2ebf:	48 83 45 e8 01       	add    QWORD PTR [rbp-0x18],0x1
-    2ec4:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    2ec8:	0f b7 40 30          	movzx  eax,WORD PTR [rax+0x30]
-    2ecc:	0f b7 c0             	movzx  eax,ax
-    2ecf:	48 39 45 e8          	cmp    QWORD PTR [rbp-0x18],rax
-    2ed3:	0f 82 45 fd ff ff    	jb     2c1e <load_elf+0xb2f>
+    2ec9:	48 83 45 e8 01       	add    QWORD PTR [rbp-0x18],0x1
+    2ece:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    2ed2:	0f b7 40 30          	movzx  eax,WORD PTR [rax+0x30]
+    2ed6:	0f b7 c0             	movzx  eax,ax
+    2ed9:	48 39 45 e8          	cmp    QWORD PTR [rbp-0x18],rax
+    2edd:	0f 82 45 fd ff ff    	jb     2c28 <load_elf+0xb2f>
 						}
 				}
 
 		/* page-align for the next module */
 		/* DBG: and insert a guard-page */
 		for (i = 0; i < 4; i++) {
-    2ed9:	48 c7 45 e8 00 00 00 00 	mov    QWORD PTR [rbp-0x18],0x0
-    2ee1:	e9 c2 00 00 00       	jmp    2fa8 <load_elf+0xeb9>
+    2ee3:	48 c7 45 e8 00 00 00 00 	mov    QWORD PTR [rbp-0x18],0x0
+    2eeb:	e9 c2 00 00 00       	jmp    2fb2 <load_elf+0xeb9>
 				if (mi->sz_secs[i]) {
-    2ee6:	48 8b 85 98 fe ff ff 	mov    rax,QWORD PTR [rbp-0x168]
-    2eed:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
-    2ef1:	48 83 c2 08          	add    rdx,0x8
-    2ef5:	48 8b 44 d0 08       	mov    rax,QWORD PTR [rax+rdx*8+0x8]
-    2efa:	48 85 c0             	test   rax,rax
-    2efd:	0f 84 a0 00 00 00    	je     2fa3 <load_elf+0xeb4>
+    2ef0:	48 8b 85 98 fe ff ff 	mov    rax,QWORD PTR [rbp-0x168]
+    2ef7:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
+    2efb:	48 83 c2 08          	add    rdx,0x8
+    2eff:	48 8b 44 d0 08       	mov    rax,QWORD PTR [rax+rdx*8+0x8]
+    2f04:	48 85 c0             	test   rax,rax
+    2f07:	0f 84 a0 00 00 00    	je     2fad <load_elf+0xeb4>
 						mod_tbl.vm_ofs[i] = mi->vm_ofs[i] + mi->sz_secs[i];
-    2f03:	48 8b 85 98 fe ff ff 	mov    rax,QWORD PTR [rbp-0x168]
-    2f0a:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
-    2f0e:	48 83 c2 04          	add    rdx,0x4
-    2f12:	48 8b 54 d0 08       	mov    rdx,QWORD PTR [rax+rdx*8+0x8]
-    2f17:	48 8b 85 98 fe ff ff 	mov    rax,QWORD PTR [rbp-0x168]
-    2f1e:	48 8b 4d e8          	mov    rcx,QWORD PTR [rbp-0x18]
-    2f22:	48 83 c1 08          	add    rcx,0x8
-    2f26:	48 8b 44 c8 08       	mov    rax,QWORD PTR [rax+rcx*8+0x8]
-    2f2b:	48 01 c2             	add    rdx,rax
-    2f2e:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
-    2f32:	48 89 14 c5 00 00 00 00 	mov    QWORD PTR [rax*8+0x0],rdx
+    2f0d:	48 8b 85 98 fe ff ff 	mov    rax,QWORD PTR [rbp-0x168]
+    2f14:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
+    2f18:	48 83 c2 04          	add    rdx,0x4
+    2f1c:	48 8b 54 d0 08       	mov    rdx,QWORD PTR [rax+rdx*8+0x8]
+    2f21:	48 8b 85 98 fe ff ff 	mov    rax,QWORD PTR [rbp-0x168]
+    2f28:	48 8b 4d e8          	mov    rcx,QWORD PTR [rbp-0x18]
+    2f2c:	48 83 c1 08          	add    rcx,0x8
+    2f30:	48 8b 44 c8 08       	mov    rax,QWORD PTR [rax+rcx*8+0x8]
+    2f35:	48 01 c2             	add    rdx,rax
+    2f38:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+    2f3c:	48 89 14 c5 00 00 00 00 	mov    QWORD PTR [rax*8+0x0],rdx
 						if ((size_t)mod_tbl.vm_ofs[i] % 4096) {
-    2f3a:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
-    2f3e:	48 8b 04 c5 00 00 00 00 	mov    rax,QWORD PTR [rax*8+0x0]
-    2f46:	25 ff 0f 00 00       	and    eax,0xfff
-    2f4b:	48 85 c0             	test   rax,rax
-    2f4e:	74 34                	je     2f84 <load_elf+0xe95>
+    2f44:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+    2f48:	48 8b 04 c5 00 00 00 00 	mov    rax,QWORD PTR [rax*8+0x0]
+    2f50:	25 ff 0f 00 00       	and    eax,0xfff
+    2f55:	48 85 c0             	test   rax,rax
+    2f58:	74 34                	je     2f8e <load_elf+0xe95>
 								/* section align */
 								mod_tbl.vm_ofs[i] += 4096 - (size_t)mod_tbl.vm_ofs[i] % 4096;
-    2f50:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
-    2f54:	48 8b 14 c5 00 00 00 00 	mov    rdx,QWORD PTR [rax*8+0x0]
-    2f5c:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
-    2f60:	48 8b 04 c5 00 00 00 00 	mov    rax,QWORD PTR [rax*8+0x0]
-    2f68:	25 ff 0f 00 00       	and    eax,0xfff
-    2f6d:	b9 00 10 00 00       	mov    ecx,0x1000
-    2f72:	48 29 c1             	sub    rcx,rax
-    2f75:	48 01 ca             	add    rdx,rcx
-    2f78:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
-    2f7c:	48 89 14 c5 00 00 00 00 	mov    QWORD PTR [rax*8+0x0],rdx
+    2f5a:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+    2f5e:	48 8b 14 c5 00 00 00 00 	mov    rdx,QWORD PTR [rax*8+0x0]
+    2f66:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+    2f6a:	48 8b 04 c5 00 00 00 00 	mov    rax,QWORD PTR [rax*8+0x0]
+    2f72:	25 ff 0f 00 00       	and    eax,0xfff
+    2f77:	b9 00 10 00 00       	mov    ecx,0x1000
+    2f7c:	48 29 c1             	sub    rcx,rax
+    2f7f:	48 01 ca             	add    rdx,rcx
+    2f82:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+    2f86:	48 89 14 c5 00 00 00 00 	mov    QWORD PTR [rax*8+0x0],rdx
 						}
 						/* add guard page */
 						mod_tbl.vm_ofs[i] += 4096;
-    2f84:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
-    2f88:	48 8b 04 c5 00 00 00 00 	mov    rax,QWORD PTR [rax*8+0x0]
-    2f90:	48 8d 90 00 10 00 00 	lea    rdx,[rax+0x1000]
-    2f97:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
-    2f9b:	48 89 14 c5 00 00 00 00 	mov    QWORD PTR [rax*8+0x0],rdx
+    2f8e:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+    2f92:	48 8b 04 c5 00 00 00 00 	mov    rax,QWORD PTR [rax*8+0x0]
+    2f9a:	48 8d 90 00 10 00 00 	lea    rdx,[rax+0x1000]
+    2fa1:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+    2fa5:	48 89 14 c5 00 00 00 00 	mov    QWORD PTR [rax*8+0x0],rdx
 		for (i = 0; i < 4; i++) {
-    2fa3:	48 83 45 e8 01       	add    QWORD PTR [rbp-0x18],0x1
-    2fa8:	48 83 7d e8 03       	cmp    QWORD PTR [rbp-0x18],0x3
-    2fad:	0f 86 33 ff ff ff    	jbe    2ee6 <load_elf+0xdf7>
+    2fad:	48 83 45 e8 01       	add    QWORD PTR [rbp-0x18],0x1
+    2fb2:	48 83 7d e8 03       	cmp    QWORD PTR [rbp-0x18],0x3
+    2fb7:	0f 86 33 ff ff ff    	jbe    2ef0 <load_elf+0xdf7>
 				}
 		}
 
 		return ELF_OK;
-    2fb3:	b8 00 00 00 00       	mov    eax,0x0
+    2fbd:	b8 00 00 00 00       	mov    eax,0x0
 }
-    2fb8:	48 8b 5d f8          	mov    rbx,QWORD PTR [rbp-0x8]
-    2fbc:	c9                   	leave
-    2fbd:	c3                   	ret
+    2fc2:	48 8b 5d f8          	mov    rbx,QWORD PTR [rbp-0x8]
+    2fc6:	c9                   	leave
+    2fc7:	c3                   	ret
 
-0000000000002fbe <get_elferr_string>:
+0000000000002fc8 <get_elferr_string>:
 
 const char* get_elferr_string(enum elferr e)
 {
-    2fbe:	55                   	push   rbp
-    2fbf:	48 89 e5             	mov    rbp,rsp
-    2fc2:	48 83 ec 08          	sub    rsp,0x8
-    2fc6:	89 7d fc             	mov    DWORD PTR [rbp-0x4],edi
+    2fc8:	55                   	push   rbp
+    2fc9:	48 89 e5             	mov    rbp,rsp
+    2fcc:	48 83 ec 08          	sub    rsp,0x8
+    2fd0:	89 7d fc             	mov    DWORD PTR [rbp-0x4],edi
 		switch (e) {
-    2fc9:	83 7d fc 11          	cmp    DWORD PTR [rbp-0x4],0x11
-    2fcd:	0f 87 af 00 00 00    	ja     3082 <get_elferr_string+0xc4>
-    2fd3:	8b 45 fc             	mov    eax,DWORD PTR [rbp-0x4]
-    2fd6:	48 8b 04 c5 00 00 00 00 	mov    rax,QWORD PTR [rax*8+0x0]
-    2fde:	ff e0                	jmp    rax
+    2fd3:	83 7d fc 11          	cmp    DWORD PTR [rbp-0x4],0x11
+    2fd7:	0f 87 af 00 00 00    	ja     308c <get_elferr_string+0xc4>
+    2fdd:	8b 45 fc             	mov    eax,DWORD PTR [rbp-0x4]
+    2fe0:	48 8b 04 c5 00 00 00 00 	mov    rax,QWORD PTR [rax*8+0x0]
+    2fe8:	ff e0                	jmp    rax
 		case ELF_WRONG_MAGIC:
 				return "not ELF file";
-    2fe0:	48 c7 c0 00 00 00 00 	mov    rax,0x0
-    2fe7:	e9 9d 00 00 00       	jmp    3089 <get_elferr_string+0xcb>
+    2fea:	48 c7 c0 00 00 00 00 	mov    rax,0x0
+    2ff1:	e9 9d 00 00 00       	jmp    3093 <get_elferr_string+0xcb>
 		case ELF_NOT_CLASS32:
 				return "not a 32-bit ELF file";
-    2fec:	48 c7 c0 00 00 00 00 	mov    rax,0x0
-    2ff3:	e9 91 00 00 00       	jmp    3089 <get_elferr_string+0xcb>
+    2ff6:	48 c7 c0 00 00 00 00 	mov    rax,0x0
+    2ffd:	e9 91 00 00 00       	jmp    3093 <get_elferr_string+0xcb>
 		case ELF_NOMEM:
 				return "out of memory";
-    2ff8:	48 c7 c0 00 00 00 00 	mov    rax,0x0
-    2fff:	e9 85 00 00 00       	jmp    3089 <get_elferr_string+0xcb>
+    3002:	48 c7 c0 00 00 00 00 	mov    rax,0x0
+    3009:	e9 85 00 00 00       	jmp    3093 <get_elferr_string+0xcb>
 		case ELF_NOT_LE:
 				return "not a little-endian file";
-    3004:	48 c7 c0 00 00 00 00 	mov    rax,0x0
-    300b:	eb 7c                	jmp    3089 <get_elferr_string+0xcb>
+    300e:	48 c7 c0 00 00 00 00 	mov    rax,0x0
+    3015:	eb 7c                	jmp    3093 <get_elferr_string+0xcb>
 		case ELF_VERSION_NOT_SUPPORTED:
 				return "unsupported ELF version";
-    300d:	48 c7 c0 00 00 00 00 	mov    rax,0x0
-    3014:	eb 73                	jmp    3089 <get_elferr_string+0xcb>
+    3017:	48 c7 c0 00 00 00 00 	mov    rax,0x0
+    301e:	eb 73                	jmp    3093 <get_elferr_string+0xcb>
 		case ELF_WRONG_OSABI:
 				return "unsupported OS ABI";
-    3016:	48 c7 c0 00 00 00 00 	mov    rax,0x0
-    301d:	eb 6a                	jmp    3089 <get_elferr_string+0xcb>
+    3020:	48 c7 c0 00 00 00 00 	mov    rax,0x0
+    3027:	eb 6a                	jmp    3093 <get_elferr_string+0xcb>
 		case ELF_NOT_REL:
 				return "modules have to be relocatable object files";
-    301f:	48 c7 c0 00 00 00 00 	mov    rax,0x0
-    3026:	eb 61                	jmp    3089 <get_elferr_string+0xcb>
+    3029:	48 c7 c0 00 00 00 00 	mov    rax,0x0
+    3030:	eb 61                	jmp    3093 <get_elferr_string+0xcb>
 		case ELF_NOT_386:
 				return "only i386 modules can be loaded";
-    3028:	48 c7 c0 00 00 00 00 	mov    rax,0x0
-    302f:	eb 58                	jmp    3089 <get_elferr_string+0xcb>
+    3032:	48 c7 c0 00 00 00 00 	mov    rax,0x0
+    3039:	eb 58                	jmp    3093 <get_elferr_string+0xcb>
 		case ELF_INCOMPATIBLE_HEADER:
 				return "unexpected size of ELF header";
-    3031:	48 c7 c0 00 00 00 00 	mov    rax,0x0
-    3038:	eb 4f                	jmp    3089 <get_elferr_string+0xcb>
+    303b:	48 c7 c0 00 00 00 00 	mov    rax,0x0
+    3042:	eb 4f                	jmp    3093 <get_elferr_string+0xcb>
 		case ELF_CONTAINS_PROG_HEADERS:
 				return "ELF contains program heades (no object file)";
-    303a:	48 c7 c0 00 00 00 00 	mov    rax,0x0
-    3041:	eb 46                	jmp    3089 <get_elferr_string+0xcb>
+    3044:	48 c7 c0 00 00 00 00 	mov    rax,0x0
+    304b:	eb 46                	jmp    3093 <get_elferr_string+0xcb>
 		case ELF_NO_SECTIONS_DEFINED:
 				return "ELF contains no defined sections";
-    3043:	48 c7 c0 00 00 00 00 	mov    rax,0x0
-    304a:	eb 3d                	jmp    3089 <get_elferr_string+0xcb>
+    304d:	48 c7 c0 00 00 00 00 	mov    rax,0x0
+    3054:	eb 3d                	jmp    3093 <get_elferr_string+0xcb>
 		case ELF_WRONG_SHDR_SIZE:
 				return "no matching ELF section header size";
-    304c:	48 c7 c0 00 00 00 00 	mov    rax,0x0
-    3053:	eb 34                	jmp    3089 <get_elferr_string+0xcb>
+    3056:	48 c7 c0 00 00 00 00 	mov    rax,0x0
+    305d:	eb 34                	jmp    3093 <get_elferr_string+0xcb>
 		case ELF_NO_SECTION_STRTAB:
 				return "no ELF STRTAB for section names";
-    3055:	48 c7 c0 00 00 00 00 	mov    rax,0x0
-    305c:	eb 2b                	jmp    3089 <get_elferr_string+0xcb>
+    305f:	48 c7 c0 00 00 00 00 	mov    rax,0x0
+    3066:	eb 2b                	jmp    3093 <get_elferr_string+0xcb>
 		case ELF_SECTION_RWX:
 				return "module contains rwx secton";
-    305e:	48 c7 c0 00 00 00 00 	mov    rax,0x0
-    3065:	eb 22                	jmp    3089 <get_elferr_string+0xcb>
+    3068:	48 c7 c0 00 00 00 00 	mov    rax,0x0
+    306f:	eb 22                	jmp    3093 <get_elferr_string+0xcb>
 		case ELF_GSTAB_ALREADY_PRESENT:
 				return "the global symbol table has already been loaded";
-    3067:	48 c7 c0 00 00 00 00 	mov    rax,0x0
-    306e:	eb 19                	jmp    3089 <get_elferr_string+0xcb>
+    3071:	48 c7 c0 00 00 00 00 	mov    rax,0x0
+    3078:	eb 19                	jmp    3093 <get_elferr_string+0xcb>
 		case ELF_STRING_PARSE_NUMBER:
 				return "the string parser expected a number but found none";
-    3070:	48 c7 c0 00 00 00 00 	mov    rax,0x0
-    3077:	eb 10                	jmp    3089 <get_elferr_string+0xcb>
+    307a:	48 c7 c0 00 00 00 00 	mov    rax,0x0
+    3081:	eb 10                	jmp    3093 <get_elferr_string+0xcb>
 		case ELF_PARSE_FORMAT_NOT_NM:
 				return "the provided symbol mapping file is not in the nm format";
-    3079:	48 c7 c0 00 00 00 00 	mov    rax,0x0
-    3080:	eb 07                	jmp    3089 <get_elferr_string+0xcb>
+    3083:	48 c7 c0 00 00 00 00 	mov    rax,0x0
+    308a:	eb 07                	jmp    3093 <get_elferr_string+0xcb>
 		default:
 				return "unknown";
-    3082:	48 c7 c0 00 00 00 00 	mov    rax,0x0
+    308c:	48 c7 c0 00 00 00 00 	mov    rax,0x0
 		}
 }
-    3089:	c9                   	leave
-    308a:	c3                   	ret
+    3093:	c9                   	leave
+    3094:	c3                   	ret
 
-000000000000308b <elf_parse_global_symtab>:
+0000000000003095 <elf_parse_global_symtab>:
 
 enum elferr elf_parse_global_symtab(void* addr, size_t sz)
 {
-    308b:	55                   	push   rbp
-    308c:	48 89 e5             	mov    rbp,rsp
-    308f:	48 83 ec 50          	sub    rsp,0x50
-    3093:	48 89 7d b8          	mov    QWORD PTR [rbp-0x48],rdi
-    3097:	48 89 75 b0          	mov    QWORD PTR [rbp-0x50],rsi
+    3095:	55                   	push   rbp
+    3096:	48 89 e5             	mov    rbp,rsp
+    3099:	48 83 ec 50          	sub    rsp,0x50
+    309d:	48 89 7d b8          	mov    QWORD PTR [rbp-0x48],rdi
+    30a1:	48 89 75 b0          	mov    QWORD PTR [rbp-0x50],rsi
 		const char* str = (const char*)addr; size_t cap = 64;
-    309b:	48 8b 45 b8          	mov    rax,QWORD PTR [rbp-0x48]
-    309f:	48 89 45 c8          	mov    QWORD PTR [rbp-0x38],rax
-    30a3:	48 c7 45 f8 40 00 00 00 	mov    QWORD PTR [rbp-0x8],0x40
+    30a5:	48 8b 45 b8          	mov    rax,QWORD PTR [rbp-0x48]
+    30a9:	48 89 45 c8          	mov    QWORD PTR [rbp-0x38],rax
+    30ad:	48 c7 45 f8 40 00 00 00 	mov    QWORD PTR [rbp-0x8],0x40
 		struct symbol_list* sl;
 		if (gs_lst)
-    30ab:	48 8b 05 00 00 00 00 	mov    rax,QWORD PTR [rip+0x0]        # 30b2 <elf_parse_global_symtab+0x27>
-    30b2:	48 85 c0             	test   rax,rax
-    30b5:	74 0a                	je     30c1 <elf_parse_global_symtab+0x36>
+    30b5:	48 8b 05 00 00 00 00 	mov    rax,QWORD PTR [rip+0x0]        # 30bc <elf_parse_global_symtab+0x27>
+    30bc:	48 85 c0             	test   rax,rax
+    30bf:	74 0a                	je     30cb <elf_parse_global_symtab+0x36>
 				return ELF_GSTAB_ALREADY_PRESENT;
-    30b7:	b8 0f 00 00 00       	mov    eax,0xf
-    30bc:	e9 eb 02 00 00       	jmp    33ac <elf_parse_global_symtab+0x321>
+    30c1:	b8 0f 00 00 00       	mov    eax,0xf
+    30c6:	e9 eb 02 00 00       	jmp    33b6 <elf_parse_global_symtab+0x321>
 
 		/* allocate the initial capacity */
 		sl = gs_lst = kmalloc(sizeof(struct symbol_list));
-    30c1:	bf 08 06 00 00       	mov    edi,0x608
-    30c6:	e8 00 00 00 00       	call   30cb <elf_parse_global_symtab+0x40>
-    30cb:	48 89 05 00 00 00 00 	mov    QWORD PTR [rip+0x0],rax        # 30d2 <elf_parse_global_symtab+0x47>
-    30d2:	48 8b 05 00 00 00 00 	mov    rax,QWORD PTR [rip+0x0]        # 30d9 <elf_parse_global_symtab+0x4e>
-    30d9:	48 89 45 f0          	mov    QWORD PTR [rbp-0x10],rax
+    30cb:	bf 08 06 00 00       	mov    edi,0x608
+    30d0:	e8 00 00 00 00       	call   30d5 <elf_parse_global_symtab+0x40>
+    30d5:	48 89 05 00 00 00 00 	mov    QWORD PTR [rip+0x0],rax        # 30dc <elf_parse_global_symtab+0x47>
+    30dc:	48 8b 05 00 00 00 00 	mov    rax,QWORD PTR [rip+0x0]        # 30e3 <elf_parse_global_symtab+0x4e>
+    30e3:	48 89 45 f0          	mov    QWORD PTR [rbp-0x10],rax
 		if (!sl)
-    30dd:	48 83 7d f0 00       	cmp    QWORD PTR [rbp-0x10],0x0
-    30e2:	75 0a                	jne    30ee <elf_parse_global_symtab+0x63>
+    30e7:	48 83 7d f0 00       	cmp    QWORD PTR [rbp-0x10],0x0
+    30ec:	75 0a                	jne    30f8 <elf_parse_global_symtab+0x63>
 				return ELF_NOMEM;
-    30e4:	b8 04 00 00 00       	mov    eax,0x4
-    30e9:	e9 be 02 00 00       	jmp    33ac <elf_parse_global_symtab+0x321>
+    30ee:	b8 04 00 00 00       	mov    eax,0x4
+    30f3:	e9 be 02 00 00       	jmp    33b6 <elf_parse_global_symtab+0x321>
 		sl->next = NULL;
-    30ee:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
-    30f2:	48 c7 80 00 06 00 00 00 00 00 00 	mov    QWORD PTR [rax+0x600],0x0
+    30f8:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
+    30fc:	48 c7 80 00 06 00 00 00 00 00 00 	mov    QWORD PTR [rax+0x600],0x0
 
 		while ((size_t)((void*)str - addr) < sz) {
-    30fd:	e9 3a 02 00 00       	jmp    333c <elf_parse_global_symtab+0x2b1>
+    3107:	e9 3a 02 00 00       	jmp    3346 <elf_parse_global_symtab+0x2b1>
 				const char* s1 = str; char *s2; char tp = ' ';
-    3102:	48 8b 45 c8          	mov    rax,QWORD PTR [rbp-0x38]
-    3106:	48 89 45 e8          	mov    QWORD PTR [rbp-0x18],rax
-    310a:	c6 45 e7 20          	mov    BYTE PTR [rbp-0x19],0x20
+    310c:	48 8b 45 c8          	mov    rax,QWORD PTR [rbp-0x38]
+    3110:	48 89 45 e8          	mov    QWORD PTR [rbp-0x18],rax
+    3114:	c6 45 e7 20          	mov    BYTE PTR [rbp-0x19],0x20
 				long val = strtol(str, (char**)&str, 16);
-    310e:	48 8b 45 c8          	mov    rax,QWORD PTR [rbp-0x38]
-    3112:	48 8d 4d c8          	lea    rcx,[rbp-0x38]
-    3116:	ba 10 00 00 00       	mov    edx,0x10
-    311b:	48 89 ce             	mov    rsi,rcx
-    311e:	48 89 c7             	mov    rdi,rax
-    3121:	e8 00 00 00 00       	call   3126 <elf_parse_global_symtab+0x9b>
-    3126:	48 89 45 d8          	mov    QWORD PTR [rbp-0x28],rax
+    3118:	48 8b 45 c8          	mov    rax,QWORD PTR [rbp-0x38]
+    311c:	48 8d 4d c8          	lea    rcx,[rbp-0x38]
+    3120:	ba 10 00 00 00       	mov    edx,0x10
+    3125:	48 89 ce             	mov    rsi,rcx
+    3128:	48 89 c7             	mov    rdi,rax
+    312b:	e8 00 00 00 00       	call   3130 <elf_parse_global_symtab+0x9b>
+    3130:	48 89 45 d8          	mov    QWORD PTR [rbp-0x28],rax
 				
 				if (s1 == str)
-    312a:	48 8b 45 c8          	mov    rax,QWORD PTR [rbp-0x38]
-    312e:	48 39 45 e8          	cmp    QWORD PTR [rbp-0x18],rax
-    3132:	75 0a                	jne    313e <elf_parse_global_symtab+0xb3>
+    3134:	48 8b 45 c8          	mov    rax,QWORD PTR [rbp-0x38]
+    3138:	48 39 45 e8          	cmp    QWORD PTR [rbp-0x18],rax
+    313c:	75 0a                	jne    3148 <elf_parse_global_symtab+0xb3>
 						return ELF_STRING_PARSE_NUMBER;
-    3134:	b8 10 00 00 00       	mov    eax,0x10
-    3139:	e9 6e 02 00 00       	jmp    33ac <elf_parse_global_symtab+0x321>
+    313e:	b8 10 00 00 00       	mov    eax,0x10
+    3143:	e9 6e 02 00 00       	jmp    33b6 <elf_parse_global_symtab+0x321>
 				if (*str++ != ' ')
-    313e:	48 8b 45 c8          	mov    rax,QWORD PTR [rbp-0x38]
-    3142:	48 8d 50 01          	lea    rdx,[rax+0x1]
-    3146:	48 89 55 c8          	mov    QWORD PTR [rbp-0x38],rdx
-    314a:	0f b6 00             	movzx  eax,BYTE PTR [rax]
-    314d:	3c 20                	cmp    al,0x20
-    314f:	74 0a                	je     315b <elf_parse_global_symtab+0xd0>
+    3148:	48 8b 45 c8          	mov    rax,QWORD PTR [rbp-0x38]
+    314c:	48 8d 50 01          	lea    rdx,[rax+0x1]
+    3150:	48 89 55 c8          	mov    QWORD PTR [rbp-0x38],rdx
+    3154:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+    3157:	3c 20                	cmp    al,0x20
+    3159:	74 0a                	je     3165 <elf_parse_global_symtab+0xd0>
 						return ELF_PARSE_FORMAT_NOT_NM;
-    3151:	b8 11 00 00 00       	mov    eax,0x11
-    3156:	e9 51 02 00 00       	jmp    33ac <elf_parse_global_symtab+0x321>
+    315b:	b8 11 00 00 00       	mov    eax,0x11
+    3160:	e9 51 02 00 00       	jmp    33b6 <elf_parse_global_symtab+0x321>
 				tp = *str++;
-    315b:	48 8b 45 c8          	mov    rax,QWORD PTR [rbp-0x38]
-    315f:	48 8d 50 01          	lea    rdx,[rax+0x1]
-    3163:	48 89 55 c8          	mov    QWORD PTR [rbp-0x38],rdx
-    3167:	0f b6 00             	movzx  eax,BYTE PTR [rax]
-    316a:	88 45 e7             	mov    BYTE PTR [rbp-0x19],al
+    3165:	48 8b 45 c8          	mov    rax,QWORD PTR [rbp-0x38]
+    3169:	48 8d 50 01          	lea    rdx,[rax+0x1]
+    316d:	48 89 55 c8          	mov    QWORD PTR [rbp-0x38],rdx
+    3171:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+    3174:	88 45 e7             	mov    BYTE PTR [rbp-0x19],al
 				if (*str++ != ' ')
-    316d:	48 8b 45 c8          	mov    rax,QWORD PTR [rbp-0x38]
-    3171:	48 8d 50 01          	lea    rdx,[rax+0x1]
-    3175:	48 89 55 c8          	mov    QWORD PTR [rbp-0x38],rdx
-    3179:	0f b6 00             	movzx  eax,BYTE PTR [rax]
-    317c:	3c 20                	cmp    al,0x20
-    317e:	74 0a                	je     318a <elf_parse_global_symtab+0xff>
+    3177:	48 8b 45 c8          	mov    rax,QWORD PTR [rbp-0x38]
+    317b:	48 8d 50 01          	lea    rdx,[rax+0x1]
+    317f:	48 89 55 c8          	mov    QWORD PTR [rbp-0x38],rdx
+    3183:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+    3186:	3c 20                	cmp    al,0x20
+    3188:	74 0a                	je     3194 <elf_parse_global_symtab+0xff>
 						return ELF_PARSE_FORMAT_NOT_NM;
-    3180:	b8 11 00 00 00       	mov    eax,0x11
-    3185:	e9 22 02 00 00       	jmp    33ac <elf_parse_global_symtab+0x321>
+    318a:	b8 11 00 00 00       	mov    eax,0x11
+    318f:	e9 22 02 00 00       	jmp    33b6 <elf_parse_global_symtab+0x321>
 				s1 = strchr(str, '\n');
-    318a:	48 8b 45 c8          	mov    rax,QWORD PTR [rbp-0x38]
-    318e:	be 0a 00 00 00       	mov    esi,0xa
-    3193:	48 89 c7             	mov    rdi,rax
-    3196:	e8 00 00 00 00       	call   319b <elf_parse_global_symtab+0x110>
-    319b:	48 89 45 e8          	mov    QWORD PTR [rbp-0x18],rax
+    3194:	48 8b 45 c8          	mov    rax,QWORD PTR [rbp-0x38]
+    3198:	be 0a 00 00 00       	mov    esi,0xa
+    319d:	48 89 c7             	mov    rdi,rax
+    31a0:	e8 00 00 00 00       	call   31a5 <elf_parse_global_symtab+0x110>
+    31a5:	48 89 45 e8          	mov    QWORD PTR [rbp-0x18],rax
 				if (!s1) {
-    319f:	48 83 7d e8 00       	cmp    QWORD PTR [rbp-0x18],0x0
-    31a4:	75 20                	jne    31c6 <elf_parse_global_symtab+0x13b>
+    31a9:	48 83 7d e8 00       	cmp    QWORD PTR [rbp-0x18],0x0
+    31ae:	75 20                	jne    31d0 <elf_parse_global_symtab+0x13b>
 						printf("strchr!\n");
-    31a6:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-    31ad:	b8 00 00 00 00       	mov    eax,0x0
-    31b2:	e8 00 00 00 00       	call   31b7 <elf_parse_global_symtab+0x12c>
+    31b0:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+    31b7:	b8 00 00 00 00       	mov    eax,0x0
+    31bc:	e8 00 00 00 00       	call   31c1 <elf_parse_global_symtab+0x12c>
 						s1 = (const char*)(addr + sz);
-    31b7:	48 8b 55 b8          	mov    rdx,QWORD PTR [rbp-0x48]
-    31bb:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    31bf:	48 01 d0             	add    rax,rdx
-    31c2:	48 89 45 e8          	mov    QWORD PTR [rbp-0x18],rax
+    31c1:	48 8b 55 b8          	mov    rdx,QWORD PTR [rbp-0x48]
+    31c5:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    31c9:	48 01 d0             	add    rax,rdx
+    31cc:	48 89 45 e8          	mov    QWORD PTR [rbp-0x18],rax
 				}
 				s2 = strndup(str, s1 - str);
-    31c6:	48 8b 45 c8          	mov    rax,QWORD PTR [rbp-0x38]
-    31ca:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
-    31ce:	48 29 c2             	sub    rdx,rax
-    31d1:	48 8b 45 c8          	mov    rax,QWORD PTR [rbp-0x38]
-    31d5:	48 89 d6             	mov    rsi,rdx
-    31d8:	48 89 c7             	mov    rdi,rax
-    31db:	e8 00 00 00 00       	call   31e0 <elf_parse_global_symtab+0x155>
-    31e0:	48 89 45 d0          	mov    QWORD PTR [rbp-0x30],rax
+    31d0:	48 8b 45 c8          	mov    rax,QWORD PTR [rbp-0x38]
+    31d4:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
+    31d8:	48 29 c2             	sub    rdx,rax
+    31db:	48 8b 45 c8          	mov    rax,QWORD PTR [rbp-0x38]
+    31df:	48 89 d6             	mov    rsi,rdx
+    31e2:	48 89 c7             	mov    rdi,rax
+    31e5:	e8 00 00 00 00       	call   31ea <elf_parse_global_symtab+0x155>
+    31ea:	48 89 45 d0          	mov    QWORD PTR [rbp-0x30],rax
 
 				/*printf("symbol at %p: \"%s\" type %c\n", (void*)val, s2, tp);------------------*/
 				if (strcmp(s2, "printf") == 0)
-    31e4:	48 8b 45 d0          	mov    rax,QWORD PTR [rbp-0x30]
-    31e8:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
-    31ef:	48 89 c7             	mov    rdi,rax
-    31f2:	e8 00 00 00 00       	call   31f7 <elf_parse_global_symtab+0x16c>
-    31f7:	85 c0                	test   eax,eax
-    31f9:	75 52                	jne    324d <elf_parse_global_symtab+0x1c2>
+    31ee:	48 8b 45 d0          	mov    rax,QWORD PTR [rbp-0x30]
+    31f2:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
+    31f9:	48 89 c7             	mov    rdi,rax
+    31fc:	e8 00 00 00 00       	call   3201 <elf_parse_global_symtab+0x16c>
+    3201:	85 c0                	test   eax,eax
+    3203:	75 52                	jne    3257 <elf_parse_global_symtab+0x1c2>
 						if (&printf != (void*)val) {
-    31fb:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
-    31ff:	48 3d 00 00 00 00    	cmp    rax,0x0
-    3205:	74 46                	je     324d <elf_parse_global_symtab+0x1c2>
+    3205:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
+    3209:	48 3d 00 00 00 00    	cmp    rax,0x0
+    320f:	74 46                	je     3257 <elf_parse_global_symtab+0x1c2>
 								cprintf(KFMT_WARN, "WARNING! Loaded outdated symtab!\n");
-    3207:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
-    320e:	bf 0e 00 00 00       	mov    edi,0xe
-    3213:	b8 00 00 00 00       	mov    eax,0x0
-    3218:	e8 00 00 00 00       	call   321d <elf_parse_global_symtab+0x192>
+    3211:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
+    3218:	bf 0e 00 00 00       	mov    edi,0xe
+    321d:	b8 00 00 00 00       	mov    eax,0x0
+    3222:	e8 00 00 00 00       	call   3227 <elf_parse_global_symtab+0x192>
 								printf("printf is located at %p but symtab says it's at %p\n",
-    321d:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
-    3221:	48 89 c2             	mov    rdx,rax
-    3224:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
-    322b:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-    3232:	b8 00 00 00 00       	mov    eax,0x0
-    3237:	e8 00 00 00 00       	call   323c <elf_parse_global_symtab+0x1b1>
+    3227:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
+    322b:	48 89 c2             	mov    rdx,rax
+    322e:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
+    3235:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+    323c:	b8 00 00 00 00       	mov    eax,0x0
+    3241:	e8 00 00 00 00       	call   3246 <elf_parse_global_symtab+0x1b1>
 												&printf, (void*)val);
 								printf("expect modules to fail randomly as the\n"
-    323c:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-    3243:	b8 00 00 00 00       	mov    eax,0x0
-    3248:	e8 00 00 00 00       	call   324d <elf_parse_global_symtab+0x1c2>
+    3246:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+    324d:	b8 00 00 00 00       	mov    eax,0x0
+    3252:	e8 00 00 00 00       	call   3257 <elf_parse_global_symtab+0x1c2>
 									   "symbols used therein will not be resolved correctly\n");
 						}
 
 				/* expand the capacity if needed */
 				if (!cap) {
-    324d:	48 83 7d f8 00       	cmp    QWORD PTR [rbp-0x8],0x0
-    3252:	75 5b                	jne    32af <elf_parse_global_symtab+0x224>
+    3257:	48 83 7d f8 00       	cmp    QWORD PTR [rbp-0x8],0x0
+    325c:	75 5b                	jne    32b9 <elf_parse_global_symtab+0x224>
 						sl->next = kmalloc(sizeof(struct symbol_list));
-    3254:	bf 08 06 00 00       	mov    edi,0x608
-    3259:	e8 00 00 00 00       	call   325e <elf_parse_global_symtab+0x1d3>
-    325e:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
-    3262:	48 89 82 00 06 00 00 	mov    QWORD PTR [rdx+0x600],rax
+    325e:	bf 08 06 00 00       	mov    edi,0x608
+    3263:	e8 00 00 00 00       	call   3268 <elf_parse_global_symtab+0x1d3>
+    3268:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
+    326c:	48 89 82 00 06 00 00 	mov    QWORD PTR [rdx+0x600],rax
 						if (!sl) {
-    3269:	48 83 7d f0 00       	cmp    QWORD PTR [rbp-0x10],0x0
-    326e:	75 19                	jne    3289 <elf_parse_global_symtab+0x1fe>
+    3273:	48 83 7d f0 00       	cmp    QWORD PTR [rbp-0x10],0x0
+    3278:	75 19                	jne    3293 <elf_parse_global_symtab+0x1fe>
 								cprintf(KFMT_ERROR, "Out of memory for parsing global symbol table\n");
-    3270:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
-    3277:	bf 0c 00 00 00       	mov    edi,0xc
-    327c:	b8 00 00 00 00       	mov    eax,0x0
-    3281:	e8 00 00 00 00       	call   3286 <elf_parse_global_symtab+0x1fb>
+    327a:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
+    3281:	bf 0c 00 00 00       	mov    edi,0xc
+    3286:	b8 00 00 00 00       	mov    eax,0x0
+    328b:	e8 00 00 00 00       	call   3290 <elf_parse_global_symtab+0x1fb>
 								while (1);
-    3286:	90                   	nop
-    3287:	eb fd                	jmp    3286 <elf_parse_global_symtab+0x1fb>
+    3290:	90                   	nop
+    3291:	eb fd                	jmp    3290 <elf_parse_global_symtab+0x1fb>
 						}
 						sl = sl->next;
-    3289:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
-    328d:	48 8b 80 00 06 00 00 	mov    rax,QWORD PTR [rax+0x600]
-    3294:	48 89 45 f0          	mov    QWORD PTR [rbp-0x10],rax
+    3293:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
+    3297:	48 8b 80 00 06 00 00 	mov    rax,QWORD PTR [rax+0x600]
+    329e:	48 89 45 f0          	mov    QWORD PTR [rbp-0x10],rax
 						sl->next = NULL;
-    3298:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
-    329c:	48 c7 80 00 06 00 00 00 00 00 00 	mov    QWORD PTR [rax+0x600],0x0
+    32a2:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
+    32a6:	48 c7 80 00 06 00 00 00 00 00 00 	mov    QWORD PTR [rax+0x600],0x0
 						cap = 64;
-    32a7:	48 c7 45 f8 40 00 00 00 	mov    QWORD PTR [rbp-0x8],0x40
+    32b1:	48 c7 45 f8 40 00 00 00 	mov    QWORD PTR [rbp-0x8],0x40
 				}
 
 				/* store the two values */
 				sl->entries[64 - cap].name = s2;
-    32af:	b8 40 00 00 00       	mov    eax,0x40
-    32b4:	48 2b 45 f8          	sub    rax,QWORD PTR [rbp-0x8]
-    32b8:	48 89 c2             	mov    rdx,rax
-    32bb:	48 8b 4d f0          	mov    rcx,QWORD PTR [rbp-0x10]
-    32bf:	48 89 d0             	mov    rax,rdx
-    32c2:	48 01 c0             	add    rax,rax
-    32c5:	48 01 d0             	add    rax,rdx
-    32c8:	48 c1 e0 03          	shl    rax,0x3
-    32cc:	48 01 c8             	add    rax,rcx
-    32cf:	48 8d 50 08          	lea    rdx,[rax+0x8]
-    32d3:	48 8b 45 d0          	mov    rax,QWORD PTR [rbp-0x30]
-    32d7:	48 89 02             	mov    QWORD PTR [rdx],rax
+    32b9:	b8 40 00 00 00       	mov    eax,0x40
+    32be:	48 2b 45 f8          	sub    rax,QWORD PTR [rbp-0x8]
+    32c2:	48 89 c2             	mov    rdx,rax
+    32c5:	48 8b 4d f0          	mov    rcx,QWORD PTR [rbp-0x10]
+    32c9:	48 89 d0             	mov    rax,rdx
+    32cc:	48 01 c0             	add    rax,rax
+    32cf:	48 01 d0             	add    rax,rdx
+    32d2:	48 c1 e0 03          	shl    rax,0x3
+    32d6:	48 01 c8             	add    rax,rcx
+    32d9:	48 8d 50 08          	lea    rdx,[rax+0x8]
+    32dd:	48 8b 45 d0          	mov    rax,QWORD PTR [rbp-0x30]
+    32e1:	48 89 02             	mov    QWORD PTR [rdx],rax
 				sl->entries[64 - cap].vma = (void*)val;
-    32da:	b8 40 00 00 00       	mov    eax,0x40
-    32df:	48 2b 45 f8          	sub    rax,QWORD PTR [rbp-0x8]
-    32e3:	48 89 c2             	mov    rdx,rax
-    32e6:	48 8b 4d d8          	mov    rcx,QWORD PTR [rbp-0x28]
-    32ea:	48 8b 75 f0          	mov    rsi,QWORD PTR [rbp-0x10]
-    32ee:	48 89 d0             	mov    rax,rdx
-    32f1:	48 01 c0             	add    rax,rax
-    32f4:	48 01 d0             	add    rax,rdx
-    32f7:	48 c1 e0 03          	shl    rax,0x3
-    32fb:	48 01 f0             	add    rax,rsi
-    32fe:	48 89 08             	mov    QWORD PTR [rax],rcx
+    32e4:	b8 40 00 00 00       	mov    eax,0x40
+    32e9:	48 2b 45 f8          	sub    rax,QWORD PTR [rbp-0x8]
+    32ed:	48 89 c2             	mov    rdx,rax
+    32f0:	48 8b 4d d8          	mov    rcx,QWORD PTR [rbp-0x28]
+    32f4:	48 8b 75 f0          	mov    rsi,QWORD PTR [rbp-0x10]
+    32f8:	48 89 d0             	mov    rax,rdx
+    32fb:	48 01 c0             	add    rax,rax
+    32fe:	48 01 d0             	add    rax,rdx
+    3301:	48 c1 e0 03          	shl    rax,0x3
+    3305:	48 01 f0             	add    rax,rsi
+    3308:	48 89 08             	mov    QWORD PTR [rax],rcx
 				sl->entries[64 - cap].type = tp;
-    3301:	b8 40 00 00 00       	mov    eax,0x40
-    3306:	48 2b 45 f8          	sub    rax,QWORD PTR [rbp-0x8]
-    330a:	48 89 c2             	mov    rdx,rax
-    330d:	48 8b 4d f0          	mov    rcx,QWORD PTR [rbp-0x10]
-    3311:	48 89 d0             	mov    rax,rdx
-    3314:	48 01 c0             	add    rax,rax
-    3317:	48 01 d0             	add    rax,rdx
-    331a:	48 c1 e0 03          	shl    rax,0x3
-    331e:	48 01 c8             	add    rax,rcx
-    3321:	48 8d 50 10          	lea    rdx,[rax+0x10]
-    3325:	0f b6 45 e7          	movzx  eax,BYTE PTR [rbp-0x19]
-    3329:	88 02                	mov    BYTE PTR [rdx],al
+    330b:	b8 40 00 00 00       	mov    eax,0x40
+    3310:	48 2b 45 f8          	sub    rax,QWORD PTR [rbp-0x8]
+    3314:	48 89 c2             	mov    rdx,rax
+    3317:	48 8b 4d f0          	mov    rcx,QWORD PTR [rbp-0x10]
+    331b:	48 89 d0             	mov    rax,rdx
+    331e:	48 01 c0             	add    rax,rax
+    3321:	48 01 d0             	add    rax,rdx
+    3324:	48 c1 e0 03          	shl    rax,0x3
+    3328:	48 01 c8             	add    rax,rcx
+    332b:	48 8d 50 10          	lea    rdx,[rax+0x10]
+    332f:	0f b6 45 e7          	movzx  eax,BYTE PTR [rbp-0x19]
+    3333:	88 02                	mov    BYTE PTR [rdx],al
 				cap--;
-    332b:	48 83 6d f8 01       	sub    QWORD PTR [rbp-0x8],0x1
+    3335:	48 83 6d f8 01       	sub    QWORD PTR [rbp-0x8],0x1
 				/* and advance */
 				str = s1 + 1;
-    3330:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
-    3334:	48 83 c0 01          	add    rax,0x1
-    3338:	48 89 45 c8          	mov    QWORD PTR [rbp-0x38],rax
+    333a:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+    333e:	48 83 c0 01          	add    rax,0x1
+    3342:	48 89 45 c8          	mov    QWORD PTR [rbp-0x38],rax
 		while ((size_t)((void*)str - addr) < sz) {
-    333c:	48 8b 45 c8          	mov    rax,QWORD PTR [rbp-0x38]
-    3340:	48 2b 45 b8          	sub    rax,QWORD PTR [rbp-0x48]
-    3344:	48 3b 45 b0          	cmp    rax,QWORD PTR [rbp-0x50]
-    3348:	0f 82 b4 fd ff ff    	jb     3102 <elf_parse_global_symtab+0x77>
+    3346:	48 8b 45 c8          	mov    rax,QWORD PTR [rbp-0x38]
+    334a:	48 2b 45 b8          	sub    rax,QWORD PTR [rbp-0x48]
+    334e:	48 3b 45 b0          	cmp    rax,QWORD PTR [rbp-0x50]
+    3352:	0f 82 b4 fd ff ff    	jb     310c <elf_parse_global_symtab+0x77>
 		}
 
 		/* zero-terminate not fully used lists */
 		if (cap) {
-    334e:	48 83 7d f8 00       	cmp    QWORD PTR [rbp-0x8],0x0
-    3353:	74 52                	je     33a7 <elf_parse_global_symtab+0x31c>
+    3358:	48 83 7d f8 00       	cmp    QWORD PTR [rbp-0x8],0x0
+    335d:	74 52                	je     33b1 <elf_parse_global_symtab+0x31c>
 				sl->entries[64 - cap].name = NULL;
-    3355:	b8 40 00 00 00       	mov    eax,0x40
-    335a:	48 2b 45 f8          	sub    rax,QWORD PTR [rbp-0x8]
-    335e:	48 89 c2             	mov    rdx,rax
-    3361:	48 8b 4d f0          	mov    rcx,QWORD PTR [rbp-0x10]
-    3365:	48 89 d0             	mov    rax,rdx
-    3368:	48 01 c0             	add    rax,rax
-    336b:	48 01 d0             	add    rax,rdx
-    336e:	48 c1 e0 03          	shl    rax,0x3
-    3372:	48 01 c8             	add    rax,rcx
-    3375:	48 83 c0 08          	add    rax,0x8
-    3379:	48 c7 00 00 00 00 00 	mov    QWORD PTR [rax],0x0
+    335f:	b8 40 00 00 00       	mov    eax,0x40
+    3364:	48 2b 45 f8          	sub    rax,QWORD PTR [rbp-0x8]
+    3368:	48 89 c2             	mov    rdx,rax
+    336b:	48 8b 4d f0          	mov    rcx,QWORD PTR [rbp-0x10]
+    336f:	48 89 d0             	mov    rax,rdx
+    3372:	48 01 c0             	add    rax,rax
+    3375:	48 01 d0             	add    rax,rdx
+    3378:	48 c1 e0 03          	shl    rax,0x3
+    337c:	48 01 c8             	add    rax,rcx
+    337f:	48 83 c0 08          	add    rax,0x8
+    3383:	48 c7 00 00 00 00 00 	mov    QWORD PTR [rax],0x0
 				sl->entries[64 - cap].vma = NULL;
-    3380:	b8 40 00 00 00       	mov    eax,0x40
-    3385:	48 2b 45 f8          	sub    rax,QWORD PTR [rbp-0x8]
-    3389:	48 89 c2             	mov    rdx,rax
-    338c:	48 8b 4d f0          	mov    rcx,QWORD PTR [rbp-0x10]
-    3390:	48 89 d0             	mov    rax,rdx
-    3393:	48 01 c0             	add    rax,rax
-    3396:	48 01 d0             	add    rax,rdx
-    3399:	48 c1 e0 03          	shl    rax,0x3
-    339d:	48 01 c8             	add    rax,rcx
-    33a0:	48 c7 00 00 00 00 00 	mov    QWORD PTR [rax],0x0
+    338a:	b8 40 00 00 00       	mov    eax,0x40
+    338f:	48 2b 45 f8          	sub    rax,QWORD PTR [rbp-0x8]
+    3393:	48 89 c2             	mov    rdx,rax
+    3396:	48 8b 4d f0          	mov    rcx,QWORD PTR [rbp-0x10]
+    339a:	48 89 d0             	mov    rax,rdx
+    339d:	48 01 c0             	add    rax,rax
+    33a0:	48 01 d0             	add    rax,rdx
+    33a3:	48 c1 e0 03          	shl    rax,0x3
+    33a7:	48 01 c8             	add    rax,rcx
+    33aa:	48 c7 00 00 00 00 00 	mov    QWORD PTR [rax],0x0
 		}
 		return ELF_OK;
-    33a7:	b8 00 00 00 00       	mov    eax,0x0
+    33b1:	b8 00 00 00 00       	mov    eax,0x0
 }
-    33ac:	c9                   	leave
-    33ad:	c3                   	ret
+    33b6:	c9                   	leave
+    33b7:	c3                   	ret
 
-00000000000033ae <load_modules>:
+00000000000033b8 <load_modules>:
 
 void load_modules()
 {
-    33ae:	55                   	push   rbp
-    33af:	48 89 e5             	mov    rbp,rsp
-    33b2:	48 81 ec 90 00 00 00 	sub    rsp,0x90
+    33b8:	55                   	push   rbp
+    33b9:	48 89 e5             	mov    rbp,rsp
+    33bc:	48 81 ec 90 00 00 00 	sub    rsp,0x90
 		void* mem = (void*)0x200000;
-    33b9:	48 c7 45 f8 00 00 20 00 	mov    QWORD PTR [rbp-0x8],0x200000
+    33c3:	48 c7 45 f8 00 00 20 00 	mov    QWORD PTR [rbp-0x8],0x200000
 		uint32_t mct = *(uint32_t*)mem;
-    33c1:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-    33c5:	8b 00                	mov    eax,DWORD PTR [rax]
-    33c7:	89 45 f4             	mov    DWORD PTR [rbp-0xc],eax
+    33cb:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    33cf:	8b 00                	mov    eax,DWORD PTR [rax]
+    33d1:	89 45 f4             	mov    DWORD PTR [rbp-0xc],eax
 		enum elferr ee;
 		mem += sizeof(uint32_t);
-    33ca:	48 83 45 f8 04       	add    QWORD PTR [rbp-0x8],0x4
+    33d4:	48 83 45 f8 04       	add    QWORD PTR [rbp-0x8],0x4
 
 		if (strcmp(mem, "LD.MAP") != 0) {
-    33cf:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-    33d3:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
-    33da:	48 89 c7             	mov    rdi,rax
-    33dd:	e8 00 00 00 00       	call   33e2 <load_modules+0x34>
-    33e2:	85 c0                	test   eax,eax
-    33e4:	74 19                	je     33ff <load_modules+0x51>
+    33d9:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    33dd:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
+    33e4:	48 89 c7             	mov    rdi,rax
+    33e7:	e8 00 00 00 00       	call   33ec <load_modules+0x34>
+    33ec:	85 c0                	test   eax,eax
+    33ee:	74 19                	je     3409 <load_modules+0x51>
 				cprintf(KFMT_ERROR, "first file has to be global symbol map\n");
-    33e6:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
-    33ed:	bf 0c 00 00 00       	mov    edi,0xc
-    33f2:	b8 00 00 00 00       	mov    eax,0x0
-    33f7:	e8 00 00 00 00       	call   33fc <load_modules+0x4e>
+    33f0:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
+    33f7:	bf 0c 00 00 00       	mov    edi,0xc
+    33fc:	b8 00 00 00 00       	mov    eax,0x0
+    3401:	e8 00 00 00 00       	call   3406 <load_modules+0x4e>
 				while (1);
-    33fc:	90                   	nop
-    33fd:	eb fd                	jmp    33fc <load_modules+0x4e>
+    3406:	90                   	nop
+    3407:	eb fd                	jmp    3406 <load_modules+0x4e>
 		} else
 				mem += 7;
-    33ff:	48 83 45 f8 07       	add    QWORD PTR [rbp-0x8],0x7
+    3409:	48 83 45 f8 07       	add    QWORD PTR [rbp-0x8],0x7
 		/* parse the kernel symbol table supplied in nm format */
 		if ((ee = elf_parse_global_symtab(mem + sizeof(uint32_t), *(uint32_t*)mem))) {
-    3404:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-    3408:	8b 00                	mov    eax,DWORD PTR [rax]
-    340a:	89 c2                	mov    edx,eax
-    340c:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-    3410:	48 83 c0 04          	add    rax,0x4
-    3414:	48 89 d6             	mov    rsi,rdx
-    3417:	48 89 c7             	mov    rdi,rax
-    341a:	e8 00 00 00 00       	call   341f <load_modules+0x71>
-    341f:	89 45 f0             	mov    DWORD PTR [rbp-0x10],eax
-    3422:	83 7d f0 00          	cmp    DWORD PTR [rbp-0x10],0x0
-    3426:	74 57                	je     347f <load_modules+0xd1>
+    340e:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    3412:	8b 00                	mov    eax,DWORD PTR [rax]
+    3414:	89 c2                	mov    edx,eax
+    3416:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    341a:	48 83 c0 04          	add    rax,0x4
+    341e:	48 89 d6             	mov    rsi,rdx
+    3421:	48 89 c7             	mov    rdi,rax
+    3424:	e8 00 00 00 00       	call   3429 <load_modules+0x71>
+    3429:	89 45 f0             	mov    DWORD PTR [rbp-0x10],eax
+    342c:	83 7d f0 00          	cmp    DWORD PTR [rbp-0x10],0x0
+    3430:	74 57                	je     3489 <load_modules+0xd1>
 				cprintf(KFMT_ERROR, "Failed to parse global kernel symbol table ("
-    3428:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
-    342f:	bf 0c 00 00 00       	mov    edi,0xc
-    3434:	b8 00 00 00 00       	mov    eax,0x0
-    3439:	e8 00 00 00 00       	call   343e <load_modules+0x90>
+    3432:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
+    3439:	bf 0c 00 00 00       	mov    edi,0xc
+    343e:	b8 00 00 00 00       	mov    eax,0x0
+    3443:	e8 00 00 00 00       	call   3448 <load_modules+0x90>
 					   "file ld.map in root directory)\n");
 				cprintf(KFMT_ERROR, "reason: %s\n", get_elferr_string(ee));
-    343e:	8b 45 f0             	mov    eax,DWORD PTR [rbp-0x10]
-    3441:	89 c7                	mov    edi,eax
-    3443:	e8 00 00 00 00       	call   3448 <load_modules+0x9a>
-    3448:	48 89 c2             	mov    rdx,rax
-    344b:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
-    3452:	bf 0c 00 00 00       	mov    edi,0xc
-    3457:	b8 00 00 00 00       	mov    eax,0x0
-    345c:	e8 00 00 00 00       	call   3461 <load_modules+0xb3>
+    3448:	8b 45 f0             	mov    eax,DWORD PTR [rbp-0x10]
+    344b:	89 c7                	mov    edi,eax
+    344d:	e8 00 00 00 00       	call   3452 <load_modules+0x9a>
+    3452:	48 89 c2             	mov    rdx,rax
+    3455:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
+    345c:	bf 0c 00 00 00       	mov    edi,0xc
+    3461:	b8 00 00 00 00       	mov    eax,0x0
+    3466:	e8 00 00 00 00       	call   346b <load_modules+0xb3>
 				memdump(mem + sizeof(uint32_t), *(uint32_t*)mem);
-    3461:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-    3465:	8b 00                	mov    eax,DWORD PTR [rax]
-    3467:	89 c2                	mov    edx,eax
-    3469:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-    346d:	48 83 c0 04          	add    rax,0x4
-    3471:	48 89 d6             	mov    rsi,rdx
-    3474:	48 89 c7             	mov    rdi,rax
-    3477:	e8 00 00 00 00       	call   347c <load_modules+0xce>
+    346b:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    346f:	8b 00                	mov    eax,DWORD PTR [rax]
+    3471:	89 c2                	mov    edx,eax
+    3473:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    3477:	48 83 c0 04          	add    rax,0x4
+    347b:	48 89 d6             	mov    rsi,rdx
+    347e:	48 89 c7             	mov    rdi,rax
+    3481:	e8 00 00 00 00       	call   3486 <load_modules+0xce>
 				while (1);
-    347c:	90                   	nop
-    347d:	eb fd                	jmp    347c <load_modules+0xce>
+    3486:	90                   	nop
+    3487:	eb fd                	jmp    3486 <load_modules+0xce>
 		}
 		mem += sizeof(uint32_t) + *(uint32_t*)mem;
-    347f:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-    3483:	8b 00                	mov    eax,DWORD PTR [rax]
-    3485:	89 c0                	mov    eax,eax
-    3487:	48 83 c0 04          	add    rax,0x4
-    348b:	48 01 45 f8          	add    QWORD PTR [rbp-0x8],rax
+    3489:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    348d:	8b 00                	mov    eax,DWORD PTR [rax]
+    348f:	89 c0                	mov    eax,eax
+    3491:	48 83 c0 04          	add    rax,0x4
+    3495:	48 01 45 f8          	add    QWORD PTR [rbp-0x8],rax
 		mct--;
-    348f:	83 6d f4 01          	sub    DWORD PTR [rbp-0xc],0x1
+    3499:	83 6d f4 01          	sub    DWORD PTR [rbp-0xc],0x1
 
 		/* try to load each module */
 		while (mct--) {
-    3493:	e9 ff 01 00 00       	jmp    3697 <load_modules+0x2e9>
+    349d:	e9 ff 01 00 00       	jmp    36a1 <load_modules+0x2e9>
 				const char* name = (const char*)mem;
-    3498:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-    349c:	48 89 45 e8          	mov    QWORD PTR [rbp-0x18],rax
+    34a2:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    34a6:	48 89 45 e8          	mov    QWORD PTR [rbp-0x18],rax
 				uint32_t sz;
 				struct module_info mi = {0};
-    34a0:	48 8d 95 70 ff ff ff 	lea    rdx,[rbp-0x90]
-    34a7:	b8 00 00 00 00       	mov    eax,0x0
-    34ac:	b9 0d 00 00 00       	mov    ecx,0xd
-    34b1:	48 89 d7             	mov    rdi,rdx
-    34b4:	f3 48 ab             	rep stos QWORD PTR es:[rdi],rax
+    34aa:	48 8d 95 78 ff ff ff 	lea    rdx,[rbp-0x88]
+    34b1:	b8 00 00 00 00       	mov    eax,0x0
+    34b6:	b9 0d 00 00 00       	mov    ecx,0xd
+    34bb:	48 89 d7             	mov    rdi,rdx
+    34be:	f3 48 ab             	rep stos QWORD PTR es:[rdi],rax
 				mem += strlen(name) + 1;
-    34b7:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
-    34bb:	48 89 c7             	mov    rdi,rax
-    34be:	e8 00 00 00 00       	call   34c3 <load_modules+0x115>
-    34c3:	48 83 c0 01          	add    rax,0x1
-    34c7:	48 01 45 f8          	add    QWORD PTR [rbp-0x8],rax
+    34c1:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+    34c5:	48 89 c7             	mov    rdi,rax
+    34c8:	e8 00 00 00 00       	call   34cd <load_modules+0x115>
+    34cd:	48 83 c0 01          	add    rax,0x1
+    34d1:	48 01 45 f8          	add    QWORD PTR [rbp-0x8],rax
 				sz = *(uint32_t*)mem;
-    34cb:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-    34cf:	8b 00                	mov    eax,DWORD PTR [rax]
-    34d1:	89 45 e4             	mov    DWORD PTR [rbp-0x1c],eax
+    34d5:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    34d9:	8b 00                	mov    eax,DWORD PTR [rax]
+    34db:	89 45 e4             	mov    DWORD PTR [rbp-0x1c],eax
 				mem += sizeof(uint32_t);
-    34d4:	48 83 45 f8 04       	add    QWORD PTR [rbp-0x8],0x4
+    34de:	48 83 45 f8 04       	add    QWORD PTR [rbp-0x8],0x4
 				strncpy(mi.mi_name, name, 20);
-    34d9:	48 8b 4d e8          	mov    rcx,QWORD PTR [rbp-0x18]
-    34dd:	48 8d 85 70 ff ff ff 	lea    rax,[rbp-0x90]
-    34e4:	ba 14 00 00 00       	mov    edx,0x14
-    34e9:	48 89 ce             	mov    rsi,rcx
-    34ec:	48 89 c7             	mov    rdi,rax
-    34ef:	e8 00 00 00 00       	call   34f4 <load_modules+0x146>
+    34e3:	48 8b 4d e8          	mov    rcx,QWORD PTR [rbp-0x18]
+    34e7:	48 8d 85 78 ff ff ff 	lea    rax,[rbp-0x88]
+    34ee:	ba 14 00 00 00       	mov    edx,0x14
+    34f3:	48 89 ce             	mov    rsi,rcx
+    34f6:	48 89 c7             	mov    rdi,rax
+    34f9:	e8 00 00 00 00       	call   34fe <load_modules+0x146>
 				printf("loading module %.20s...\n", mi.mi_name);
-    34f4:	48 8d 85 70 ff ff ff 	lea    rax,[rbp-0x90]
-    34fb:	48 89 c6             	mov    rsi,rax
-    34fe:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-    3505:	b8 00 00 00 00       	mov    eax,0x0
-    350a:	e8 00 00 00 00       	call   350f <load_modules+0x161>
+    34fe:	48 8d 85 78 ff ff ff 	lea    rax,[rbp-0x88]
+    3505:	48 89 c6             	mov    rsi,rax
+    3508:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+    350f:	b8 00 00 00 00       	mov    eax,0x0
+    3514:	e8 00 00 00 00       	call   3519 <load_modules+0x161>
 				if ((ee = load_elf(mem, sz, &mi))) {
-    350f:	48 8d 95 70 ff ff ff 	lea    rdx,[rbp-0x90]
-    3516:	8b 4d e4             	mov    ecx,DWORD PTR [rbp-0x1c]
-    3519:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-    351d:	89 ce                	mov    esi,ecx
-    351f:	48 89 c7             	mov    rdi,rax
-    3522:	e8 00 00 00 00       	call   3527 <load_modules+0x179>
-    3527:	89 45 f0             	mov    DWORD PTR [rbp-0x10],eax
-    352a:	83 7d f0 00          	cmp    DWORD PTR [rbp-0x10],0x0
-    352e:	74 43                	je     3573 <load_modules+0x1c5>
+    3519:	48 8d 95 78 ff ff ff 	lea    rdx,[rbp-0x88]
+    3520:	8b 4d e4             	mov    ecx,DWORD PTR [rbp-0x1c]
+    3523:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    3527:	89 ce                	mov    esi,ecx
+    3529:	48 89 c7             	mov    rdi,rax
+    352c:	e8 00 00 00 00       	call   3531 <load_modules+0x179>
+    3531:	89 45 f0             	mov    DWORD PTR [rbp-0x10],eax
+    3534:	83 7d f0 00          	cmp    DWORD PTR [rbp-0x10],0x0
+    3538:	74 43                	je     357d <load_modules+0x1c5>
 						cprintf(KFMT_ERROR, "Failed to load ELF module at %p\n", mem);
-    3530:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-    3534:	48 89 c2             	mov    rdx,rax
-    3537:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
-    353e:	bf 0c 00 00 00       	mov    edi,0xc
-    3543:	b8 00 00 00 00       	mov    eax,0x0
-    3548:	e8 00 00 00 00       	call   354d <load_modules+0x19f>
+    353a:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    353e:	48 89 c2             	mov    rdx,rax
+    3541:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
+    3548:	bf 0c 00 00 00       	mov    edi,0xc
+    354d:	b8 00 00 00 00       	mov    eax,0x0
+    3552:	e8 00 00 00 00       	call   3557 <load_modules+0x19f>
 						cprintf(KFMT_ERROR, "reason: %s\n", get_elferr_string(ee));
-    354d:	8b 45 f0             	mov    eax,DWORD PTR [rbp-0x10]
-    3550:	89 c7                	mov    edi,eax
-    3552:	e8 00 00 00 00       	call   3557 <load_modules+0x1a9>
-    3557:	48 89 c2             	mov    rdx,rax
-    355a:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
-    3561:	bf 0c 00 00 00       	mov    edi,0xc
-    3566:	b8 00 00 00 00       	mov    eax,0x0
-    356b:	e8 00 00 00 00       	call   3570 <load_modules+0x1c2>
+    3557:	8b 45 f0             	mov    eax,DWORD PTR [rbp-0x10]
+    355a:	89 c7                	mov    edi,eax
+    355c:	e8 00 00 00 00       	call   3561 <load_modules+0x1a9>
+    3561:	48 89 c2             	mov    rdx,rax
+    3564:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
+    356b:	bf 0c 00 00 00       	mov    edi,0xc
+    3570:	b8 00 00 00 00       	mov    eax,0x0
+    3575:	e8 00 00 00 00       	call   357a <load_modules+0x1c2>
 						while (1);
-    3570:	90                   	nop
-    3571:	eb fd                	jmp    3570 <load_modules+0x1c2>
+    357a:	90                   	nop
+    357b:	eb fd                	jmp    357a <load_modules+0x1c2>
 				} else {
 						int errc;
 						cprintf(KFMT_INFO, "loaded module at the following offsets and sizes:\n");
-    3573:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
-    357a:	bf 0b 00 00 00       	mov    edi,0xb
-    357f:	b8 00 00 00 00       	mov    eax,0x0
-    3584:	e8 00 00 00 00       	call   3589 <load_modules+0x1db>
+    357d:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
+    3584:	bf 0b 00 00 00       	mov    edi,0xb
+    3589:	b8 00 00 00 00       	mov    eax,0x0
+    358e:	e8 00 00 00 00       	call   3593 <load_modules+0x1db>
 						cprintf(KFMT_INFO, ".text    %p %11lu\n", mi.vm_ofs[0], mi.sz_secs[0]);
-    3589:	48 8b 55 b8          	mov    rdx,QWORD PTR [rbp-0x48]
-    358d:	48 8b 45 98          	mov    rax,QWORD PTR [rbp-0x68]
-    3591:	48 89 d1             	mov    rcx,rdx
-    3594:	48 89 c2             	mov    rdx,rax
-    3597:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
-    359e:	bf 0b 00 00 00       	mov    edi,0xb
-    35a3:	b8 00 00 00 00       	mov    eax,0x0
-    35a8:	e8 00 00 00 00       	call   35ad <load_modules+0x1ff>
+    3593:	48 8b 55 c0          	mov    rdx,QWORD PTR [rbp-0x40]
+    3597:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
+    359b:	48 89 d1             	mov    rcx,rdx
+    359e:	48 89 c2             	mov    rdx,rax
+    35a1:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
+    35a8:	bf 0b 00 00 00       	mov    edi,0xb
+    35ad:	b8 00 00 00 00       	mov    eax,0x0
+    35b2:	e8 00 00 00 00       	call   35b7 <load_modules+0x1ff>
 						cprintf(KFMT_INFO, ".data    %p %11lu\n", mi.vm_ofs[1], mi.sz_secs[1]);
-    35ad:	48 8b 55 c0          	mov    rdx,QWORD PTR [rbp-0x40]
-    35b1:	48 8b 45 a0          	mov    rax,QWORD PTR [rbp-0x60]
-    35b5:	48 89 d1             	mov    rcx,rdx
-    35b8:	48 89 c2             	mov    rdx,rax
-    35bb:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
-    35c2:	bf 0b 00 00 00       	mov    edi,0xb
-    35c7:	b8 00 00 00 00       	mov    eax,0x0
-    35cc:	e8 00 00 00 00       	call   35d1 <load_modules+0x223>
+    35b7:	48 8b 55 c8          	mov    rdx,QWORD PTR [rbp-0x38]
+    35bb:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
+    35bf:	48 89 d1             	mov    rcx,rdx
+    35c2:	48 89 c2             	mov    rdx,rax
+    35c5:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
+    35cc:	bf 0b 00 00 00       	mov    edi,0xb
+    35d1:	b8 00 00 00 00       	mov    eax,0x0
+    35d6:	e8 00 00 00 00       	call   35db <load_modules+0x223>
 						cprintf(KFMT_INFO, ".rodata  %p %11lu\n", mi.vm_ofs[2], mi.sz_secs[2]);
-    35d1:	48 8b 55 c8          	mov    rdx,QWORD PTR [rbp-0x38]
-    35d5:	48 8b 45 a8          	mov    rax,QWORD PTR [rbp-0x58]
-    35d9:	48 89 d1             	mov    rcx,rdx
-    35dc:	48 89 c2             	mov    rdx,rax
-    35df:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
-    35e6:	bf 0b 00 00 00       	mov    edi,0xb
-    35eb:	b8 00 00 00 00       	mov    eax,0x0
-    35f0:	e8 00 00 00 00       	call   35f5 <load_modules+0x247>
+    35db:	48 8b 55 d0          	mov    rdx,QWORD PTR [rbp-0x30]
+    35df:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
+    35e3:	48 89 d1             	mov    rcx,rdx
+    35e6:	48 89 c2             	mov    rdx,rax
+    35e9:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
+    35f0:	bf 0b 00 00 00       	mov    edi,0xb
+    35f5:	b8 00 00 00 00       	mov    eax,0x0
+    35fa:	e8 00 00 00 00       	call   35ff <load_modules+0x247>
 						cprintf(KFMT_INFO, ".bss     %p %11lu\n", mi.vm_ofs[3], mi.sz_secs[3]);
-    35f5:	48 8b 55 d0          	mov    rdx,QWORD PTR [rbp-0x30]
-    35f9:	48 8b 45 b0          	mov    rax,QWORD PTR [rbp-0x50]
-    35fd:	48 89 d1             	mov    rcx,rdx
-    3600:	48 89 c2             	mov    rdx,rax
-    3603:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
-    360a:	bf 0b 00 00 00       	mov    edi,0xb
-    360f:	b8 00 00 00 00       	mov    eax,0x0
-    3614:	e8 00 00 00 00       	call   3619 <load_modules+0x26b>
+    35ff:	48 8b 55 d8          	mov    rdx,QWORD PTR [rbp-0x28]
+    3603:	48 8b 45 b8          	mov    rax,QWORD PTR [rbp-0x48]
+    3607:	48 89 d1             	mov    rcx,rdx
+    360a:	48 89 c2             	mov    rdx,rax
+    360d:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
+    3614:	bf 0b 00 00 00       	mov    edi,0xb
+    3619:	b8 00 00 00 00       	mov    eax,0x0
+    361e:	e8 00 00 00 00       	call   3623 <load_modules+0x26b>
 						cprintf(KFMT_INFO, "calling module_init()...\n");
-    3619:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
-    3620:	bf 0b 00 00 00       	mov    edi,0xb
-    3625:	b8 00 00 00 00       	mov    eax,0x0
-    362a:	e8 00 00 00 00       	call   362f <load_modules+0x281>
+    3623:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
+    362a:	bf 0b 00 00 00       	mov    edi,0xb
+    362f:	b8 00 00 00 00       	mov    eax,0x0
+    3634:	e8 00 00 00 00       	call   3639 <load_modules+0x281>
 						errc = mi.mi_init();
-    362f:	48 8b 55 88          	mov    rdx,QWORD PTR [rbp-0x78]
-    3633:	b8 00 00 00 00       	mov    eax,0x0
-    3638:	ff d2                	call   rdx
-    363a:	89 45 e0             	mov    DWORD PTR [rbp-0x20],eax
+    3639:	48 8b 55 90          	mov    rdx,QWORD PTR [rbp-0x70]
+    363d:	b8 00 00 00 00       	mov    eax,0x0
+    3642:	ff d2                	call   rdx
+    3644:	89 45 e0             	mov    DWORD PTR [rbp-0x20],eax
 						if (errc) {
-    363d:	83 7d e0 00          	cmp    DWORD PTR [rbp-0x20],0x0
-    3641:	74 1e                	je     3661 <load_modules+0x2b3>
+    3647:	83 7d e0 00          	cmp    DWORD PTR [rbp-0x20],0x0
+    364b:	74 1e                	je     366b <load_modules+0x2b3>
 								cprintf(KFMT_ERROR, "init failed with error %d\n", errc);
-    3643:	8b 45 e0             	mov    eax,DWORD PTR [rbp-0x20]
-    3646:	89 c2                	mov    edx,eax
-    3648:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
-    364f:	bf 0c 00 00 00       	mov    edi,0xc
-    3654:	b8 00 00 00 00       	mov    eax,0x0
-    3659:	e8 00 00 00 00       	call   365e <load_modules+0x2b0>
+    364d:	8b 45 e0             	mov    eax,DWORD PTR [rbp-0x20]
+    3650:	89 c2                	mov    edx,eax
+    3652:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
+    3659:	bf 0c 00 00 00       	mov    edi,0xc
+    365e:	b8 00 00 00 00       	mov    eax,0x0
+    3663:	e8 00 00 00 00       	call   3668 <load_modules+0x2b0>
 								while (1);
-    365e:	90                   	nop
-    365f:	eb fd                	jmp    365e <load_modules+0x2b0>
+    3668:	90                   	nop
+    3669:	eb fd                	jmp    3668 <load_modules+0x2b0>
 						} else {
 								cprintf(KFMT_OK, "successfully initialized module \"%s\"\n", mi.mi_name);
-    3661:	48 8d 85 70 ff ff ff 	lea    rax,[rbp-0x90]
-    3668:	48 89 c2             	mov    rdx,rax
-    366b:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
-    3672:	bf 0a 00 00 00       	mov    edi,0xa
-    3677:	b8 00 00 00 00       	mov    eax,0x0
-    367c:	e8 00 00 00 00       	call   3681 <load_modules+0x2d3>
+    366b:	48 8d 85 78 ff ff ff 	lea    rax,[rbp-0x88]
+    3672:	48 89 c2             	mov    rdx,rax
+    3675:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
+    367c:	bf 0a 00 00 00       	mov    edi,0xa
+    3681:	b8 00 00 00 00       	mov    eax,0x0
+    3686:	e8 00 00 00 00       	call   368b <load_modules+0x2d3>
 								store_module_info(&mi);
-    3681:	48 8d 85 70 ff ff ff 	lea    rax,[rbp-0x90]
-    3688:	48 89 c7             	mov    rdi,rax
-    368b:	e8 00 00 00 00       	call   3690 <load_modules+0x2e2>
+    368b:	48 8d 85 78 ff ff ff 	lea    rax,[rbp-0x88]
+    3692:	48 89 c7             	mov    rdi,rax
+    3695:	e8 00 00 00 00       	call   369a <load_modules+0x2e2>
 						}
 				}
 
 				mem += sz;
-    3690:	8b 45 e4             	mov    eax,DWORD PTR [rbp-0x1c]
-    3693:	48 01 45 f8          	add    QWORD PTR [rbp-0x8],rax
+    369a:	8b 45 e4             	mov    eax,DWORD PTR [rbp-0x1c]
+    369d:	48 01 45 f8          	add    QWORD PTR [rbp-0x8],rax
 		while (mct--) {
-    3697:	8b 45 f4             	mov    eax,DWORD PTR [rbp-0xc]
-    369a:	8d 50 ff             	lea    edx,[rax-0x1]
-    369d:	89 55 f4             	mov    DWORD PTR [rbp-0xc],edx
-    36a0:	85 c0                	test   eax,eax
-    36a2:	0f 85 f0 fd ff ff    	jne    3498 <load_modules+0xea>
+    36a1:	8b 45 f4             	mov    eax,DWORD PTR [rbp-0xc]
+    36a4:	8d 50 ff             	lea    edx,[rax-0x1]
+    36a7:	89 55 f4             	mov    DWORD PTR [rbp-0xc],edx
+    36aa:	85 c0                	test   eax,eax
+    36ac:	0f 85 f0 fd ff ff    	jne    34a2 <load_modules+0xea>
 		}
 
 		printf("done loading kernel modules\n");
-    36a8:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-    36af:	b8 00 00 00 00       	mov    eax,0x0
-    36b4:	e8 00 00 00 00       	call   36b9 <load_modules+0x30b>
+    36b2:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+    36b9:	b8 00 00 00 00       	mov    eax,0x0
+    36be:	e8 00 00 00 00       	call   36c3 <load_modules+0x30b>
 }
-    36b9:	90                   	nop
-    36ba:	c9                   	leave
-    36bb:	c3                   	ret
+    36c3:	90                   	nop
+    36c4:	c9                   	leave
+    36c5:	c3                   	ret

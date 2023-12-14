@@ -691,7 +691,6 @@ redo:
 void mmgr_reinit()
 {
 		uint32_t* ptr = FM_FREE_MEMORY_MAP;
-		while (ptr);
 		fm_ofs = ptr[-1];
 		fm_begin = ptr[-2];
 		rm_count = ptr[-3];
@@ -720,7 +719,6 @@ void mmgr_reinit()
 
 		/* allocate the heap */
 		void init_kernel_heap();
-		while (ptr);
 		init_kernel_heap();
 		void flush_tlb_full();
 		flush_tlb_full();

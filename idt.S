@@ -1,5 +1,4 @@
 .intel_syntax noprefix
-.section .idt, "aw", @progbits
 #ifdef __x86_64__
 	.code64
 #	.org 0xffffffff00000000
@@ -7,7 +6,6 @@
 	.code32
 #	.org 0xf4000000
 #endif
-.global idt
 .global idt_end
 .global idt_init
 
@@ -108,6 +106,7 @@
 	.endm
 #endif
 
+.section .data, "aw", @progbits
 .align 16
 # Interrupt descriptor table (in .idt section)
 # First 32 entries intel-mandated exceptions
@@ -115,6 +114,7 @@
 # then software interrupts
 # results in 0x180 bytes + software (fits in 0x200 .idt)
 # types: e->interrupt f->trap
+.global idt
 idt:
 IGATE 0x08 gate_0 0x8e
 IGATE 0x08 gate_1 0x8e
@@ -190,7 +190,6 @@ IGATE 0x08 apic_ipi 0x8e # APIC IPI test interrupt gate 3e
 IGATE 0x08 apic_spr 0x8e # APIC spurious interrupt gate (vector 3f for P6)
 idt_end:
 
-.section .data, "aw", @progbits
 .int 0xcccccccc, 0xcccccccc
 .align 16
 idtr: .word 0
@@ -1099,16 +1098,6 @@ idt_init:
 #endif
 	mov word ptr[idtr], ax
 	lidt [idtr]
-
-	mov ecx,  ( idt_end - idt ) / 8 
-
-#	mov ecx, 48 # zero extend in amd64
-
-idt_i1:
-	dec ecx
-	IGI ecx
-	test ecx, ecx
-	jnz idt_i1
 
 	# reenable NMI
 	inb al, 0x70

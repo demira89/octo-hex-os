@@ -6,19 +6,15 @@
 
 void ktimer_tick();
 
-struct IDTDescr {
-		uint16_t offset_1; // offset bits 0..15
-		uint16_t selector; // a code segment selector in GDT or LDT
-		uint8_t zero;      // unused, set to 0
-		uint8_t type_attr; // type and attributes, see below
-		uint16_t offset_2; // offset bits 16..31
-};
 extern void exceptionHandler(int i, void* ptr)
 {
-		struct IDTDescr* dt = &idt;
+		struct idt_entry* dt = &idt;
 		if (i < 17) {
-				dt[i].offset_1 = (uint16_t)((uint32_t)ptr & 0x0000ffff);
-				dt[i].offset_2 = (uint16_t)((uint32_t)ptr >> 16);
+				dt[i].offset_1 = (uint16_t)((size_t)ptr & 0x0000ffff);
+				dt[i].offset_2 = (uint16_t)((size_t)ptr >> 16);
+#ifdef __x86_64__
+				dt[i].offset_3 = (uint32_t)((size_t)ptr >> 32);
+#endif
 		}
 }
 extern void set_debug_traps();
@@ -51,7 +47,7 @@ extern void print_exception(void* eip, unsigned int code)
 					/* TODO enable FPU */
 					break;
 				case 8:
-					printf("#DF with error code %x\n", (unsigned int)eip);
+					printf("#DF with error code %x\n", (uint32_t)(size_t)eip);
 					die("that's it");
 					break;
 				case 9:
@@ -85,23 +81,18 @@ extern void print_exception(void* eip, unsigned int code)
 		}
 }
 
-struct idt_entry
-{
-	unsigned short offset_1;
-	unsigned short selector;
-	unsigned char zero;
-	unsigned char type_attr;
-	unsigned short offset_2;
-};
-
 extern void print_idt(struct idt_entry* idt, unsigned int num)
 {
 		unsigned int i;
 		printf("IDT at %p\n", idt);
 		for (i = 0; i < num; i++) {
 				printf("IDT entry %d: %x:%p type=%x\n", i, idt->selector,
-								(void*)((((unsigned int)idt->offset_2) << 16) + idt->offset_1),
-								idt->type_attr);
+#ifdef __x86_64__
+								(void*)(((uint64_t)idt->offset_3 << 32) | (((uint32_t)idt->offset_2) << 16) | idt->offset_1),
+#else
+								(void*)((((unsigned int)idt->offset_2) << 16) | idt->offset_1),
+#endif
+								idt->type);
 				idt++;
 		}
 }
@@ -364,8 +355,8 @@ extern void msi_handler(unsigned int msi)
 		iprintf("MSI %u received on processor %u\n", msi, smp_processor_id());
 }
 /*************************************************************************/
-volatile void (*irq0_hook)() = NULL;
-volatile void (*apic_hook)() = NULL;
+void (* volatile irq0_hook)() = NULL;
+void (*volatile apic_hook)() = NULL;
 extern void irq_handler(unsigned int irq)
 {
 		int spurious = 0; void (*hook)();
@@ -458,6 +449,7 @@ extern void segment_handler(void* eip, unsigned int seg_error, void* cr2, unsign
 				case 3: tp = "#GP"; break;
 				case 4: tp = "#PF"; break;
 		}
+		while (type);
 		if (type == 4) {
 				if(mm_handle_pagefault(&mm_kernel, eip, seg_error, cr2) == 0)
 						return; /* continue execution */
@@ -589,13 +581,14 @@ struct tm cmos_get_time()
 /* TODO: TLS for errno */
 int errno = 0;
 /*struct cti cti = {1};*/
-struct perf_ctrs bp_pc = {0,0,0,0};
+struct perf_ctrs bp_pc = {0};
 struct perf_ctrs* bp_tick = &bp_pc;
 uint64_t km_set = 0, counter_print = 0, counter_sec = 0;
 struct kio_region km_regS = { 60, 0, 20, 5, 0, 0, 0x27, KIO_REGION_NO_DELAY | KIO_REGION_NO_SCROLL, 0, 0, SPIN_LOCK_UNLOCKED };
 struct kio_region km_regC = { 60, 23, 20, 2, 0, 0, 0x0f, KIO_REGION_NO_DELAY | KIO_REGION_NO_SCROLL, 0, 0, SPIN_LOCK_UNLOCKED };
 struct tm km_time = {0};
 size_t h_stats[4] = {0}, h_stats_old[4] = {0};
+struct cpuinfo cpu = {0};
 
 void kernel_fb_resize()
 {
@@ -615,18 +608,19 @@ void second_tick()
 		task_do_stats();
 		/* update the display time */
 		{
-				double scs = (double)jiffies / HZ;
+				//double scs = (double)jiffies / HZ;
+				uint64_t scs = jiffies / HZ;
 				uint32_t secs = 0, mins = 0, hrs = 0, days = 0;
 				static uint32_t old_sc = 0;
 				km_regS.cur_x = 4;
 				km_regS.cur_y = 2;
 				/* format uptime */
-				days = (uint32_t)(scs / 86400.0f);
-				scs -= 86400.0f * days;
-				hrs = (uint32_t)(scs / 3600.0f);
-				scs -= 3600.0f * hrs;
-				mins = (uint32_t)(scs / 60.0f);
-				scs -= 60.0f * mins;
+				days = (uint32_t)(scs / 86400); //.0
+				scs -= 86400 * days;
+				hrs = (uint32_t)(scs / 3600);
+				scs -= 3600 * hrs;
+				mins = (uint32_t)(scs / 60);
+				scs -= 60 * mins;
 				secs = (uint32_t)(scs);
 				if (secs != old_sc) {
 						crprintf(0x2f, &km_regS, "%ud %uh %um %us\n", days, hrs, mins, secs);
@@ -636,7 +630,7 @@ void second_tick()
 				km_regS.cur_x = 0;
 				km_regS.cur_y = 3;
 				if (km_time.tm_year) {
-						uint32_t adsec = ((double)(jiffies - km_set) / HZ);
+						uint32_t adsec = ((uint64_t)(jiffies - km_set) / HZ);
 						struct tm ta = km_time;
 						ta.tm_sec += adsec;
 						if (ta.tm_sec > 59) {
@@ -743,7 +737,7 @@ void print_counter()
 		kstats(h_stats, h_stats + 1, h_stats + 2, h_stats + 3);
 		for (size_t i = 0; i < 4; i++)
 				if (h_stats_old[i] != h_stats[i]) {
-						crprintf(0x2f, &km_regS, "%4uk %4u%s %2u %4uk", (h_stats[0]) / 1024,
+						crprintf(0x2f, &km_regS, "%4zuk %4zu%s %2zu %4zuk", (h_stats[0]) / 1024,
 								h_stats[1] >= 100000 ? h_stats[1] / 1024 : h_stats[1],
 								h_stats[1] >= 100000 ? "k" : ((h_stats[1] >= 10000) ? "" : " "),
 								h_stats[3], (h_stats[2]) / 1024);
@@ -1345,6 +1339,91 @@ void cpu_info()
 		printf("The brand string is \"%s\"\n", cpu.brand_string);
 }
 
+#ifdef __x86_64__
+struct __attribute__((packed)) igate {
+	uint64_t fun;
+	uint8_t zero;
+	uint8_t type;
+	uint16_t sel;
+	uint32_t res;
+};
+#else
+struct __attribute__((packed)) igate {
+	uint32_t fun;
+	uint8_t zero;
+	uint8_t type;
+	uint16_t sel;
+};
+#endif
+//#ifdef __x86_64__
+////	.macro IGATE SEL FN TP
+//	.quad \FN
+//	.byte 0
+//	.byte \TP
+//	.word \SEL
+//	.long 0 # reserved
+//	.endm
+//#else
+//	.macro IGATE SEL FN TP
+//	.int \FN
+//	.byte 0
+//	.byte \TP
+//	.word \SEL
+//	.endm
+//#endif
+//
+//#ifdef __x86_64__
+//	.macro IGI NUM    # swaps FN high with SEL and ...
+//	mov edx, \NUM # zero extend
+//	shl rdx, 4
+//	mov eax, dword ptr [rdx+idt+4] # load FN top
+//	xchg eax, dword ptr [rdx+idt+8] # FN top -> +8 bt
+//	mov dword ptr [rdx+idt+4], eax # store flag+SEL
+//	shr eax, 16
+//	xchg ax, word ptr [rdx+idt+2] # swap SEL <-> FN high
+//	mov word ptr [rdx+idt+6], ax # set offset high
+//	.endm
+//
+//#else
+//	.macro IGI NUM   # swaps FN high with SEL
+//	mov edx, \NUM
+//	shl edx, 3
+//	#add edx, 2
+//	mov ax, word ptr [edx+idt+2]
+//#	add edx, 4
+//	xchg ax, word ptr [edx+idt+6]
+//#	sub edx, 4
+//	mov word ptr [edx+idt+2], bx
+//	.endm
+//#endif
+void prepare_idt()
+{
+	/* do the bit shuffling on IDT descriptors */
+	struct idt_entry* pt = (struct idt_entry*)&idt;
+	struct igate ig;
+	size_t count = ((size_t)&idt_end - (size_t)&idt) / sizeof(struct idt_entry);
+
+	while (count--) {
+		/* we got to swap the linear address (32/64bt) into the
+		 * IDT descriptor format since there's no suitable relocation
+		 * available to do it with the linker. */
+		ig = *(struct igate*)pt;
+		pt->offset_1 = ig.fun & 0xffff;
+		pt->offset_2 = (ig.fun >> 16) & 0xffff;
+#ifdef __x86_64__
+		pt->offset_3 = (ig.fun >> 32);
+		pt->ist = 0; /* we don't have interrupt stacks so far */
+#endif
+		pt->selector = ig.sel;
+		pt->type = ig.type;
+		pt->zero = 0;
+		
+		/* advance */
+		pt++;
+
+	}
+}
+
 extern void _start()
 {
 		extern int fb_no_malloc;
@@ -1356,19 +1435,21 @@ extern void _start()
 		fb_no_malloc = 1;
 		fb_video_setup();
 
+		/* use the correct GDT */
+		extern void gdt_init();
+		gdt_init();
+
 		/* transfer mmgr data from known locations */
 		extern void mmgr_reinit();
 		mmgr_reinit();
 		fb_no_malloc = 0;
 
-		/* use the correct GDT */
-		extern void gdt_init();
-		gdt_init();
-
 		/* do the IDT setup & remap PIC */
-		extern void mm_idt_init();
-		mm_idt_init();
+		extern void idt_init();
+		prepare_idt();
+		idt_init();
 		PIC_remap(0x20, 0x28);
+		while (!fb_no_malloc);
 		asm("sti");
 
 		/* protect null pointer */
@@ -1396,6 +1477,7 @@ void kinit(void* data)
 				extern void apic_init(); /* PCP works afterwards */
 				apic_init();
 		}
+		extern void region_clear(struct kio_region* cr);
 		region_clear(&km_regS);
 		km_regS.cur_x = km_regS.cur_y = 0;
 		region_puts(&km_regS, "total used  hp free\n\nup: ");
@@ -1564,13 +1646,13 @@ void kloop()
 								if (val) {
 										struct page_range pr[10]; size_t rv;
 										printf("allocating %d physical pages...\n", val);
-										rv = mm_alloc_pm(pr, 10, val);
-										printf("%u pages allocated\n", rv);
+										rv = mm_alloc_pm(val, pr, 10);
+										printf("%zu pages allocated\n", rv);
 										for (rv = 0; rv < 10; rv++)
 												if (!pr[rv].count)
 														break;
 												else
-														printf("%u pages at %#08x%08x\n",
+														printf("%zu pages at %#08x%08x\n",
 																	   pr[rv].count,
 																	   (uint32_t)(pr[rv].base >> 32),
 																	   (uint32_t)pr[rv].base);
@@ -1584,7 +1666,7 @@ void kloop()
 												struct page_range pr;
 												pr.base = val;
 												pr.count = ct;
-												printf("freeing %d physical pages at 0x%016llx\n",
+												printf("freeing %zu physical pages at 0x%016llx\n",
 																pr.count, pr.base);
 												mm_free_pm(&pr, 1);
 										}

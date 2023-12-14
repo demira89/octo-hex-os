@@ -125,7 +125,7 @@ int fat16_read(uint16_t* clst, int cct, uint32_t sz, struct page_range* pr, int 
 								if (!dst || !dst_sz) {
 										if (!prc)
 												return -1;
-										dst = (void*)pr->base;
+										dst = (void*)(size_t)pr->base;
 										dst_sz = pr->count * 4096;
 										pr++; prc--;
 										p1 = dst;

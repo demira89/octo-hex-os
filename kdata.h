@@ -3,7 +3,27 @@
  *          Details can be found at the beginning of the linker map.
  * */
 
-struct cpuinfo {
+#ifdef __x86_64__ /* (C) osdev.org/IDT  */
+struct __attribute__((packed)) idt_entry {
+   uint16_t offset_1;        // offset bits 0..15
+   uint16_t selector;        // a code segment selector in GDT or LDT
+   uint8_t  ist;             // bits 0..2 holds Interrupt Stack Table offset, rest of bits zero.
+   uint8_t  type;            // gate type, dpl, and p fields
+   uint16_t offset_2;        // offset bits 16..31
+   uint32_t offset_3;        // offset bits 32..63
+   uint32_t zero;            // reserved
+};
+#else
+struct __attribute__((packed)) idt_entry {
+   uint16_t offset_1;        // offset bits 0..15
+   uint16_t selector;        // a code segment selector in GDT or LDT
+   uint8_t  zero;            // unused, set to 0
+   uint8_t  type;            // gate type, dpl, and p fields
+   uint16_t offset_2;        // offset bits 16..31
+};
+#endif
+
+extern struct cpuinfo {
 		uint32_t max_leaf; /* highest allowed cpuid eax */
 		uint32_t max_eleaf; /* highest extended info leaf */
 		int reserved : 30;
@@ -178,17 +198,17 @@ struct tss {
 };
 #endif
 
-struct vmd {
+extern struct vmd {
 		char is_textmode; char gm_bts; /* 4/8/15/16/24/32 */
 		char btpp;
 		int32_t width, height; uint32_t bpsl;
 		uint32_t fnt, txt, ptr; /* low ptrs */
 } video_mode;
 
-void* vga_mem_ptr;
-void* vga_pmem;
-size_t vga_pmem_size;
-const char* vga_font;
+extern void* vga_mem_ptr;
+extern void* vga_pmem;
+extern size_t vga_pmem_size;
+extern const char* vga_font;
 
 struct rct {
 		struct kio_region r[32];
@@ -201,7 +221,7 @@ struct exclude_rect {
 		struct exclude_rect* next;
 };
 
-struct framebuffer {
+extern struct framebuffer {
 		void* text_mem;
 		ssize_t width; /* in character cells */
 		ssize_t height;
@@ -248,7 +268,9 @@ void framebuffer_remove_exclude_rect(struct framebuffer* fb, struct exclude_rect
 #endif
 
 /* The number of major rotations of the staircase scheduler */
-STAT_DECL_COUNTER(sched_mr_count, uint32_t);
+#ifdef COLLECT_STATS
+extern STAT_DECL_COUNTER(sched_mr_count, uint32_t);
+#endif
 
 /* processor performance counter structure */
 struct perf_ctrs {

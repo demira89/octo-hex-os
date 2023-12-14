@@ -5,36 +5,36 @@ smp.o64:     file format elf64-x86-64
 Disassembly of section .text:
 
 0000000000000000 <per_cpu_ptr>:
-				return rv;
-		rv = search_mp_fps((void*)0x9fc00, 1024);
-		if (rv)
-				return rv;
-
 		/* BIOS ROM */
+		rv = search_mp_fps((void*)0xf0000, 64 * 1024);
+		return rv;
+}
+
+void* build_configuration_table_from_default(uint8_t tp)
        0:	55                   	push   rbp
        1:	48 89 e5             	mov    rbp,rsp
        4:	48 83 ec 10          	sub    rsp,0x10
-		rv = search_mp_fps((void*)0xf0000, 64 * 1024);
-		return rv;
+{
+		return NULL + tp - tp;
 }
        8:	65 48 8b 04 25 00 00 00 00 	mov    rax,QWORD PTR gs:0x0
       11:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
 
-void* build_configuration_table_from_default(uint8_t tp)
+void parse_processor_entry(struct mp_proc* p)
 {
-		return NULL + tp - tp;
+		static int hdr = 0;
       15:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-}
+		if (!hdr++) {
       19:	c9                   	leave
       1a:	c3                   	ret
 
 000000000000001b <outb>:
-		const char* el[4] = { "Bus", "edge", "res", "level" };
-		printf("\tType: %7s Bus: %3u %7s IRQ: %3u\n", tps[max(l->type, 4)],
-				l->src_bus_id, find_bus(l->src_bus_id), l->src_bus_irq);
-		printf("\tLocal APIC: %3u INP# %3u P: %5s T: %5s\n",
-				l->dest_lapic_id, l->dest_lapic_linp,
 				pol[l->intr_flags & 0x03], el[(l->intr_flags >> 2) & 0x03]);
+		/* TODO: for now do nothing with this info */
+}
+
+void mp_sanitize_table()
+{
       1b:	55                   	push   rbp
       1c:	48 89 e5             	mov    rbp,rsp
       1f:	48 83 ec 08          	sub    rsp,0x8
@@ -42,37 +42,37 @@ void* build_configuration_table_from_default(uint8_t tp)
       25:	89 f0                	mov    eax,esi
       27:	66 89 55 fc          	mov    WORD PTR [rbp-0x4],dx
       2b:	88 45 f8             	mov    BYTE PTR [rbp-0x8],al
-		/* TODO: for now do nothing with this info */
+		struct apid *ps, **pt;
       2e:	0f b6 45 f8          	movzx  eax,BYTE PTR [rbp-0x8]
       32:	0f b7 55 fc          	movzx  edx,WORD PTR [rbp-0x4]
       36:	ee                   	out    dx,al
-}
+		/* removes duplicate speculative processor entries */
       37:	90                   	nop
       38:	c9                   	leave
       39:	c3                   	ret
 
 000000000000003a <memcpy>:
-						pt = &ps->next;
-		} while ((ps = *pt));
-}
-
-void mp_parse_config_table(void* ptr)
 {
+		/* first map the table to VM */
+		struct page_range pr = {(uint64_t)(size_t)ptr / 4096 * 4096, 1};
+		struct mp_pcmp* mp = mm_map(&mm_kernel, NULL, &pr, 1, MMGR_MAP_KERNEL);
+		uint16_t ec; void* e;
+
       3a:	55                   	push   rbp
       3b:	48 89 e5             	mov    rbp,rsp
       3e:	48 83 ec 28          	sub    rsp,0x28
       42:	48 89 7d e8          	mov    QWORD PTR [rbp-0x18],rdi
       46:	48 89 75 e0          	mov    QWORD PTR [rbp-0x20],rsi
       4a:	48 89 55 d8          	mov    QWORD PTR [rbp-0x28],rdx
-		/* first map the table to VM */
+		if (!mp) {
       4e:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
       52:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
-		struct page_range pr = {(uint64_t)(size_t)ptr / 4096 * 4096, 1};
+				cprintf(KFMT_WARN, "unable to map MP configuration table to virtual memory. Continuing with UP init.\n");
       56:	48 8b 45 e0          	mov    rax,QWORD PTR [rbp-0x20]
       5a:	48 89 45 f0          	mov    QWORD PTR [rbp-0x10],rax
-		struct mp_pcmp* mp = mm_map(&mm_kernel, NULL, &pr, 1, MMGR_MAP_KERNEL);
+				return;
       5e:	eb 1d                	jmp    7d <memcpy+0x43>
-		uint16_t ec; void* e;
+		}
       60:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
       64:	48 8d 42 01          	lea    rax,[rdx+0x1]
       68:	48 89 45 f0          	mov    QWORD PTR [rbp-0x10],rax
@@ -81,13 +81,13 @@ void mp_parse_config_table(void* ptr)
       74:	48 89 4d f8          	mov    QWORD PTR [rbp-0x8],rcx
       78:	0f b6 12             	movzx  edx,BYTE PTR [rdx]
       7b:	88 10                	mov    BYTE PTR [rax],dl
-		struct mp_pcmp* mp = mm_map(&mm_kernel, NULL, &pr, 1, MMGR_MAP_KERNEL);
+				return;
       7d:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
       81:	48 8d 50 ff          	lea    rdx,[rax-0x1]
       85:	48 89 55 d8          	mov    QWORD PTR [rbp-0x28],rdx
       89:	48 85 c0             	test   rax,rax
       8c:	75 d2                	jne    60 <memcpy+0x26>
-
+		/* fix the mmap alignment */
       8e:	90                   	nop
       8f:	90                   	nop
       90:	c9                   	leave
@@ -542,17 +542,17 @@ htt_proc: /* mark as speculative */
 {
      576:	55                   	push   rbp
      577:	48 89 e5             	mov    rbp,rsp
-     57a:	48 83 ec 40          	sub    rsp,0x40
+     57a:	48 83 ec 38          	sub    rsp,0x38
      57e:	89 f8                	mov    eax,edi
      580:	88 45 cc             	mov    BYTE PTR [rbp-0x34],al
 		struct busid* bi = bus_ids;
      583:	48 8b 05 00 00 00 00 	mov    rax,QWORD PTR [rip+0x0]        # 58a <find_bus+0x14>
      58a:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
 		const char* bts[4] = { "ISA", "EISA", "PCI", "Unknown" };
-     58e:	48 c7 45 d0 00 00 00 00 	mov    QWORD PTR [rbp-0x30],0x0
-     596:	48 c7 45 d8 00 00 00 00 	mov    QWORD PTR [rbp-0x28],0x0
-     59e:	48 c7 45 e0 00 00 00 00 	mov    QWORD PTR [rbp-0x20],0x0
-     5a6:	48 c7 45 e8 00 00 00 00 	mov    QWORD PTR [rbp-0x18],0x0
+     58e:	48 c7 45 d8 00 00 00 00 	mov    QWORD PTR [rbp-0x28],0x0
+     596:	48 c7 45 e0 00 00 00 00 	mov    QWORD PTR [rbp-0x20],0x0
+     59e:	48 c7 45 e8 00 00 00 00 	mov    QWORD PTR [rbp-0x18],0x0
+     5a6:	48 c7 45 f0 00 00 00 00 	mov    QWORD PTR [rbp-0x10],0x0
 		if (!bus_ids)
      5ae:	48 8b 05 00 00 00 00 	mov    rax,QWORD PTR [rip+0x0]        # 5b5 <find_bus+0x3f>
      5b5:	48 85 c0             	test   rax,rax
@@ -573,7 +573,7 @@ htt_proc: /* mark as speculative */
      5de:	0f 47 c2             	cmova  eax,edx
      5e1:	0f b6 c0             	movzx  eax,al
      5e4:	48 98                	cdqe
-     5e6:	48 8b 44 c5 d0       	mov    rax,QWORD PTR [rbp+rax*8-0x30]
+     5e6:	48 8b 44 c5 d8       	mov    rax,QWORD PTR [rbp+rax*8-0x28]
      5eb:	eb 1a                	jmp    607 <find_bus+0x91>
 		} while ((bi = bi->next));
      5ed:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
@@ -596,108 +596,106 @@ htt_proc: /* mark as speculative */
      611:	41 55                	push   r13
      613:	41 54                	push   r12
      615:	53                   	push   rbx
-     616:	48 81 ec 88 00 00 00 	sub    rsp,0x88
+     616:	48 81 ec a8 00 00 00 	sub    rsp,0xa8
      61d:	48 89 bd 58 ff ff ff 	mov    QWORD PTR [rbp-0xa8],rdi
 		const char* tps[5] = { "INT", "NMI", "SMI", "ExtINT", "Unknown" };
-     624:	48 c7 45 a0 00 00 00 00 	mov    QWORD PTR [rbp-0x60],0x0
-     62c:	48 c7 45 a8 00 00 00 00 	mov    QWORD PTR [rbp-0x58],0x0
-     634:	48 c7 45 b0 00 00 00 00 	mov    QWORD PTR [rbp-0x50],0x0
-     63c:	48 c7 45 b8 00 00 00 00 	mov    QWORD PTR [rbp-0x48],0x0
-     644:	48 c7 45 c0 00 00 00 00 	mov    QWORD PTR [rbp-0x40],0x0
+     624:	48 c7 45 a8 00 00 00 00 	mov    QWORD PTR [rbp-0x58],0x0
+     62c:	48 c7 45 b0 00 00 00 00 	mov    QWORD PTR [rbp-0x50],0x0
+     634:	48 c7 45 b8 00 00 00 00 	mov    QWORD PTR [rbp-0x48],0x0
+     63c:	48 c7 45 c0 00 00 00 00 	mov    QWORD PTR [rbp-0x40],0x0
+     644:	48 c7 45 c8 00 00 00 00 	mov    QWORD PTR [rbp-0x38],0x0
 		const char* pol[4] = { "Bus", "hi", "res", "lo" };
-     64c:	48 c7 45 80 00 00 00 00 	mov    QWORD PTR [rbp-0x80],0x0
-     654:	48 c7 45 88 00 00 00 00 	mov    QWORD PTR [rbp-0x78],0x0
-     65c:	48 c7 45 90 00 00 00 00 	mov    QWORD PTR [rbp-0x70],0x0
-     664:	48 c7 45 98 00 00 00 00 	mov    QWORD PTR [rbp-0x68],0x0
+     64c:	48 c7 45 88 00 00 00 00 	mov    QWORD PTR [rbp-0x78],0x0
+     654:	48 c7 45 90 00 00 00 00 	mov    QWORD PTR [rbp-0x70],0x0
+     65c:	48 c7 45 98 00 00 00 00 	mov    QWORD PTR [rbp-0x68],0x0
+     664:	48 c7 45 a0 00 00 00 00 	mov    QWORD PTR [rbp-0x60],0x0
 		const char* el[4] = { "Bus", "edge", "res", "level" };
-     66c:	48 c7 85 60 ff ff ff 00 00 00 00 	mov    QWORD PTR [rbp-0xa0],0x0
-     677:	48 c7 85 68 ff ff ff 00 00 00 00 	mov    QWORD PTR [rbp-0x98],0x0
-     682:	48 c7 85 70 ff ff ff 00 00 00 00 	mov    QWORD PTR [rbp-0x90],0x0
-     68d:	48 c7 85 78 ff ff ff 00 00 00 00 	mov    QWORD PTR [rbp-0x88],0x0
+     66c:	48 c7 85 68 ff ff ff 00 00 00 00 	mov    QWORD PTR [rbp-0x98],0x0
+     677:	48 c7 85 70 ff ff ff 00 00 00 00 	mov    QWORD PTR [rbp-0x90],0x0
+     682:	48 c7 85 78 ff ff ff 00 00 00 00 	mov    QWORD PTR [rbp-0x88],0x0
+     68d:	48 c7 45 80 00 00 00 00 	mov    QWORD PTR [rbp-0x80],0x0
 		if (!prt++) {
-     698:	8b 05 00 00 00 00    	mov    eax,DWORD PTR [rip+0x0]        # 69e <parse_io_interrupt+0x95>
-     69e:	8d 50 01             	lea    edx,[rax+0x1]
-     6a1:	89 15 00 00 00 00    	mov    DWORD PTR [rip+0x0],edx        # 6a7 <parse_io_interrupt+0x9e>
-     6a7:	85 c0                	test   eax,eax
-     6a9:	75 22                	jne    6cd <parse_io_interrupt+0xc4>
+     695:	8b 05 00 00 00 00    	mov    eax,DWORD PTR [rip+0x0]        # 69b <parse_io_interrupt+0x92>
+     69b:	8d 50 01             	lea    edx,[rax+0x1]
+     69e:	89 15 00 00 00 00    	mov    DWORD PTR [rip+0x0],edx        # 6a4 <parse_io_interrupt+0x9b>
+     6a4:	85 c0                	test   eax,eax
+     6a6:	75 22                	jne    6ca <parse_io_interrupt+0xc1>
 				printf("I/O interrupt assignments:\n");
-     6ab:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-     6b2:	b8 00 00 00 00       	mov    eax,0x0
-     6b7:	e8 00 00 00 00       	call   6bc <parse_io_interrupt+0xb3>
+     6a8:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+     6af:	b8 00 00 00 00       	mov    eax,0x0
+     6b4:	e8 00 00 00 00       	call   6b9 <parse_io_interrupt+0xb0>
 				printf("TYPE     BUS (NAME)   IRQ  IOAPIC  INP#  POL    TRIG\n");
-     6bc:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-     6c3:	b8 00 00 00 00       	mov    eax,0x0
-     6c8:	e8 00 00 00 00       	call   6cd <parse_io_interrupt+0xc4>
+     6b9:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+     6c0:	b8 00 00 00 00       	mov    eax,0x0
+     6c5:	e8 00 00 00 00       	call   6ca <parse_io_interrupt+0xc1>
 				pol[i->intr_flags & 0x03], el[(i->intr_flags >> 2) & 0x03]);
-     6cd:	48 8b 85 58 ff ff ff 	mov    rax,QWORD PTR [rbp-0xa8]
-     6d4:	0f b7 40 02          	movzx  eax,WORD PTR [rax+0x2]
-     6d8:	66 c1 e8 02          	shr    ax,0x2
-     6dc:	0f b7 c0             	movzx  eax,ax
-     6df:	83 e0 03             	and    eax,0x3
+     6ca:	48 8b 85 58 ff ff ff 	mov    rax,QWORD PTR [rbp-0xa8]
+     6d1:	0f b7 40 02          	movzx  eax,WORD PTR [rax+0x2]
+     6d5:	66 c1 e8 02          	shr    ax,0x2
+     6d9:	0f b7 c0             	movzx  eax,ax
+     6dc:	83 e0 03             	and    eax,0x3
 		printf("%7s  %3u %-7s  %3u  %6u  %4u  %-5s  %-5s\n",
-     6e2:	48 98                	cdqe
-     6e4:	4c 8b ac c5 60 ff ff ff 	mov    r13,QWORD PTR [rbp+rax*8-0xa0]
+     6df:	48 98                	cdqe
+     6e1:	4c 8b ac c5 68 ff ff ff 	mov    r13,QWORD PTR [rbp+rax*8-0x98]
 				pol[i->intr_flags & 0x03], el[(i->intr_flags >> 2) & 0x03]);
-     6ec:	48 8b 85 58 ff ff ff 	mov    rax,QWORD PTR [rbp-0xa8]
-     6f3:	0f b7 40 02          	movzx  eax,WORD PTR [rax+0x2]
-     6f7:	0f b7 c0             	movzx  eax,ax
-     6fa:	83 e0 03             	and    eax,0x3
+     6e9:	48 8b 85 58 ff ff ff 	mov    rax,QWORD PTR [rbp-0xa8]
+     6f0:	0f b7 40 02          	movzx  eax,WORD PTR [rax+0x2]
+     6f4:	0f b7 c0             	movzx  eax,ax
+     6f7:	83 e0 03             	and    eax,0x3
 		printf("%7s  %3u %-7s  %3u  %6u  %4u  %-5s  %-5s\n",
-     6fd:	48 98                	cdqe
-     6ff:	4c 8b 64 c5 80       	mov    r12,QWORD PTR [rbp+rax*8-0x80]
+     6fa:	48 98                	cdqe
+     6fc:	4c 8b 64 c5 88       	mov    r12,QWORD PTR [rbp+rax*8-0x78]
 			   	i->src_bus_irq, i->dest_apic_id, i->dest_apic_inp,
-     704:	48 8b 85 58 ff ff ff 	mov    rax,QWORD PTR [rbp-0xa8]
-     70b:	0f b6 40 07          	movzx  eax,BYTE PTR [rax+0x7]
+     701:	48 8b 85 58 ff ff ff 	mov    rax,QWORD PTR [rbp-0xa8]
+     708:	0f b6 40 07          	movzx  eax,BYTE PTR [rax+0x7]
 		printf("%7s  %3u %-7s  %3u  %6u  %4u  %-5s  %-5s\n",
-     70f:	0f b6 d8             	movzx  ebx,al
+     70c:	0f b6 d8             	movzx  ebx,al
 			   	i->src_bus_irq, i->dest_apic_id, i->dest_apic_inp,
-     712:	48 8b 85 58 ff ff ff 	mov    rax,QWORD PTR [rbp-0xa8]
-     719:	0f b6 40 06          	movzx  eax,BYTE PTR [rax+0x6]
+     70f:	48 8b 85 58 ff ff ff 	mov    rax,QWORD PTR [rbp-0xa8]
+     716:	0f b6 40 06          	movzx  eax,BYTE PTR [rax+0x6]
 		printf("%7s  %3u %-7s  %3u  %6u  %4u  %-5s  %-5s\n",
-     71d:	44 0f b6 f8          	movzx  r15d,al
+     71a:	44 0f b6 f8          	movzx  r15d,al
 			   	i->src_bus_irq, i->dest_apic_id, i->dest_apic_inp,
-     721:	48 8b 85 58 ff ff ff 	mov    rax,QWORD PTR [rbp-0xa8]
-     728:	0f b6 40 05          	movzx  eax,BYTE PTR [rax+0x5]
+     71e:	48 8b 85 58 ff ff ff 	mov    rax,QWORD PTR [rbp-0xa8]
+     725:	0f b6 40 05          	movzx  eax,BYTE PTR [rax+0x5]
 		printf("%7s  %3u %-7s  %3u  %6u  %4u  %-5s  %-5s\n",
-     72c:	44 0f b6 f0          	movzx  r14d,al
+     729:	44 0f b6 f0          	movzx  r14d,al
 				tps[max(i->type, 4)], i->src_bus_id, find_bus(i->src_bus_id),
-     730:	48 8b 85 58 ff ff ff 	mov    rax,QWORD PTR [rbp-0xa8]
-     737:	0f b6 40 04          	movzx  eax,BYTE PTR [rax+0x4]
+     72d:	48 8b 85 58 ff ff ff 	mov    rax,QWORD PTR [rbp-0xa8]
+     734:	0f b6 40 04          	movzx  eax,BYTE PTR [rax+0x4]
 		printf("%7s  %3u %-7s  %3u  %6u  %4u  %-5s  %-5s\n",
-     73b:	0f b6 c0             	movzx  eax,al
-     73e:	89 c7                	mov    edi,eax
-     740:	e8 00 00 00 00       	call   745 <parse_io_interrupt+0x13c>
-     745:	48 89 c6             	mov    rsi,rax
+     738:	0f b6 c0             	movzx  eax,al
+     73b:	89 c7                	mov    edi,eax
+     73d:	e8 00 00 00 00       	call   742 <parse_io_interrupt+0x139>
+     742:	48 89 c6             	mov    rsi,rax
 				tps[max(i->type, 4)], i->src_bus_id, find_bus(i->src_bus_id),
-     748:	48 8b 85 58 ff ff ff 	mov    rax,QWORD PTR [rbp-0xa8]
-     74f:	0f b6 40 04          	movzx  eax,BYTE PTR [rax+0x4]
+     745:	48 8b 85 58 ff ff ff 	mov    rax,QWORD PTR [rbp-0xa8]
+     74c:	0f b6 40 04          	movzx  eax,BYTE PTR [rax+0x4]
 		printf("%7s  %3u %-7s  %3u  %6u  %4u  %-5s  %-5s\n",
-     753:	0f b6 d0             	movzx  edx,al
+     750:	0f b6 d0             	movzx  edx,al
 				tps[max(i->type, 4)], i->src_bus_id, find_bus(i->src_bus_id),
-     756:	48 8b 85 58 ff ff ff 	mov    rax,QWORD PTR [rbp-0xa8]
-     75d:	0f b6 00             	movzx  eax,BYTE PTR [rax]
-     760:	b9 04 00 00 00       	mov    ecx,0x4
-     765:	38 c8                	cmp    al,cl
-     767:	0f 42 c1             	cmovb  eax,ecx
-     76a:	0f b6 c0             	movzx  eax,al
+     753:	48 8b 85 58 ff ff ff 	mov    rax,QWORD PTR [rbp-0xa8]
+     75a:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+     75d:	b9 04 00 00 00       	mov    ecx,0x4
+     762:	38 c8                	cmp    al,cl
+     764:	0f 42 c1             	cmovb  eax,ecx
+     767:	0f b6 c0             	movzx  eax,al
 		printf("%7s  %3u %-7s  %3u  %6u  %4u  %-5s  %-5s\n",
-     76d:	48 98                	cdqe
-     76f:	48 8b 44 c5 a0       	mov    rax,QWORD PTR [rbp+rax*8-0x60]
-     774:	48 83 ec 08          	sub    rsp,0x8
-     778:	41 55                	push   r13
-     77a:	41 54                	push   r12
-     77c:	53                   	push   rbx
-     77d:	45 89 f9             	mov    r9d,r15d
-     780:	45 89 f0             	mov    r8d,r14d
-     783:	48 89 f1             	mov    rcx,rsi
-     786:	48 89 c6             	mov    rsi,rax
-     789:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
-     790:	b8 00 00 00 00       	mov    eax,0x0
-     795:	e8 00 00 00 00       	call   79a <parse_io_interrupt+0x191>
-     79a:	48 83 c4 20          	add    rsp,0x20
+     76a:	48 98                	cdqe
+     76c:	48 8b 44 c5 a8       	mov    rax,QWORD PTR [rbp+rax*8-0x58]
+     771:	4c 89 6c 24 10       	mov    QWORD PTR [rsp+0x10],r13
+     776:	4c 89 64 24 08       	mov    QWORD PTR [rsp+0x8],r12
+     77b:	89 1c 24             	mov    DWORD PTR [rsp],ebx
+     77e:	45 89 f9             	mov    r9d,r15d
+     781:	45 89 f0             	mov    r8d,r14d
+     784:	48 89 f1             	mov    rcx,rsi
+     787:	48 89 c6             	mov    rsi,rax
+     78a:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+     791:	b8 00 00 00 00       	mov    eax,0x0
+     796:	e8 00 00 00 00       	call   79b <parse_io_interrupt+0x192>
 }
-     79e:	90                   	nop
-     79f:	48 8d 65 d8          	lea    rsp,[rbp-0x28]
+     79b:	90                   	nop
+     79c:	48 81 c4 a8 00 00 00 	add    rsp,0xa8
      7a3:	5b                   	pop    rbx
      7a4:	41 5c                	pop    r12
      7a6:	41 5d                	pop    r13
@@ -718,21 +716,21 @@ htt_proc: /* mark as speculative */
      7c8:	b8 00 00 00 00       	mov    eax,0x0
      7cd:	e8 00 00 00 00       	call   7d2 <parse_local_interrupt+0x24>
 		const char* tps[5] = { "INT", "NMI", "SMI", "ExtINT", "Unknown" };
-     7d2:	48 c7 45 c0 00 00 00 00 	mov    QWORD PTR [rbp-0x40],0x0
-     7da:	48 c7 45 c8 00 00 00 00 	mov    QWORD PTR [rbp-0x38],0x0
-     7e2:	48 c7 45 d0 00 00 00 00 	mov    QWORD PTR [rbp-0x30],0x0
-     7ea:	48 c7 45 d8 00 00 00 00 	mov    QWORD PTR [rbp-0x28],0x0
-     7f2:	48 c7 45 e0 00 00 00 00 	mov    QWORD PTR [rbp-0x20],0x0
+     7d2:	48 c7 45 c8 00 00 00 00 	mov    QWORD PTR [rbp-0x38],0x0
+     7da:	48 c7 45 d0 00 00 00 00 	mov    QWORD PTR [rbp-0x30],0x0
+     7e2:	48 c7 45 d8 00 00 00 00 	mov    QWORD PTR [rbp-0x28],0x0
+     7ea:	48 c7 45 e0 00 00 00 00 	mov    QWORD PTR [rbp-0x20],0x0
+     7f2:	48 c7 45 e8 00 00 00 00 	mov    QWORD PTR [rbp-0x18],0x0
 		const char* pol[4] = { "Bus", "hi", "res", "lo" };
-     7fa:	48 c7 45 a0 00 00 00 00 	mov    QWORD PTR [rbp-0x60],0x0
-     802:	48 c7 45 a8 00 00 00 00 	mov    QWORD PTR [rbp-0x58],0x0
-     80a:	48 c7 45 b0 00 00 00 00 	mov    QWORD PTR [rbp-0x50],0x0
-     812:	48 c7 45 b8 00 00 00 00 	mov    QWORD PTR [rbp-0x48],0x0
+     7fa:	48 c7 45 a8 00 00 00 00 	mov    QWORD PTR [rbp-0x58],0x0
+     802:	48 c7 45 b0 00 00 00 00 	mov    QWORD PTR [rbp-0x50],0x0
+     80a:	48 c7 45 b8 00 00 00 00 	mov    QWORD PTR [rbp-0x48],0x0
+     812:	48 c7 45 c0 00 00 00 00 	mov    QWORD PTR [rbp-0x40],0x0
 		const char* el[4] = { "Bus", "edge", "res", "level" };
-     81a:	48 c7 45 80 00 00 00 00 	mov    QWORD PTR [rbp-0x80],0x0
-     822:	48 c7 45 88 00 00 00 00 	mov    QWORD PTR [rbp-0x78],0x0
-     82a:	48 c7 45 90 00 00 00 00 	mov    QWORD PTR [rbp-0x70],0x0
-     832:	48 c7 45 98 00 00 00 00 	mov    QWORD PTR [rbp-0x68],0x0
+     81a:	48 c7 45 88 00 00 00 00 	mov    QWORD PTR [rbp-0x78],0x0
+     822:	48 c7 45 90 00 00 00 00 	mov    QWORD PTR [rbp-0x70],0x0
+     82a:	48 c7 45 98 00 00 00 00 	mov    QWORD PTR [rbp-0x68],0x0
+     832:	48 c7 45 a0 00 00 00 00 	mov    QWORD PTR [rbp-0x60],0x0
 				l->src_bus_id, find_bus(l->src_bus_id), l->src_bus_irq);
      83a:	48 8b 85 78 ff ff ff 	mov    rax,QWORD PTR [rbp-0x88]
      841:	0f b6 40 05          	movzx  eax,BYTE PTR [rax+0x5]
@@ -758,7 +756,7 @@ htt_proc: /* mark as speculative */
      87f:	0f 42 c1             	cmovb  eax,ecx
      882:	0f b6 c0             	movzx  eax,al
      885:	48 98                	cdqe
-     887:	48 8b 44 c5 c0       	mov    rax,QWORD PTR [rbp+rax*8-0x40]
+     887:	48 8b 44 c5 c8       	mov    rax,QWORD PTR [rbp+rax*8-0x38]
      88c:	41 89 d8             	mov    r8d,ebx
      88f:	48 89 f1             	mov    rcx,rsi
      892:	48 89 c6             	mov    rsi,rax
@@ -773,7 +771,7 @@ htt_proc: /* mark as speculative */
      8b8:	83 e0 03             	and    eax,0x3
 		printf("\tLocal APIC: %3u INP# %3u P: %5s T: %5s\n",
      8bb:	48 98                	cdqe
-     8bd:	48 8b 74 c5 80       	mov    rsi,QWORD PTR [rbp+rax*8-0x80]
+     8bd:	48 8b 74 c5 88       	mov    rsi,QWORD PTR [rbp+rax*8-0x78]
 				pol[l->intr_flags & 0x03], el[(l->intr_flags >> 2) & 0x03]);
      8c2:	48 8b 85 78 ff ff ff 	mov    rax,QWORD PTR [rbp-0x88]
      8c9:	0f b7 40 02          	movzx  eax,WORD PTR [rax+0x2]
@@ -781,7 +779,7 @@ htt_proc: /* mark as speculative */
      8d0:	83 e0 03             	and    eax,0x3
 		printf("\tLocal APIC: %3u INP# %3u P: %5s T: %5s\n",
      8d3:	48 98                	cdqe
-     8d5:	48 8b 4c c5 a0       	mov    rcx,QWORD PTR [rbp+rax*8-0x60]
+     8d5:	48 8b 4c c5 a8       	mov    rcx,QWORD PTR [rbp+rax*8-0x58]
 				l->dest_lapic_id, l->dest_lapic_linp,
      8da:	48 8b 85 78 ff ff ff 	mov    rax,QWORD PTR [rbp-0x88]
      8e1:	0f b6 40 07          	movzx  eax,BYTE PTR [rax+0x7]

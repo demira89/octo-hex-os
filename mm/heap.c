@@ -34,8 +34,8 @@ void init_kernel_heap()
 				ct = pm_count / 4096 / 16;
 
 		/* now allocate-on-access the heap */
-		hp = mm_alloc_vmem(&mm_kernel, NULL, ct, MMGR_ALLOC_NP_AOA
-						| MMGR_MAP_WRITE | MMGR_MAP_KERNEL/* | MMGR_MAP_GLOBAL*/);
+		hp = mm_alloc_vmem(&mm_kernel, NULL, ct, /*MMGR_ALLOC_NP_AOA // no AOA for start
+						|*/ MMGR_MAP_WRITE | MMGR_MAP_KERNEL/* | MMGR_MAP_GLOBAL*/);
 		h_kernel.heap_base = h_kernel.heap_ptr = hp;
 		h_kernel.heap_limit = hp + ct * 4096;
 }
@@ -368,6 +368,8 @@ int h_generic_oom_handler(void* hp, size_t s)
 				/* TODO: maybe check kernel vs. user pages */
 				return 0;
 		}
+
+		while (s);
 
 		/* map a new heap and move the initial desc into dynamic memory */
 		page_ct = s / 4096;

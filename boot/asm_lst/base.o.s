@@ -377,150 +377,221 @@ void base_entry()
  2a5:	55                   	push   ebp
  2a6:	89 e5                	mov    ebp,esp
  2a8:	53                   	push   ebx
- 2a9:	83 ec 24             	sub    esp,0x24
+ 2a9:	83 ec 34             	sub    esp,0x34
 		/* First check for 32, PAE and 64-bit */
-		int mode = 0; /* 0=32, 1=PAE, 2=64 */
+		int mode = 0, nx = 0, msr = 0; /* 0=32, 1=PAE, 2=64 */
  2ac:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
+ 2b3:	c7 45 f0 00 00 00 00 	mov    DWORD PTR [ebp-0x10],0x0
+ 2ba:	c7 45 ec 00 00 00 00 	mov    DWORD PTR [ebp-0x14],0x0
 		unsigned int eax, ebx, ecx, edx;
 		uint64_t ep;
 
 		__cpuid(0, eax, ebx, ecx, edx);
- 2b3:	b8 00 00 00 00       	mov    eax,0x0
- 2b8:	0f a2                	cpuid
- 2ba:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
- 2bd:	89 5d ec             	mov    DWORD PTR [ebp-0x14],ebx
- 2c0:	89 4d e8             	mov    DWORD PTR [ebp-0x18],ecx
- 2c3:	89 55 e4             	mov    DWORD PTR [ebp-0x1c],edx
+ 2c1:	b8 00 00 00 00       	mov    eax,0x0
+ 2c6:	0f a2                	cpuid
+ 2c8:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
+ 2cb:	89 5d e4             	mov    DWORD PTR [ebp-0x1c],ebx
+ 2ce:	89 4d e0             	mov    DWORD PTR [ebp-0x20],ecx
+ 2d1:	89 55 dc             	mov    DWORD PTR [ebp-0x24],edx
 
 		/* eax leaves */
 		if (eax >= 1) {
- 2c6:	83 7d f0 00          	cmp    DWORD PTR [ebp-0x10],0x0
- 2ca:	74 32                	je     2fe <base_entry+0x59>
+ 2d4:	83 7d e8 00          	cmp    DWORD PTR [ebp-0x18],0x0
+ 2d8:	74 56                	je     330 <base_entry+0x8b>
 				__cpuid(1, eax, ebx, ecx, edx);
- 2cc:	b8 01 00 00 00       	mov    eax,0x1
- 2d1:	b9 00 00 00 00       	mov    ecx,0x0
- 2d6:	ba 00 00 00 00       	mov    edx,0x0
- 2db:	89 cb                	mov    ebx,ecx
- 2dd:	89 d1                	mov    ecx,edx
- 2df:	0f a2                	cpuid
- 2e1:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
- 2e4:	89 5d ec             	mov    DWORD PTR [ebp-0x14],ebx
- 2e7:	89 4d e8             	mov    DWORD PTR [ebp-0x18],ecx
- 2ea:	89 55 e4             	mov    DWORD PTR [ebp-0x1c],edx
+ 2da:	b8 01 00 00 00       	mov    eax,0x1
+ 2df:	b9 00 00 00 00       	mov    ecx,0x0
+ 2e4:	ba 00 00 00 00       	mov    edx,0x0
+ 2e9:	89 cb                	mov    ebx,ecx
+ 2eb:	89 d1                	mov    ecx,edx
+ 2ed:	0f a2                	cpuid
+ 2ef:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
+ 2f2:	89 5d e4             	mov    DWORD PTR [ebp-0x1c],ebx
+ 2f5:	89 4d e0             	mov    DWORD PTR [ebp-0x20],ecx
+ 2f8:	89 55 dc             	mov    DWORD PTR [ebp-0x24],edx
+				if (edx & (1 << 5)) /* MSR */
+ 2fb:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+ 2fe:	83 e0 20             	and    eax,0x20
+ 301:	85 c0                	test   eax,eax
+ 303:	74 07                	je     30c <base_entry+0x67>
+					msr = 1;
+ 305:	c7 45 ec 01 00 00 00 	mov    DWORD PTR [ebp-0x14],0x1
 				if (edx & (1 << 6)) /* PAE */
- 2ed:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
- 2f0:	83 e0 40             	and    eax,0x40
- 2f3:	85 c0                	test   eax,eax
- 2f5:	74 07                	je     2fe <base_entry+0x59>
+ 30c:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+ 30f:	83 e0 40             	and    eax,0x40
+ 312:	85 c0                	test   eax,eax
+ 314:	74 07                	je     31d <base_entry+0x78>
 						mode = 1;
- 2f7:	c7 45 f4 01 00 00 00 	mov    DWORD PTR [ebp-0xc],0x1
+ 316:	c7 45 f4 01 00 00 00 	mov    DWORD PTR [ebp-0xc],0x1
+				if (edx & (1 << 20))
+ 31d:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+ 320:	25 00 00 10 00       	and    eax,0x100000
+ 325:	85 c0                	test   eax,eax
+ 327:	74 07                	je     330 <base_entry+0x8b>
+					nx = 1;
+ 329:	c7 45 f0 01 00 00 00 	mov    DWORD PTR [ebp-0x10],0x1
 		}
 
 		/* EFEAT leaves */
 		__cpuid(0x80000000, eax, ebx, ecx, edx);
- 2fe:	b8 00 00 00 80       	mov    eax,0x80000000
- 303:	0f a2                	cpuid
- 305:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
- 308:	89 5d ec             	mov    DWORD PTR [ebp-0x14],ebx
- 30b:	89 4d e8             	mov    DWORD PTR [ebp-0x18],ecx
- 30e:	89 55 e4             	mov    DWORD PTR [ebp-0x1c],edx
+ 330:	b8 00 00 00 80       	mov    eax,0x80000000
+ 335:	0f a2                	cpuid
+ 337:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
+ 33a:	89 5d e4             	mov    DWORD PTR [ebp-0x1c],ebx
+ 33d:	89 4d e0             	mov    DWORD PTR [ebp-0x20],ecx
+ 340:	89 55 dc             	mov    DWORD PTR [ebp-0x24],edx
 		if (eax >= 0x80000001) {
- 311:	81 7d f0 00 00 00 80 	cmp    DWORD PTR [ebp-0x10],0x80000000
- 318:	76 39                	jbe    353 <base_entry+0xae>
+ 343:	81 7d e8 00 00 00 80 	cmp    DWORD PTR [ebp-0x18],0x80000000
+ 34a:	76 4c                	jbe    398 <base_entry+0xf3>
 				__cpuid(0x80000001, eax, ebx, ecx, edx);
- 31a:	b8 01 00 00 80       	mov    eax,0x80000001
- 31f:	0f a2                	cpuid
- 321:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
- 324:	89 5d ec             	mov    DWORD PTR [ebp-0x14],ebx
- 327:	89 4d e8             	mov    DWORD PTR [ebp-0x18],ecx
- 32a:	89 55 e4             	mov    DWORD PTR [ebp-0x1c],edx
+ 34c:	b8 01 00 00 80       	mov    eax,0x80000001
+ 351:	0f a2                	cpuid
+ 353:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
+ 356:	89 5d e4             	mov    DWORD PTR [ebp-0x1c],ebx
+ 359:	89 4d e0             	mov    DWORD PTR [ebp-0x20],ecx
+ 35c:	89 55 dc             	mov    DWORD PTR [ebp-0x24],edx
 				if (edx & (1 << 29))
- 32d:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
- 330:	25 00 00 00 20       	and    eax,0x20000000
- 335:	85 c0                	test   eax,eax
- 337:	74 09                	je     342 <base_entry+0x9d>
+ 35f:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+ 362:	25 00 00 00 20       	and    eax,0x20000000
+ 367:	85 c0                	test   eax,eax
+ 369:	74 09                	je     374 <base_entry+0xcf>
 						mode = 2;
- 339:	c7 45 f4 02 00 00 00 	mov    DWORD PTR [ebp-0xc],0x2
- 340:	eb 11                	jmp    353 <base_entry+0xae>
+ 36b:	c7 45 f4 02 00 00 00 	mov    DWORD PTR [ebp-0xc],0x2
+ 372:	eb 11                	jmp    385 <base_entry+0xe0>
 				else if (edx & (1 << 6)) /* PAE alternative */
- 342:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
- 345:	83 e0 40             	and    eax,0x40
- 348:	85 c0                	test   eax,eax
- 34a:	74 07                	je     353 <base_entry+0xae>
+ 374:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+ 377:	83 e0 40             	and    eax,0x40
+ 37a:	85 c0                	test   eax,eax
+ 37c:	74 07                	je     385 <base_entry+0xe0>
 						mode = 1;
- 34c:	c7 45 f4 01 00 00 00 	mov    DWORD PTR [ebp-0xc],0x1
+ 37e:	c7 45 f4 01 00 00 00 	mov    DWORD PTR [ebp-0xc],0x1
+				if (edx & (1 << 20))
+ 385:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+ 388:	25 00 00 10 00       	and    eax,0x100000
+ 38d:	85 c0                	test   eax,eax
+ 38f:	74 07                	je     398 <base_entry+0xf3>
+					nx = 1;
+ 391:	c7 45 f0 01 00 00 00 	mov    DWORD PTR [ebp-0x10],0x1
 		}
 
+		/* enable nx if possible*/
+		if (msr) {
+ 398:	83 7d ec 00          	cmp    DWORD PTR [ebp-0x14],0x0
+ 39c:	74 25                	je     3c3 <base_entry+0x11e>
+			uint32_t a, d;
+			asm volatile("rdmsr" : "=a"(a), "=d"(d) : "c"(0xC0000080)); /* IA32_EFER */
+ 39e:	b8 80 00 00 c0       	mov    eax,0xc0000080
+ 3a3:	89 c1                	mov    ecx,eax
+ 3a5:	0f 32                	rdmsr
+ 3a7:	89 45 d8             	mov    DWORD PTR [ebp-0x28],eax
+ 3aa:	89 55 d4             	mov    DWORD PTR [ebp-0x2c],edx
+			a |= (1 << 11); /* NX enable */
+ 3ad:	81 4d d8 00 08 00 00 	or     DWORD PTR [ebp-0x28],0x800
+			asm volatile("wrmsr" : : "a"(a), "d"(d), "c"(0xC0000080));
+ 3b4:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+ 3b7:	8b 55 d4             	mov    edx,DWORD PTR [ebp-0x2c]
+ 3ba:	b9 80 00 00 c0       	mov    ecx,0xc0000080
+ 3bf:	0f 30                	wrmsr
+ 3c1:	eb 07                	jmp    3ca <base_entry+0x125>
+		} else
+			nx = 0;
+ 3c3:	c7 45 f0 00 00 00 00 	mov    DWORD PTR [ebp-0x10],0x0
+
 		if (mode == 0)
- 353:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
- 357:	75 12                	jne    36b <base_entry+0xc6>
+ 3ca:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
+ 3ce:	75 12                	jne    3e2 <base_entry+0x13d>
 				puts("32-bit");
- 359:	83 ec 0c             	sub    esp,0xc
- 35c:	68 04 00 00 00       	push   0x4
- 361:	e8 fc ff ff ff       	call   362 <base_entry+0xbd>
- 366:	83 c4 10             	add    esp,0x10
- 369:	eb 2e                	jmp    399 <base_entry+0xf4>
+ 3d0:	83 ec 0c             	sub    esp,0xc
+ 3d3:	68 04 00 00 00       	push   0x4
+ 3d8:	e8 fc ff ff ff       	call   3d9 <base_entry+0x134>
+ 3dd:	83 c4 10             	add    esp,0x10
+ 3e0:	eb 2e                	jmp    410 <base_entry+0x16b>
 		else if (mode == 1)
- 36b:	83 7d f4 01          	cmp    DWORD PTR [ebp-0xc],0x1
- 36f:	75 12                	jne    383 <base_entry+0xde>
+ 3e2:	83 7d f4 01          	cmp    DWORD PTR [ebp-0xc],0x1
+ 3e6:	75 12                	jne    3fa <base_entry+0x155>
 				puts("PAE");
- 371:	83 ec 0c             	sub    esp,0xc
- 374:	68 0b 00 00 00       	push   0xb
- 379:	e8 fc ff ff ff       	call   37a <base_entry+0xd5>
- 37e:	83 c4 10             	add    esp,0x10
- 381:	eb 16                	jmp    399 <base_entry+0xf4>
+ 3e8:	83 ec 0c             	sub    esp,0xc
+ 3eb:	68 0b 00 00 00       	push   0xb
+ 3f0:	e8 fc ff ff ff       	call   3f1 <base_entry+0x14c>
+ 3f5:	83 c4 10             	add    esp,0x10
+ 3f8:	eb 16                	jmp    410 <base_entry+0x16b>
 		else if (mode == 2)
- 383:	83 7d f4 02          	cmp    DWORD PTR [ebp-0xc],0x2
- 387:	75 10                	jne    399 <base_entry+0xf4>
+ 3fa:	83 7d f4 02          	cmp    DWORD PTR [ebp-0xc],0x2
+ 3fe:	75 10                	jne    410 <base_entry+0x16b>
 				puts("64-bit");
- 389:	83 ec 0c             	sub    esp,0xc
- 38c:	68 0f 00 00 00       	push   0xf
- 391:	e8 fc ff ff ff       	call   392 <base_entry+0xed>
- 396:	83 c4 10             	add    esp,0x10
+ 400:	83 ec 0c             	sub    esp,0xc
+ 403:	68 0f 00 00 00       	push   0xf
+ 408:	e8 fc ff ff ff       	call   409 <base_entry+0x164>
+ 40d:	83 c4 10             	add    esp,0x10
+		if (nx)
+ 410:	83 7d f0 00          	cmp    DWORD PTR [ebp-0x10],0x0
+ 414:	74 12                	je     428 <base_entry+0x183>
+			puts("with NX");
+ 416:	83 ec 0c             	sub    esp,0xc
+ 419:	68 16 00 00 00       	push   0x16
+ 41e:	e8 fc ff ff ff       	call   41f <base_entry+0x17a>
+ 423:	83 c4 10             	add    esp,0x10
+ 426:	eb 28                	jmp    450 <base_entry+0x1ab>
+		else if (!msr)
+ 428:	83 7d ec 00          	cmp    DWORD PTR [ebp-0x14],0x0
+ 42c:	75 12                	jne    440 <base_entry+0x19b>
+			puts("due to no MSR support");
+ 42e:	83 ec 0c             	sub    esp,0xc
+ 431:	68 1e 00 00 00       	push   0x1e
+ 436:	e8 fc ff ff ff       	call   437 <base_entry+0x192>
+ 43b:	83 c4 10             	add    esp,0x10
+ 43e:	eb 10                	jmp    450 <base_entry+0x1ab>
+		else
+			puts("due to lack of processor support");
+ 440:	83 ec 0c             	sub    esp,0xc
+ 443:	68 34 00 00 00       	push   0x34
+ 448:	e8 fc ff ff ff       	call   449 <base_entry+0x1a4>
+ 44d:	83 c4 10             	add    esp,0x10
 
 		/* and initialize the mini-mm */
-		mm_initialize(mode);
- 399:	83 ec 0c             	sub    esp,0xc
- 39c:	ff 75 f4             	push   DWORD PTR [ebp-0xc]
- 39f:	e8 fc ff ff ff       	call   3a0 <base_entry+0xfb>
- 3a4:	83 c4 10             	add    esp,0x10
+		mm_initialize(mode, nx);
+ 450:	83 ec 08             	sub    esp,0x8
+ 453:	ff 75 f0             	push   DWORD PTR [ebp-0x10]
+ 456:	ff 75 f4             	push   DWORD PTR [ebp-0xc]
+ 459:	e8 fc ff ff ff       	call   45a <base_entry+0x1b5>
+ 45e:	83 c4 10             	add    esp,0x10
 
 		/* Then load the kernel image & modules via BIOS functions */
 		ep = fl_load_images(mode);
- 3a7:	83 ec 0c             	sub    esp,0xc
- 3aa:	ff 75 f4             	push   DWORD PTR [ebp-0xc]
- 3ad:	e8 fc ff ff ff       	call   3ae <base_entry+0x109>
- 3b2:	83 c4 10             	add    esp,0x10
- 3b5:	89 45 d8             	mov    DWORD PTR [ebp-0x28],eax
- 3b8:	89 55 dc             	mov    DWORD PTR [ebp-0x24],edx
+ 461:	83 ec 0c             	sub    esp,0xc
+ 464:	ff 75 f4             	push   DWORD PTR [ebp-0xc]
+ 467:	e8 fc ff ff ff       	call   468 <base_entry+0x1c3>
+ 46c:	83 c4 10             	add    esp,0x10
+ 46f:	89 45 c8             	mov    DWORD PTR [ebp-0x38],eax
+ 472:	89 55 cc             	mov    DWORD PTR [ebp-0x34],edx
 
 		/* select the video mode */
 		void vga_init(int mode);
 		vga_init(mode);
- 3bb:	83 ec 0c             	sub    esp,0xc
- 3be:	ff 75 f4             	push   DWORD PTR [ebp-0xc]
- 3c1:	e8 fc ff ff ff       	call   3c2 <base_entry+0x11d>
- 3c6:	83 c4 10             	add    esp,0x10
+ 475:	83 ec 0c             	sub    esp,0xc
+ 478:	ff 75 f4             	push   DWORD PTR [ebp-0xc]
+ 47b:	e8 fc ff ff ff       	call   47c <base_entry+0x1d7>
+ 480:	83 c4 10             	add    esp,0x10
 
 		/* Preallocate memory map tables in VM */
 		void mm_preallocate_maps(int mode);
 		mm_preallocate_maps(mode);
- 3c9:	83 ec 0c             	sub    esp,0xc
- 3cc:	ff 75 f4             	push   DWORD PTR [ebp-0xc]
- 3cf:	e8 fc ff ff ff       	call   3d0 <base_entry+0x12b>
- 3d4:	83 c4 10             	add    esp,0x10
+ 483:	83 ec 0c             	sub    esp,0xc
+ 486:	ff 75 f4             	push   DWORD PTR [ebp-0xc]
+ 489:	e8 fc ff ff ff       	call   48a <base_entry+0x1e5>
+ 48e:	83 c4 10             	add    esp,0x10
 
 		/* enable paging (and LM?) and jump into
 		 * the kernel */
 		mm_enable_paging(mode, ep);
- 3d7:	83 ec 04             	sub    esp,0x4
- 3da:	ff 75 dc             	push   DWORD PTR [ebp-0x24]
- 3dd:	ff 75 d8             	push   DWORD PTR [ebp-0x28]
- 3e0:	ff 75 f4             	push   DWORD PTR [ebp-0xc]
- 3e3:	e8 fc ff ff ff       	call   3e4 <base_entry+0x13f>
- 3e8:	83 c4 10             	add    esp,0x10
+ 491:	83 ec 04             	sub    esp,0x4
+ 494:	ff 75 cc             	push   DWORD PTR [ebp-0x34]
+ 497:	ff 75 c8             	push   DWORD PTR [ebp-0x38]
+ 49a:	ff 75 f4             	push   DWORD PTR [ebp-0xc]
+ 49d:	e8 fc ff ff ff       	call   49e <base_entry+0x1f9>
+ 4a2:	83 c4 10             	add    esp,0x10
 }
- 3eb:	90                   	nop
- 3ec:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
- 3ef:	c9                   	leave
- 3f0:	c3                   	ret
+ 4a5:	90                   	nop
+ 4a6:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
+ 4a9:	c9                   	leave
+ 4aa:	c3                   	ret

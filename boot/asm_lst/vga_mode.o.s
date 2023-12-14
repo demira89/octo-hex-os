@@ -5,7 +5,7 @@ vga_mode.o:     file format elf32-i386
 Disassembly of section .text:
 
 00000000 <call_int16>:
-void* vga_pmem = (void*)0xb8000;
+void* vga_pmem = (void*)FM_VIDEO_MEMORY;
 size_t vga_pmem_size = 0x8000; /* b8000-c0000 color TM */
 const char* vga_font = NULL;
 

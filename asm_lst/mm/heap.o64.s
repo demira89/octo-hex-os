@@ -5,27 +5,27 @@ mm/heap.o64:     file format elf64-x86-64
 Disassembly of section .text:
 
 0000000000000000 <memcpy>:
-		for (size_t i = 0; i < KGUARD_SIZE; i++)
-				*p1++ = *--p2 = 0xcb;
-		return rv + KGUARD_SIZE;
-}
-
 void* kzalloc(size_t s)
+{
+		void* rv = kmalloc(s);
+		if (!rv)
+				return NULL;
+		bzero(rv, s);
    0:	55                   	push   rbp
    1:	48 89 e5             	mov    rbp,rsp
    4:	48 83 ec 28          	sub    rsp,0x28
    8:	48 89 7d e8          	mov    QWORD PTR [rbp-0x18],rdi
    c:	48 89 75 e0          	mov    QWORD PTR [rbp-0x20],rsi
   10:	48 89 55 d8          	mov    QWORD PTR [rbp-0x28],rdx
-{
+		return rv;
   14:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
   18:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
-		void* rv = kmalloc(s);
+}
   1c:	48 8b 45 e0          	mov    rax,QWORD PTR [rbp-0x20]
   20:	48 89 45 f0          	mov    QWORD PTR [rbp-0x10],rax
-		if (!rv)
+
   24:	eb 1d                	jmp    43 <memcpy+0x43>
-				return NULL;
+void kfree(void* ptr)
   26:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
   2a:	48 8d 42 01          	lea    rax,[rdx+0x1]
   2e:	48 89 45 f0          	mov    QWORD PTR [rbp-0x10],rax
@@ -34,13 +34,13 @@ void* kzalloc(size_t s)
   3a:	48 89 4d f8          	mov    QWORD PTR [rbp-0x8],rcx
   3e:	0f b6 12             	movzx  edx,BYTE PTR [rdx]
   41:	88 10                	mov    BYTE PTR [rax],dl
-		if (!rv)
+
   43:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
   47:	48 8d 50 ff          	lea    rdx,[rax-0x1]
   4b:	48 89 55 d8          	mov    QWORD PTR [rbp-0x28],rdx
   4f:	48 85 c0             	test   rax,rax
   52:	75 d2                	jne    26 <memcpy+0x26>
-		bzero(rv, s);
+{
   54:	90                   	nop
   55:	90                   	nop
   56:	c9                   	leave
@@ -62,9 +62,9 @@ void* kzalloc(size_t s)
   79:	48 8b 05 00 00 00 00 	mov    rax,QWORD PTR [rip+0x0]        # 80 <init_kernel_heap+0x28>
   80:	48 c1 e8 10          	shr    rax,0x10
   84:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
-		hp = mm_alloc_vmem(&mm_kernel, NULL, ct, MMGR_ALLOC_NP_AOA
+		hp = mm_alloc_vmem(&mm_kernel, NULL, ct, /*MMGR_ALLOC_NP_AOA // no AOA for start
   88:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
-  8c:	b9 0c 00 02 00       	mov    ecx,0x2000c
+  8c:	b9 0c 00 00 00       	mov    ecx,0xc
   91:	48 89 c2             	mov    rdx,rax
   94:	be 00 00 00 00       	mov    esi,0x0
   99:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
@@ -1061,8 +1061,6 @@ Pos1:
  c00:	c3                   	ret
 
 0000000000000c01 <kfree>:
-
-void kfree(void* ptr)
 {
  c01:	55                   	push   rbp
  c02:	48 89 e5             	mov    rbp,rsp
@@ -1263,173 +1261,176 @@ int h_generic_oom_handler(void* hp, size_t s)
 {
  e13:	55                   	push   rbp
  e14:	48 89 e5             	mov    rbp,rsp
- e17:	53                   	push   rbx
- e18:	48 83 ec 38          	sub    rsp,0x38
- e1c:	48 89 7d c8          	mov    QWORD PTR [rbp-0x38],rdi
- e20:	48 89 75 c0          	mov    QWORD PTR [rbp-0x40],rsi
+ e17:	48 83 ec 30          	sub    rsp,0x30
+ e1b:	48 89 7d d8          	mov    QWORD PTR [rbp-0x28],rdi
+ e1f:	48 89 75 d0          	mov    QWORD PTR [rbp-0x30],rsi
 		struct h_heap* h = (struct h_heap*)hp, *h2; void* nm;
- e24:	48 8b 45 c8          	mov    rax,QWORD PTR [rbp-0x38]
- e28:	48 89 45 e0          	mov    QWORD PTR [rbp-0x20],rax
+ e23:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
+ e27:	48 89 45 f0          	mov    QWORD PTR [rbp-0x10],rax
 		size_t page_ct;
 
 		if (h->flags == 1) {
- e2c:	48 8b 45 e0          	mov    rax,QWORD PTR [rbp-0x20]
- e30:	8b 40 30             	mov    eax,DWORD PTR [rax+0x30]
- e33:	25 ff ff ff 7f       	and    eax,0x7fffffff
- e38:	83 f8 01             	cmp    eax,0x1
- e3b:	75 0a                	jne    e47 <h_generic_oom_handler+0x34>
+ e2b:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
+ e2f:	8b 40 30             	mov    eax,DWORD PTR [rax+0x30]
+ e32:	25 ff ff ff 7f       	and    eax,0x7fffffff
+ e37:	83 f8 01             	cmp    eax,0x1
+ e3a:	75 0a                	jne    e46 <h_generic_oom_handler+0x33>
 				/* aggregate on aggregates */
 				/* should be handled by the generic handler */
 				/* TODO: maybe check kernel vs. user pages */
 				return 0;
- e3d:	b8 00 00 00 00       	mov    eax,0x0
- e42:	e9 77 01 00 00       	jmp    fbe <h_generic_oom_handler+0x1ab>
+ e3c:	b8 00 00 00 00       	mov    eax,0x0
+ e41:	e9 7f 01 00 00       	jmp    fc5 <h_generic_oom_handler+0x1b2>
 		}
+
+		while (s);
+ e46:	90                   	nop
+ e47:	48 83 7d d0 00       	cmp    QWORD PTR [rbp-0x30],0x0
+ e4c:	75 f9                	jne    e47 <h_generic_oom_handler+0x34>
 
 		/* map a new heap and move the initial desc into dynamic memory */
 		page_ct = s / 4096;
- e47:	48 8b 45 c0          	mov    rax,QWORD PTR [rbp-0x40]
- e4b:	48 c1 e8 0c          	shr    rax,0xc
- e4f:	48 89 45 e8          	mov    QWORD PTR [rbp-0x18],rax
+ e4e:	48 8b 45 d0          	mov    rax,QWORD PTR [rbp-0x30]
+ e52:	48 c1 e8 0c          	shr    rax,0xc
+ e56:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
 		if (page_ct % 256) /* MiB granularity */
- e53:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
- e57:	0f b6 c0             	movzx  eax,al
- e5a:	48 85 c0             	test   rax,rax
- e5d:	74 10                	je     e6f <h_generic_oom_handler+0x5c>
+ e5a:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+ e5e:	0f b6 c0             	movzx  eax,al
+ e61:	48 85 c0             	test   rax,rax
+ e64:	74 10                	je     e76 <h_generic_oom_handler+0x63>
 				page_ct += 256 - (page_ct % 256);
- e5f:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
- e63:	b0 00                	mov    al,0x0
- e65:	48 05 00 01 00 00    	add    rax,0x100
- e6b:	48 89 45 e8          	mov    QWORD PTR [rbp-0x18],rax
+ e66:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+ e6a:	b0 00                	mov    al,0x0
+ e6c:	48 05 00 01 00 00    	add    rax,0x100
+ e72:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
 		nm = mm_alloc_vmem(&mm_kernel, NULL, page_ct, MMGR_ALLOC_NP_AOA
- e6f:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
- e73:	b9 0c 00 02 00       	mov    ecx,0x2000c
- e78:	48 89 c2             	mov    rdx,rax
- e7b:	be 00 00 00 00       	mov    esi,0x0
- e80:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
- e87:	e8 00 00 00 00       	call   e8c <h_generic_oom_handler+0x79>
- e8c:	48 89 45 d8          	mov    QWORD PTR [rbp-0x28],rax
+ e76:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+ e7a:	b9 0c 00 02 00       	mov    ecx,0x2000c
+ e7f:	48 89 c2             	mov    rdx,rax
+ e82:	be 00 00 00 00       	mov    esi,0x0
+ e87:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+ e8e:	e8 00 00 00 00       	call   e93 <h_generic_oom_handler+0x80>
+ e93:	48 89 45 e8          	mov    QWORD PTR [rbp-0x18],rax
 						| MMGR_MAP_WRITE | MMGR_MAP_KERNEL/* | MMGR_MAP_GLOBAL*/);
 
 		/* we now have page_ct scrubbed pages at nm
 		 * let's create a new heap there */
 		h2 = (struct h_heap*)h_create_heap(nm, page_ct * 4096, h_generic_oom_handler, h_generic_decommit);
- e90:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
- e94:	48 c1 e0 0c          	shl    rax,0xc
- e98:	48 89 c6             	mov    rsi,rax
- e9b:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
- e9f:	48 c7 c1 00 00 00 00 	mov    rcx,0x0
- ea6:	48 c7 c2 00 00 00 00 	mov    rdx,0x0
- ead:	48 89 c7             	mov    rdi,rax
- eb0:	e8 00 00 00 00       	call   eb5 <h_generic_oom_handler+0xa2>
- eb5:	48 89 45 d0          	mov    QWORD PTR [rbp-0x30],rax
+ e97:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+ e9b:	48 c1 e0 0c          	shl    rax,0xc
+ e9f:	48 89 c6             	mov    rsi,rax
+ ea2:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+ ea6:	48 c7 c1 00 00 00 00 	mov    rcx,0x0
+ ead:	48 c7 c2 00 00 00 00 	mov    rdx,0x0
+ eb4:	48 89 c7             	mov    rdi,rax
+ eb7:	e8 00 00 00 00       	call   ebc <h_generic_oom_handler+0xa9>
+ ebc:	48 89 45 e0          	mov    QWORD PTR [rbp-0x20],rax
 		/* and move the desc of the initial heap there */
 		nm = h_malloc(h2, sizeof(struct h_heap));
- eb9:	48 8b 45 d0          	mov    rax,QWORD PTR [rbp-0x30]
- ebd:	be 38 00 00 00       	mov    esi,0x38
- ec2:	48 89 c7             	mov    rdi,rax
- ec5:	e8 00 00 00 00       	call   eca <h_generic_oom_handler+0xb7>
- eca:	48 89 45 d8          	mov    QWORD PTR [rbp-0x28],rax
+ ec0:	48 8b 45 e0          	mov    rax,QWORD PTR [rbp-0x20]
+ ec4:	be 38 00 00 00       	mov    esi,0x38
+ ec9:	48 89 c7             	mov    rdi,rax
+ ecc:	e8 00 00 00 00       	call   ed1 <h_generic_oom_handler+0xbe>
+ ed1:	48 89 45 e8          	mov    QWORD PTR [rbp-0x18],rax
 		if (!nm) {
- ece:	48 83 7d d8 00       	cmp    QWORD PTR [rbp-0x28],0x0
- ed3:	75 19                	jne    eee <h_generic_oom_handler+0xdb>
+ ed5:	48 83 7d e8 00       	cmp    QWORD PTR [rbp-0x18],0x0
+ eda:	75 19                	jne    ef5 <h_generic_oom_handler+0xe2>
 				/* this should never fail */
 				cprintf(KFMT_ERROR, "catastrophe\n");
- ed5:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
- edc:	bf 0c 00 00 00       	mov    edi,0xc
- ee1:	b8 00 00 00 00       	mov    eax,0x0
- ee6:	e8 00 00 00 00       	call   eeb <h_generic_oom_handler+0xd8>
+ edc:	48 c7 c6 00 00 00 00 	mov    rsi,0x0
+ ee3:	bf 0c 00 00 00       	mov    edi,0xc
+ ee8:	b8 00 00 00 00       	mov    eax,0x0
+ eed:	e8 00 00 00 00       	call   ef2 <h_generic_oom_handler+0xdf>
 				while (1);
- eeb:	90                   	nop
- eec:	eb fd                	jmp    eeb <h_generic_oom_handler+0xd8>
+ ef2:	90                   	nop
+ ef3:	eb fd                	jmp    ef2 <h_generic_oom_handler+0xdf>
 		}
 		h->heap_oom_handler = NULL;
- eee:	48 8b 45 e0          	mov    rax,QWORD PTR [rbp-0x20]
- ef2:	48 c7 40 20 00 00 00 00 	mov    QWORD PTR [rax+0x20],0x0
+ ef5:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
+ ef9:	48 c7 40 20 00 00 00 00 	mov    QWORD PTR [rax+0x20],0x0
 		*(struct h_heap*)nm = *h; /* deregister this handler */
- efa:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
- efe:	48 8b 55 e0          	mov    rdx,QWORD PTR [rbp-0x20]
- f02:	48 8b 0a             	mov    rcx,QWORD PTR [rdx]
- f05:	48 8b 5a 08          	mov    rbx,QWORD PTR [rdx+0x8]
- f09:	48 89 08             	mov    QWORD PTR [rax],rcx
- f0c:	48 89 58 08          	mov    QWORD PTR [rax+0x8],rbx
- f10:	48 8b 4a 10          	mov    rcx,QWORD PTR [rdx+0x10]
- f14:	48 8b 5a 18          	mov    rbx,QWORD PTR [rdx+0x18]
- f18:	48 89 48 10          	mov    QWORD PTR [rax+0x10],rcx
- f1c:	48 89 58 18          	mov    QWORD PTR [rax+0x18],rbx
- f20:	48 8b 4a 20          	mov    rcx,QWORD PTR [rdx+0x20]
- f24:	48 8b 5a 28          	mov    rbx,QWORD PTR [rdx+0x28]
- f28:	48 89 48 20          	mov    QWORD PTR [rax+0x20],rcx
- f2c:	48 89 58 28          	mov    QWORD PTR [rax+0x28],rbx
- f30:	48 8b 52 30          	mov    rdx,QWORD PTR [rdx+0x30]
- f34:	48 89 50 30          	mov    QWORD PTR [rax+0x30],rdx
+ f01:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+ f05:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
+ f09:	48 8b 0a             	mov    rcx,QWORD PTR [rdx]
+ f0c:	48 89 08             	mov    QWORD PTR [rax],rcx
+ f0f:	48 8b 4a 08          	mov    rcx,QWORD PTR [rdx+0x8]
+ f13:	48 89 48 08          	mov    QWORD PTR [rax+0x8],rcx
+ f17:	48 8b 4a 10          	mov    rcx,QWORD PTR [rdx+0x10]
+ f1b:	48 89 48 10          	mov    QWORD PTR [rax+0x10],rcx
+ f1f:	48 8b 4a 18          	mov    rcx,QWORD PTR [rdx+0x18]
+ f23:	48 89 48 18          	mov    QWORD PTR [rax+0x18],rcx
+ f27:	48 8b 4a 20          	mov    rcx,QWORD PTR [rdx+0x20]
+ f2b:	48 89 48 20          	mov    QWORD PTR [rax+0x20],rcx
+ f2f:	48 8b 4a 28          	mov    rcx,QWORD PTR [rdx+0x28]
+ f33:	48 89 48 28          	mov    QWORD PTR [rax+0x28],rcx
+ f37:	48 8b 52 30          	mov    rdx,QWORD PTR [rdx+0x30]
+ f3b:	48 89 50 30          	mov    QWORD PTR [rax+0x30],rdx
 		/* now change the desc for the aggregate heap */
 		h->heap_base = nm;
- f38:	48 8b 45 e0          	mov    rax,QWORD PTR [rbp-0x20]
- f3c:	48 8b 55 d8          	mov    rdx,QWORD PTR [rbp-0x28]
- f40:	48 89 10             	mov    QWORD PTR [rax],rdx
+ f3f:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
+ f43:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
+ f47:	48 89 10             	mov    QWORD PTR [rax],rdx
 		h->heap_ptr = h->heap_limit = h2;
- f43:	48 8b 45 e0          	mov    rax,QWORD PTR [rbp-0x20]
- f47:	48 8b 55 d0          	mov    rdx,QWORD PTR [rbp-0x30]
- f4b:	48 89 50 10          	mov    QWORD PTR [rax+0x10],rdx
- f4f:	48 8b 45 e0          	mov    rax,QWORD PTR [rbp-0x20]
- f53:	48 8b 50 10          	mov    rdx,QWORD PTR [rax+0x10]
- f57:	48 8b 45 e0          	mov    rax,QWORD PTR [rbp-0x20]
- f5b:	48 89 50 08          	mov    QWORD PTR [rax+0x8],rdx
+ f4a:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
+ f4e:	48 8b 55 e0          	mov    rdx,QWORD PTR [rbp-0x20]
+ f52:	48 89 50 10          	mov    QWORD PTR [rax+0x10],rdx
+ f56:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
+ f5a:	48 8b 50 10          	mov    rdx,QWORD PTR [rax+0x10]
+ f5e:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
+ f62:	48 89 50 08          	mov    QWORD PTR [rax+0x8],rdx
 		h->heap_commit = h2->heap_commit + ((struct h_heap*)nm)->heap_commit;
- f5f:	48 8b 45 d0          	mov    rax,QWORD PTR [rbp-0x30]
- f63:	48 8b 50 18          	mov    rdx,QWORD PTR [rax+0x18]
- f67:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
- f6b:	48 8b 40 18          	mov    rax,QWORD PTR [rax+0x18]
- f6f:	48 01 c2             	add    rdx,rax
- f72:	48 8b 45 e0          	mov    rax,QWORD PTR [rbp-0x20]
- f76:	48 89 50 18          	mov    QWORD PTR [rax+0x18],rdx
+ f66:	48 8b 45 e0          	mov    rax,QWORD PTR [rbp-0x20]
+ f6a:	48 8b 50 18          	mov    rdx,QWORD PTR [rax+0x18]
+ f6e:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+ f72:	48 8b 40 18          	mov    rax,QWORD PTR [rax+0x18]
+ f76:	48 01 c2             	add    rdx,rax
+ f79:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
+ f7d:	48 89 50 18          	mov    QWORD PTR [rax+0x18],rdx
 		h->flags = 1;
- f7a:	48 8b 45 e0          	mov    rax,QWORD PTR [rbp-0x20]
- f7e:	8b 50 30             	mov    edx,DWORD PTR [rax+0x30]
- f81:	81 e2 00 00 00 80    	and    edx,0x80000000
- f87:	83 ca 01             	or     edx,0x1
- f8a:	89 50 30             	mov    DWORD PTR [rax+0x30],edx
+ f81:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
+ f85:	8b 50 30             	mov    edx,DWORD PTR [rax+0x30]
+ f88:	81 e2 00 00 00 80    	and    edx,0x80000000
+ f8e:	83 ca 01             	or     edx,0x1
+ f91:	89 50 30             	mov    DWORD PTR [rax+0x30],edx
 		h->desc_in_heap = 0;
- f8d:	48 8b 45 e0          	mov    rax,QWORD PTR [rbp-0x20]
- f91:	0f b6 50 33          	movzx  edx,BYTE PTR [rax+0x33]
- f95:	83 e2 7f             	and    edx,0x7f
- f98:	88 50 33             	mov    BYTE PTR [rax+0x33],dl
+ f94:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
+ f98:	0f b6 50 33          	movzx  edx,BYTE PTR [rax+0x33]
+ f9c:	83 e2 7f             	and    edx,0x7f
+ f9f:	88 50 33             	mov    BYTE PTR [rax+0x33],dl
 		h->heap_decommit = NULL; /* don't decommit the aggregate */
- f9b:	48 8b 45 e0          	mov    rax,QWORD PTR [rbp-0x20]
- f9f:	48 c7 40 28 00 00 00 00 	mov    QWORD PTR [rax+0x28],0x0
+ fa2:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
+ fa6:	48 c7 40 28 00 00 00 00 	mov    QWORD PTR [rax+0x28],0x0
 		return 4096 * page_ct - ((struct h_heap*)nm)->heap_commit;
- fa7:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
- fab:	c1 e0 0c             	shl    eax,0xc
- fae:	89 c2                	mov    edx,eax
- fb0:	48 8b 45 d8          	mov    rax,QWORD PTR [rbp-0x28]
- fb4:	48 8b 40 18          	mov    rax,QWORD PTR [rax+0x18]
- fb8:	89 c1                	mov    ecx,eax
- fba:	89 d0                	mov    eax,edx
- fbc:	29 c8                	sub    eax,ecx
+ fae:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+ fb2:	c1 e0 0c             	shl    eax,0xc
+ fb5:	89 c2                	mov    edx,eax
+ fb7:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
+ fbb:	48 8b 40 18          	mov    rax,QWORD PTR [rax+0x18]
+ fbf:	89 c1                	mov    ecx,eax
+ fc1:	89 d0                	mov    eax,edx
+ fc3:	29 c8                	sub    eax,ecx
 }
- fbe:	48 8b 5d f8          	mov    rbx,QWORD PTR [rbp-0x8]
- fc2:	c9                   	leave
- fc3:	c3                   	ret
+ fc5:	c9                   	leave
+ fc6:	c3                   	ret
 
-0000000000000fc4 <h_generic_decommit>:
+0000000000000fc7 <h_generic_decommit>:
 
 void h_generic_decommit(void* mem, size_t ct)
 {
- fc4:	55                   	push   rbp
- fc5:	48 89 e5             	mov    rbp,rsp
- fc8:	48 83 ec 10          	sub    rsp,0x10
- fcc:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
- fd0:	48 89 75 f0          	mov    QWORD PTR [rbp-0x10],rsi
+ fc7:	55                   	push   rbp
+ fc8:	48 89 e5             	mov    rbp,rsp
+ fcb:	48 83 ec 10          	sub    rsp,0x10
+ fcf:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
+ fd3:	48 89 75 f0          	mov    QWORD PTR [rbp-0x10],rsi
 		mm_free_vmem(&mm_kernel, mem, ct / 4096);
- fd4:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
- fd8:	48 c1 e8 0c          	shr    rax,0xc
- fdc:	48 89 c2             	mov    rdx,rax
- fdf:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
- fe3:	48 89 c6             	mov    rsi,rax
- fe6:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
- fed:	e8 00 00 00 00       	call   ff2 <h_generic_decommit+0x2e>
+ fd7:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
+ fdb:	48 c1 e8 0c          	shr    rax,0xc
+ fdf:	48 89 c2             	mov    rdx,rax
+ fe2:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+ fe6:	48 89 c6             	mov    rsi,rax
+ fe9:	48 c7 c7 00 00 00 00 	mov    rdi,0x0
+ ff0:	e8 00 00 00 00       	call   ff5 <h_generic_decommit+0x2e>
 }
- ff2:	90                   	nop
- ff3:	c9                   	leave
- ff4:	c3                   	ret
+ ff5:	90                   	nop
+ ff6:	c9                   	leave
+ ff7:	c3                   	ret

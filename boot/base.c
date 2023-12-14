@@ -102,7 +102,7 @@ void enable_sse()
 void base_entry()
 {
 		/* First check for 32, PAE and 64-bit */
-		int mode = 0; /* 0=32, 1=PAE, 2=64 */
+		int mode = 0, nx = 0, msr = 0; /* 0=32, 1=PAE, 2=64 */
 		unsigned int eax, ebx, ecx, edx;
 		uint64_t ep;
 
@@ -111,8 +111,12 @@ void base_entry()
 		/* eax leaves */
 		if (eax >= 1) {
 				__cpuid(1, eax, ebx, ecx, edx);
+				if (edx & (1 << 5)) /* MSR */
+					msr = 1;
 				if (edx & (1 << 6)) /* PAE */
 						mode = 1;
+				if (edx & (1 << 20))
+					nx = 1;
 		}
 
 		/* EFEAT leaves */
@@ -123,7 +127,18 @@ void base_entry()
 						mode = 2;
 				else if (edx & (1 << 6)) /* PAE alternative */
 						mode = 1;
+				if (edx & (1 << 20))
+					nx = 1;
 		}
+
+		/* enable nx if possible*/
+		if (msr) {
+			uint32_t a, d;
+			asm volatile("rdmsr" : "=a"(a), "=d"(d) : "c"(0xC0000080)); /* IA32_EFER */
+			a |= (1 << 11); /* NX enable */
+			asm volatile("wrmsr" : : "a"(a), "d"(d), "c"(0xC0000080));
+		} else
+			nx = 0;
 
 		if (mode == 0)
 				puts("32-bit");
@@ -131,9 +146,15 @@ void base_entry()
 				puts("PAE");
 		else if (mode == 2)
 				puts("64-bit");
+		if (nx)
+			puts("with NX");
+		else if (!msr)
+			puts("due to no MSR support");
+		else
+			puts("due to lack of processor support");
 
 		/* and initialize the mini-mm */
-		mm_initialize(mode);
+		mm_initialize(mode, nx);
 
 		/* Then load the kernel image & modules via BIOS functions */
 		ep = fl_load_images(mode);

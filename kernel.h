@@ -1,5 +1,6 @@
 /* kernel.h: defines the essential function an inline assembly routines */
 
+#include <stdarg.h>
 #include "gdt.h"
 #include "mm/virtmem.h"
 
@@ -25,6 +26,9 @@ void task_diag();
 #define va_start(v, a) (v = (void**)((&a) + 1))
 #define va_end(v) (v = NULL)
 #define va_arg(v, t) (*((t*)(v)++))*/
+#if 1 
+
+#else
 typedef void* va_list;
 #define va_start(v,a) (v = (void*)((void**)(&(a)) + 1))
 #define va_end(v) (v = NULL)
@@ -33,6 +37,7 @@ typedef void* va_list;
 #define va_arg(v, t) \
 		((void)(v = (va_list)((char*)(v) + __va_rounded_size(t))), \
 		 *((t*)(void*)((char*)(v) - __va_rounded_size(t))))
+#endif
 
 #ifndef C11
 #define CTASTR2(pre,post) pre ## post
@@ -228,8 +233,8 @@ int clock_getres(clockid_t clk_id, struct timespec* res);
 int clock_gettime(clockid_t clk_id, struct timespec* tp);
 int clock_settime(clockid_t clk_id, const struct timespec* tp);
 #define PIT_FREQ (1193181.66666666)
-#define CLOCKS_PER_SEC (PIT_FREQ/9861.0) /* about 121.0000sth */
-#define CMOS_THRESHOLD (CLOCKS_PER_SEC*60*60) /* adjust every hour (prec is 1s/4h) */
+#define CLOCKS_PER_SEC ((uint32_t)(PIT_FREQ/9861.0)) /* about 121.0000sth */
+#define CMOS_THRESHOLD ((uint64_t)(CLOCKS_PER_SEC*60*60)) /* adjust every hour (prec is 1s/4h) */
 char* asctime(const struct tm* timeptr);
 char* asctime_r(const struct tm* timeptr, char* result);
 time_t mktime(struct tm* timep);
@@ -414,7 +419,7 @@ void* mmio_get_vmem(size_t pg_ct);
 #define ERANGE 34
 #define ENOSYS 38
 #define ENOTSUP 95
-int errno;
+extern int errno;
 
 /* Text io functions implemented in kio.c
  * */
@@ -715,7 +720,7 @@ struct tsi* get_task();
 void task_yield();
 void task_spawn_named(void (*fn)(void*), void* dat, uint32_t priority, const char* name);
 #define task_spawn(fun, dat, prio) task_spawn_named(fun, dat, prio, #fun)
-struct perf_ctrs* bp_tick;
+extern struct perf_ctrs* bp_tick;
 /* provide jiffies-like interface for delays */
 extern uint64_t tsc_per_ms;
 extern uint32_t loops_per_jiffy, loop_per_ms, apic_reload_value;

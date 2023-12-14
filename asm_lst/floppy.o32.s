@@ -13,31 +13,27 @@ int MODENTRY module_init()
 {
    0:	55                   	push   ebp
    1:	89 e5                	mov    ebp,esp
-   3:	83 ec 08             	sub    esp,0x8
+   3:	83 ec 18             	sub    esp,0x18
 		printf("floppy.ko says hello\n");
-   6:	83 ec 0c             	sub    esp,0xc
-   9:	68 00 00 00 00       	push   0x0
-   e:	e8 fc ff ff ff       	call   f <module_init+0xf>
-  13:	83 c4 10             	add    esp,0x10
+   6:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+   d:	e8 fc ff ff ff       	call   e <module_init+0xe>
 		return 0;
-  16:	b8 00 00 00 00       	mov    eax,0x0
+  12:	b8 00 00 00 00       	mov    eax,0x0
 }
-  1b:	c9                   	leave
-  1c:	c3                   	ret
+  17:	c9                   	leave
+  18:	c3                   	ret
 
-0000001d <module_cleanup>:
+00000019 <module_cleanup>:
 
 void MODENTRY module_cleanup()
 {
-  1d:	55                   	push   ebp
-  1e:	89 e5                	mov    ebp,esp
-  20:	83 ec 08             	sub    esp,0x8
+  19:	55                   	push   ebp
+  1a:	89 e5                	mov    ebp,esp
+  1c:	83 ec 18             	sub    esp,0x18
 		printf("goodbye floppy.ko\n");
-  23:	83 ec 0c             	sub    esp,0xc
-  26:	68 16 00 00 00       	push   0x16
-  2b:	e8 fc ff ff ff       	call   2c <module_cleanup+0xf>
-  30:	83 c4 10             	add    esp,0x10
+  1f:	c7 04 24 16 00 00 00 	mov    DWORD PTR [esp],0x16
+  26:	e8 fc ff ff ff       	call   27 <module_cleanup+0xe>
 }
-  33:	90                   	nop
-  34:	c9                   	leave
-  35:	c3                   	ret
+  2b:	90                   	nop
+  2c:	c9                   	leave
+  2d:	c3                   	ret

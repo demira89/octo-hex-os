@@ -5,26 +5,26 @@ apic.o64:     file format elf64-x86-64
 Disassembly of section .text:
 
 0000000000000000 <per_cpu_ptr>:
-		for (int i = 0; i < 16; i++) {
-				uint32_t pin = 0;
-				if (!ioapic_mappings[i].ptr_base)
-						continue;
-				for (int j = 0; j < ioapic_mappings[i].max_pin + 1; j++) {
 						uint32_t st;
-   0:	55                   	push   rbp
-   1:	48 89 e5             	mov    rbp,rsp
-   4:	48 83 ec 10          	sub    rsp,0x10
 						st = ioapic_read(i, 0x10 + 2 * j);
 						if (st & (1 << 12)) /* DS=pending */
 								pin |= (1 << j);
-   8:	65 48 8b 04 25 00 00 00 00 	mov    rax,QWORD PTR gs:0x0
-  11:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
 				}
 				printf("IOAPIC%u: %08x\n", i, pin);
+   0:	55                   	push   rbp
+   1:	48 89 e5             	mov    rbp,rsp
+   4:	48 83 ec 10          	sub    rsp,0x10
 		}
 }
-  15:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
 
+   8:	65 48 8b 04 25 00 00 00 00 	mov    rax,QWORD PTR gs:0x0
+  11:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
+/**********  Local APIC configuration including IPIs  ********************/
+void ap_apic_init()
+{
+		/* TODO use regular init as APIC MMIO memory is global */
+  15:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+		/* we're using iprintf to avoid needless waiting */
   19:	c9                   	leave
   1a:	c3                   	ret
 
@@ -647,16 +647,12 @@ Disassembly of section .text:
  726:	c3                   	ret
 
 0000000000000727 <ap_apic_init>:
-/**********  Local APIC configuration including IPIs  ********************/
-void ap_apic_init()
 {
  727:	55                   	push   rbp
  728:	48 89 e5             	mov    rbp,rsp
  72b:	41 54                	push   r12
  72d:	53                   	push   rbx
  72e:	48 83 ec 20          	sub    rsp,0x20
-		/* TODO use regular init as APIC MMIO memory is global */
-		/* we're using iprintf to avoid needless waiting */
 		struct page_range pr = {0,1};
  732:	48 c7 45 e0 00 00 00 00 	mov    QWORD PTR [rbp-0x20],0x0
  73a:	48 c7 45 e8 01 00 00 00 	mov    QWORD PTR [rbp-0x18],0x1

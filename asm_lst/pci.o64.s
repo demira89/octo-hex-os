@@ -5,117 +5,117 @@ pci.o64:     file format elf64-x86-64
 Disassembly of section .text:
 
 0000000000000000 <io_wait>:
-								return "generic 8254 system timer";
-						else if (progIf == 1)
-								return "ISA system timer";
-						else if (progIf == 2)
-								return "EISA system timer";
 						else
+								return "other system timer";
+				else if (scls == 3)
+						if (progIf == 0)
+								return "generic RTC controller";
+						else if (progIf == 1)
        0:	55                   	push   rbp
        1:	48 89 e5             	mov    rbp,rsp
-								return "other system timer";
+								return "ISA RTC controller";
        4:	b8 00 00 00 00       	mov    eax,0x0
        9:	e6 80                	out    0x80,al
-				else if (scls == 3)
+						else
        b:	90                   	nop
        c:	5d                   	pop    rbp
        d:	c3                   	ret
 
 000000000000000e <outl>:
-				else if (scls == 4)
-						if (progIf == 0)
-								return "Gameport controller (generic)";
-						else if (progIf == 0x10)
-								return "Gameport controller (legacy)";
 						else
+								return "other Gameport controller";
+				else if (scls == 0x80)
+						return "other input controller";
+				else
+						return "unrecognized input controller";
        e:	55                   	push   rbp
        f:	48 89 e5             	mov    rbp,rsp
       12:	48 83 ec 08          	sub    rsp,0x8
       16:	89 f8                	mov    eax,edi
       18:	89 75 f8             	mov    DWORD PTR [rbp-0x8],esi
       1b:	66 89 45 fc          	mov    WORD PTR [rbp-0x4],ax
-								return "other Gameport controller";
+		else if (cls == 10)
       1f:	8b 45 f8             	mov    eax,DWORD PTR [rbp-0x8]
       22:	0f b7 55 fc          	movzx  edx,WORD PTR [rbp-0x4]
       26:	ef                   	out    dx,eax
-				else if (scls == 0x80)
+				if (scls == 0)
       27:	90                   	nop
       28:	c9                   	leave
       29:	c3                   	ret
 
 000000000000002a <inl>:
-						return "other input controller";
-				else
-						return "unrecognized input controller";
+						return "generic docking station";
+				else if (scls == 0x80)
+						return "other docking station";
       2a:	55                   	push   rbp
       2b:	48 89 e5             	mov    rbp,rsp
       2e:	48 83 ec 18          	sub    rsp,0x18
       32:	89 f8                	mov    eax,edi
       34:	66 89 45 ec          	mov    WORD PTR [rbp-0x14],ax
-		else if (cls == 10)
-				if (scls == 0)
+				else
+						return "unrecognized docking station";
       38:	0f b7 45 ec          	movzx  eax,WORD PTR [rbp-0x14]
       3c:	89 c2                	mov    edx,eax
       3e:	ed                   	in     eax,dx
       3f:	89 45 fc             	mov    DWORD PTR [rbp-0x4],eax
-						return "generic docking station";
+		else if (cls == 11)
       42:	8b 45 fc             	mov    eax,DWORD PTR [rbp-0x4]
-				else if (scls == 0x80)
+				if (scls == 0)
       45:	c9                   	leave
       46:	c3                   	ret
 
 0000000000000047 <__list_add>:
-								//else if ((dat >> 24) == 1)
-								//		mdelay(1000);
-								pca.reg_no = 12;
-								dat = pci_read(pca);
-								dat = (dat >> 16) & 0xff;
 								le->dev.device_type = dat;
+								mf = dat & 0x80;
+								printf("\tfunction: %s\n",
+									(dat & 0x80) ? "multi" : "single");
+								printf("\ttype:     %s\n",
+									((dat & 0x7f) == 0) ? "general" : (((dat & 0x7f) == 1)
       47:	55                   	push   rbp
       48:	48 89 e5             	mov    rbp,rsp
       4b:	48 83 ec 18          	sub    rsp,0x18
       4f:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
       53:	48 89 75 f0          	mov    QWORD PTR [rbp-0x10],rsi
       57:	48 89 55 e8          	mov    QWORD PTR [rbp-0x18],rdx
-								mf = dat & 0x80;
+									? ("PCI-to-PCI bridge") : ("CardBus bridge")));
       5b:	48 8b 45 e8          	mov    rax,QWORD PTR [rbp-0x18]
       5f:	48 8b 55 f8          	mov    rdx,QWORD PTR [rbp-0x8]
       63:	48 89 10             	mov    QWORD PTR [rax],rdx
-								printf("\tfunction: %s\n",
+								pca.reg_no = PCI_INTERRUPT_LINE;
       66:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
       6a:	48 8b 55 e8          	mov    rdx,QWORD PTR [rbp-0x18]
       6e:	48 89 50 08          	mov    QWORD PTR [rax+0x8],rdx
-									(dat & 0x80) ? "multi" : "single");
+								dat = pci_read(pca);
       72:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
       76:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
       7a:	48 89 10             	mov    QWORD PTR [rax],rdx
-								printf("\ttype:     %s\n",
+								le->dev.intr_pin = (dat >> 8) & 0xff;
       7d:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
       81:	48 8b 55 f8          	mov    rdx,QWORD PTR [rbp-0x8]
       85:	48 89 50 08          	mov    QWORD PTR [rax+0x8],rdx
-									((dat & 0x7f) == 0) ? "general" : (((dat & 0x7f) == 1)
+								le->dev.intr_line = dat & 0xff;
       89:	90                   	nop
       8a:	c9                   	leave
       8b:	c3                   	ret
 
 000000000000008c <list_add_tail>:
-								pci_add_caps(&le->dev);
-								list_add_tail(&le->devices, &device_list.devices);
-								if (mf && fno < 8)
-										goto multifun;
-						} else if (fno && fno < 8)
 								goto multifun; /* non-consecuitive layouts */
+				}
+}
+
+int MODENTRY module_init()
+{
       8c:	55                   	push   rbp
       8d:	48 89 e5             	mov    rbp,rsp
       90:	48 83 ec 10          	sub    rsp,0x10
       94:	48 89 7d f8          	mov    QWORD PTR [rbp-0x8],rdi
       98:	48 89 75 f0          	mov    QWORD PTR [rbp-0x10],rsi
-				}
+		pci_enumerate_devices();
       9c:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
       a0:	48 83 c0 10          	add    rax,0x10
       a4:	48 89 c7             	mov    rdi,rax
       a7:	e8 00 00 00 00       	call   ac <list_add_tail+0x20>
-}
+		return 0;
       ac:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
       b0:	48 8b 08             	mov    rcx,QWORD PTR [rax]
       b3:	48 8b 55 f0          	mov    rdx,QWORD PTR [rbp-0x10]
@@ -123,12 +123,12 @@ Disassembly of section .text:
       bb:	48 89 ce             	mov    rsi,rcx
       be:	48 89 c7             	mov    rdi,rax
       c1:	e8 81 ff ff ff       	call   47 <__list_add>
-
+}
       c6:	48 8b 45 f0          	mov    rax,QWORD PTR [rbp-0x10]
       ca:	48 83 c0 10          	add    rax,0x10
       ce:	48 89 c7             	mov    rdi,rax
       d1:	e8 00 00 00 00       	call   d6 <list_add_tail+0x4a>
-int MODENTRY module_init()
+
       d6:	90                   	nop
       d7:	c9                   	leave
       d8:	c3                   	ret
@@ -2916,7 +2916,6 @@ exit:
     1efc:	c3                   	ret
 
 0000000000001efd <module_cleanup>:
-
 void MODENTRY module_cleanup()
 {
     1efd:	55                   	push   rbp

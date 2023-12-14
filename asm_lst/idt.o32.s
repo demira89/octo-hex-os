@@ -891,44 +891,23 @@ idt_init:
 	lidt [idtr]
  275:	0f 01 1d 00 00 00 00 	lidtd  ds:0x0
 
-	mov ecx,  ( idt_end - idt ) / 8 
- 27c:	b9 00 02 00 00       	mov    ecx,0x200
-
-00000281 <idt_i1>:
-
-#	mov ecx, 48 # zero extend in amd64
-
-idt_i1:
-	dec ecx
- 281:	49                   	dec    ecx
-	IGI ecx
- 282:	89 ca                	mov    edx,ecx
- 284:	c1 e2 03             	shl    edx,0x3
- 287:	66 8b 82 02 00 00 00 	mov    ax,WORD PTR [edx+0x2]
- 28e:	66 87 82 06 00 00 00 	xchg   WORD PTR [edx+0x6],ax
- 295:	66 89 9a 02 00 00 00 	mov    WORD PTR [edx+0x2],bx
-	test ecx, ecx
- 29c:	85 c9                	test   ecx,ecx
-	jnz idt_i1
- 29e:	75 e1                	jne    281 <idt_i1>
-
 	# reenable NMI
 	inb al, 0x70
- 2a0:	e4 70                	in     al,0x70
+ 27c:	e4 70                	in     al,0x70
 	and al, 0x7f
- 2a2:	24 7f                	and    al,0x7f
+ 27e:	24 7f                	and    al,0x7f
 	outb 0x70, al
- 2a4:	e6 70                	out    0x70,al
+ 280:	e6 70                	out    0x70,al
 
 #	leave <- none at all
 	ret
- 2a6:	c3                   	ret
+ 282:	c3                   	ret
 
-000002a7 <pc_shutdown>:
+00000283 <pc_shutdown>:
 
 .global pc_shutdown
 pc_shutdown:
 	cli
- 2a7:	fa                   	cli
+ 283:	fa                   	cli
 	hlt # TODO PM->RM or LM->RM
- 2a8:	f4                   	hlt
+ 284:	f4                   	hlt

@@ -25,4 +25,5 @@
 
 extern void* gdt;
 extern void* idt;
+extern void* idt_end;
 

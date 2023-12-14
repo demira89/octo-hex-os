@@ -5,24 +5,24 @@ module.o32:     file format elf32-i386
 Disassembly of section .text:
 
 00000000 <memcpy>:
-						}
-				}
-		}
-}
-
 const char* get_section_type_string(Elf32_Word tp)
+{
+		if (tp == SHT_PROGBITS)
+				return "PROGBITS";
+		else if (tp == SHT_SYMTAB)
+				return "SYMTAB";
        0:	55                   	push   ebp
        1:	89 e5                	mov    ebp,esp
        3:	83 ec 10             	sub    esp,0x10
-{
+		else if (tp == SHT_DYNSYM)
        6:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
        9:	89 45 fc             	mov    DWORD PTR [ebp-0x4],eax
-		if (tp == SHT_PROGBITS)
+				return "DYNSYM";
        c:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
        f:	89 45 f8             	mov    DWORD PTR [ebp-0x8],eax
-				return "PROGBITS";
+		else if (tp == SHT_STRTAB)
       12:	eb 17                	jmp    2b <memcpy+0x2b>
-		else if (tp == SHT_SYMTAB)
+				return "STRTAB";
       14:	8b 55 f8             	mov    edx,DWORD PTR [ebp-0x8]
       17:	8d 42 01             	lea    eax,[edx+0x1]
       1a:	89 45 f8             	mov    DWORD PTR [ebp-0x8],eax
@@ -31,13 +31,13 @@ const char* get_section_type_string(Elf32_Word tp)
       23:	89 4d fc             	mov    DWORD PTR [ebp-0x4],ecx
       26:	0f b6 12             	movzx  edx,BYTE PTR [edx]
       29:	88 10                	mov    BYTE PTR [eax],dl
-				return "PROGBITS";
+		else if (tp == SHT_STRTAB)
       2b:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
       2e:	8d 50 ff             	lea    edx,[eax-0x1]
       31:	89 55 10             	mov    DWORD PTR [ebp+0x10],edx
       34:	85 c0                	test   eax,eax
       36:	75 dc                	jne    14 <memcpy+0x14>
-				return "SYMTAB";
+		else if (tp == SHT_RELA)
       38:	90                   	nop
       39:	90                   	nop
       3a:	c9                   	leave
@@ -118,7 +118,7 @@ const char* get_section_type_string(Elf32_Word tp)
       d8:	55                   	push   ebp
       d9:	89 e5                	mov    ebp,esp
       db:	53                   	push   ebx
-      dc:	83 ec 34             	sub    esp,0x34
+      dc:	83 ec 54             	sub    esp,0x54
       df:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
       e2:	66 89 45 d4          	mov    WORD PTR [ebp-0x2c],ax
 		void* ptr = ((void*)hdr + shdr[symtab].sh_offset);
@@ -159,3781 +159,3556 @@ const char* get_section_type_string(Elf32_Word tp)
      13f:	89 45 dc             	mov    DWORD PTR [ebp-0x24],eax
 		if (ct <= 1)
      142:	83 7d dc 01          	cmp    DWORD PTR [ebp-0x24],0x1
-     146:	0f 86 6b 02 00 00    	jbe    3b7 <elf_dump_symtab+0x2df>
+     146:	0f 86 94 02 00 00    	jbe    3e0 <elf_dump_symtab+0x308>
 		printf("dumping symtab with %lu entries\n", ct);
-     14c:	83 ec 08             	sub    esp,0x8
-     14f:	ff 75 dc             	push   DWORD PTR [ebp-0x24]
-     152:	68 30 00 00 00       	push   0x30
-     157:	e8 fc ff ff ff       	call   158 <elf_dump_symtab+0x80>
-     15c:	83 c4 10             	add    esp,0x10
+     14c:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+     14f:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+     153:	c7 04 24 30 00 00 00 	mov    DWORD PTR [esp],0x30
+     15a:	e8 fc ff ff ff       	call   15b <elf_dump_symtab+0x83>
 		printf("   Num:    Value  Size Type    Bind   Section  Name\n");
-     15f:	83 ec 0c             	sub    esp,0xc
-     162:	68 54 00 00 00       	push   0x54
-     167:	e8 fc ff ff ff       	call   168 <elf_dump_symtab+0x90>
-     16c:	83 c4 10             	add    esp,0x10
+     15f:	c7 04 24 54 00 00 00 	mov    DWORD PTR [esp],0x54
+     166:	e8 fc ff ff ff       	call   167 <elf_dump_symtab+0x8f>
 		for (i = 1; i < ct; i++) {
-     16f:	c7 45 f4 01 00 00 00 	mov    DWORD PTR [ebp-0xc],0x1
-     176:	e9 2e 02 00 00       	jmp    3a9 <elf_dump_symtab+0x2d1>
+     16b:	c7 45 f4 01 00 00 00 	mov    DWORD PTR [ebp-0xc],0x1
+     172:	e9 5b 02 00 00       	jmp    3d2 <elf_dump_symtab+0x2fa>
 				Elf32_Sym* s = (ptr + i * shdr[symtab].sh_entsize);
-     17b:	0f b7 55 d4          	movzx  edx,WORD PTR [ebp-0x2c]
-     17f:	89 d0                	mov    eax,edx
-     181:	c1 e0 02             	shl    eax,0x2
-     184:	01 d0                	add    eax,edx
-     186:	c1 e0 03             	shl    eax,0x3
-     189:	89 c2                	mov    edx,eax
-     18b:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     18e:	01 d0                	add    eax,edx
-     190:	8b 40 24             	mov    eax,DWORD PTR [eax+0x24]
-     193:	0f af 45 f4          	imul   eax,DWORD PTR [ebp-0xc]
-     197:	89 c2                	mov    edx,eax
-     199:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
-     19c:	01 d0                	add    eax,edx
-     19e:	89 45 d8             	mov    DWORD PTR [ebp-0x28],eax
+     177:	0f b7 55 d4          	movzx  edx,WORD PTR [ebp-0x2c]
+     17b:	89 d0                	mov    eax,edx
+     17d:	c1 e0 02             	shl    eax,0x2
+     180:	01 d0                	add    eax,edx
+     182:	c1 e0 03             	shl    eax,0x3
+     185:	89 c2                	mov    edx,eax
+     187:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     18a:	01 d0                	add    eax,edx
+     18c:	8b 40 24             	mov    eax,DWORD PTR [eax+0x24]
+     18f:	0f af 45 f4          	imul   eax,DWORD PTR [ebp-0xc]
+     193:	89 c2                	mov    edx,eax
+     195:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
+     198:	01 d0                	add    eax,edx
+     19a:	89 45 d8             	mov    DWORD PTR [ebp-0x28],eax
 				char *name = "STN_UNDEF", *sec, *stp, *stb;
-     1a1:	c7 45 f0 89 00 00 00 	mov    DWORD PTR [ebp-0x10],0x89
+     19d:	c7 45 f0 89 00 00 00 	mov    DWORD PTR [ebp-0x10],0x89
 				if (s->st_name)
-     1a8:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-     1ab:	8b 00                	mov    eax,DWORD PTR [eax]
-     1ad:	85 c0                	test   eax,eax
-     1af:	74 33                	je     1e4 <elf_dump_symtab+0x10c>
+     1a4:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+     1a7:	8b 00                	mov    eax,DWORD PTR [eax]
+     1a9:	85 c0                	test   eax,eax
+     1ab:	74 3d                	je     1ea <elf_dump_symtab+0x112>
 						name = elf_fetch_string(hdr, shdr, shdr[symtab].sh_link, s->st_name);
-     1b1:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-     1b4:	8b 08                	mov    ecx,DWORD PTR [eax]
-     1b6:	0f b7 55 d4          	movzx  edx,WORD PTR [ebp-0x2c]
-     1ba:	89 d0                	mov    eax,edx
-     1bc:	c1 e0 02             	shl    eax,0x2
-     1bf:	01 d0                	add    eax,edx
-     1c1:	c1 e0 03             	shl    eax,0x3
-     1c4:	89 c2                	mov    edx,eax
-     1c6:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     1c9:	01 d0                	add    eax,edx
-     1cb:	8b 40 18             	mov    eax,DWORD PTR [eax+0x18]
-     1ce:	0f b7 c0             	movzx  eax,ax
-     1d1:	51                   	push   ecx
-     1d2:	50                   	push   eax
-     1d3:	ff 75 0c             	push   DWORD PTR [ebp+0xc]
-     1d6:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-     1d9:	e8 fc ff ff ff       	call   1da <elf_dump_symtab+0x102>
-     1de:	83 c4 10             	add    esp,0x10
-     1e1:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
+     1ad:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+     1b0:	8b 08                	mov    ecx,DWORD PTR [eax]
+     1b2:	0f b7 55 d4          	movzx  edx,WORD PTR [ebp-0x2c]
+     1b6:	89 d0                	mov    eax,edx
+     1b8:	c1 e0 02             	shl    eax,0x2
+     1bb:	01 d0                	add    eax,edx
+     1bd:	c1 e0 03             	shl    eax,0x3
+     1c0:	89 c2                	mov    edx,eax
+     1c2:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     1c5:	01 d0                	add    eax,edx
+     1c7:	8b 40 18             	mov    eax,DWORD PTR [eax+0x18]
+     1ca:	0f b7 c0             	movzx  eax,ax
+     1cd:	89 4c 24 0c          	mov    DWORD PTR [esp+0xc],ecx
+     1d1:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+     1d5:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     1d8:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+     1dc:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     1df:	89 04 24             	mov    DWORD PTR [esp],eax
+     1e2:	e8 fc ff ff ff       	call   1e3 <elf_dump_symtab+0x10b>
+     1e7:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
 				if (ELF32_ST_TYPE(s->st_info) == STT_NOTYPE)
-     1e4:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-     1e7:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
-     1eb:	0f b6 c0             	movzx  eax,al
-     1ee:	83 e0 0f             	and    eax,0xf
-     1f1:	85 c0                	test   eax,eax
-     1f3:	75 0c                	jne    201 <elf_dump_symtab+0x129>
+     1ea:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+     1ed:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
+     1f1:	0f b6 c0             	movzx  eax,al
+     1f4:	83 e0 0f             	and    eax,0xf
+     1f7:	85 c0                	test   eax,eax
+     1f9:	75 0c                	jne    207 <elf_dump_symtab+0x12f>
 						stp = "NOTYPE ";
-     1f5:	c7 45 e8 93 00 00 00 	mov    DWORD PTR [ebp-0x18],0x93
-     1fc:	e9 8e 00 00 00       	jmp    28f <elf_dump_symtab+0x1b7>
+     1fb:	c7 45 e8 93 00 00 00 	mov    DWORD PTR [ebp-0x18],0x93
+     202:	e9 8e 00 00 00       	jmp    295 <elf_dump_symtab+0x1bd>
 				else if (ELF32_ST_TYPE(s->st_info) == STT_OBJECT)
-     201:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-     204:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
-     208:	0f b6 c0             	movzx  eax,al
-     20b:	83 e0 0f             	and    eax,0xf
-     20e:	83 f8 01             	cmp    eax,0x1
-     211:	75 09                	jne    21c <elf_dump_symtab+0x144>
+     207:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+     20a:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
+     20e:	0f b6 c0             	movzx  eax,al
+     211:	83 e0 0f             	and    eax,0xf
+     214:	83 f8 01             	cmp    eax,0x1
+     217:	75 09                	jne    222 <elf_dump_symtab+0x14a>
 						stp = "OBJECT ";
-     213:	c7 45 e8 9b 00 00 00 	mov    DWORD PTR [ebp-0x18],0x9b
-     21a:	eb 73                	jmp    28f <elf_dump_symtab+0x1b7>
+     219:	c7 45 e8 9b 00 00 00 	mov    DWORD PTR [ebp-0x18],0x9b
+     220:	eb 73                	jmp    295 <elf_dump_symtab+0x1bd>
 				else if (ELF32_ST_TYPE(s->st_info) == STT_FUNC)
-     21c:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-     21f:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
-     223:	0f b6 c0             	movzx  eax,al
-     226:	83 e0 0f             	and    eax,0xf
-     229:	83 f8 02             	cmp    eax,0x2
-     22c:	75 09                	jne    237 <elf_dump_symtab+0x15f>
+     222:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+     225:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
+     229:	0f b6 c0             	movzx  eax,al
+     22c:	83 e0 0f             	and    eax,0xf
+     22f:	83 f8 02             	cmp    eax,0x2
+     232:	75 09                	jne    23d <elf_dump_symtab+0x165>
 						stp = "FUNC   ";
-     22e:	c7 45 e8 a3 00 00 00 	mov    DWORD PTR [ebp-0x18],0xa3
-     235:	eb 58                	jmp    28f <elf_dump_symtab+0x1b7>
+     234:	c7 45 e8 a3 00 00 00 	mov    DWORD PTR [ebp-0x18],0xa3
+     23b:	eb 58                	jmp    295 <elf_dump_symtab+0x1bd>
 				else if (ELF32_ST_TYPE(s->st_info) == STT_SECTION)
-     237:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-     23a:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
-     23e:	0f b6 c0             	movzx  eax,al
-     241:	83 e0 0f             	and    eax,0xf
-     244:	83 f8 03             	cmp    eax,0x3
-     247:	75 09                	jne    252 <elf_dump_symtab+0x17a>
+     23d:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+     240:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
+     244:	0f b6 c0             	movzx  eax,al
+     247:	83 e0 0f             	and    eax,0xf
+     24a:	83 f8 03             	cmp    eax,0x3
+     24d:	75 09                	jne    258 <elf_dump_symtab+0x180>
 						stp = "SECTION";
-     249:	c7 45 e8 ab 00 00 00 	mov    DWORD PTR [ebp-0x18],0xab
-     250:	eb 3d                	jmp    28f <elf_dump_symtab+0x1b7>
+     24f:	c7 45 e8 ab 00 00 00 	mov    DWORD PTR [ebp-0x18],0xab
+     256:	eb 3d                	jmp    295 <elf_dump_symtab+0x1bd>
 				else if (ELF32_ST_TYPE(s->st_info) == STT_FILE)
-     252:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-     255:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
-     259:	0f b6 c0             	movzx  eax,al
-     25c:	83 e0 0f             	and    eax,0xf
-     25f:	83 f8 04             	cmp    eax,0x4
-     262:	75 09                	jne    26d <elf_dump_symtab+0x195>
+     258:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+     25b:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
+     25f:	0f b6 c0             	movzx  eax,al
+     262:	83 e0 0f             	and    eax,0xf
+     265:	83 f8 04             	cmp    eax,0x4
+     268:	75 09                	jne    273 <elf_dump_symtab+0x19b>
 						stp = "FILE   ";
-     264:	c7 45 e8 b3 00 00 00 	mov    DWORD PTR [ebp-0x18],0xb3
-     26b:	eb 22                	jmp    28f <elf_dump_symtab+0x1b7>
+     26a:	c7 45 e8 b3 00 00 00 	mov    DWORD PTR [ebp-0x18],0xb3
+     271:	eb 22                	jmp    295 <elf_dump_symtab+0x1bd>
 				else if (ELF32_ST_TYPE(s->st_info) >= 13/*STT_LOPROC*/ &&
-     26d:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-     270:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
-     274:	0f b6 c0             	movzx  eax,al
-     277:	83 e0 0f             	and    eax,0xf
-     27a:	83 f8 0c             	cmp    eax,0xc
-     27d:	76 09                	jbe    288 <elf_dump_symtab+0x1b0>
+     273:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+     276:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
+     27a:	0f b6 c0             	movzx  eax,al
+     27d:	83 e0 0f             	and    eax,0xf
+     280:	83 f8 0c             	cmp    eax,0xc
+     283:	76 09                	jbe    28e <elf_dump_symtab+0x1b6>
 						stp = "PROC   ";
-     27f:	c7 45 e8 bb 00 00 00 	mov    DWORD PTR [ebp-0x18],0xbb
-     286:	eb 07                	jmp    28f <elf_dump_symtab+0x1b7>
+     285:	c7 45 e8 bb 00 00 00 	mov    DWORD PTR [ebp-0x18],0xbb
+     28c:	eb 07                	jmp    295 <elf_dump_symtab+0x1bd>
 						stp = "UNKNOWN";
-     288:	c7 45 e8 c3 00 00 00 	mov    DWORD PTR [ebp-0x18],0xc3
+     28e:	c7 45 e8 c3 00 00 00 	mov    DWORD PTR [ebp-0x18],0xc3
 				if (ELF32_ST_BIND(s->st_info) == STB_LOCAL)
-     28f:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-     292:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
-     296:	c0 e8 04             	shr    al,0x4
-     299:	84 c0                	test   al,al
-     29b:	75 09                	jne    2a6 <elf_dump_symtab+0x1ce>
+     295:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+     298:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
+     29c:	c0 e8 04             	shr    al,0x4
+     29f:	84 c0                	test   al,al
+     2a1:	75 09                	jne    2ac <elf_dump_symtab+0x1d4>
 						stb = "LOCAL ";
-     29d:	c7 45 e4 cb 00 00 00 	mov    DWORD PTR [ebp-0x1c],0xcb
-     2a4:	eb 5a                	jmp    300 <elf_dump_symtab+0x228>
+     2a3:	c7 45 e4 cb 00 00 00 	mov    DWORD PTR [ebp-0x1c],0xcb
+     2aa:	eb 5a                	jmp    306 <elf_dump_symtab+0x22e>
 				else if (ELF32_ST_BIND(s->st_info) == STB_GLOBAL)
-     2a6:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-     2a9:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
-     2ad:	c0 e8 04             	shr    al,0x4
-     2b0:	3c 01                	cmp    al,0x1
-     2b2:	75 09                	jne    2bd <elf_dump_symtab+0x1e5>
+     2ac:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+     2af:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
+     2b3:	c0 e8 04             	shr    al,0x4
+     2b6:	3c 01                	cmp    al,0x1
+     2b8:	75 09                	jne    2c3 <elf_dump_symtab+0x1eb>
 						stb = "GLOBAL";
-     2b4:	c7 45 e4 d2 00 00 00 	mov    DWORD PTR [ebp-0x1c],0xd2
-     2bb:	eb 43                	jmp    300 <elf_dump_symtab+0x228>
+     2ba:	c7 45 e4 d2 00 00 00 	mov    DWORD PTR [ebp-0x1c],0xd2
+     2c1:	eb 43                	jmp    306 <elf_dump_symtab+0x22e>
 				else if (ELF32_ST_BIND(s->st_info) == STB_WEAK)
-     2bd:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-     2c0:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
-     2c4:	c0 e8 04             	shr    al,0x4
-     2c7:	3c 02                	cmp    al,0x2
-     2c9:	75 09                	jne    2d4 <elf_dump_symtab+0x1fc>
+     2c3:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+     2c6:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
+     2ca:	c0 e8 04             	shr    al,0x4
+     2cd:	3c 02                	cmp    al,0x2
+     2cf:	75 09                	jne    2da <elf_dump_symtab+0x202>
 						stb = "WEAK  ";
-     2cb:	c7 45 e4 d9 00 00 00 	mov    DWORD PTR [ebp-0x1c],0xd9
-     2d2:	eb 2c                	jmp    300 <elf_dump_symtab+0x228>
+     2d1:	c7 45 e4 d9 00 00 00 	mov    DWORD PTR [ebp-0x1c],0xd9
+     2d8:	eb 2c                	jmp    306 <elf_dump_symtab+0x22e>
 				else if (ELF32_ST_BIND(s->st_info) >= 13 &&
-     2d4:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-     2d7:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
-     2db:	c0 e8 04             	shr    al,0x4
-     2de:	3c 0c                	cmp    al,0xc
-     2e0:	76 17                	jbe    2f9 <elf_dump_symtab+0x221>
+     2da:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+     2dd:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
+     2e1:	c0 e8 04             	shr    al,0x4
+     2e4:	3c 0c                	cmp    al,0xc
+     2e6:	76 17                	jbe    2ff <elf_dump_symtab+0x227>
 						ELF32_ST_BIND(s->st_info) <= 15)
-     2e2:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-     2e5:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
-     2e9:	c0 e8 04             	shr    al,0x4
+     2e8:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+     2eb:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
+     2ef:	c0 e8 04             	shr    al,0x4
 				else if (ELF32_ST_BIND(s->st_info) >= 13 &&
-     2ec:	3c 0f                	cmp    al,0xf
-     2ee:	77 09                	ja     2f9 <elf_dump_symtab+0x221>
+     2f2:	3c 0f                	cmp    al,0xf
+     2f4:	77 09                	ja     2ff <elf_dump_symtab+0x227>
 						stb = "PROC  ";
-     2f0:	c7 45 e4 e0 00 00 00 	mov    DWORD PTR [ebp-0x1c],0xe0
-     2f7:	eb 07                	jmp    300 <elf_dump_symtab+0x228>
+     2f6:	c7 45 e4 e0 00 00 00 	mov    DWORD PTR [ebp-0x1c],0xe0
+     2fd:	eb 07                	jmp    306 <elf_dump_symtab+0x22e>
 						stb = "UNK   ";
-     2f9:	c7 45 e4 e7 00 00 00 	mov    DWORD PTR [ebp-0x1c],0xe7
+     2ff:	c7 45 e4 e7 00 00 00 	mov    DWORD PTR [ebp-0x1c],0xe7
 				if (s->st_shndx == SHN_ABS)
-     300:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-     303:	0f b7 40 0e          	movzx  eax,WORD PTR [eax+0xe]
-     307:	66 83 f8 f1          	cmp    ax,0xfff1
-     30b:	75 09                	jne    316 <elf_dump_symtab+0x23e>
+     306:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+     309:	0f b7 40 0e          	movzx  eax,WORD PTR [eax+0xe]
+     30d:	66 83 f8 f1          	cmp    ax,0xfff1
+     311:	75 09                	jne    31c <elf_dump_symtab+0x244>
 						sec = "ABS     ";
-     30d:	c7 45 ec ee 00 00 00 	mov    DWORD PTR [ebp-0x14],0xee
-     314:	eb 65                	jmp    37b <elf_dump_symtab+0x2a3>
+     313:	c7 45 ec ee 00 00 00 	mov    DWORD PTR [ebp-0x14],0xee
+     31a:	eb 6f                	jmp    38b <elf_dump_symtab+0x2b3>
 				else if (s->st_shndx == SHN_COMMON)
-     316:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-     319:	0f b7 40 0e          	movzx  eax,WORD PTR [eax+0xe]
-     31d:	66 83 f8 f2          	cmp    ax,0xfff2
-     321:	75 09                	jne    32c <elf_dump_symtab+0x254>
+     31c:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+     31f:	0f b7 40 0e          	movzx  eax,WORD PTR [eax+0xe]
+     323:	66 83 f8 f2          	cmp    ax,0xfff2
+     327:	75 09                	jne    332 <elf_dump_symtab+0x25a>
 						sec = "COMMON  ";
-     323:	c7 45 ec f7 00 00 00 	mov    DWORD PTR [ebp-0x14],0xf7
-     32a:	eb 4f                	jmp    37b <elf_dump_symtab+0x2a3>
+     329:	c7 45 ec f7 00 00 00 	mov    DWORD PTR [ebp-0x14],0xf7
+     330:	eb 59                	jmp    38b <elf_dump_symtab+0x2b3>
 				else if (s->st_shndx == SHN_UNDEF)
-     32c:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-     32f:	0f b7 40 0e          	movzx  eax,WORD PTR [eax+0xe]
-     333:	66 85 c0             	test   ax,ax
-     336:	75 09                	jne    341 <elf_dump_symtab+0x269>
+     332:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+     335:	0f b7 40 0e          	movzx  eax,WORD PTR [eax+0xe]
+     339:	66 85 c0             	test   ax,ax
+     33c:	75 09                	jne    347 <elf_dump_symtab+0x26f>
 						sec = "UNDEF   ";
-     338:	c7 45 ec 00 01 00 00 	mov    DWORD PTR [ebp-0x14],0x100
-     33f:	eb 3a                	jmp    37b <elf_dump_symtab+0x2a3>
+     33e:	c7 45 ec 00 01 00 00 	mov    DWORD PTR [ebp-0x14],0x100
+     345:	eb 44                	jmp    38b <elf_dump_symtab+0x2b3>
 						sec = elf_fetch_string(hdr, shdr, hdr->e_shstrndx, shdr[s->st_shndx].sh_name);
-     341:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-     344:	0f b7 40 0e          	movzx  eax,WORD PTR [eax+0xe]
-     348:	0f b7 d0             	movzx  edx,ax
-     34b:	89 d0                	mov    eax,edx
-     34d:	c1 e0 02             	shl    eax,0x2
-     350:	01 d0                	add    eax,edx
-     352:	c1 e0 03             	shl    eax,0x3
-     355:	89 c2                	mov    edx,eax
-     357:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     35a:	01 d0                	add    eax,edx
-     35c:	8b 10                	mov    edx,DWORD PTR [eax]
-     35e:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     361:	0f b7 40 32          	movzx  eax,WORD PTR [eax+0x32]
-     365:	0f b7 c0             	movzx  eax,ax
-     368:	52                   	push   edx
-     369:	50                   	push   eax
-     36a:	ff 75 0c             	push   DWORD PTR [ebp+0xc]
-     36d:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-     370:	e8 fc ff ff ff       	call   371 <elf_dump_symtab+0x299>
-     375:	83 c4 10             	add    esp,0x10
-     378:	89 45 ec             	mov    DWORD PTR [ebp-0x14],eax
+     347:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+     34a:	0f b7 40 0e          	movzx  eax,WORD PTR [eax+0xe]
+     34e:	0f b7 d0             	movzx  edx,ax
+     351:	89 d0                	mov    eax,edx
+     353:	c1 e0 02             	shl    eax,0x2
+     356:	01 d0                	add    eax,edx
+     358:	c1 e0 03             	shl    eax,0x3
+     35b:	89 c2                	mov    edx,eax
+     35d:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     360:	01 d0                	add    eax,edx
+     362:	8b 10                	mov    edx,DWORD PTR [eax]
+     364:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     367:	0f b7 40 32          	movzx  eax,WORD PTR [eax+0x32]
+     36b:	0f b7 c0             	movzx  eax,ax
+     36e:	89 54 24 0c          	mov    DWORD PTR [esp+0xc],edx
+     372:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+     376:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     379:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+     37d:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     380:	89 04 24             	mov    DWORD PTR [esp],eax
+     383:	e8 fc ff ff ff       	call   384 <elf_dump_symtab+0x2ac>
+     388:	89 45 ec             	mov    DWORD PTR [ebp-0x14],eax
 				printf("%6lu: %08u %5u %s %s %8.8s %.13s\n", i, s->st_value, s->st_size,
-     37b:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-     37e:	8b 50 08             	mov    edx,DWORD PTR [eax+0x8]
-     381:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-     384:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-     387:	ff 75 f0             	push   DWORD PTR [ebp-0x10]
-     38a:	ff 75 ec             	push   DWORD PTR [ebp-0x14]
-     38d:	ff 75 e4             	push   DWORD PTR [ebp-0x1c]
-     390:	ff 75 e8             	push   DWORD PTR [ebp-0x18]
-     393:	52                   	push   edx
-     394:	50                   	push   eax
-     395:	ff 75 f4             	push   DWORD PTR [ebp-0xc]
-     398:	68 0c 01 00 00       	push   0x10c
-     39d:	e8 fc ff ff ff       	call   39e <elf_dump_symtab+0x2c6>
-     3a2:	83 c4 20             	add    esp,0x20
+     38b:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+     38e:	8b 50 08             	mov    edx,DWORD PTR [eax+0x8]
+     391:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+     394:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+     397:	8b 4d f0             	mov    ecx,DWORD PTR [ebp-0x10]
+     39a:	89 4c 24 1c          	mov    DWORD PTR [esp+0x1c],ecx
+     39e:	8b 4d ec             	mov    ecx,DWORD PTR [ebp-0x14]
+     3a1:	89 4c 24 18          	mov    DWORD PTR [esp+0x18],ecx
+     3a5:	8b 4d e4             	mov    ecx,DWORD PTR [ebp-0x1c]
+     3a8:	89 4c 24 14          	mov    DWORD PTR [esp+0x14],ecx
+     3ac:	8b 4d e8             	mov    ecx,DWORD PTR [ebp-0x18]
+     3af:	89 4c 24 10          	mov    DWORD PTR [esp+0x10],ecx
+     3b3:	89 54 24 0c          	mov    DWORD PTR [esp+0xc],edx
+     3b7:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+     3bb:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     3be:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+     3c2:	c7 04 24 0c 01 00 00 	mov    DWORD PTR [esp],0x10c
+     3c9:	e8 fc ff ff ff       	call   3ca <elf_dump_symtab+0x2f2>
 		for (i = 1; i < ct; i++) {
-     3a5:	83 45 f4 01          	add    DWORD PTR [ebp-0xc],0x1
-     3a9:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     3ac:	3b 45 dc             	cmp    eax,DWORD PTR [ebp-0x24]
-     3af:	0f 82 c6 fd ff ff    	jb     17b <elf_dump_symtab+0xa3>
-     3b5:	eb 01                	jmp    3b8 <elf_dump_symtab+0x2e0>
+     3ce:	83 45 f4 01          	add    DWORD PTR [ebp-0xc],0x1
+     3d2:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     3d5:	3b 45 dc             	cmp    eax,DWORD PTR [ebp-0x24]
+     3d8:	0f 82 99 fd ff ff    	jb     177 <elf_dump_symtab+0x9f>
+     3de:	eb 01                	jmp    3e1 <elf_dump_symtab+0x309>
 				return;
-     3b7:	90                   	nop
+     3e0:	90                   	nop
 }
-     3b8:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
-     3bb:	c9                   	leave
-     3bc:	c3                   	ret
+     3e1:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
+     3e4:	c9                   	leave
+     3e5:	c3                   	ret
 
-000003bd <elf_rel_type_string>:
+000003e6 <elf_rel_type_string>:
 {
-     3bd:	55                   	push   ebp
-     3be:	89 e5                	mov    ebp,esp
+     3e6:	55                   	push   ebp
+     3e7:	89 e5                	mov    ebp,esp
 		switch (t) {
-     3c0:	83 7d 08 0a          	cmp    DWORD PTR [ebp+0x8],0xa
-     3c4:	77 5c                	ja     422 <elf_rel_type_string+0x65>
-     3c6:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     3c9:	c1 e0 02             	shl    eax,0x2
-     3cc:	05 b8 01 00 00       	add    eax,0x1b8
-     3d1:	8b 00                	mov    eax,DWORD PTR [eax]
-     3d3:	ff e0                	jmp    eax
+     3e9:	83 7d 08 0a          	cmp    DWORD PTR [ebp+0x8],0xa
+     3ed:	77 5c                	ja     44b <elf_rel_type_string+0x65>
+     3ef:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     3f2:	c1 e0 02             	shl    eax,0x2
+     3f5:	05 b8 01 00 00       	add    eax,0x1b8
+     3fa:	8b 00                	mov    eax,DWORD PTR [eax]
+     3fc:	ff e0                	jmp    eax
 				return "R_386_NONE";
-     3d5:	b8 2e 01 00 00       	mov    eax,0x12e
-     3da:	eb 4b                	jmp    427 <elf_rel_type_string+0x6a>
+     3fe:	b8 2e 01 00 00       	mov    eax,0x12e
+     403:	eb 4b                	jmp    450 <elf_rel_type_string+0x6a>
 				return "R_386_32";
-     3dc:	b8 39 01 00 00       	mov    eax,0x139
-     3e1:	eb 44                	jmp    427 <elf_rel_type_string+0x6a>
+     405:	b8 39 01 00 00       	mov    eax,0x139
+     40a:	eb 44                	jmp    450 <elf_rel_type_string+0x6a>
 				return "R_386_PC32";
-     3e3:	b8 42 01 00 00       	mov    eax,0x142
-     3e8:	eb 3d                	jmp    427 <elf_rel_type_string+0x6a>
+     40c:	b8 42 01 00 00       	mov    eax,0x142
+     411:	eb 3d                	jmp    450 <elf_rel_type_string+0x6a>
 				return "R_386_GOT32";
-     3ea:	b8 4d 01 00 00       	mov    eax,0x14d
-     3ef:	eb 36                	jmp    427 <elf_rel_type_string+0x6a>
+     413:	b8 4d 01 00 00       	mov    eax,0x14d
+     418:	eb 36                	jmp    450 <elf_rel_type_string+0x6a>
 				return "R_386_PLT32";
-     3f1:	b8 59 01 00 00       	mov    eax,0x159
-     3f6:	eb 2f                	jmp    427 <elf_rel_type_string+0x6a>
+     41a:	b8 59 01 00 00       	mov    eax,0x159
+     41f:	eb 2f                	jmp    450 <elf_rel_type_string+0x6a>
 				return "R_386_COPY";
-     3f8:	b8 65 01 00 00       	mov    eax,0x165
-     3fd:	eb 28                	jmp    427 <elf_rel_type_string+0x6a>
+     421:	b8 65 01 00 00       	mov    eax,0x165
+     426:	eb 28                	jmp    450 <elf_rel_type_string+0x6a>
 				return "R_386_GLOB_DAT";
-     3ff:	b8 70 01 00 00       	mov    eax,0x170
-     404:	eb 21                	jmp    427 <elf_rel_type_string+0x6a>
+     428:	b8 70 01 00 00       	mov    eax,0x170
+     42d:	eb 21                	jmp    450 <elf_rel_type_string+0x6a>
 				return "R_386_JMP_SLOT";
-     406:	b8 7f 01 00 00       	mov    eax,0x17f
-     40b:	eb 1a                	jmp    427 <elf_rel_type_string+0x6a>
+     42f:	b8 7f 01 00 00       	mov    eax,0x17f
+     434:	eb 1a                	jmp    450 <elf_rel_type_string+0x6a>
 				return "R_386_RELATIVE";
-     40d:	b8 8e 01 00 00       	mov    eax,0x18e
-     412:	eb 13                	jmp    427 <elf_rel_type_string+0x6a>
+     436:	b8 8e 01 00 00       	mov    eax,0x18e
+     43b:	eb 13                	jmp    450 <elf_rel_type_string+0x6a>
 				return "R_386_GOTOFF";
-     414:	b8 9d 01 00 00       	mov    eax,0x19d
-     419:	eb 0c                	jmp    427 <elf_rel_type_string+0x6a>
+     43d:	b8 9d 01 00 00       	mov    eax,0x19d
+     442:	eb 0c                	jmp    450 <elf_rel_type_string+0x6a>
 				return "R_386_GOTPC";
-     41b:	b8 aa 01 00 00       	mov    eax,0x1aa
-     420:	eb 05                	jmp    427 <elf_rel_type_string+0x6a>
+     444:	b8 aa 01 00 00       	mov    eax,0x1aa
+     449:	eb 05                	jmp    450 <elf_rel_type_string+0x6a>
 				return "UNKNOWN";
-     422:	b8 c3 00 00 00       	mov    eax,0xc3
+     44b:	b8 c3 00 00 00       	mov    eax,0xc3
 }
-     427:	5d                   	pop    ebp
-     428:	c3                   	ret
+     450:	5d                   	pop    ebp
+     451:	c3                   	ret
 
-00000429 <elf_dump_rel>:
+00000452 <elf_dump_rel>:
 {
-     429:	55                   	push   ebp
-     42a:	89 e5                	mov    ebp,esp
-     42c:	56                   	push   esi
-     42d:	53                   	push   ebx
-     42e:	83 ec 50             	sub    esp,0x50
-     431:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-     434:	66 89 45 b4          	mov    WORD PTR [ebp-0x4c],ax
+     452:	55                   	push   ebp
+     453:	89 e5                	mov    ebp,esp
+     455:	56                   	push   esi
+     456:	53                   	push   ebx
+     457:	83 ec 70             	sub    esp,0x70
+     45a:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+     45d:	66 89 45 b4          	mov    WORD PTR [ebp-0x4c],ax
 		void* ptr = ((void*)hdr + shdr[rel].sh_offset), *sptr, *stptr;
-     438:	0f b7 55 b4          	movzx  edx,WORD PTR [ebp-0x4c]
-     43c:	89 d0                	mov    eax,edx
-     43e:	c1 e0 02             	shl    eax,0x2
-     441:	01 d0                	add    eax,edx
-     443:	c1 e0 03             	shl    eax,0x3
-     446:	89 c2                	mov    edx,eax
-     448:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     44b:	01 d0                	add    eax,edx
-     44d:	8b 50 10             	mov    edx,DWORD PTR [eax+0x10]
-     450:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     453:	01 d0                	add    eax,edx
-     455:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
+     461:	0f b7 55 b4          	movzx  edx,WORD PTR [ebp-0x4c]
+     465:	89 d0                	mov    eax,edx
+     467:	c1 e0 02             	shl    eax,0x2
+     46a:	01 d0                	add    eax,edx
+     46c:	c1 e0 03             	shl    eax,0x3
+     46f:	89 c2                	mov    edx,eax
+     471:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     474:	01 d0                	add    eax,edx
+     476:	8b 50 10             	mov    edx,DWORD PTR [eax+0x10]
+     479:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     47c:	01 d0                	add    eax,edx
+     47e:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
 		size_t i, ct = shdr[rel].sh_size / shdr[rel].sh_entsize;
-     458:	0f b7 55 b4          	movzx  edx,WORD PTR [ebp-0x4c]
-     45c:	89 d0                	mov    eax,edx
-     45e:	c1 e0 02             	shl    eax,0x2
-     461:	01 d0                	add    eax,edx
-     463:	c1 e0 03             	shl    eax,0x3
-     466:	89 c2                	mov    edx,eax
-     468:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     46b:	01 d0                	add    eax,edx
-     46d:	8b 48 14             	mov    ecx,DWORD PTR [eax+0x14]
-     470:	0f b7 55 b4          	movzx  edx,WORD PTR [ebp-0x4c]
-     474:	89 d0                	mov    eax,edx
-     476:	c1 e0 02             	shl    eax,0x2
-     479:	01 d0                	add    eax,edx
-     47b:	c1 e0 03             	shl    eax,0x3
-     47e:	89 c2                	mov    edx,eax
-     480:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     483:	01 d0                	add    eax,edx
-     485:	8b 58 24             	mov    ebx,DWORD PTR [eax+0x24]
-     488:	89 c8                	mov    eax,ecx
-     48a:	ba 00 00 00 00       	mov    edx,0x0
-     48f:	f7 f3                	div    ebx
-     491:	89 45 e4             	mov    DWORD PTR [ebp-0x1c],eax
+     481:	0f b7 55 b4          	movzx  edx,WORD PTR [ebp-0x4c]
+     485:	89 d0                	mov    eax,edx
+     487:	c1 e0 02             	shl    eax,0x2
+     48a:	01 d0                	add    eax,edx
+     48c:	c1 e0 03             	shl    eax,0x3
+     48f:	89 c2                	mov    edx,eax
+     491:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     494:	01 d0                	add    eax,edx
+     496:	8b 48 14             	mov    ecx,DWORD PTR [eax+0x14]
+     499:	0f b7 55 b4          	movzx  edx,WORD PTR [ebp-0x4c]
+     49d:	89 d0                	mov    eax,edx
+     49f:	c1 e0 02             	shl    eax,0x2
+     4a2:	01 d0                	add    eax,edx
+     4a4:	c1 e0 03             	shl    eax,0x3
+     4a7:	89 c2                	mov    edx,eax
+     4a9:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     4ac:	01 d0                	add    eax,edx
+     4ae:	8b 58 24             	mov    ebx,DWORD PTR [eax+0x24]
+     4b1:	89 c8                	mov    eax,ecx
+     4b3:	ba 00 00 00 00       	mov    edx,0x0
+     4b8:	f7 f3                	div    ebx
+     4ba:	89 45 e4             	mov    DWORD PTR [ebp-0x1c],eax
 		if (!ct)
-     494:	83 7d e4 00          	cmp    DWORD PTR [ebp-0x1c],0x0
-     498:	0f 84 51 03 00 00    	je     7ef <elf_dump_rel+0x3c6>
+     4bd:	83 7d e4 00          	cmp    DWORD PTR [ebp-0x1c],0x0
+     4c1:	0f 84 72 03 00 00    	je     839 <elf_dump_rel+0x3e7>
 		sptr = (void*)hdr + shdr[shdr[rel].sh_info].sh_offset;
-     49e:	0f b7 55 b4          	movzx  edx,WORD PTR [ebp-0x4c]
-     4a2:	89 d0                	mov    eax,edx
-     4a4:	c1 e0 02             	shl    eax,0x2
-     4a7:	01 d0                	add    eax,edx
-     4a9:	c1 e0 03             	shl    eax,0x3
-     4ac:	89 c2                	mov    edx,eax
-     4ae:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     4b1:	01 d0                	add    eax,edx
-     4b3:	8b 50 1c             	mov    edx,DWORD PTR [eax+0x1c]
-     4b6:	89 d0                	mov    eax,edx
-     4b8:	c1 e0 02             	shl    eax,0x2
-     4bb:	01 d0                	add    eax,edx
-     4bd:	c1 e0 03             	shl    eax,0x3
-     4c0:	89 c2                	mov    edx,eax
-     4c2:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     4c5:	01 d0                	add    eax,edx
-     4c7:	8b 50 10             	mov    edx,DWORD PTR [eax+0x10]
-     4ca:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     4cd:	01 d0                	add    eax,edx
-     4cf:	89 45 e0             	mov    DWORD PTR [ebp-0x20],eax
+     4c7:	0f b7 55 b4          	movzx  edx,WORD PTR [ebp-0x4c]
+     4cb:	89 d0                	mov    eax,edx
+     4cd:	c1 e0 02             	shl    eax,0x2
+     4d0:	01 d0                	add    eax,edx
+     4d2:	c1 e0 03             	shl    eax,0x3
+     4d5:	89 c2                	mov    edx,eax
+     4d7:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     4da:	01 d0                	add    eax,edx
+     4dc:	8b 50 1c             	mov    edx,DWORD PTR [eax+0x1c]
+     4df:	89 d0                	mov    eax,edx
+     4e1:	c1 e0 02             	shl    eax,0x2
+     4e4:	01 d0                	add    eax,edx
+     4e6:	c1 e0 03             	shl    eax,0x3
+     4e9:	89 c2                	mov    edx,eax
+     4eb:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     4ee:	01 d0                	add    eax,edx
+     4f0:	8b 50 10             	mov    edx,DWORD PTR [eax+0x10]
+     4f3:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     4f6:	01 d0                	add    eax,edx
+     4f8:	89 45 e0             	mov    DWORD PTR [ebp-0x20],eax
 		stptr = (void*)hdr + shdr[shdr[rel].sh_link].sh_offset;
-     4d2:	0f b7 55 b4          	movzx  edx,WORD PTR [ebp-0x4c]
-     4d6:	89 d0                	mov    eax,edx
-     4d8:	c1 e0 02             	shl    eax,0x2
-     4db:	01 d0                	add    eax,edx
-     4dd:	c1 e0 03             	shl    eax,0x3
-     4e0:	89 c2                	mov    edx,eax
-     4e2:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     4e5:	01 d0                	add    eax,edx
-     4e7:	8b 50 18             	mov    edx,DWORD PTR [eax+0x18]
-     4ea:	89 d0                	mov    eax,edx
-     4ec:	c1 e0 02             	shl    eax,0x2
-     4ef:	01 d0                	add    eax,edx
-     4f1:	c1 e0 03             	shl    eax,0x3
-     4f4:	89 c2                	mov    edx,eax
-     4f6:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     4f9:	01 d0                	add    eax,edx
-     4fb:	8b 50 10             	mov    edx,DWORD PTR [eax+0x10]
-     4fe:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     501:	01 d0                	add    eax,edx
-     503:	89 45 dc             	mov    DWORD PTR [ebp-0x24],eax
+     4fb:	0f b7 55 b4          	movzx  edx,WORD PTR [ebp-0x4c]
+     4ff:	89 d0                	mov    eax,edx
+     501:	c1 e0 02             	shl    eax,0x2
+     504:	01 d0                	add    eax,edx
+     506:	c1 e0 03             	shl    eax,0x3
+     509:	89 c2                	mov    edx,eax
+     50b:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     50e:	01 d0                	add    eax,edx
+     510:	8b 50 18             	mov    edx,DWORD PTR [eax+0x18]
+     513:	89 d0                	mov    eax,edx
+     515:	c1 e0 02             	shl    eax,0x2
+     518:	01 d0                	add    eax,edx
+     51a:	c1 e0 03             	shl    eax,0x3
+     51d:	89 c2                	mov    edx,eax
+     51f:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     522:	01 d0                	add    eax,edx
+     524:	8b 50 10             	mov    edx,DWORD PTR [eax+0x10]
+     527:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     52a:	01 d0                	add    eax,edx
+     52c:	89 45 dc             	mov    DWORD PTR [ebp-0x24],eax
 		stb = shdr + shdr[rel].sh_link;
-     506:	0f b7 55 b4          	movzx  edx,WORD PTR [ebp-0x4c]
-     50a:	89 d0                	mov    eax,edx
-     50c:	c1 e0 02             	shl    eax,0x2
-     50f:	01 d0                	add    eax,edx
-     511:	c1 e0 03             	shl    eax,0x3
-     514:	89 c2                	mov    edx,eax
-     516:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     519:	01 d0                	add    eax,edx
-     51b:	8b 50 18             	mov    edx,DWORD PTR [eax+0x18]
-     51e:	89 d0                	mov    eax,edx
-     520:	c1 e0 02             	shl    eax,0x2
-     523:	01 d0                	add    eax,edx
-     525:	c1 e0 03             	shl    eax,0x3
-     528:	89 c2                	mov    edx,eax
-     52a:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     52d:	01 d0                	add    eax,edx
-     52f:	89 45 d8             	mov    DWORD PTR [ebp-0x28],eax
+     52f:	0f b7 55 b4          	movzx  edx,WORD PTR [ebp-0x4c]
+     533:	89 d0                	mov    eax,edx
+     535:	c1 e0 02             	shl    eax,0x2
+     538:	01 d0                	add    eax,edx
+     53a:	c1 e0 03             	shl    eax,0x3
+     53d:	89 c2                	mov    edx,eax
+     53f:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     542:	01 d0                	add    eax,edx
+     544:	8b 50 18             	mov    edx,DWORD PTR [eax+0x18]
+     547:	89 d0                	mov    eax,edx
+     549:	c1 e0 02             	shl    eax,0x2
+     54c:	01 d0                	add    eax,edx
+     54e:	c1 e0 03             	shl    eax,0x3
+     551:	89 c2                	mov    edx,eax
+     553:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     556:	01 d0                	add    eax,edx
+     558:	89 45 d8             	mov    DWORD PTR [ebp-0x28],eax
 		printf("dumping relocations with %lu entries\n", ct);
-     532:	83 ec 08             	sub    esp,0x8
-     535:	ff 75 e4             	push   DWORD PTR [ebp-0x1c]
-     538:	68 e4 01 00 00       	push   0x1e4
-     53d:	e8 fc ff ff ff       	call   53e <elf_dump_rel+0x115>
-     542:	83 c4 10             	add    esp,0x10
+     55b:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
+     55e:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+     562:	c7 04 24 e4 01 00 00 	mov    DWORD PTR [esp],0x1e4
+     569:	e8 fc ff ff ff       	call   56a <elf_dump_rel+0x118>
 			shdr, hdr->e_shstrndx, shdr[shdr[rel].sh_info].sh_name));
-     545:	0f b7 55 b4          	movzx  edx,WORD PTR [ebp-0x4c]
-     549:	89 d0                	mov    eax,edx
-     54b:	c1 e0 02             	shl    eax,0x2
-     54e:	01 d0                	add    eax,edx
-     550:	c1 e0 03             	shl    eax,0x3
-     553:	89 c2                	mov    edx,eax
-     555:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     558:	01 d0                	add    eax,edx
-     55a:	8b 50 1c             	mov    edx,DWORD PTR [eax+0x1c]
-     55d:	89 d0                	mov    eax,edx
-     55f:	c1 e0 02             	shl    eax,0x2
-     562:	01 d0                	add    eax,edx
-     564:	c1 e0 03             	shl    eax,0x3
-     567:	89 c2                	mov    edx,eax
-     569:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     56c:	01 d0                	add    eax,edx
+     56e:	0f b7 55 b4          	movzx  edx,WORD PTR [ebp-0x4c]
+     572:	89 d0                	mov    eax,edx
+     574:	c1 e0 02             	shl    eax,0x2
+     577:	01 d0                	add    eax,edx
+     579:	c1 e0 03             	shl    eax,0x3
+     57c:	89 c2                	mov    edx,eax
+     57e:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     581:	01 d0                	add    eax,edx
+     583:	8b 50 1c             	mov    edx,DWORD PTR [eax+0x1c]
+     586:	89 d0                	mov    eax,edx
+     588:	c1 e0 02             	shl    eax,0x2
+     58b:	01 d0                	add    eax,edx
+     58d:	c1 e0 03             	shl    eax,0x3
+     590:	89 c2                	mov    edx,eax
+     592:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     595:	01 d0                	add    eax,edx
 		printf("relocations apply to section %s\n", elf_fetch_string(hdr,
-     56e:	8b 10                	mov    edx,DWORD PTR [eax]
+     597:	8b 10                	mov    edx,DWORD PTR [eax]
 			shdr, hdr->e_shstrndx, shdr[shdr[rel].sh_info].sh_name));
-     570:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     573:	0f b7 40 32          	movzx  eax,WORD PTR [eax+0x32]
+     599:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     59c:	0f b7 40 32          	movzx  eax,WORD PTR [eax+0x32]
 		printf("relocations apply to section %s\n", elf_fetch_string(hdr,
-     577:	0f b7 c0             	movzx  eax,ax
-     57a:	52                   	push   edx
-     57b:	50                   	push   eax
-     57c:	ff 75 0c             	push   DWORD PTR [ebp+0xc]
-     57f:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-     582:	e8 fc ff ff ff       	call   583 <elf_dump_rel+0x15a>
-     587:	83 c4 10             	add    esp,0x10
-     58a:	83 ec 08             	sub    esp,0x8
-     58d:	50                   	push   eax
-     58e:	68 0c 02 00 00       	push   0x20c
-     593:	e8 fc ff ff ff       	call   594 <elf_dump_rel+0x16b>
-     598:	83 c4 10             	add    esp,0x10
+     5a0:	0f b7 c0             	movzx  eax,ax
+     5a3:	89 54 24 0c          	mov    DWORD PTR [esp+0xc],edx
+     5a7:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+     5ab:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     5ae:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+     5b2:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     5b5:	89 04 24             	mov    DWORD PTR [esp],eax
+     5b8:	e8 fc ff ff ff       	call   5b9 <elf_dump_rel+0x167>
+     5bd:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+     5c1:	c7 04 24 0c 02 00 00 	mov    DWORD PTR [esp],0x20c
+     5c8:	e8 fc ff ff ff       	call   5c9 <elf_dump_rel+0x177>
 		printf("   Num:   Offset Type              Field SyNdx SymbolName\n");
-     59b:	83 ec 0c             	sub    esp,0xc
-     59e:	68 30 02 00 00       	push   0x230
-     5a3:	e8 fc ff ff ff       	call   5a4 <elf_dump_rel+0x17b>
-     5a8:	83 c4 10             	add    esp,0x10
+     5cd:	c7 04 24 30 02 00 00 	mov    DWORD PTR [esp],0x230
+     5d4:	e8 fc ff ff ff       	call   5d5 <elf_dump_rel+0x183>
 		for (i = 0; i < ct; i++) {
-     5ab:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
-     5b2:	e9 2a 02 00 00       	jmp    7e1 <elf_dump_rel+0x3b8>
+     5d9:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
+     5e0:	e9 46 02 00 00       	jmp    82b <elf_dump_rel+0x3d9>
 				Elf32_Rela* r = (ptr + i * shdr[rel].sh_entsize);
-     5b7:	0f b7 55 b4          	movzx  edx,WORD PTR [ebp-0x4c]
-     5bb:	89 d0                	mov    eax,edx
-     5bd:	c1 e0 02             	shl    eax,0x2
-     5c0:	01 d0                	add    eax,edx
-     5c2:	c1 e0 03             	shl    eax,0x3
-     5c5:	89 c2                	mov    edx,eax
-     5c7:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     5ca:	01 d0                	add    eax,edx
-     5cc:	8b 40 24             	mov    eax,DWORD PTR [eax+0x24]
-     5cf:	0f af 45 f4          	imul   eax,DWORD PTR [ebp-0xc]
-     5d3:	89 c2                	mov    edx,eax
-     5d5:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
-     5d8:	01 d0                	add    eax,edx
-     5da:	89 45 d4             	mov    DWORD PTR [ebp-0x2c],eax
+     5e5:	0f b7 55 b4          	movzx  edx,WORD PTR [ebp-0x4c]
+     5e9:	89 d0                	mov    eax,edx
+     5eb:	c1 e0 02             	shl    eax,0x2
+     5ee:	01 d0                	add    eax,edx
+     5f0:	c1 e0 03             	shl    eax,0x3
+     5f3:	89 c2                	mov    edx,eax
+     5f5:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     5f8:	01 d0                	add    eax,edx
+     5fa:	8b 40 24             	mov    eax,DWORD PTR [eax+0x24]
+     5fd:	0f af 45 f4          	imul   eax,DWORD PTR [ebp-0xc]
+     601:	89 c2                	mov    edx,eax
+     603:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
+     606:	01 d0                	add    eax,edx
+     608:	89 45 d4             	mov    DWORD PTR [ebp-0x2c],eax
 				Elf32_Sym* s = (stptr + ELF32_R_SYM(r->r_info) * stb->sh_entsize);
-     5dd:	8b 45 d4             	mov    eax,DWORD PTR [ebp-0x2c]
-     5e0:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-     5e3:	c1 e8 08             	shr    eax,0x8
-     5e6:	89 c2                	mov    edx,eax
-     5e8:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-     5eb:	8b 40 24             	mov    eax,DWORD PTR [eax+0x24]
-     5ee:	0f af d0             	imul   edx,eax
-     5f1:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-     5f4:	01 d0                	add    eax,edx
-     5f6:	89 45 d0             	mov    DWORD PTR [ebp-0x30],eax
+     60b:	8b 45 d4             	mov    eax,DWORD PTR [ebp-0x2c]
+     60e:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+     611:	c1 e8 08             	shr    eax,0x8
+     614:	89 c2                	mov    edx,eax
+     616:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+     619:	8b 40 24             	mov    eax,DWORD PTR [eax+0x24]
+     61c:	0f af d0             	imul   edx,eax
+     61f:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+     622:	01 d0                	add    eax,edx
+     624:	89 45 d0             	mov    DWORD PTR [ebp-0x30],eax
 				const char* sn; char dat[] = "DAT: ........";
-     5f9:	c7 45 ba 44 41 54 3a 	mov    DWORD PTR [ebp-0x46],0x3a544144
-     600:	c7 45 be 20 2e 2e 2e 	mov    DWORD PTR [ebp-0x42],0x2e2e2e20
-     607:	c7 45 c2 2e 2e 2e 2e 	mov    DWORD PTR [ebp-0x3e],0x2e2e2e2e
-     60e:	66 c7 45 c6 2e 00    	mov    WORD PTR [ebp-0x3a],0x2e
+     627:	c7 45 ba 44 41 54 3a 	mov    DWORD PTR [ebp-0x46],0x3a544144
+     62e:	c7 45 be 20 2e 2e 2e 	mov    DWORD PTR [ebp-0x42],0x2e2e2e20
+     635:	c7 45 c2 2e 2e 2e 2e 	mov    DWORD PTR [ebp-0x3e],0x2e2e2e2e
+     63c:	66 c7 45 c6 2e 00    	mov    WORD PTR [ebp-0x3a],0x2e
 				if (s->st_name)
-     614:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-     617:	8b 00                	mov    eax,DWORD PTR [eax]
-     619:	85 c0                	test   eax,eax
-     61b:	74 26                	je     643 <elf_dump_rel+0x21a>
+     642:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+     645:	8b 00                	mov    eax,DWORD PTR [eax]
+     647:	85 c0                	test   eax,eax
+     649:	74 30                	je     67b <elf_dump_rel+0x229>
 						sn = elf_fetch_string(hdr, shdr, stb->sh_link, s->st_name);
-     61d:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-     620:	8b 10                	mov    edx,DWORD PTR [eax]
-     622:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-     625:	8b 40 18             	mov    eax,DWORD PTR [eax+0x18]
-     628:	0f b7 c0             	movzx  eax,ax
-     62b:	52                   	push   edx
-     62c:	50                   	push   eax
-     62d:	ff 75 0c             	push   DWORD PTR [ebp+0xc]
-     630:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-     633:	e8 fc ff ff ff       	call   634 <elf_dump_rel+0x20b>
-     638:	83 c4 10             	add    esp,0x10
-     63b:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
-     63e:	e9 4f 01 00 00       	jmp    792 <elf_dump_rel+0x369>
+     64b:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+     64e:	8b 10                	mov    edx,DWORD PTR [eax]
+     650:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+     653:	8b 40 18             	mov    eax,DWORD PTR [eax+0x18]
+     656:	0f b7 c0             	movzx  eax,ax
+     659:	89 54 24 0c          	mov    DWORD PTR [esp+0xc],edx
+     65d:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+     661:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     664:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+     668:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     66b:	89 04 24             	mov    DWORD PTR [esp],eax
+     66e:	e8 fc ff ff ff       	call   66f <elf_dump_rel+0x21d>
+     673:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
+     676:	e9 55 01 00 00       	jmp    7d0 <elf_dump_rel+0x37e>
 				else if ((shdr[s->st_shndx].sh_flags & SHF_WRITE) == 0
-     643:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-     646:	0f b7 40 0e          	movzx  eax,WORD PTR [eax+0xe]
-     64a:	0f b7 d0             	movzx  edx,ax
-     64d:	89 d0                	mov    eax,edx
-     64f:	c1 e0 02             	shl    eax,0x2
-     652:	01 d0                	add    eax,edx
-     654:	c1 e0 03             	shl    eax,0x3
-     657:	89 c2                	mov    edx,eax
-     659:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     65c:	01 d0                	add    eax,edx
-     65e:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
-     661:	83 e0 01             	and    eax,0x1
-     664:	85 c0                	test   eax,eax
-     666:	0f 85 ec 00 00 00    	jne    758 <elf_dump_rel+0x32f>
+     67b:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+     67e:	0f b7 40 0e          	movzx  eax,WORD PTR [eax+0xe]
+     682:	0f b7 d0             	movzx  edx,ax
+     685:	89 d0                	mov    eax,edx
+     687:	c1 e0 02             	shl    eax,0x2
+     68a:	01 d0                	add    eax,edx
+     68c:	c1 e0 03             	shl    eax,0x3
+     68f:	89 c2                	mov    edx,eax
+     691:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     694:	01 d0                	add    eax,edx
+     696:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
+     699:	83 e0 01             	and    eax,0x1
+     69c:	85 c0                	test   eax,eax
+     69e:	0f 85 e8 00 00 00    	jne    78c <elf_dump_rel+0x33a>
 						&& shdr[s->st_shndx].sh_flags & SHF_ALLOC
-     66c:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-     66f:	0f b7 40 0e          	movzx  eax,WORD PTR [eax+0xe]
-     673:	0f b7 d0             	movzx  edx,ax
-     676:	89 d0                	mov    eax,edx
-     678:	c1 e0 02             	shl    eax,0x2
-     67b:	01 d0                	add    eax,edx
-     67d:	c1 e0 03             	shl    eax,0x3
-     680:	89 c2                	mov    edx,eax
-     682:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     685:	01 d0                	add    eax,edx
-     687:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
-     68a:	83 e0 02             	and    eax,0x2
-     68d:	85 c0                	test   eax,eax
-     68f:	0f 84 c3 00 00 00    	je     758 <elf_dump_rel+0x32f>
+     6a4:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+     6a7:	0f b7 40 0e          	movzx  eax,WORD PTR [eax+0xe]
+     6ab:	0f b7 d0             	movzx  edx,ax
+     6ae:	89 d0                	mov    eax,edx
+     6b0:	c1 e0 02             	shl    eax,0x2
+     6b3:	01 d0                	add    eax,edx
+     6b5:	c1 e0 03             	shl    eax,0x3
+     6b8:	89 c2                	mov    edx,eax
+     6ba:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     6bd:	01 d0                	add    eax,edx
+     6bf:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
+     6c2:	83 e0 02             	and    eax,0x2
+     6c5:	85 c0                	test   eax,eax
+     6c7:	0f 84 bf 00 00 00    	je     78c <elf_dump_rel+0x33a>
 						&& (shdr[s->st_shndx].sh_flags & SHF_EXECINSTR) == 0) {
-     695:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-     698:	0f b7 40 0e          	movzx  eax,WORD PTR [eax+0xe]
-     69c:	0f b7 d0             	movzx  edx,ax
-     69f:	89 d0                	mov    eax,edx
-     6a1:	c1 e0 02             	shl    eax,0x2
-     6a4:	01 d0                	add    eax,edx
-     6a6:	c1 e0 03             	shl    eax,0x3
-     6a9:	89 c2                	mov    edx,eax
-     6ab:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     6ae:	01 d0                	add    eax,edx
-     6b0:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
-     6b3:	83 e0 04             	and    eax,0x4
-     6b6:	85 c0                	test   eax,eax
-     6b8:	0f 85 9a 00 00 00    	jne    758 <elf_dump_rel+0x32f>
+     6cd:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+     6d0:	0f b7 40 0e          	movzx  eax,WORD PTR [eax+0xe]
+     6d4:	0f b7 d0             	movzx  edx,ax
+     6d7:	89 d0                	mov    eax,edx
+     6d9:	c1 e0 02             	shl    eax,0x2
+     6dc:	01 d0                	add    eax,edx
+     6de:	c1 e0 03             	shl    eax,0x3
+     6e1:	89 c2                	mov    edx,eax
+     6e3:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     6e6:	01 d0                	add    eax,edx
+     6e8:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
+     6eb:	83 e0 04             	and    eax,0x4
+     6ee:	85 c0                	test   eax,eax
+     6f0:	0f 85 96 00 00 00    	jne    78c <elf_dump_rel+0x33a>
 						const char* c = (void*)hdr + shdr[s->st_shndx].sh_offset;
-     6be:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-     6c1:	0f b7 40 0e          	movzx  eax,WORD PTR [eax+0xe]
-     6c5:	0f b7 d0             	movzx  edx,ax
-     6c8:	89 d0                	mov    eax,edx
-     6ca:	c1 e0 02             	shl    eax,0x2
-     6cd:	01 d0                	add    eax,edx
-     6cf:	c1 e0 03             	shl    eax,0x3
-     6d2:	89 c2                	mov    edx,eax
-     6d4:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     6d7:	01 d0                	add    eax,edx
-     6d9:	8b 50 10             	mov    edx,DWORD PTR [eax+0x10]
-     6dc:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     6df:	01 d0                	add    eax,edx
-     6e1:	89 45 cc             	mov    DWORD PTR [ebp-0x34],eax
+     6f6:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+     6f9:	0f b7 40 0e          	movzx  eax,WORD PTR [eax+0xe]
+     6fd:	0f b7 d0             	movzx  edx,ax
+     700:	89 d0                	mov    eax,edx
+     702:	c1 e0 02             	shl    eax,0x2
+     705:	01 d0                	add    eax,edx
+     707:	c1 e0 03             	shl    eax,0x3
+     70a:	89 c2                	mov    edx,eax
+     70c:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     70f:	01 d0                	add    eax,edx
+     711:	8b 50 10             	mov    edx,DWORD PTR [eax+0x10]
+     714:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     717:	01 d0                	add    eax,edx
+     719:	89 45 cc             	mov    DWORD PTR [ebp-0x34],eax
 						uint32_t of = *(uint32_t*)(sptr + r->r_offset), j;
-     6e4:	8b 45 d4             	mov    eax,DWORD PTR [ebp-0x2c]
-     6e7:	8b 10                	mov    edx,DWORD PTR [eax]
-     6e9:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
-     6ec:	01 d0                	add    eax,edx
-     6ee:	8b 00                	mov    eax,DWORD PTR [eax]
-     6f0:	89 45 c8             	mov    DWORD PTR [ebp-0x38],eax
+     71c:	8b 45 d4             	mov    eax,DWORD PTR [ebp-0x2c]
+     71f:	8b 10                	mov    edx,DWORD PTR [eax]
+     721:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
+     724:	01 d0                	add    eax,edx
+     726:	8b 00                	mov    eax,DWORD PTR [eax]
+     728:	89 45 c8             	mov    DWORD PTR [ebp-0x38],eax
 						for (j = 0; j < 8; j++)
-     6f3:	c7 45 ec 00 00 00 00 	mov    DWORD PTR [ebp-0x14],0x0
-     6fa:	eb 4e                	jmp    74a <elf_dump_rel+0x321>
+     72b:	c7 45 ec 00 00 00 00 	mov    DWORD PTR [ebp-0x14],0x0
+     732:	eb 4a                	jmp    77e <elf_dump_rel+0x32c>
 								if (isprint(c[of + j]))
-     6fc:	8b 55 c8             	mov    edx,DWORD PTR [ebp-0x38]
-     6ff:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-     702:	01 c2                	add    edx,eax
-     704:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-     707:	01 d0                	add    eax,edx
-     709:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     70c:	0f be c0             	movsx  eax,al
-     70f:	83 ec 0c             	sub    esp,0xc
-     712:	50                   	push   eax
-     713:	e8 fc ff ff ff       	call   714 <elf_dump_rel+0x2eb>
-     718:	83 c4 10             	add    esp,0x10
-     71b:	85 c0                	test   eax,eax
-     71d:	74 1c                	je     73b <elf_dump_rel+0x312>
+     734:	8b 55 c8             	mov    edx,DWORD PTR [ebp-0x38]
+     737:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+     73a:	01 c2                	add    edx,eax
+     73c:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+     73f:	01 d0                	add    eax,edx
+     741:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     744:	0f be c0             	movsx  eax,al
+     747:	89 04 24             	mov    DWORD PTR [esp],eax
+     74a:	e8 fc ff ff ff       	call   74b <elf_dump_rel+0x2f9>
+     74f:	85 c0                	test   eax,eax
+     751:	74 1c                	je     76f <elf_dump_rel+0x31d>
 										dat[j + 5] = c[of + j];
-     71f:	8b 55 c8             	mov    edx,DWORD PTR [ebp-0x38]
-     722:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-     725:	01 c2                	add    edx,eax
-     727:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-     72a:	01 d0                	add    eax,edx
-     72c:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
-     72f:	83 c2 05             	add    edx,0x5
-     732:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     735:	88 44 15 ba          	mov    BYTE PTR [ebp+edx*1-0x46],al
-     739:	eb 0b                	jmp    746 <elf_dump_rel+0x31d>
+     753:	8b 55 c8             	mov    edx,DWORD PTR [ebp-0x38]
+     756:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+     759:	01 c2                	add    edx,eax
+     75b:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+     75e:	01 d0                	add    eax,edx
+     760:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
+     763:	83 c2 05             	add    edx,0x5
+     766:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     769:	88 44 15 ba          	mov    BYTE PTR [ebp+edx*1-0x46],al
+     76d:	eb 0b                	jmp    77a <elf_dump_rel+0x328>
 										dat[j + 5] = '.';
-     73b:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-     73e:	83 c0 05             	add    eax,0x5
-     741:	c6 44 05 ba 2e       	mov    BYTE PTR [ebp+eax*1-0x46],0x2e
+     76f:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+     772:	83 c0 05             	add    eax,0x5
+     775:	c6 44 05 ba 2e       	mov    BYTE PTR [ebp+eax*1-0x46],0x2e
 						for (j = 0; j < 8; j++)
-     746:	83 45 ec 01          	add    DWORD PTR [ebp-0x14],0x1
-     74a:	83 7d ec 07          	cmp    DWORD PTR [ebp-0x14],0x7
-     74e:	76 ac                	jbe    6fc <elf_dump_rel+0x2d3>
+     77a:	83 45 ec 01          	add    DWORD PTR [ebp-0x14],0x1
+     77e:	83 7d ec 07          	cmp    DWORD PTR [ebp-0x14],0x7
+     782:	76 b0                	jbe    734 <elf_dump_rel+0x2e2>
 						sn = dat;
-     750:	8d 45 ba             	lea    eax,[ebp-0x46]
-     753:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
+     784:	8d 45 ba             	lea    eax,[ebp-0x46]
+     787:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
 						&& (shdr[s->st_shndx].sh_flags & SHF_EXECINSTR) == 0) {
-     756:	eb 3a                	jmp    792 <elf_dump_rel+0x369>
+     78a:	eb 44                	jmp    7d0 <elf_dump_rel+0x37e>
 						sn = elf_fetch_string(hdr, shdr, hdr->e_shstrndx, shdr[s->st_shndx].sh_name);
-     758:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-     75b:	0f b7 40 0e          	movzx  eax,WORD PTR [eax+0xe]
-     75f:	0f b7 d0             	movzx  edx,ax
-     762:	89 d0                	mov    eax,edx
-     764:	c1 e0 02             	shl    eax,0x2
-     767:	01 d0                	add    eax,edx
-     769:	c1 e0 03             	shl    eax,0x3
-     76c:	89 c2                	mov    edx,eax
-     76e:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     771:	01 d0                	add    eax,edx
-     773:	8b 10                	mov    edx,DWORD PTR [eax]
-     775:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     778:	0f b7 40 32          	movzx  eax,WORD PTR [eax+0x32]
-     77c:	0f b7 c0             	movzx  eax,ax
-     77f:	52                   	push   edx
-     780:	50                   	push   eax
-     781:	ff 75 0c             	push   DWORD PTR [ebp+0xc]
-     784:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-     787:	e8 fc ff ff ff       	call   788 <elf_dump_rel+0x35f>
-     78c:	83 c4 10             	add    esp,0x10
-     78f:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
-					*(uint32_t*)(sptr + r->r_offset), ELF32_R_SYM(r->r_info), sn);
-     792:	8b 45 d4             	mov    eax,DWORD PTR [ebp-0x2c]
-     795:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-				printf("%6lu: %8x %14s %8x %5u %.13s\n", i, r->r_offset,
-     798:	c1 e8 08             	shr    eax,0x8
-     79b:	89 c6                	mov    esi,eax
-					*(uint32_t*)(sptr + r->r_offset), ELF32_R_SYM(r->r_info), sn);
-     79d:	8b 45 d4             	mov    eax,DWORD PTR [ebp-0x2c]
-     7a0:	8b 10                	mov    edx,DWORD PTR [eax]
-     7a2:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
+     78c:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+     78f:	0f b7 40 0e          	movzx  eax,WORD PTR [eax+0xe]
+     793:	0f b7 d0             	movzx  edx,ax
+     796:	89 d0                	mov    eax,edx
+     798:	c1 e0 02             	shl    eax,0x2
+     79b:	01 d0                	add    eax,edx
+     79d:	c1 e0 03             	shl    eax,0x3
+     7a0:	89 c2                	mov    edx,eax
+     7a2:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
      7a5:	01 d0                	add    eax,edx
+     7a7:	8b 10                	mov    edx,DWORD PTR [eax]
+     7a9:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     7ac:	0f b7 40 32          	movzx  eax,WORD PTR [eax+0x32]
+     7b0:	0f b7 c0             	movzx  eax,ax
+     7b3:	89 54 24 0c          	mov    DWORD PTR [esp+0xc],edx
+     7b7:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+     7bb:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     7be:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+     7c2:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     7c5:	89 04 24             	mov    DWORD PTR [esp],eax
+     7c8:	e8 fc ff ff ff       	call   7c9 <elf_dump_rel+0x377>
+     7cd:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
+					*(uint32_t*)(sptr + r->r_offset), ELF32_R_SYM(r->r_info), sn);
+     7d0:	8b 45 d4             	mov    eax,DWORD PTR [ebp-0x2c]
+     7d3:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
 				printf("%6lu: %8x %14s %8x %5u %.13s\n", i, r->r_offset,
-     7a7:	8b 18                	mov    ebx,DWORD PTR [eax]
+     7d6:	c1 e8 08             	shr    eax,0x8
+     7d9:	89 c6                	mov    esi,eax
+					*(uint32_t*)(sptr + r->r_offset), ELF32_R_SYM(r->r_info), sn);
+     7db:	8b 45 d4             	mov    eax,DWORD PTR [ebp-0x2c]
+     7de:	8b 10                	mov    edx,DWORD PTR [eax]
+     7e0:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
+     7e3:	01 d0                	add    eax,edx
+				printf("%6lu: %8x %14s %8x %5u %.13s\n", i, r->r_offset,
+     7e5:	8b 18                	mov    ebx,DWORD PTR [eax]
 					elf_rel_type_string(ELF32_R_TYPE(r->r_info)),
-     7a9:	8b 45 d4             	mov    eax,DWORD PTR [ebp-0x2c]
-     7ac:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+     7e7:	8b 45 d4             	mov    eax,DWORD PTR [ebp-0x2c]
+     7ea:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
 				printf("%6lu: %8x %14s %8x %5u %.13s\n", i, r->r_offset,
-     7af:	0f b6 c0             	movzx  eax,al
-     7b2:	83 ec 0c             	sub    esp,0xc
-     7b5:	50                   	push   eax
-     7b6:	e8 fc ff ff ff       	call   7b7 <elf_dump_rel+0x38e>
-     7bb:	83 c4 10             	add    esp,0x10
-     7be:	8b 55 d4             	mov    edx,DWORD PTR [ebp-0x2c]
-     7c1:	8b 12                	mov    edx,DWORD PTR [edx]
-     7c3:	83 ec 04             	sub    esp,0x4
-     7c6:	ff 75 f0             	push   DWORD PTR [ebp-0x10]
-     7c9:	56                   	push   esi
-     7ca:	53                   	push   ebx
-     7cb:	50                   	push   eax
-     7cc:	52                   	push   edx
-     7cd:	ff 75 f4             	push   DWORD PTR [ebp-0xc]
-     7d0:	68 6b 02 00 00       	push   0x26b
-     7d5:	e8 fc ff ff ff       	call   7d6 <elf_dump_rel+0x3ad>
-     7da:	83 c4 20             	add    esp,0x20
+     7ed:	0f b6 c0             	movzx  eax,al
+     7f0:	89 04 24             	mov    DWORD PTR [esp],eax
+     7f3:	e8 fc ff ff ff       	call   7f4 <elf_dump_rel+0x3a2>
+     7f8:	8b 55 d4             	mov    edx,DWORD PTR [ebp-0x2c]
+     7fb:	8b 12                	mov    edx,DWORD PTR [edx]
+     7fd:	8b 4d f0             	mov    ecx,DWORD PTR [ebp-0x10]
+     800:	89 4c 24 18          	mov    DWORD PTR [esp+0x18],ecx
+     804:	89 74 24 14          	mov    DWORD PTR [esp+0x14],esi
+     808:	89 5c 24 10          	mov    DWORD PTR [esp+0x10],ebx
+     80c:	89 44 24 0c          	mov    DWORD PTR [esp+0xc],eax
+     810:	89 54 24 08          	mov    DWORD PTR [esp+0x8],edx
+     814:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     817:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+     81b:	c7 04 24 6b 02 00 00 	mov    DWORD PTR [esp],0x26b
+     822:	e8 fc ff ff ff       	call   823 <elf_dump_rel+0x3d1>
 		for (i = 0; i < ct; i++) {
-     7dd:	83 45 f4 01          	add    DWORD PTR [ebp-0xc],0x1
-     7e1:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     7e4:	3b 45 e4             	cmp    eax,DWORD PTR [ebp-0x1c]
-     7e7:	0f 82 ca fd ff ff    	jb     5b7 <elf_dump_rel+0x18e>
-     7ed:	eb 01                	jmp    7f0 <elf_dump_rel+0x3c7>
+     827:	83 45 f4 01          	add    DWORD PTR [ebp-0xc],0x1
+     82b:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     82e:	3b 45 e4             	cmp    eax,DWORD PTR [ebp-0x1c]
+     831:	0f 82 ae fd ff ff    	jb     5e5 <elf_dump_rel+0x193>
+     837:	eb 01                	jmp    83a <elf_dump_rel+0x3e8>
 				return;
-     7ef:	90                   	nop
+     839:	90                   	nop
 }
-     7f0:	8d 65 f8             	lea    esp,[ebp-0x8]
-     7f3:	5b                   	pop    ebx
-     7f4:	5e                   	pop    esi
-     7f5:	5d                   	pop    ebp
-     7f6:	c3                   	ret
+     83a:	83 c4 70             	add    esp,0x70
+     83d:	5b                   	pop    ebx
+     83e:	5e                   	pop    esi
+     83f:	5d                   	pop    ebp
+     840:	c3                   	ret
 
-000007f7 <elf_relocate_section>:
+00000841 <elf_relocate_section>:
 {
-     7f7:	55                   	push   ebp
-     7f8:	89 e5                	mov    ebp,esp
-     7fa:	53                   	push   ebx
-     7fb:	83 ec 44             	sub    esp,0x44
-     7fe:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-     801:	66 89 45 c4          	mov    WORD PTR [ebp-0x3c],ax
+     841:	55                   	push   ebp
+     842:	89 e5                	mov    ebp,esp
+     844:	53                   	push   ebx
+     845:	83 ec 54             	sub    esp,0x54
+     848:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+     84b:	66 89 45 c4          	mov    WORD PTR [ebp-0x3c],ax
 		void* ptr = ((void*)hdr + shdr[rel].sh_offset), *sptr, *stptr;
-     805:	0f b7 55 c4          	movzx  edx,WORD PTR [ebp-0x3c]
-     809:	89 d0                	mov    eax,edx
-     80b:	c1 e0 02             	shl    eax,0x2
-     80e:	01 d0                	add    eax,edx
-     810:	c1 e0 03             	shl    eax,0x3
-     813:	89 c2                	mov    edx,eax
-     815:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     818:	01 d0                	add    eax,edx
-     81a:	8b 50 10             	mov    edx,DWORD PTR [eax+0x10]
-     81d:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     820:	01 d0                	add    eax,edx
-     822:	89 45 ec             	mov    DWORD PTR [ebp-0x14],eax
+     84f:	0f b7 55 c4          	movzx  edx,WORD PTR [ebp-0x3c]
+     853:	89 d0                	mov    eax,edx
+     855:	c1 e0 02             	shl    eax,0x2
+     858:	01 d0                	add    eax,edx
+     85a:	c1 e0 03             	shl    eax,0x3
+     85d:	89 c2                	mov    edx,eax
+     85f:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     862:	01 d0                	add    eax,edx
+     864:	8b 50 10             	mov    edx,DWORD PTR [eax+0x10]
+     867:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     86a:	01 d0                	add    eax,edx
+     86c:	89 45 ec             	mov    DWORD PTR [ebp-0x14],eax
 		size_t i, ct = shdr[rel].sh_size / shdr[rel].sh_entsize;
-     825:	0f b7 55 c4          	movzx  edx,WORD PTR [ebp-0x3c]
-     829:	89 d0                	mov    eax,edx
-     82b:	c1 e0 02             	shl    eax,0x2
-     82e:	01 d0                	add    eax,edx
-     830:	c1 e0 03             	shl    eax,0x3
-     833:	89 c2                	mov    edx,eax
-     835:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     838:	01 d0                	add    eax,edx
-     83a:	8b 48 14             	mov    ecx,DWORD PTR [eax+0x14]
-     83d:	0f b7 55 c4          	movzx  edx,WORD PTR [ebp-0x3c]
-     841:	89 d0                	mov    eax,edx
-     843:	c1 e0 02             	shl    eax,0x2
-     846:	01 d0                	add    eax,edx
-     848:	c1 e0 03             	shl    eax,0x3
-     84b:	89 c2                	mov    edx,eax
-     84d:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     850:	01 d0                	add    eax,edx
-     852:	8b 58 24             	mov    ebx,DWORD PTR [eax+0x24]
-     855:	89 c8                	mov    eax,ecx
-     857:	ba 00 00 00 00       	mov    edx,0x0
-     85c:	f7 f3                	div    ebx
-     85e:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
+     86f:	0f b7 55 c4          	movzx  edx,WORD PTR [ebp-0x3c]
+     873:	89 d0                	mov    eax,edx
+     875:	c1 e0 02             	shl    eax,0x2
+     878:	01 d0                	add    eax,edx
+     87a:	c1 e0 03             	shl    eax,0x3
+     87d:	89 c2                	mov    edx,eax
+     87f:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     882:	01 d0                	add    eax,edx
+     884:	8b 48 14             	mov    ecx,DWORD PTR [eax+0x14]
+     887:	0f b7 55 c4          	movzx  edx,WORD PTR [ebp-0x3c]
+     88b:	89 d0                	mov    eax,edx
+     88d:	c1 e0 02             	shl    eax,0x2
+     890:	01 d0                	add    eax,edx
+     892:	c1 e0 03             	shl    eax,0x3
+     895:	89 c2                	mov    edx,eax
+     897:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     89a:	01 d0                	add    eax,edx
+     89c:	8b 58 24             	mov    ebx,DWORD PTR [eax+0x24]
+     89f:	89 c8                	mov    eax,ecx
+     8a1:	ba 00 00 00 00       	mov    edx,0x0
+     8a6:	f7 f3                	div    ebx
+     8a8:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
 		if (!ct)
-     861:	83 7d e8 00          	cmp    DWORD PTR [ebp-0x18],0x0
-     865:	0f 84 2e 02 00 00    	je     a99 <elf_relocate_section+0x2a2>
+     8ab:	83 7d e8 00          	cmp    DWORD PTR [ebp-0x18],0x0
+     8af:	0f 84 41 02 00 00    	je     af6 <elf_relocate_section+0x2b5>
 		sptr = (void*)shdr[shdr[rel].sh_info].sh_addr; /* vma */
-     86b:	0f b7 55 c4          	movzx  edx,WORD PTR [ebp-0x3c]
-     86f:	89 d0                	mov    eax,edx
-     871:	c1 e0 02             	shl    eax,0x2
-     874:	01 d0                	add    eax,edx
-     876:	c1 e0 03             	shl    eax,0x3
-     879:	89 c2                	mov    edx,eax
-     87b:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     87e:	01 d0                	add    eax,edx
-     880:	8b 50 1c             	mov    edx,DWORD PTR [eax+0x1c]
-     883:	89 d0                	mov    eax,edx
-     885:	c1 e0 02             	shl    eax,0x2
-     888:	01 d0                	add    eax,edx
-     88a:	c1 e0 03             	shl    eax,0x3
-     88d:	89 c2                	mov    edx,eax
-     88f:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     892:	01 d0                	add    eax,edx
-     894:	8b 40 0c             	mov    eax,DWORD PTR [eax+0xc]
-     897:	89 45 e4             	mov    DWORD PTR [ebp-0x1c],eax
+     8b5:	0f b7 55 c4          	movzx  edx,WORD PTR [ebp-0x3c]
+     8b9:	89 d0                	mov    eax,edx
+     8bb:	c1 e0 02             	shl    eax,0x2
+     8be:	01 d0                	add    eax,edx
+     8c0:	c1 e0 03             	shl    eax,0x3
+     8c3:	89 c2                	mov    edx,eax
+     8c5:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     8c8:	01 d0                	add    eax,edx
+     8ca:	8b 50 1c             	mov    edx,DWORD PTR [eax+0x1c]
+     8cd:	89 d0                	mov    eax,edx
+     8cf:	c1 e0 02             	shl    eax,0x2
+     8d2:	01 d0                	add    eax,edx
+     8d4:	c1 e0 03             	shl    eax,0x3
+     8d7:	89 c2                	mov    edx,eax
+     8d9:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     8dc:	01 d0                	add    eax,edx
+     8de:	8b 40 0c             	mov    eax,DWORD PTR [eax+0xc]
+     8e1:	89 45 e4             	mov    DWORD PTR [ebp-0x1c],eax
 		stptr = (void*)hdr + shdr[shdr[rel].sh_link].sh_offset;
-     89a:	0f b7 55 c4          	movzx  edx,WORD PTR [ebp-0x3c]
-     89e:	89 d0                	mov    eax,edx
-     8a0:	c1 e0 02             	shl    eax,0x2
-     8a3:	01 d0                	add    eax,edx
-     8a5:	c1 e0 03             	shl    eax,0x3
-     8a8:	89 c2                	mov    edx,eax
-     8aa:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     8ad:	01 d0                	add    eax,edx
-     8af:	8b 50 18             	mov    edx,DWORD PTR [eax+0x18]
-     8b2:	89 d0                	mov    eax,edx
-     8b4:	c1 e0 02             	shl    eax,0x2
-     8b7:	01 d0                	add    eax,edx
-     8b9:	c1 e0 03             	shl    eax,0x3
-     8bc:	89 c2                	mov    edx,eax
-     8be:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     8c1:	01 d0                	add    eax,edx
-     8c3:	8b 50 10             	mov    edx,DWORD PTR [eax+0x10]
-     8c6:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     8c9:	01 d0                	add    eax,edx
-     8cb:	89 45 e0             	mov    DWORD PTR [ebp-0x20],eax
+     8e4:	0f b7 55 c4          	movzx  edx,WORD PTR [ebp-0x3c]
+     8e8:	89 d0                	mov    eax,edx
+     8ea:	c1 e0 02             	shl    eax,0x2
+     8ed:	01 d0                	add    eax,edx
+     8ef:	c1 e0 03             	shl    eax,0x3
+     8f2:	89 c2                	mov    edx,eax
+     8f4:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     8f7:	01 d0                	add    eax,edx
+     8f9:	8b 50 18             	mov    edx,DWORD PTR [eax+0x18]
+     8fc:	89 d0                	mov    eax,edx
+     8fe:	c1 e0 02             	shl    eax,0x2
+     901:	01 d0                	add    eax,edx
+     903:	c1 e0 03             	shl    eax,0x3
+     906:	89 c2                	mov    edx,eax
+     908:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     90b:	01 d0                	add    eax,edx
+     90d:	8b 50 10             	mov    edx,DWORD PTR [eax+0x10]
+     910:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     913:	01 d0                	add    eax,edx
+     915:	89 45 e0             	mov    DWORD PTR [ebp-0x20],eax
 		stb = shdr + shdr[rel].sh_link;
-     8ce:	0f b7 55 c4          	movzx  edx,WORD PTR [ebp-0x3c]
-     8d2:	89 d0                	mov    eax,edx
-     8d4:	c1 e0 02             	shl    eax,0x2
-     8d7:	01 d0                	add    eax,edx
-     8d9:	c1 e0 03             	shl    eax,0x3
-     8dc:	89 c2                	mov    edx,eax
-     8de:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     8e1:	01 d0                	add    eax,edx
-     8e3:	8b 50 18             	mov    edx,DWORD PTR [eax+0x18]
-     8e6:	89 d0                	mov    eax,edx
-     8e8:	c1 e0 02             	shl    eax,0x2
-     8eb:	01 d0                	add    eax,edx
-     8ed:	c1 e0 03             	shl    eax,0x3
-     8f0:	89 c2                	mov    edx,eax
-     8f2:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     8f5:	01 d0                	add    eax,edx
-     8f7:	89 45 dc             	mov    DWORD PTR [ebp-0x24],eax
-			shdr, hdr->e_shstrndx, shdr[shdr[rel].sh_info].sh_name));
-     8fa:	0f b7 55 c4          	movzx  edx,WORD PTR [ebp-0x3c]
-     8fe:	89 d0                	mov    eax,edx
-     900:	c1 e0 02             	shl    eax,0x2
-     903:	01 d0                	add    eax,edx
-     905:	c1 e0 03             	shl    eax,0x3
-     908:	89 c2                	mov    edx,eax
-     90a:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     90d:	01 d0                	add    eax,edx
-     90f:	8b 50 1c             	mov    edx,DWORD PTR [eax+0x1c]
-     912:	89 d0                	mov    eax,edx
-     914:	c1 e0 02             	shl    eax,0x2
-     917:	01 d0                	add    eax,edx
-     919:	c1 e0 03             	shl    eax,0x3
-     91c:	89 c2                	mov    edx,eax
-     91e:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     918:	0f b7 55 c4          	movzx  edx,WORD PTR [ebp-0x3c]
+     91c:	89 d0                	mov    eax,edx
+     91e:	c1 e0 02             	shl    eax,0x2
      921:	01 d0                	add    eax,edx
-		sbprintf("%lu relocations apply to section %s\n", ct, elf_fetch_string(hdr,
-     923:	8b 10                	mov    edx,DWORD PTR [eax]
+     923:	c1 e0 03             	shl    eax,0x3
+     926:	89 c2                	mov    edx,eax
+     928:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     92b:	01 d0                	add    eax,edx
+     92d:	8b 50 18             	mov    edx,DWORD PTR [eax+0x18]
+     930:	89 d0                	mov    eax,edx
+     932:	c1 e0 02             	shl    eax,0x2
+     935:	01 d0                	add    eax,edx
+     937:	c1 e0 03             	shl    eax,0x3
+     93a:	89 c2                	mov    edx,eax
+     93c:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     93f:	01 d0                	add    eax,edx
+     941:	89 45 dc             	mov    DWORD PTR [ebp-0x24],eax
 			shdr, hdr->e_shstrndx, shdr[shdr[rel].sh_info].sh_name));
-     925:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     928:	0f b7 40 32          	movzx  eax,WORD PTR [eax+0x32]
+     944:	0f b7 55 c4          	movzx  edx,WORD PTR [ebp-0x3c]
+     948:	89 d0                	mov    eax,edx
+     94a:	c1 e0 02             	shl    eax,0x2
+     94d:	01 d0                	add    eax,edx
+     94f:	c1 e0 03             	shl    eax,0x3
+     952:	89 c2                	mov    edx,eax
+     954:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     957:	01 d0                	add    eax,edx
+     959:	8b 50 1c             	mov    edx,DWORD PTR [eax+0x1c]
+     95c:	89 d0                	mov    eax,edx
+     95e:	c1 e0 02             	shl    eax,0x2
+     961:	01 d0                	add    eax,edx
+     963:	c1 e0 03             	shl    eax,0x3
+     966:	89 c2                	mov    edx,eax
+     968:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     96b:	01 d0                	add    eax,edx
 		sbprintf("%lu relocations apply to section %s\n", ct, elf_fetch_string(hdr,
-     92c:	0f b7 c0             	movzx  eax,ax
-     92f:	52                   	push   edx
-     930:	50                   	push   eax
-     931:	ff 75 0c             	push   DWORD PTR [ebp+0xc]
-     934:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-     937:	e8 fc ff ff ff       	call   938 <elf_relocate_section+0x141>
-     93c:	83 c4 10             	add    esp,0x10
-     93f:	83 ec 04             	sub    esp,0x4
-     942:	50                   	push   eax
-     943:	ff 75 e8             	push   DWORD PTR [ebp-0x18]
-     946:	68 8c 02 00 00       	push   0x28c
-     94b:	e8 fc ff ff ff       	call   94c <elf_relocate_section+0x155>
-     950:	83 c4 10             	add    esp,0x10
+     96d:	8b 10                	mov    edx,DWORD PTR [eax]
+			shdr, hdr->e_shstrndx, shdr[shdr[rel].sh_info].sh_name));
+     96f:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     972:	0f b7 40 32          	movzx  eax,WORD PTR [eax+0x32]
+		sbprintf("%lu relocations apply to section %s\n", ct, elf_fetch_string(hdr,
+     976:	0f b7 c0             	movzx  eax,ax
+     979:	89 54 24 0c          	mov    DWORD PTR [esp+0xc],edx
+     97d:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+     981:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     984:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+     988:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     98b:	89 04 24             	mov    DWORD PTR [esp],eax
+     98e:	e8 fc ff ff ff       	call   98f <elf_relocate_section+0x14e>
+     993:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+     997:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
+     99a:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+     99e:	c7 04 24 8c 02 00 00 	mov    DWORD PTR [esp],0x28c
+     9a5:	e8 fc ff ff ff       	call   9a6 <elf_relocate_section+0x165>
 		for (i = 0; i < ct; i++) {
-     953:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
-     95a:	e9 2c 01 00 00       	jmp    a8b <elf_relocate_section+0x294>
+     9aa:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
+     9b1:	e9 32 01 00 00       	jmp    ae8 <elf_relocate_section+0x2a7>
 				Elf32_Addr val = 0;
-     95f:	c7 45 d8 00 00 00 00 	mov    DWORD PTR [ebp-0x28],0x0
+     9b6:	c7 45 d8 00 00 00 00 	mov    DWORD PTR [ebp-0x28],0x0
 				Elf32_Rela* r = (ptr + i * shdr[rel].sh_entsize);
-     966:	0f b7 55 c4          	movzx  edx,WORD PTR [ebp-0x3c]
-     96a:	89 d0                	mov    eax,edx
-     96c:	c1 e0 02             	shl    eax,0x2
-     96f:	01 d0                	add    eax,edx
-     971:	c1 e0 03             	shl    eax,0x3
-     974:	89 c2                	mov    edx,eax
-     976:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     979:	01 d0                	add    eax,edx
-     97b:	8b 40 24             	mov    eax,DWORD PTR [eax+0x24]
-     97e:	0f af 45 f4          	imul   eax,DWORD PTR [ebp-0xc]
-     982:	89 c2                	mov    edx,eax
-     984:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-     987:	01 d0                	add    eax,edx
-     989:	89 45 d4             	mov    DWORD PTR [ebp-0x2c],eax
+     9bd:	0f b7 55 c4          	movzx  edx,WORD PTR [ebp-0x3c]
+     9c1:	89 d0                	mov    eax,edx
+     9c3:	c1 e0 02             	shl    eax,0x2
+     9c6:	01 d0                	add    eax,edx
+     9c8:	c1 e0 03             	shl    eax,0x3
+     9cb:	89 c2                	mov    edx,eax
+     9cd:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     9d0:	01 d0                	add    eax,edx
+     9d2:	8b 40 24             	mov    eax,DWORD PTR [eax+0x24]
+     9d5:	0f af 45 f4          	imul   eax,DWORD PTR [ebp-0xc]
+     9d9:	89 c2                	mov    edx,eax
+     9db:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+     9de:	01 d0                	add    eax,edx
+     9e0:	89 45 d4             	mov    DWORD PTR [ebp-0x2c],eax
 				void** pptr = (void**)(sptr + r->r_offset);
-     98c:	8b 45 d4             	mov    eax,DWORD PTR [ebp-0x2c]
-     98f:	8b 10                	mov    edx,DWORD PTR [eax]
-     991:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
-     994:	01 d0                	add    eax,edx
-     996:	89 45 d0             	mov    DWORD PTR [ebp-0x30],eax
+     9e3:	8b 45 d4             	mov    eax,DWORD PTR [ebp-0x2c]
+     9e6:	8b 10                	mov    edx,DWORD PTR [eax]
+     9e8:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
+     9eb:	01 d0                	add    eax,edx
+     9ed:	89 45 d0             	mov    DWORD PTR [ebp-0x30],eax
 				Elf32_Sym* s = (stptr + ELF32_R_SYM(r->r_info) * stb->sh_entsize);
-     999:	8b 45 d4             	mov    eax,DWORD PTR [ebp-0x2c]
-     99c:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-     99f:	c1 e8 08             	shr    eax,0x8
-     9a2:	89 c2                	mov    edx,eax
-     9a4:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-     9a7:	8b 40 24             	mov    eax,DWORD PTR [eax+0x24]
-     9aa:	0f af d0             	imul   edx,eax
-     9ad:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
-     9b0:	01 d0                	add    eax,edx
-     9b2:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
+     9f0:	8b 45 d4             	mov    eax,DWORD PTR [ebp-0x2c]
+     9f3:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+     9f6:	c1 e8 08             	shr    eax,0x8
+     9f9:	89 c2                	mov    edx,eax
+     9fb:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+     9fe:	8b 40 24             	mov    eax,DWORD PTR [eax+0x24]
+     a01:	0f af d0             	imul   edx,eax
+     a04:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
+     a07:	01 d0                	add    eax,edx
+     a09:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
 				if (ELF32_R_SYM(r->r_info) == 0/*STN_UNDEF*/)
-     9b5:	8b 45 d4             	mov    eax,DWORD PTR [ebp-0x2c]
-     9b8:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-     9bb:	c1 e8 08             	shr    eax,0x8
-     9be:	85 c0                	test   eax,eax
-     9c0:	75 07                	jne    9c9 <elf_relocate_section+0x1d2>
+     a0c:	8b 45 d4             	mov    eax,DWORD PTR [ebp-0x2c]
+     a0f:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+     a12:	c1 e8 08             	shr    eax,0x8
+     a15:	85 c0                	test   eax,eax
+     a17:	75 07                	jne    a20 <elf_relocate_section+0x1df>
 						s = NULL;
-     9c2:	c7 45 f0 00 00 00 00 	mov    DWORD PTR [ebp-0x10],0x0
+     a19:	c7 45 f0 00 00 00 00 	mov    DWORD PTR [ebp-0x10],0x0
 				if (s && !s->st_value) {
-     9c9:	83 7d f0 00          	cmp    DWORD PTR [ebp-0x10],0x0
-     9cd:	74 1f                	je     9ee <elf_relocate_section+0x1f7>
-     9cf:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-     9d2:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-     9d5:	85 c0                	test   eax,eax
-     9d7:	75 15                	jne    9ee <elf_relocate_section+0x1f7>
+     a20:	83 7d f0 00          	cmp    DWORD PTR [ebp-0x10],0x0
+     a24:	74 21                	je     a47 <elf_relocate_section+0x206>
+     a26:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+     a29:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+     a2c:	85 c0                	test   eax,eax
+     a2e:	75 17                	jne    a47 <elf_relocate_section+0x206>
 						cprintf(KFMT_ERROR, "tried to relocate reference to undefined symbol\n");
-     9d9:	83 ec 08             	sub    esp,0x8
-     9dc:	68 b4 02 00 00       	push   0x2b4
-     9e1:	6a 0c                	push   0xc
-     9e3:	e8 fc ff ff ff       	call   9e4 <elf_relocate_section+0x1ed>
-     9e8:	83 c4 10             	add    esp,0x10
+     a30:	c7 44 24 04 b4 02 00 00 	mov    DWORD PTR [esp+0x4],0x2b4
+     a38:	c7 04 24 0c 00 00 00 	mov    DWORD PTR [esp],0xc
+     a3f:	e8 fc ff ff ff       	call   a40 <elf_relocate_section+0x1ff>
 						while (1);
-     9eb:	90                   	nop
-     9ec:	eb fd                	jmp    9eb <elf_relocate_section+0x1f4>
+     a44:	90                   	nop
+     a45:	eb fd                	jmp    a44 <elf_relocate_section+0x203>
 						val = s->st_value;
-     9ee:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-     9f1:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-     9f4:	89 45 d8             	mov    DWORD PTR [ebp-0x28],eax
+     a47:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+     a4a:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+     a4d:	89 45 d8             	mov    DWORD PTR [ebp-0x28],eax
 				if (shdr[rel].sh_type == SHT_RELA) {
-     9f7:	0f b7 55 c4          	movzx  edx,WORD PTR [ebp-0x3c]
-     9fb:	89 d0                	mov    eax,edx
-     9fd:	c1 e0 02             	shl    eax,0x2
-     a00:	01 d0                	add    eax,edx
-     a02:	c1 e0 03             	shl    eax,0x3
-     a05:	89 c2                	mov    edx,eax
-     a07:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     a0a:	01 d0                	add    eax,edx
-     a0c:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-     a0f:	83 f8 04             	cmp    eax,0x4
-     a12:	75 15                	jne    a29 <elf_relocate_section+0x232>
+     a50:	0f b7 55 c4          	movzx  edx,WORD PTR [ebp-0x3c]
+     a54:	89 d0                	mov    eax,edx
+     a56:	c1 e0 02             	shl    eax,0x2
+     a59:	01 d0                	add    eax,edx
+     a5b:	c1 e0 03             	shl    eax,0x3
+     a5e:	89 c2                	mov    edx,eax
+     a60:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     a63:	01 d0                	add    eax,edx
+     a65:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+     a68:	83 f8 04             	cmp    eax,0x4
+     a6b:	75 17                	jne    a84 <elf_relocate_section+0x243>
 						cprintf(KFMT_ERROR, "RELA relocations not implemented\n");
-     a14:	83 ec 08             	sub    esp,0x8
-     a17:	68 e8 02 00 00       	push   0x2e8
-     a1c:	6a 0c                	push   0xc
-     a1e:	e8 fc ff ff ff       	call   a1f <elf_relocate_section+0x228>
-     a23:	83 c4 10             	add    esp,0x10
+     a6d:	c7 44 24 04 e8 02 00 00 	mov    DWORD PTR [esp+0x4],0x2e8
+     a75:	c7 04 24 0c 00 00 00 	mov    DWORD PTR [esp],0xc
+     a7c:	e8 fc ff ff ff       	call   a7d <elf_relocate_section+0x23c>
 						while (1);
-     a26:	90                   	nop
-     a27:	eb fd                	jmp    a26 <elf_relocate_section+0x22f>
+     a81:	90                   	nop
+     a82:	eb fd                	jmp    a81 <elf_relocate_section+0x240>
 						switch (ELF32_R_TYPE(r->r_info)) {
-     a29:	8b 45 d4             	mov    eax,DWORD PTR [ebp-0x2c]
-     a2c:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-     a2f:	0f b6 c0             	movzx  eax,al
-     a32:	83 f8 06             	cmp    eax,0x6
-     a35:	77 3a                	ja     a71 <elf_relocate_section+0x27a>
-     a37:	8b 04 85 30 03 00 00 	mov    eax,DWORD PTR [eax*4+0x330]
-     a3e:	ff e0                	jmp    eax
+     a84:	8b 45 d4             	mov    eax,DWORD PTR [ebp-0x2c]
+     a87:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+     a8a:	0f b6 c0             	movzx  eax,al
+     a8d:	83 f8 06             	cmp    eax,0x6
+     a90:	77 3a                	ja     acc <elf_relocate_section+0x28b>
+     a92:	8b 04 85 30 03 00 00 	mov    eax,DWORD PTR [eax*4+0x330]
+     a99:	ff e0                	jmp    eax
 								*pptr = (size_t)val + *pptr;
-     a40:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-     a43:	8b 10                	mov    edx,DWORD PTR [eax]
-     a45:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
-     a48:	01 c2                	add    edx,eax
-     a4a:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-     a4d:	89 10                	mov    DWORD PTR [eax],edx
+     a9b:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+     a9e:	8b 10                	mov    edx,DWORD PTR [eax]
+     aa0:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+     aa3:	01 c2                	add    edx,eax
+     aa5:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+     aa8:	89 10                	mov    DWORD PTR [eax],edx
 								break;
-     a4f:	eb 36                	jmp    a87 <elf_relocate_section+0x290>
+     aaa:	eb 38                	jmp    ae4 <elf_relocate_section+0x2a3>
 								*pptr = (size_t)val + *pptr - (size_t)pptr;
-     a51:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-     a54:	8b 10                	mov    edx,DWORD PTR [eax]
-     a56:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-     a59:	8b 4d d8             	mov    ecx,DWORD PTR [ebp-0x28]
-     a5c:	29 c1                	sub    ecx,eax
-     a5e:	01 ca                	add    edx,ecx
-     a60:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-     a63:	89 10                	mov    DWORD PTR [eax],edx
+     aac:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+     aaf:	8b 10                	mov    edx,DWORD PTR [eax]
+     ab1:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+     ab4:	8b 4d d8             	mov    ecx,DWORD PTR [ebp-0x28]
+     ab7:	29 c1                	sub    ecx,eax
+     ab9:	01 ca                	add    edx,ecx
+     abb:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+     abe:	89 10                	mov    DWORD PTR [eax],edx
 								break;
-     a65:	eb 20                	jmp    a87 <elf_relocate_section+0x290>
+     ac0:	eb 22                	jmp    ae4 <elf_relocate_section+0x2a3>
 								*pptr = (void*)val;
-     a67:	8b 55 d8             	mov    edx,DWORD PTR [ebp-0x28]
-     a6a:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-     a6d:	89 10                	mov    DWORD PTR [eax],edx
+     ac2:	8b 55 d8             	mov    edx,DWORD PTR [ebp-0x28]
+     ac5:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+     ac8:	89 10                	mov    DWORD PTR [eax],edx
 								break;
-     a6f:	eb 16                	jmp    a87 <elf_relocate_section+0x290>
+     aca:	eb 18                	jmp    ae4 <elf_relocate_section+0x2a3>
 								cprintf(KFMT_ERROR, "relocation type not implemented\n");
-     a71:	83 ec 08             	sub    esp,0x8
-     a74:	68 0c 03 00 00       	push   0x30c
-     a79:	6a 0c                	push   0xc
-     a7b:	e8 fc ff ff ff       	call   a7c <elf_relocate_section+0x285>
-     a80:	83 c4 10             	add    esp,0x10
+     acc:	c7 44 24 04 0c 03 00 00 	mov    DWORD PTR [esp+0x4],0x30c
+     ad4:	c7 04 24 0c 00 00 00 	mov    DWORD PTR [esp],0xc
+     adb:	e8 fc ff ff ff       	call   adc <elf_relocate_section+0x29b>
 								while (1);
-     a83:	90                   	nop
-     a84:	eb fd                	jmp    a83 <elf_relocate_section+0x28c>
+     ae0:	90                   	nop
+     ae1:	eb fd                	jmp    ae0 <elf_relocate_section+0x29f>
 								break;
-     a86:	90                   	nop
+     ae3:	90                   	nop
 		for (i = 0; i < ct; i++) {
-     a87:	83 45 f4 01          	add    DWORD PTR [ebp-0xc],0x1
-     a8b:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     a8e:	3b 45 e8             	cmp    eax,DWORD PTR [ebp-0x18]
-     a91:	0f 82 c8 fe ff ff    	jb     95f <elf_relocate_section+0x168>
-     a97:	eb 01                	jmp    a9a <elf_relocate_section+0x2a3>
+     ae4:	83 45 f4 01          	add    DWORD PTR [ebp-0xc],0x1
+     ae8:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     aeb:	3b 45 e8             	cmp    eax,DWORD PTR [ebp-0x18]
+     aee:	0f 82 c2 fe ff ff    	jb     9b6 <elf_relocate_section+0x175>
+     af4:	eb 01                	jmp    af7 <elf_relocate_section+0x2b6>
 				return;
-     a99:	90                   	nop
+     af6:	90                   	nop
 }
-     a9a:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
-     a9d:	c9                   	leave
-     a9e:	c3                   	ret
+     af7:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
+     afa:	c9                   	leave
+     afb:	c3                   	ret
 
-00000a9f <get_section_type_string>:
+00000afc <get_section_type_string>:
 {
-     a9f:	55                   	push   ebp
-     aa0:	89 e5                	mov    ebp,esp
+     afc:	55                   	push   ebp
+     afd:	89 e5                	mov    ebp,esp
 		if (tp == SHT_PROGBITS)
-     aa2:	83 7d 08 01          	cmp    DWORD PTR [ebp+0x8],0x1
-     aa6:	75 0a                	jne    ab2 <get_section_type_string+0x13>
+     aff:	83 7d 08 01          	cmp    DWORD PTR [ebp+0x8],0x1
+     b03:	75 0a                	jne    b0f <get_section_type_string+0x13>
 				return "PROGBITS";
-     aa8:	b8 4c 03 00 00       	mov    eax,0x34c
-     aad:	e9 b5 00 00 00       	jmp    b67 <get_section_type_string+0xc8>
+     b05:	b8 4c 03 00 00       	mov    eax,0x34c
+     b0a:	e9 b5 00 00 00       	jmp    bc4 <get_section_type_string+0xc8>
 		else if (tp == SHT_SYMTAB)
-     ab2:	83 7d 08 02          	cmp    DWORD PTR [ebp+0x8],0x2
-     ab6:	75 0a                	jne    ac2 <get_section_type_string+0x23>
+     b0f:	83 7d 08 02          	cmp    DWORD PTR [ebp+0x8],0x2
+     b13:	75 0a                	jne    b1f <get_section_type_string+0x23>
 				return "SYMTAB";
-     ab8:	b8 55 03 00 00       	mov    eax,0x355
-     abd:	e9 a5 00 00 00       	jmp    b67 <get_section_type_string+0xc8>
+     b15:	b8 55 03 00 00       	mov    eax,0x355
+     b1a:	e9 a5 00 00 00       	jmp    bc4 <get_section_type_string+0xc8>
 		else if (tp == SHT_DYNSYM)
-     ac2:	83 7d 08 0b          	cmp    DWORD PTR [ebp+0x8],0xb
-     ac6:	75 0a                	jne    ad2 <get_section_type_string+0x33>
+     b1f:	83 7d 08 0b          	cmp    DWORD PTR [ebp+0x8],0xb
+     b23:	75 0a                	jne    b2f <get_section_type_string+0x33>
 				return "DYNSYM";
-     ac8:	b8 5c 03 00 00       	mov    eax,0x35c
-     acd:	e9 95 00 00 00       	jmp    b67 <get_section_type_string+0xc8>
+     b25:	b8 5c 03 00 00       	mov    eax,0x35c
+     b2a:	e9 95 00 00 00       	jmp    bc4 <get_section_type_string+0xc8>
 		else if (tp == SHT_STRTAB)
-     ad2:	83 7d 08 03          	cmp    DWORD PTR [ebp+0x8],0x3
-     ad6:	75 0a                	jne    ae2 <get_section_type_string+0x43>
+     b2f:	83 7d 08 03          	cmp    DWORD PTR [ebp+0x8],0x3
+     b33:	75 0a                	jne    b3f <get_section_type_string+0x43>
 				return "STRTAB";
-     ad8:	b8 63 03 00 00       	mov    eax,0x363
-     add:	e9 85 00 00 00       	jmp    b67 <get_section_type_string+0xc8>
+     b35:	b8 63 03 00 00       	mov    eax,0x363
+     b3a:	e9 85 00 00 00       	jmp    bc4 <get_section_type_string+0xc8>
 		else if (tp == SHT_RELA)
-     ae2:	83 7d 08 04          	cmp    DWORD PTR [ebp+0x8],0x4
-     ae6:	75 07                	jne    aef <get_section_type_string+0x50>
+     b3f:	83 7d 08 04          	cmp    DWORD PTR [ebp+0x8],0x4
+     b43:	75 07                	jne    b4c <get_section_type_string+0x50>
 				return "RELA";
-     ae8:	b8 6a 03 00 00       	mov    eax,0x36a
-     aed:	eb 78                	jmp    b67 <get_section_type_string+0xc8>
+     b45:	b8 6a 03 00 00       	mov    eax,0x36a
+     b4a:	eb 78                	jmp    bc4 <get_section_type_string+0xc8>
 		else if (tp == SHT_HASH)
-     aef:	83 7d 08 05          	cmp    DWORD PTR [ebp+0x8],0x5
-     af3:	75 07                	jne    afc <get_section_type_string+0x5d>
+     b4c:	83 7d 08 05          	cmp    DWORD PTR [ebp+0x8],0x5
+     b50:	75 07                	jne    b59 <get_section_type_string+0x5d>
 				return "HASH";
-     af5:	b8 6f 03 00 00       	mov    eax,0x36f
-     afa:	eb 6b                	jmp    b67 <get_section_type_string+0xc8>
+     b52:	b8 6f 03 00 00       	mov    eax,0x36f
+     b57:	eb 6b                	jmp    bc4 <get_section_type_string+0xc8>
 		else if (tp == SHT_DYNAMIC)
-     afc:	83 7d 08 06          	cmp    DWORD PTR [ebp+0x8],0x6
-     b00:	75 07                	jne    b09 <get_section_type_string+0x6a>
+     b59:	83 7d 08 06          	cmp    DWORD PTR [ebp+0x8],0x6
+     b5d:	75 07                	jne    b66 <get_section_type_string+0x6a>
 				return "DYNAMIC";
-     b02:	b8 74 03 00 00       	mov    eax,0x374
-     b07:	eb 5e                	jmp    b67 <get_section_type_string+0xc8>
+     b5f:	b8 74 03 00 00       	mov    eax,0x374
+     b64:	eb 5e                	jmp    bc4 <get_section_type_string+0xc8>
 		else if (tp == SHT_NOTE)
-     b09:	83 7d 08 07          	cmp    DWORD PTR [ebp+0x8],0x7
-     b0d:	75 07                	jne    b16 <get_section_type_string+0x77>
+     b66:	83 7d 08 07          	cmp    DWORD PTR [ebp+0x8],0x7
+     b6a:	75 07                	jne    b73 <get_section_type_string+0x77>
 				return "NOTE";
-     b0f:	b8 7c 03 00 00       	mov    eax,0x37c
-     b14:	eb 51                	jmp    b67 <get_section_type_string+0xc8>
+     b6c:	b8 7c 03 00 00       	mov    eax,0x37c
+     b71:	eb 51                	jmp    bc4 <get_section_type_string+0xc8>
 		else if (tp == SHT_NOBITS)
-     b16:	83 7d 08 08          	cmp    DWORD PTR [ebp+0x8],0x8
-     b1a:	75 07                	jne    b23 <get_section_type_string+0x84>
+     b73:	83 7d 08 08          	cmp    DWORD PTR [ebp+0x8],0x8
+     b77:	75 07                	jne    b80 <get_section_type_string+0x84>
 				return "NOBITS";
-     b1c:	b8 81 03 00 00       	mov    eax,0x381
-     b21:	eb 44                	jmp    b67 <get_section_type_string+0xc8>
+     b79:	b8 81 03 00 00       	mov    eax,0x381
+     b7e:	eb 44                	jmp    bc4 <get_section_type_string+0xc8>
 		else if (tp == SHT_REL)
-     b23:	83 7d 08 09          	cmp    DWORD PTR [ebp+0x8],0x9
-     b27:	75 07                	jne    b30 <get_section_type_string+0x91>
+     b80:	83 7d 08 09          	cmp    DWORD PTR [ebp+0x8],0x9
+     b84:	75 07                	jne    b8d <get_section_type_string+0x91>
 				return "REL";
-     b29:	b8 88 03 00 00       	mov    eax,0x388
-     b2e:	eb 37                	jmp    b67 <get_section_type_string+0xc8>
+     b86:	b8 88 03 00 00       	mov    eax,0x388
+     b8b:	eb 37                	jmp    bc4 <get_section_type_string+0xc8>
 		else if (tp == SHT_SHLIB)
-     b30:	83 7d 08 0a          	cmp    DWORD PTR [ebp+0x8],0xa
-     b34:	75 07                	jne    b3d <get_section_type_string+0x9e>
+     b8d:	83 7d 08 0a          	cmp    DWORD PTR [ebp+0x8],0xa
+     b91:	75 07                	jne    b9a <get_section_type_string+0x9e>
 				return "SHLIB";
-     b36:	b8 8c 03 00 00       	mov    eax,0x38c
-     b3b:	eb 2a                	jmp    b67 <get_section_type_string+0xc8>
+     b93:	b8 8c 03 00 00       	mov    eax,0x38c
+     b98:	eb 2a                	jmp    bc4 <get_section_type_string+0xc8>
 		else if (tp >= SHT_LOPROC && tp <= SHT_HIPROC)
-     b3d:	81 7d 08 ff ff ff 6f 	cmp    DWORD PTR [ebp+0x8],0x6fffffff
-     b44:	76 0e                	jbe    b54 <get_section_type_string+0xb5>
-     b46:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     b49:	85 c0                	test   eax,eax
-     b4b:	78 07                	js     b54 <get_section_type_string+0xb5>
+     b9a:	81 7d 08 ff ff ff 6f 	cmp    DWORD PTR [ebp+0x8],0x6fffffff
+     ba1:	76 0e                	jbe    bb1 <get_section_type_string+0xb5>
+     ba3:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     ba6:	85 c0                	test   eax,eax
+     ba8:	78 07                	js     bb1 <get_section_type_string+0xb5>
 				return "PROC";
-     b4d:	b8 92 03 00 00       	mov    eax,0x392
-     b52:	eb 13                	jmp    b67 <get_section_type_string+0xc8>
+     baa:	b8 92 03 00 00       	mov    eax,0x392
+     baf:	eb 13                	jmp    bc4 <get_section_type_string+0xc8>
 		else if (tp >= SHT_LOUSER && tp <= SHT_HIUSER)
-     b54:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-     b57:	85 c0                	test   eax,eax
-     b59:	79 07                	jns    b62 <get_section_type_string+0xc3>
+     bb1:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     bb4:	85 c0                	test   eax,eax
+     bb6:	79 07                	jns    bbf <get_section_type_string+0xc3>
 				return "USER";
-     b5b:	b8 97 03 00 00       	mov    eax,0x397
-     b60:	eb 05                	jmp    b67 <get_section_type_string+0xc8>
+     bb8:	b8 97 03 00 00       	mov    eax,0x397
+     bbd:	eb 05                	jmp    bc4 <get_section_type_string+0xc8>
 		else
 				return "RESERVED";
-     b62:	b8 9c 03 00 00       	mov    eax,0x39c
+     bbf:	b8 9c 03 00 00       	mov    eax,0x39c
 }
-     b67:	5d                   	pop    ebp
-     b68:	c3                   	ret
+     bc4:	5d                   	pop    ebp
+     bc5:	c3                   	ret
 
-00000b69 <elf_store_global_symbol>:
+00000bc6 <elf_store_global_symbol>:
 
 void elf_store_global_symbol(const char* name, void* vma, char type, int is_weak)
 {
-     b69:	55                   	push   ebp
-     b6a:	89 e5                	mov    ebp,esp
-     b6c:	53                   	push   ebx
-     b6d:	83 ec 24             	sub    esp,0x24
-     b70:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-     b73:	88 45 e4             	mov    BYTE PTR [ebp-0x1c],al
+     bc6:	55                   	push   ebp
+     bc7:	89 e5                	mov    ebp,esp
+     bc9:	53                   	push   ebx
+     bca:	83 ec 44             	sub    esp,0x44
+     bcd:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+     bd0:	88 45 e4             	mov    BYTE PTR [ebp-0x1c],al
 		struct symbol_list* sl = gs_lst;
-     b76:	a1 00 00 00 00       	mov    eax,ds:0x0
-     b7b:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
+     bd3:	a1 00 00 00 00       	mov    eax,ds:0x0
+     bd8:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
 		size_t i = 0; int wrt = 0;
-     b7e:	c7 45 f0 00 00 00 00 	mov    DWORD PTR [ebp-0x10],0x0
-     b85:	c7 45 ec 00 00 00 00 	mov    DWORD PTR [ebp-0x14],0x0
+     bdb:	c7 45 f0 00 00 00 00 	mov    DWORD PTR [ebp-0x10],0x0
+     be2:	c7 45 ec 00 00 00 00 	mov    DWORD PTR [ebp-0x14],0x0
 		if (!sl)
-     b8c:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
-     b90:	0f 84 1a 02 00 00    	je     db0 <elf_store_global_symbol+0x247>
+     be9:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
+     bed:	0f 84 27 02 00 00    	je     e1a <elf_store_global_symbol+0x254>
 				return;
 
 		if (!name) {
-     b96:	83 7d 08 00          	cmp    DWORD PTR [ebp+0x8],0x0
-     b9a:	0f 85 69 01 00 00    	jne    d09 <elf_store_global_symbol+0x1a0>
+     bf3:	83 7d 08 00          	cmp    DWORD PTR [ebp+0x8],0x0
+     bf7:	0f 85 79 01 00 00    	jne    d76 <elf_store_global_symbol+0x1b0>
 				cprintf(KFMT_WARN, "elf_store_global_symbol called for symbol "
-     ba0:	0f be 45 e4          	movsx  eax,BYTE PTR [ebp-0x1c]
-     ba4:	ff 75 0c             	push   DWORD PTR [ebp+0xc]
-     ba7:	50                   	push   eax
-     ba8:	68 a8 03 00 00       	push   0x3a8
-     bad:	6a 0e                	push   0xe
-     baf:	e8 fc ff ff ff       	call   bb0 <elf_store_global_symbol+0x47>
-     bb4:	83 c4 10             	add    esp,0x10
+     bfd:	0f be 45 e4          	movsx  eax,BYTE PTR [ebp-0x1c]
+     c01:	8b 55 0c             	mov    edx,DWORD PTR [ebp+0xc]
+     c04:	89 54 24 0c          	mov    DWORD PTR [esp+0xc],edx
+     c08:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+     c0c:	c7 44 24 04 a8 03 00 00 	mov    DWORD PTR [esp+0x4],0x3a8
+     c14:	c7 04 24 0e 00 00 00 	mov    DWORD PTR [esp],0xe
+     c1b:	e8 fc ff ff ff       	call   c1c <elf_store_global_symbol+0x56>
 								"of type %c with name \"\" at %p\n", type, vma);
 		}
 
 		/* search for existng definition and give an offset to which to write to */
 		while (sl) {
-     bb7:	e9 4d 01 00 00       	jmp    d09 <elf_store_global_symbol+0x1a0>
+     c20:	e9 51 01 00 00       	jmp    d76 <elf_store_global_symbol+0x1b0>
 				if (!sl->entries[i].name)
-     bbc:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
-     bbf:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
-     bc2:	89 d0                	mov    eax,edx
-     bc4:	01 c0                	add    eax,eax
-     bc6:	01 d0                	add    eax,edx
-     bc8:	c1 e0 02             	shl    eax,0x2
-     bcb:	01 c8                	add    eax,ecx
-     bcd:	83 c0 04             	add    eax,0x4
-     bd0:	8b 00                	mov    eax,DWORD PTR [eax]
-     bd2:	85 c0                	test   eax,eax
-     bd4:	0f 84 3b 01 00 00    	je     d15 <elf_store_global_symbol+0x1ac>
+     c25:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
+     c28:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
+     c2b:	89 d0                	mov    eax,edx
+     c2d:	01 c0                	add    eax,eax
+     c2f:	01 d0                	add    eax,edx
+     c31:	c1 e0 02             	shl    eax,0x2
+     c34:	01 c8                	add    eax,ecx
+     c36:	83 c0 04             	add    eax,0x4
+     c39:	8b 00                	mov    eax,DWORD PTR [eax]
+     c3b:	85 c0                	test   eax,eax
+     c3d:	0f 84 3f 01 00 00    	je     d82 <elf_store_global_symbol+0x1bc>
 						break;
 				if (strcmp(name, sl->entries[i].name) == 0) {
-     bda:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
-     bdd:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
-     be0:	89 d0                	mov    eax,edx
-     be2:	01 c0                	add    eax,eax
-     be4:	01 d0                	add    eax,edx
-     be6:	c1 e0 02             	shl    eax,0x2
-     be9:	01 c8                	add    eax,ecx
-     beb:	83 c0 04             	add    eax,0x4
-     bee:	8b 00                	mov    eax,DWORD PTR [eax]
-     bf0:	83 ec 08             	sub    esp,0x8
-     bf3:	50                   	push   eax
-     bf4:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-     bf7:	e8 fc ff ff ff       	call   bf8 <elf_store_global_symbol+0x8f>
-     bfc:	83 c4 10             	add    esp,0x10
-     bff:	85 c0                	test   eax,eax
-     c01:	0f 85 91 00 00 00    	jne    c98 <elf_store_global_symbol+0x12f>
+     c43:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
+     c46:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
+     c49:	89 d0                	mov    eax,edx
+     c4b:	01 c0                	add    eax,eax
+     c4d:	01 d0                	add    eax,edx
+     c4f:	c1 e0 02             	shl    eax,0x2
+     c52:	01 c8                	add    eax,ecx
+     c54:	83 c0 04             	add    eax,0x4
+     c57:	8b 00                	mov    eax,DWORD PTR [eax]
+     c59:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+     c5d:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     c60:	89 04 24             	mov    DWORD PTR [esp],eax
+     c63:	e8 fc ff ff ff       	call   c64 <elf_store_global_symbol+0x9e>
+     c68:	85 c0                	test   eax,eax
+     c6a:	0f 85 99 00 00 00    	jne    d09 <elf_store_global_symbol+0x143>
 						/* found a first match */
 						if (sl->entries[i].type == type) {
-     c07:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
-     c0a:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
-     c0d:	89 d0                	mov    eax,edx
-     c0f:	01 c0                	add    eax,eax
-     c11:	01 d0                	add    eax,edx
-     c13:	c1 e0 02             	shl    eax,0x2
-     c16:	01 c8                	add    eax,ecx
-     c18:	83 c0 08             	add    eax,0x8
-     c1b:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     c1e:	38 45 e4             	cmp    BYTE PTR [ebp-0x1c],al
-     c21:	75 75                	jne    c98 <elf_store_global_symbol+0x12f>
+     c70:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
+     c73:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
+     c76:	89 d0                	mov    eax,edx
+     c78:	01 c0                	add    eax,eax
+     c7a:	01 d0                	add    eax,edx
+     c7c:	c1 e0 02             	shl    eax,0x2
+     c7f:	01 c8                	add    eax,ecx
+     c81:	83 c0 08             	add    eax,0x8
+     c84:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     c87:	38 45 e4             	cmp    BYTE PTR [ebp-0x1c],al
+     c8a:	75 7d                	jne    d09 <elf_store_global_symbol+0x143>
 								if (is_weak) /* use existing symbol definition */
-     c23:	83 7d 14 00          	cmp    DWORD PTR [ebp+0x14],0x0
-     c27:	0f 85 86 01 00 00    	jne    db3 <elf_store_global_symbol+0x24a>
+     c8c:	83 7d 14 00          	cmp    DWORD PTR [ebp+0x14],0x0
+     c90:	0f 85 87 01 00 00    	jne    e1d <elf_store_global_symbol+0x257>
 										return;
 								cprintf(KFMT_WARN, "overwriting symbol %s defined at %p with "
-     c2d:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
-     c30:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
-     c33:	89 d0                	mov    eax,edx
-     c35:	01 c0                	add    eax,eax
-     c37:	01 d0                	add    eax,edx
-     c39:	c1 e0 02             	shl    eax,0x2
-     c3c:	01 c8                	add    eax,ecx
-     c3e:	8b 08                	mov    ecx,DWORD PTR [eax]
-     c40:	8b 5d f4             	mov    ebx,DWORD PTR [ebp-0xc]
-     c43:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
-     c46:	89 d0                	mov    eax,edx
-     c48:	01 c0                	add    eax,eax
-     c4a:	01 d0                	add    eax,edx
-     c4c:	c1 e0 02             	shl    eax,0x2
-     c4f:	01 d8                	add    eax,ebx
-     c51:	83 c0 04             	add    eax,0x4
-     c54:	8b 00                	mov    eax,DWORD PTR [eax]
-     c56:	83 ec 0c             	sub    esp,0xc
-     c59:	ff 75 0c             	push   DWORD PTR [ebp+0xc]
-     c5c:	51                   	push   ecx
-     c5d:	50                   	push   eax
-     c5e:	68 f4 03 00 00       	push   0x3f4
-     c63:	6a 0e                	push   0xe
-     c65:	e8 fc ff ff ff       	call   c66 <elf_store_global_symbol+0xfd>
-     c6a:	83 c4 20             	add    esp,0x20
+     c96:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
+     c99:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
+     c9c:	89 d0                	mov    eax,edx
+     c9e:	01 c0                	add    eax,eax
+     ca0:	01 d0                	add    eax,edx
+     ca2:	c1 e0 02             	shl    eax,0x2
+     ca5:	01 c8                	add    eax,ecx
+     ca7:	8b 08                	mov    ecx,DWORD PTR [eax]
+     ca9:	8b 5d f4             	mov    ebx,DWORD PTR [ebp-0xc]
+     cac:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
+     caf:	89 d0                	mov    eax,edx
+     cb1:	01 c0                	add    eax,eax
+     cb3:	01 d0                	add    eax,edx
+     cb5:	c1 e0 02             	shl    eax,0x2
+     cb8:	01 d8                	add    eax,ebx
+     cba:	83 c0 04             	add    eax,0x4
+     cbd:	8b 00                	mov    eax,DWORD PTR [eax]
+     cbf:	8b 55 0c             	mov    edx,DWORD PTR [ebp+0xc]
+     cc2:	89 54 24 10          	mov    DWORD PTR [esp+0x10],edx
+     cc6:	89 4c 24 0c          	mov    DWORD PTR [esp+0xc],ecx
+     cca:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+     cce:	c7 44 24 04 f4 03 00 00 	mov    DWORD PTR [esp+0x4],0x3f4
+     cd6:	c7 04 24 0e 00 00 00 	mov    DWORD PTR [esp],0xe
+     cdd:	e8 fc ff ff ff       	call   cde <elf_store_global_symbol+0x118>
 									"symbol at %p\n", sl->entries[i].name, sl->entries[i].vma, vma);
 								kfree(sl->entries[i].name); /* just in case */
-     c6d:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
-     c70:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
-     c73:	89 d0                	mov    eax,edx
-     c75:	01 c0                	add    eax,eax
-     c77:	01 d0                	add    eax,edx
-     c79:	c1 e0 02             	shl    eax,0x2
-     c7c:	01 c8                	add    eax,ecx
-     c7e:	83 c0 04             	add    eax,0x4
-     c81:	8b 00                	mov    eax,DWORD PTR [eax]
-     c83:	83 ec 0c             	sub    esp,0xc
-     c86:	50                   	push   eax
-     c87:	e8 fc ff ff ff       	call   c88 <elf_store_global_symbol+0x11f>
-     c8c:	83 c4 10             	add    esp,0x10
+     ce2:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
+     ce5:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
+     ce8:	89 d0                	mov    eax,edx
+     cea:	01 c0                	add    eax,eax
+     cec:	01 d0                	add    eax,edx
+     cee:	c1 e0 02             	shl    eax,0x2
+     cf1:	01 c8                	add    eax,ecx
+     cf3:	83 c0 04             	add    eax,0x4
+     cf6:	8b 00                	mov    eax,DWORD PTR [eax]
+     cf8:	89 04 24             	mov    DWORD PTR [esp],eax
+     cfb:	e8 fc ff ff ff       	call   cfc <elf_store_global_symbol+0x136>
 								wrt = 1;
-     c8f:	c7 45 ec 01 00 00 00 	mov    DWORD PTR [ebp-0x14],0x1
+     d00:	c7 45 ec 01 00 00 00 	mov    DWORD PTR [ebp-0x14],0x1
 								break; /* only overwrite full matches */
-     c96:	eb 7e                	jmp    d16 <elf_store_global_symbol+0x1ad>
+     d07:	eb 7a                	jmp    d83 <elf_store_global_symbol+0x1bd>
 						}
 				}
 				if (++i == 64) {
-     c98:	83 45 f0 01          	add    DWORD PTR [ebp-0x10],0x1
-     c9c:	83 7d f0 40          	cmp    DWORD PTR [ebp-0x10],0x40
-     ca0:	75 67                	jne    d09 <elf_store_global_symbol+0x1a0>
+     d09:	83 45 f0 01          	add    DWORD PTR [ebp-0x10],0x1
+     d0d:	83 7d f0 40          	cmp    DWORD PTR [ebp-0x10],0x40
+     d11:	75 63                	jne    d76 <elf_store_global_symbol+0x1b0>
 						if (sl->next) {
-     ca2:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     ca5:	8b 80 00 03 00 00    	mov    eax,DWORD PTR [eax+0x300]
-     cab:	85 c0                	test   eax,eax
-     cad:	74 15                	je     cc4 <elf_store_global_symbol+0x15b>
+     d13:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     d16:	8b 80 00 03 00 00    	mov    eax,DWORD PTR [eax+0x300]
+     d1c:	85 c0                	test   eax,eax
+     d1e:	74 15                	je     d35 <elf_store_global_symbol+0x16f>
 								sl = sl->next;
-     caf:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     cb2:	8b 80 00 03 00 00    	mov    eax,DWORD PTR [eax+0x300]
-     cb8:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
+     d20:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     d23:	8b 80 00 03 00 00    	mov    eax,DWORD PTR [eax+0x300]
+     d29:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
 								i = 0;
-     cbb:	c7 45 f0 00 00 00 00 	mov    DWORD PTR [ebp-0x10],0x0
-     cc2:	eb 45                	jmp    d09 <elf_store_global_symbol+0x1a0>
+     d2c:	c7 45 f0 00 00 00 00 	mov    DWORD PTR [ebp-0x10],0x0
+     d33:	eb 41                	jmp    d76 <elf_store_global_symbol+0x1b0>
 						} else {
 								/* allocate space for the next one and quit the loop */
 								i = 0;
-     cc4:	c7 45 f0 00 00 00 00 	mov    DWORD PTR [ebp-0x10],0x0
+     d35:	c7 45 f0 00 00 00 00 	mov    DWORD PTR [ebp-0x10],0x0
 								sl = sl->next = kmalloc(sizeof(struct symbol_list));
-     ccb:	83 ec 0c             	sub    esp,0xc
-     cce:	68 04 03 00 00       	push   0x304
-     cd3:	e8 fc ff ff ff       	call   cd4 <elf_store_global_symbol+0x16b>
-     cd8:	83 c4 10             	add    esp,0x10
-     cdb:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-     cde:	89 82 00 03 00 00    	mov    DWORD PTR [edx+0x300],eax
-     ce4:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     ce7:	8b 80 00 03 00 00    	mov    eax,DWORD PTR [eax+0x300]
-     ced:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
+     d3c:	c7 04 24 04 03 00 00 	mov    DWORD PTR [esp],0x304
+     d43:	e8 fc ff ff ff       	call   d44 <elf_store_global_symbol+0x17e>
+     d48:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+     d4b:	89 82 00 03 00 00    	mov    DWORD PTR [edx+0x300],eax
+     d51:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     d54:	8b 80 00 03 00 00    	mov    eax,DWORD PTR [eax+0x300]
+     d5a:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
 								if (!sl)
-     cf0:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
-     cf4:	0f 84 bc 00 00 00    	je     db6 <elf_store_global_symbol+0x24d>
+     d5d:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
+     d61:	0f 84 b9 00 00 00    	je     e20 <elf_store_global_symbol+0x25a>
 										return;
 								sl->next = NULL; /* IMPORTANT! as kmalloc != cmalloc */
-     cfa:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     cfd:	c7 80 00 03 00 00 00 00 00 00 	mov    DWORD PTR [eax+0x300],0x0
+     d67:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     d6a:	c7 80 00 03 00 00 00 00 00 00 	mov    DWORD PTR [eax+0x300],0x0
 								break;
-     d07:	eb 0d                	jmp    d16 <elf_store_global_symbol+0x1ad>
+     d74:	eb 0d                	jmp    d83 <elf_store_global_symbol+0x1bd>
 		while (sl) {
-     d09:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
-     d0d:	0f 85 a9 fe ff ff    	jne    bbc <elf_store_global_symbol+0x53>
-     d13:	eb 01                	jmp    d16 <elf_store_global_symbol+0x1ad>
+     d76:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
+     d7a:	0f 85 a5 fe ff ff    	jne    c25 <elf_store_global_symbol+0x5f>
+     d80:	eb 01                	jmp    d83 <elf_store_global_symbol+0x1bd>
 						break;
-     d15:	90                   	nop
+     d82:	90                   	nop
 						}
 				}
 		}
 
 		/* now write the new definition */
 		sl->entries[i].name = strdup(name);
-     d16:	83 ec 0c             	sub    esp,0xc
-     d19:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-     d1c:	e8 fc ff ff ff       	call   d1d <elf_store_global_symbol+0x1b4>
-     d21:	83 c4 10             	add    esp,0x10
-     d24:	89 c1                	mov    ecx,eax
-     d26:	8b 5d f4             	mov    ebx,DWORD PTR [ebp-0xc]
-     d29:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
-     d2c:	89 d0                	mov    eax,edx
-     d2e:	01 c0                	add    eax,eax
-     d30:	01 d0                	add    eax,edx
-     d32:	c1 e0 02             	shl    eax,0x2
-     d35:	01 d8                	add    eax,ebx
-     d37:	83 c0 04             	add    eax,0x4
-     d3a:	89 08                	mov    DWORD PTR [eax],ecx
+     d83:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     d86:	89 04 24             	mov    DWORD PTR [esp],eax
+     d89:	e8 fc ff ff ff       	call   d8a <elf_store_global_symbol+0x1c4>
+     d8e:	89 c1                	mov    ecx,eax
+     d90:	8b 5d f4             	mov    ebx,DWORD PTR [ebp-0xc]
+     d93:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
+     d96:	89 d0                	mov    eax,edx
+     d98:	01 c0                	add    eax,eax
+     d9a:	01 d0                	add    eax,edx
+     d9c:	c1 e0 02             	shl    eax,0x2
+     d9f:	01 d8                	add    eax,ebx
+     da1:	83 c0 04             	add    eax,0x4
+     da4:	89 08                	mov    DWORD PTR [eax],ecx
 		sl->entries[i].type = type;
-     d3c:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
-     d3f:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
-     d42:	89 d0                	mov    eax,edx
-     d44:	01 c0                	add    eax,eax
-     d46:	01 d0                	add    eax,edx
-     d48:	c1 e0 02             	shl    eax,0x2
-     d4b:	01 c8                	add    eax,ecx
-     d4d:	8d 50 08             	lea    edx,[eax+0x8]
-     d50:	0f b6 45 e4          	movzx  eax,BYTE PTR [ebp-0x1c]
-     d54:	88 02                	mov    BYTE PTR [edx],al
+     da6:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
+     da9:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
+     dac:	89 d0                	mov    eax,edx
+     dae:	01 c0                	add    eax,eax
+     db0:	01 d0                	add    eax,edx
+     db2:	c1 e0 02             	shl    eax,0x2
+     db5:	01 c8                	add    eax,ecx
+     db7:	8d 50 08             	lea    edx,[eax+0x8]
+     dba:	0f b6 45 e4          	movzx  eax,BYTE PTR [ebp-0x1c]
+     dbe:	88 02                	mov    BYTE PTR [edx],al
 		sl->entries[i].vma = vma;
-     d56:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
-     d59:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
-     d5c:	89 d0                	mov    eax,edx
-     d5e:	01 c0                	add    eax,eax
-     d60:	01 d0                	add    eax,edx
-     d62:	c1 e0 02             	shl    eax,0x2
-     d65:	8d 14 01             	lea    edx,[ecx+eax*1]
-     d68:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     d6b:	89 02                	mov    DWORD PTR [edx],eax
+     dc0:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
+     dc3:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
+     dc6:	89 d0                	mov    eax,edx
+     dc8:	01 c0                	add    eax,eax
+     dca:	01 d0                	add    eax,edx
+     dcc:	c1 e0 02             	shl    eax,0x2
+     dcf:	8d 14 01             	lea    edx,[ecx+eax*1]
+     dd2:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     dd5:	89 02                	mov    DWORD PTR [edx],eax
 		/* and null-terminate if last */
 		if (++i < 64 && !wrt) {
-     d6d:	83 45 f0 01          	add    DWORD PTR [ebp-0x10],0x1
-     d71:	83 7d f0 3f          	cmp    DWORD PTR [ebp-0x10],0x3f
-     d75:	77 40                	ja     db7 <elf_store_global_symbol+0x24e>
-     d77:	83 7d ec 00          	cmp    DWORD PTR [ebp-0x14],0x0
-     d7b:	75 3a                	jne    db7 <elf_store_global_symbol+0x24e>
+     dd7:	83 45 f0 01          	add    DWORD PTR [ebp-0x10],0x1
+     ddb:	83 7d f0 3f          	cmp    DWORD PTR [ebp-0x10],0x3f
+     ddf:	77 40                	ja     e21 <elf_store_global_symbol+0x25b>
+     de1:	83 7d ec 00          	cmp    DWORD PTR [ebp-0x14],0x0
+     de5:	75 3a                	jne    e21 <elf_store_global_symbol+0x25b>
 				sl->entries[i].name = NULL;
-     d7d:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
-     d80:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
-     d83:	89 d0                	mov    eax,edx
-     d85:	01 c0                	add    eax,eax
-     d87:	01 d0                	add    eax,edx
-     d89:	c1 e0 02             	shl    eax,0x2
-     d8c:	01 c8                	add    eax,ecx
-     d8e:	83 c0 04             	add    eax,0x4
-     d91:	c7 00 00 00 00 00    	mov    DWORD PTR [eax],0x0
+     de7:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
+     dea:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
+     ded:	89 d0                	mov    eax,edx
+     def:	01 c0                	add    eax,eax
+     df1:	01 d0                	add    eax,edx
+     df3:	c1 e0 02             	shl    eax,0x2
+     df6:	01 c8                	add    eax,ecx
+     df8:	83 c0 04             	add    eax,0x4
+     dfb:	c7 00 00 00 00 00    	mov    DWORD PTR [eax],0x0
 				sl->entries[i].vma = NULL;
-     d97:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
-     d9a:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
-     d9d:	89 d0                	mov    eax,edx
-     d9f:	01 c0                	add    eax,eax
-     da1:	01 d0                	add    eax,edx
-     da3:	c1 e0 02             	shl    eax,0x2
-     da6:	01 c8                	add    eax,ecx
-     da8:	c7 00 00 00 00 00    	mov    DWORD PTR [eax],0x0
-     dae:	eb 07                	jmp    db7 <elf_store_global_symbol+0x24e>
+     e01:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
+     e04:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
+     e07:	89 d0                	mov    eax,edx
+     e09:	01 c0                	add    eax,eax
+     e0b:	01 d0                	add    eax,edx
+     e0d:	c1 e0 02             	shl    eax,0x2
+     e10:	01 c8                	add    eax,ecx
+     e12:	c7 00 00 00 00 00    	mov    DWORD PTR [eax],0x0
+     e18:	eb 07                	jmp    e21 <elf_store_global_symbol+0x25b>
 				return;
-     db0:	90                   	nop
-     db1:	eb 04                	jmp    db7 <elf_store_global_symbol+0x24e>
+     e1a:	90                   	nop
+     e1b:	eb 04                	jmp    e21 <elf_store_global_symbol+0x25b>
 										return;
-     db3:	90                   	nop
-     db4:	eb 01                	jmp    db7 <elf_store_global_symbol+0x24e>
+     e1d:	90                   	nop
+     e1e:	eb 01                	jmp    e21 <elf_store_global_symbol+0x25b>
 										return;
-     db6:	90                   	nop
+     e20:	90                   	nop
 		}
 }
-     db7:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
-     dba:	c9                   	leave
-     dbb:	c3                   	ret
+     e21:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
+     e24:	c9                   	leave
+     e25:	c3                   	ret
 
-00000dbc <elf_locate_global_symbol>:
+00000e26 <elf_locate_global_symbol>:
 
 Elf32_Addr elf_locate_global_symbol(const char* name, char type)
 {
-     dbc:	55                   	push   ebp
-     dbd:	89 e5                	mov    ebp,esp
-     dbf:	83 ec 28             	sub    esp,0x28
-     dc2:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-     dc5:	88 45 e4             	mov    BYTE PTR [ebp-0x1c],al
+     e26:	55                   	push   ebp
+     e27:	89 e5                	mov    ebp,esp
+     e29:	83 ec 38             	sub    esp,0x38
+     e2c:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+     e2f:	88 45 e4             	mov    BYTE PTR [ebp-0x1c],al
 		struct symbol_list* sl = gs_lst;
-     dc8:	a1 00 00 00 00       	mov    eax,ds:0x0
-     dcd:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
+     e32:	a1 00 00 00 00       	mov    eax,ds:0x0
+     e37:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
 		size_t i = 0;
-     dd0:	c7 45 f0 00 00 00 00 	mov    DWORD PTR [ebp-0x10],0x0
+     e3a:	c7 45 f0 00 00 00 00 	mov    DWORD PTR [ebp-0x10],0x0
 		if (!sl)
-     dd7:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
-     ddb:	0f 85 d5 00 00 00    	jne    eb6 <elf_locate_global_symbol+0xfa>
+     e41:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
+     e45:	0f 85 d5 00 00 00    	jne    f20 <elf_locate_global_symbol+0xfa>
 				return (Elf32_Addr)NULL;
-     de1:	b8 00 00 00 00       	mov    eax,0x0
-     de6:	e9 dd 00 00 00       	jmp    ec8 <elf_locate_global_symbol+0x10c>
+     e4b:	b8 00 00 00 00       	mov    eax,0x0
+     e50:	e9 dd 00 00 00       	jmp    f32 <elf_locate_global_symbol+0x10c>
 
 		while (sl) {
 				if (!sl->entries[i].name)
-     deb:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
-     dee:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
-     df1:	89 d0                	mov    eax,edx
-     df3:	01 c0                	add    eax,eax
-     df5:	01 d0                	add    eax,edx
-     df7:	c1 e0 02             	shl    eax,0x2
-     dfa:	01 c8                	add    eax,ecx
-     dfc:	83 c0 04             	add    eax,0x4
-     dff:	8b 00                	mov    eax,DWORD PTR [eax]
-     e01:	85 c0                	test   eax,eax
-     e03:	0f 84 b9 00 00 00    	je     ec2 <elf_locate_global_symbol+0x106>
+     e55:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
+     e58:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
+     e5b:	89 d0                	mov    eax,edx
+     e5d:	01 c0                	add    eax,eax
+     e5f:	01 d0                	add    eax,edx
+     e61:	c1 e0 02             	shl    eax,0x2
+     e64:	01 c8                	add    eax,ecx
+     e66:	83 c0 04             	add    eax,0x4
+     e69:	8b 00                	mov    eax,DWORD PTR [eax]
+     e6b:	85 c0                	test   eax,eax
+     e6d:	0f 84 b9 00 00 00    	je     f2c <elf_locate_global_symbol+0x106>
 						break; /* end of list */
 				if (strcmp(sl->entries[i].name, name) == 0) {
-     e09:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
-     e0c:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
-     e0f:	89 d0                	mov    eax,edx
-     e11:	01 c0                	add    eax,eax
-     e13:	01 d0                	add    eax,edx
-     e15:	c1 e0 02             	shl    eax,0x2
-     e18:	01 c8                	add    eax,ecx
-     e1a:	83 c0 04             	add    eax,0x4
-     e1d:	8b 00                	mov    eax,DWORD PTR [eax]
-     e1f:	83 ec 08             	sub    esp,0x8
-     e22:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-     e25:	50                   	push   eax
-     e26:	e8 fc ff ff ff       	call   e27 <elf_locate_global_symbol+0x6b>
-     e2b:	83 c4 10             	add    esp,0x10
-     e2e:	85 c0                	test   eax,eax
-     e30:	75 67                	jne    e99 <elf_locate_global_symbol+0xdd>
+     e73:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
+     e76:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
+     e79:	89 d0                	mov    eax,edx
+     e7b:	01 c0                	add    eax,eax
+     e7d:	01 d0                	add    eax,edx
+     e7f:	c1 e0 02             	shl    eax,0x2
+     e82:	01 c8                	add    eax,ecx
+     e84:	83 c0 04             	add    eax,0x4
+     e87:	8b 00                	mov    eax,DWORD PTR [eax]
+     e89:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
+     e8c:	89 54 24 04          	mov    DWORD PTR [esp+0x4],edx
+     e90:	89 04 24             	mov    DWORD PTR [esp],eax
+     e93:	e8 fc ff ff ff       	call   e94 <elf_locate_global_symbol+0x6e>
+     e98:	85 c0                	test   eax,eax
+     e9a:	75 67                	jne    f03 <elf_locate_global_symbol+0xdd>
 						/* found a match candidate */
 						if (sl->entries[i].type == type) /* exact match */
-     e32:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
-     e35:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
-     e38:	89 d0                	mov    eax,edx
-     e3a:	01 c0                	add    eax,eax
-     e3c:	01 d0                	add    eax,edx
-     e3e:	c1 e0 02             	shl    eax,0x2
-     e41:	01 c8                	add    eax,ecx
-     e43:	83 c0 08             	add    eax,0x8
-     e46:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     e49:	38 45 e4             	cmp    BYTE PTR [ebp-0x1c],al
-     e4c:	75 15                	jne    e63 <elf_locate_global_symbol+0xa7>
+     e9c:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
+     e9f:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
+     ea2:	89 d0                	mov    eax,edx
+     ea4:	01 c0                	add    eax,eax
+     ea6:	01 d0                	add    eax,edx
+     ea8:	c1 e0 02             	shl    eax,0x2
+     eab:	01 c8                	add    eax,ecx
+     ead:	83 c0 08             	add    eax,0x8
+     eb0:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     eb3:	38 45 e4             	cmp    BYTE PTR [ebp-0x1c],al
+     eb6:	75 15                	jne    ecd <elf_locate_global_symbol+0xa7>
 								return (Elf32_Addr)sl->entries[i].vma;
-     e4e:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
-     e51:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
-     e54:	89 d0                	mov    eax,edx
-     e56:	01 c0                	add    eax,eax
-     e58:	01 d0                	add    eax,edx
-     e5a:	c1 e0 02             	shl    eax,0x2
-     e5d:	01 c8                	add    eax,ecx
-     e5f:	8b 00                	mov    eax,DWORD PTR [eax]
-     e61:	eb 65                	jmp    ec8 <elf_locate_global_symbol+0x10c>
+     eb8:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
+     ebb:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
+     ebe:	89 d0                	mov    eax,edx
+     ec0:	01 c0                	add    eax,eax
+     ec2:	01 d0                	add    eax,edx
+     ec4:	c1 e0 02             	shl    eax,0x2
+     ec7:	01 c8                	add    eax,ecx
+     ec9:	8b 00                	mov    eax,DWORD PTR [eax]
+     ecb:	eb 65                	jmp    f32 <elf_locate_global_symbol+0x10c>
 						else if (sl->entries[i].type == 'B' && type == 'D')
-     e63:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
-     e66:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
-     e69:	89 d0                	mov    eax,edx
-     e6b:	01 c0                	add    eax,eax
-     e6d:	01 d0                	add    eax,edx
-     e6f:	c1 e0 02             	shl    eax,0x2
-     e72:	01 c8                	add    eax,ecx
-     e74:	83 c0 08             	add    eax,0x8
-     e77:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     e7a:	3c 42                	cmp    al,0x42
-     e7c:	75 1b                	jne    e99 <elf_locate_global_symbol+0xdd>
-     e7e:	80 7d e4 44          	cmp    BYTE PTR [ebp-0x1c],0x44
-     e82:	75 15                	jne    e99 <elf_locate_global_symbol+0xdd>
+     ecd:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
+     ed0:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
+     ed3:	89 d0                	mov    eax,edx
+     ed5:	01 c0                	add    eax,eax
+     ed7:	01 d0                	add    eax,edx
+     ed9:	c1 e0 02             	shl    eax,0x2
+     edc:	01 c8                	add    eax,ecx
+     ede:	83 c0 08             	add    eax,0x8
+     ee1:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     ee4:	3c 42                	cmp    al,0x42
+     ee6:	75 1b                	jne    f03 <elf_locate_global_symbol+0xdd>
+     ee8:	80 7d e4 44          	cmp    BYTE PTR [ebp-0x1c],0x44
+     eec:	75 15                	jne    f03 <elf_locate_global_symbol+0xdd>
 								return (Elf32_Addr)sl->entries[i].vma; /* compatible */
-     e84:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
-     e87:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
-     e8a:	89 d0                	mov    eax,edx
-     e8c:	01 c0                	add    eax,eax
-     e8e:	01 d0                	add    eax,edx
-     e90:	c1 e0 02             	shl    eax,0x2
-     e93:	01 c8                	add    eax,ecx
-     e95:	8b 00                	mov    eax,DWORD PTR [eax]
-     e97:	eb 2f                	jmp    ec8 <elf_locate_global_symbol+0x10c>
+     eee:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
+     ef1:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
+     ef4:	89 d0                	mov    eax,edx
+     ef6:	01 c0                	add    eax,eax
+     ef8:	01 d0                	add    eax,edx
+     efa:	c1 e0 02             	shl    eax,0x2
+     efd:	01 c8                	add    eax,ecx
+     eff:	8b 00                	mov    eax,DWORD PTR [eax]
+     f01:	eb 2f                	jmp    f32 <elf_locate_global_symbol+0x10c>
 				}
 
 				if (++i == 64) {
-     e99:	83 45 f0 01          	add    DWORD PTR [ebp-0x10],0x1
-     e9d:	83 7d f0 40          	cmp    DWORD PTR [ebp-0x10],0x40
-     ea1:	75 13                	jne    eb6 <elf_locate_global_symbol+0xfa>
+     f03:	83 45 f0 01          	add    DWORD PTR [ebp-0x10],0x1
+     f07:	83 7d f0 40          	cmp    DWORD PTR [ebp-0x10],0x40
+     f0b:	75 13                	jne    f20 <elf_locate_global_symbol+0xfa>
 						sl = sl->next;
-     ea3:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     ea6:	8b 80 00 03 00 00    	mov    eax,DWORD PTR [eax+0x300]
-     eac:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
+     f0d:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     f10:	8b 80 00 03 00 00    	mov    eax,DWORD PTR [eax+0x300]
+     f16:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
 						i = 0;
-     eaf:	c7 45 f0 00 00 00 00 	mov    DWORD PTR [ebp-0x10],0x0
+     f19:	c7 45 f0 00 00 00 00 	mov    DWORD PTR [ebp-0x10],0x0
 		while (sl) {
-     eb6:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
-     eba:	0f 85 2b ff ff ff    	jne    deb <elf_locate_global_symbol+0x2f>
-     ec0:	eb 01                	jmp    ec3 <elf_locate_global_symbol+0x107>
+     f20:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
+     f24:	0f 85 2b ff ff ff    	jne    e55 <elf_locate_global_symbol+0x2f>
+     f2a:	eb 01                	jmp    f2d <elf_locate_global_symbol+0x107>
 						break; /* end of list */
-     ec2:	90                   	nop
+     f2c:	90                   	nop
 				}
 		}
 
 		/* no match found */
 		return (Elf32_Addr)NULL;
-     ec3:	b8 00 00 00 00       	mov    eax,0x0
+     f2d:	b8 00 00 00 00       	mov    eax,0x0
 }
-     ec8:	c9                   	leave
-     ec9:	c3                   	ret
+     f32:	c9                   	leave
+     f33:	c3                   	ret
 
-00000eca <locate_module_function>:
+00000f34 <locate_module_function>:
 
 void* locate_module_function(char* name)
 {
-     eca:	55                   	push   ebp
-     ecb:	89 e5                	mov    ebp,esp
-     ecd:	53                   	push   ebx
-     ece:	83 ec 14             	sub    esp,0x14
+     f34:	55                   	push   ebp
+     f35:	89 e5                	mov    ebp,esp
+     f37:	53                   	push   ebx
+     f38:	83 ec 24             	sub    esp,0x24
 		Elf32_Addr rv;
 		rv = elf_locate_global_symbol(name, 'T');
-     ed1:	83 ec 08             	sub    esp,0x8
-     ed4:	6a 54                	push   0x54
-     ed6:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-     ed9:	e8 fc ff ff ff       	call   eda <locate_module_function+0x10>
-     ede:	83 c4 10             	add    esp,0x10
-     ee1:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
+     f3b:	c7 44 24 04 54 00 00 00 	mov    DWORD PTR [esp+0x4],0x54
+     f43:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     f46:	89 04 24             	mov    DWORD PTR [esp],eax
+     f49:	e8 fc ff ff ff       	call   f4a <locate_module_function+0x16>
+     f4e:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
 		if (!rv)
-     ee4:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
-     ee8:	75 13                	jne    efd <locate_module_function+0x33>
+     f51:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
+     f55:	75 16                	jne    f6d <locate_module_function+0x39>
 				rv = elf_locate_global_symbol(name, 'D');
-     eea:	83 ec 08             	sub    esp,0x8
-     eed:	6a 44                	push   0x44
-     eef:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-     ef2:	e8 fc ff ff ff       	call   ef3 <locate_module_function+0x29>
-     ef7:	83 c4 10             	add    esp,0x10
-     efa:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
+     f57:	c7 44 24 04 44 00 00 00 	mov    DWORD PTR [esp+0x4],0x44
+     f5f:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+     f62:	89 04 24             	mov    DWORD PTR [esp],eax
+     f65:	e8 fc ff ff ff       	call   f66 <locate_module_function+0x32>
+     f6a:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
 		if (!rv) {
-     efd:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
-     f01:	75 76                	jne    f79 <locate_module_function+0xaf>
+     f6d:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
+     f71:	75 78                	jne    feb <locate_module_function+0xb7>
 				struct symbol_list* sl = gs_lst;
-     f03:	a1 00 00 00 00       	mov    eax,ds:0x0
-     f08:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
+     f73:	a1 00 00 00 00       	mov    eax,ds:0x0
+     f78:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
 				size_t i = 0;
-     f0b:	c7 45 ec 00 00 00 00 	mov    DWORD PTR [ebp-0x14],0x0
+     f7b:	c7 45 ec 00 00 00 00 	mov    DWORD PTR [ebp-0x14],0x0
 				while (sl) {
-     f12:	eb 5f                	jmp    f73 <locate_module_function+0xa9>
+     f82:	eb 61                	jmp    fe5 <locate_module_function+0xb1>
 						printf("%s %c\n", sl->entries[i].name, sl->entries[i].type);
-     f14:	8b 4d f0             	mov    ecx,DWORD PTR [ebp-0x10]
-     f17:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
-     f1a:	89 d0                	mov    eax,edx
-     f1c:	01 c0                	add    eax,eax
-     f1e:	01 d0                	add    eax,edx
-     f20:	c1 e0 02             	shl    eax,0x2
-     f23:	01 c8                	add    eax,ecx
-     f25:	83 c0 08             	add    eax,0x8
-     f28:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-     f2b:	0f be c8             	movsx  ecx,al
-     f2e:	8b 5d f0             	mov    ebx,DWORD PTR [ebp-0x10]
-     f31:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
-     f34:	89 d0                	mov    eax,edx
-     f36:	01 c0                	add    eax,eax
-     f38:	01 d0                	add    eax,edx
-     f3a:	c1 e0 02             	shl    eax,0x2
-     f3d:	01 d8                	add    eax,ebx
-     f3f:	83 c0 04             	add    eax,0x4
-     f42:	8b 00                	mov    eax,DWORD PTR [eax]
-     f44:	83 ec 04             	sub    esp,0x4
-     f47:	51                   	push   ecx
-     f48:	50                   	push   eax
-     f49:	68 2b 04 00 00       	push   0x42b
-     f4e:	e8 fc ff ff ff       	call   f4f <locate_module_function+0x85>
-     f53:	83 c4 10             	add    esp,0x10
+     f84:	8b 4d f0             	mov    ecx,DWORD PTR [ebp-0x10]
+     f87:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
+     f8a:	89 d0                	mov    eax,edx
+     f8c:	01 c0                	add    eax,eax
+     f8e:	01 d0                	add    eax,edx
+     f90:	c1 e0 02             	shl    eax,0x2
+     f93:	01 c8                	add    eax,ecx
+     f95:	83 c0 08             	add    eax,0x8
+     f98:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+     f9b:	0f be c8             	movsx  ecx,al
+     f9e:	8b 5d f0             	mov    ebx,DWORD PTR [ebp-0x10]
+     fa1:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
+     fa4:	89 d0                	mov    eax,edx
+     fa6:	01 c0                	add    eax,eax
+     fa8:	01 d0                	add    eax,edx
+     faa:	c1 e0 02             	shl    eax,0x2
+     fad:	01 d8                	add    eax,ebx
+     faf:	83 c0 04             	add    eax,0x4
+     fb2:	8b 00                	mov    eax,DWORD PTR [eax]
+     fb4:	89 4c 24 08          	mov    DWORD PTR [esp+0x8],ecx
+     fb8:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+     fbc:	c7 04 24 2b 04 00 00 	mov    DWORD PTR [esp],0x42b
+     fc3:	e8 fc ff ff ff       	call   fc4 <locate_module_function+0x90>
 						if (++i == 64) {
-     f56:	83 45 ec 01          	add    DWORD PTR [ebp-0x14],0x1
-     f5a:	83 7d ec 40          	cmp    DWORD PTR [ebp-0x14],0x40
-     f5e:	75 13                	jne    f73 <locate_module_function+0xa9>
+     fc8:	83 45 ec 01          	add    DWORD PTR [ebp-0x14],0x1
+     fcc:	83 7d ec 40          	cmp    DWORD PTR [ebp-0x14],0x40
+     fd0:	75 13                	jne    fe5 <locate_module_function+0xb1>
 								sl = sl->next;
-     f60:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-     f63:	8b 80 00 03 00 00    	mov    eax,DWORD PTR [eax+0x300]
-     f69:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
+     fd2:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+     fd5:	8b 80 00 03 00 00    	mov    eax,DWORD PTR [eax+0x300]
+     fdb:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
 								i = 0;
-     f6c:	c7 45 ec 00 00 00 00 	mov    DWORD PTR [ebp-0x14],0x0
+     fde:	c7 45 ec 00 00 00 00 	mov    DWORD PTR [ebp-0x14],0x0
 				while (sl) {
-     f73:	83 7d f0 00          	cmp    DWORD PTR [ebp-0x10],0x0
-     f77:	75 9b                	jne    f14 <locate_module_function+0x4a>
+     fe5:	83 7d f0 00          	cmp    DWORD PTR [ebp-0x10],0x0
+     fe9:	75 99                	jne    f84 <locate_module_function+0x50>
 						}
 				}
 		}
 		return (void*)rv;
-     f79:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+     feb:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
 }
-     f7c:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
-     f7f:	c9                   	leave
-     f80:	c3                   	ret
+     fee:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
+     ff1:	c9                   	leave
+     ff2:	c3                   	ret
 
-00000f81 <store_module_info>:
+00000ff3 <store_module_info>:
 
 void store_module_info(struct module_info* mi)
 {
-     f81:	55                   	push   ebp
-     f82:	89 e5                	mov    ebp,esp
-     f84:	83 ec 18             	sub    esp,0x18
+     ff3:	55                   	push   ebp
+     ff4:	89 e5                	mov    ebp,esp
+     ff6:	83 ec 28             	sub    esp,0x28
 		struct module_info_container* mc;
 		mc = mod_tbl.mt_mic;
-     f87:	a1 20 00 00 00       	mov    eax,ds:0x20
-     f8c:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
+     ff9:	a1 20 00 00 00       	mov    eax,ds:0x20
+     ffe:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
 		do {
 				for (int i = 0; i < 7; i++)
-     f8f:	c7 45 f0 00 00 00 00 	mov    DWORD PTR [ebp-0x10],0x0
-     f96:	e9 90 00 00 00       	jmp    102b <store_module_info+0xaa>
+    1001:	c7 45 f0 00 00 00 00 	mov    DWORD PTR [ebp-0x10],0x0
+    1008:	e9 99 00 00 00       	jmp    10a6 <store_module_info+0xb3>
 						if (!mc->ptrs[i]) {
-     f9b:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     f9e:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
-     fa1:	8b 04 90             	mov    eax,DWORD PTR [eax+edx*4]
-     fa4:	85 c0                	test   eax,eax
-     fa6:	75 7f                	jne    1027 <store_module_info+0xa6>
+    100d:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    1010:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
+    1013:	8b 04 90             	mov    eax,DWORD PTR [eax+edx*4]
+    1016:	85 c0                	test   eax,eax
+    1018:	0f 85 84 00 00 00    	jne    10a2 <store_module_info+0xaf>
 								mc->ptrs[i] = kmalloc(sizeof(struct module_info));
-     fa8:	83 ec 0c             	sub    esp,0xc
-     fab:	6a 3c                	push   0x3c
-     fad:	e8 fc ff ff ff       	call   fae <store_module_info+0x2d>
-     fb2:	83 c4 10             	add    esp,0x10
-     fb5:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-     fb8:	8b 4d f0             	mov    ecx,DWORD PTR [ebp-0x10]
-     fbb:	89 04 8a             	mov    DWORD PTR [edx+ecx*4],eax
+    101e:	c7 04 24 3c 00 00 00 	mov    DWORD PTR [esp],0x3c
+    1025:	e8 fc ff ff ff       	call   1026 <store_module_info+0x33>
+    102a:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+    102d:	8b 4d f0             	mov    ecx,DWORD PTR [ebp-0x10]
+    1030:	89 04 8a             	mov    DWORD PTR [edx+ecx*4],eax
 								if (!mc->ptrs[i])
-     fbe:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     fc1:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
-     fc4:	8b 04 90             	mov    eax,DWORD PTR [eax+edx*4]
-     fc7:	85 c0                	test   eax,eax
-     fc9:	0f 84 b6 00 00 00    	je     1085 <store_module_info+0x104>
+    1033:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    1036:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
+    1039:	8b 04 90             	mov    eax,DWORD PTR [eax+edx*4]
+    103c:	85 c0                	test   eax,eax
+    103e:	0f 84 bd 00 00 00    	je     1101 <store_module_info+0x10e>
 										return;
 								memcpy(mc->ptrs[i], mi, sizeof(struct module_info));
-     fcf:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-     fd2:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
-     fd5:	8b 04 90             	mov    eax,DWORD PTR [eax+edx*4]
-     fd8:	83 ec 04             	sub    esp,0x4
-     fdb:	6a 3c                	push   0x3c
-     fdd:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-     fe0:	50                   	push   eax
-     fe1:	e8 1a f0 ff ff       	call   0 <memcpy>
-     fe6:	83 c4 10             	add    esp,0x10
+    1044:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    1047:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
+    104a:	8b 04 90             	mov    eax,DWORD PTR [eax+edx*4]
+    104d:	c7 44 24 08 3c 00 00 00 	mov    DWORD PTR [esp+0x8],0x3c
+    1055:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
+    1058:	89 54 24 04          	mov    DWORD PTR [esp+0x4],edx
+    105c:	89 04 24             	mov    DWORD PTR [esp],eax
+    105f:	e8 9c ef ff ff       	call   0 <memcpy>
 								for (int j = 0; j < 4; j++)
-     fe9:	c7 45 ec 00 00 00 00 	mov    DWORD PTR [ebp-0x14],0x0
-     ff0:	eb 2d                	jmp    101f <store_module_info+0x9e>
+    1064:	c7 45 ec 00 00 00 00 	mov    DWORD PTR [ebp-0x14],0x0
+    106b:	eb 2d                	jmp    109a <store_module_info+0xa7>
 										mod_tbl.sz_secs[j] += mi->sz_secs[j];
-     ff2:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-     ff5:	83 c0 04             	add    eax,0x4
-     ff8:	8b 14 85 00 00 00 00 	mov    edx,DWORD PTR [eax*4+0x0]
-     fff:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1002:	8b 4d ec             	mov    ecx,DWORD PTR [ebp-0x14]
-    1005:	83 c1 08             	add    ecx,0x8
-    1008:	8b 44 88 0c          	mov    eax,DWORD PTR [eax+ecx*4+0xc]
-    100c:	01 c2                	add    edx,eax
-    100e:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    1011:	83 c0 04             	add    eax,0x4
-    1014:	89 14 85 00 00 00 00 	mov    DWORD PTR [eax*4+0x0],edx
+    106d:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    1070:	83 c0 04             	add    eax,0x4
+    1073:	8b 14 85 00 00 00 00 	mov    edx,DWORD PTR [eax*4+0x0]
+    107a:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    107d:	8b 4d ec             	mov    ecx,DWORD PTR [ebp-0x14]
+    1080:	83 c1 08             	add    ecx,0x8
+    1083:	8b 44 88 0c          	mov    eax,DWORD PTR [eax+ecx*4+0xc]
+    1087:	01 c2                	add    edx,eax
+    1089:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    108c:	83 c0 04             	add    eax,0x4
+    108f:	89 14 85 00 00 00 00 	mov    DWORD PTR [eax*4+0x0],edx
 								for (int j = 0; j < 4; j++)
-    101b:	83 45 ec 01          	add    DWORD PTR [ebp-0x14],0x1
-    101f:	83 7d ec 03          	cmp    DWORD PTR [ebp-0x14],0x3
-    1023:	7e cd                	jle    ff2 <store_module_info+0x71>
+    1096:	83 45 ec 01          	add    DWORD PTR [ebp-0x14],0x1
+    109a:	83 7d ec 03          	cmp    DWORD PTR [ebp-0x14],0x3
+    109e:	7e cd                	jle    106d <store_module_info+0x7a>
 								return;
-    1025:	eb 5f                	jmp    1086 <store_module_info+0x105>
+    10a0:	eb 60                	jmp    1102 <store_module_info+0x10f>
 				for (int i = 0; i < 7; i++)
-    1027:	83 45 f0 01          	add    DWORD PTR [ebp-0x10],0x1
-    102b:	83 7d f0 06          	cmp    DWORD PTR [ebp-0x10],0x6
-    102f:	0f 8e 66 ff ff ff    	jle    f9b <store_module_info+0x1a>
+    10a2:	83 45 f0 01          	add    DWORD PTR [ebp-0x10],0x1
+    10a6:	83 7d f0 06          	cmp    DWORD PTR [ebp-0x10],0x6
+    10aa:	0f 8e 5d ff ff ff    	jle    100d <store_module_info+0x1a>
 						}
 				if (!mc->next) {
-    1035:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    1038:	8b 40 1c             	mov    eax,DWORD PTR [eax+0x1c]
-    103b:	85 c0                	test   eax,eax
-    103d:	75 31                	jne    1070 <store_module_info+0xef>
+    10b0:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    10b3:	8b 40 1c             	mov    eax,DWORD PTR [eax+0x1c]
+    10b6:	85 c0                	test   eax,eax
+    10b8:	75 32                	jne    10ec <store_module_info+0xf9>
 						mc->next = kmalloc(sizeof(struct module_info_container));
-    103f:	83 ec 0c             	sub    esp,0xc
-    1042:	6a 20                	push   0x20
-    1044:	e8 fc ff ff ff       	call   1045 <store_module_info+0xc4>
-    1049:	83 c4 10             	add    esp,0x10
-    104c:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-    104f:	89 42 1c             	mov    DWORD PTR [edx+0x1c],eax
+    10ba:	c7 04 24 20 00 00 00 	mov    DWORD PTR [esp],0x20
+    10c1:	e8 fc ff ff ff       	call   10c2 <store_module_info+0xcf>
+    10c6:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+    10c9:	89 42 1c             	mov    DWORD PTR [edx+0x1c],eax
 						if (mc->next)
-    1052:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    1055:	8b 40 1c             	mov    eax,DWORD PTR [eax+0x1c]
-    1058:	85 c0                	test   eax,eax
-    105a:	74 14                	je     1070 <store_module_info+0xef>
+    10cc:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    10cf:	8b 40 1c             	mov    eax,DWORD PTR [eax+0x1c]
+    10d2:	85 c0                	test   eax,eax
+    10d4:	74 16                	je     10ec <store_module_info+0xf9>
 								bzero(mc->next, sizeof(struct module_info_container));
-    105c:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    105f:	8b 40 1c             	mov    eax,DWORD PTR [eax+0x1c]
-    1062:	83 ec 08             	sub    esp,0x8
-    1065:	6a 20                	push   0x20
-    1067:	50                   	push   eax
-    1068:	e8 fc ff ff ff       	call   1069 <store_module_info+0xe8>
-    106d:	83 c4 10             	add    esp,0x10
+    10d6:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    10d9:	8b 40 1c             	mov    eax,DWORD PTR [eax+0x1c]
+    10dc:	c7 44 24 04 20 00 00 00 	mov    DWORD PTR [esp+0x4],0x20
+    10e4:	89 04 24             	mov    DWORD PTR [esp],eax
+    10e7:	e8 fc ff ff ff       	call   10e8 <store_module_info+0xf5>
 				}
 		} while ((mc = mc->next));
-    1070:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    1073:	8b 40 1c             	mov    eax,DWORD PTR [eax+0x1c]
-    1076:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
-    1079:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
-    107d:	0f 85 0c ff ff ff    	jne    f8f <store_module_info+0xe>
-    1083:	eb 01                	jmp    1086 <store_module_info+0x105>
+    10ec:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    10ef:	8b 40 1c             	mov    eax,DWORD PTR [eax+0x1c]
+    10f2:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
+    10f5:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
+    10f9:	0f 85 02 ff ff ff    	jne    1001 <store_module_info+0xe>
+    10ff:	eb 01                	jmp    1102 <store_module_info+0x10f>
 										return;
-    1085:	90                   	nop
+    1101:	90                   	nop
 }
-    1086:	c9                   	leave
-    1087:	c3                   	ret
+    1102:	c9                   	leave
+    1103:	c3                   	ret
 
-00001088 <list_modules>:
+00001104 <list_modules>:
 
 void list_modules()
 {
-    1088:	55                   	push   ebp
-    1089:	89 e5                	mov    ebp,esp
-    108b:	83 ec 18             	sub    esp,0x18
+    1104:	55                   	push   ebp
+    1105:	89 e5                	mov    ebp,esp
+    1107:	83 ec 28             	sub    esp,0x28
 		struct module_info_container* mc;
 		mc = mod_tbl.mt_mic;
-    108e:	a1 20 00 00 00       	mov    eax,ds:0x20
-    1093:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
+    110a:	a1 20 00 00 00       	mov    eax,ds:0x20
+    110f:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
 		printf("Module                     Size\n");
-    1096:	83 ec 0c             	sub    esp,0xc
-    1099:	68 34 04 00 00       	push   0x434
-    109e:	e8 fc ff ff ff       	call   109f <list_modules+0x17>
-    10a3:	83 c4 10             	add    esp,0x10
+    1112:	c7 04 24 34 04 00 00 	mov    DWORD PTR [esp],0x434
+    1119:	e8 fc ff ff ff       	call   111a <list_modules+0x16>
 		do {
 				for (int i = 0; i < 7; i++)
-    10a6:	c7 45 f0 00 00 00 00 	mov    DWORD PTR [ebp-0x10],0x0
-    10ad:	eb 50                	jmp    10ff <list_modules+0x77>
+    111e:	c7 45 f0 00 00 00 00 	mov    DWORD PTR [ebp-0x10],0x0
+    1125:	eb 52                	jmp    1179 <list_modules+0x75>
 						if (mc->ptrs[i]) {
-    10af:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    10b2:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
-    10b5:	8b 04 90             	mov    eax,DWORD PTR [eax+edx*4]
-    10b8:	85 c0                	test   eax,eax
-    10ba:	74 4b                	je     1107 <list_modules+0x7f>
+    1127:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    112a:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
+    112d:	8b 04 90             	mov    eax,DWORD PTR [eax+edx*4]
+    1130:	85 c0                	test   eax,eax
+    1132:	74 4d                	je     1181 <list_modules+0x7d>
 								struct module_info* mi = mc->ptrs[i];
-    10bc:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    10bf:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
-    10c2:	8b 04 90             	mov    eax,DWORD PTR [eax+edx*4]
-    10c5:	89 45 ec             	mov    DWORD PTR [ebp-0x14],eax
+    1134:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    1137:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
+    113a:	8b 04 90             	mov    eax,DWORD PTR [eax+edx*4]
+    113d:	89 45 ec             	mov    DWORD PTR [ebp-0x14],eax
 								printf("%20s %10lu\n", mi->mi_name, mi->sz_secs[0] +
-    10c8:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    10cb:	8b 50 2c             	mov    edx,DWORD PTR [eax+0x2c]
+    1140:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    1143:	8b 50 2c             	mov    edx,DWORD PTR [eax+0x2c]
 											mi->sz_secs[1] + mi->sz_secs[2] + mi->sz_secs[3]);
-    10ce:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    10d1:	8b 40 30             	mov    eax,DWORD PTR [eax+0x30]
+    1146:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    1149:	8b 40 30             	mov    eax,DWORD PTR [eax+0x30]
 								printf("%20s %10lu\n", mi->mi_name, mi->sz_secs[0] +
-    10d4:	01 c2                	add    edx,eax
+    114c:	01 c2                	add    edx,eax
 											mi->sz_secs[1] + mi->sz_secs[2] + mi->sz_secs[3]);
-    10d6:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    10d9:	8b 40 34             	mov    eax,DWORD PTR [eax+0x34]
-    10dc:	01 c2                	add    edx,eax
-    10de:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    10e1:	8b 40 38             	mov    eax,DWORD PTR [eax+0x38]
+    114e:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    1151:	8b 40 34             	mov    eax,DWORD PTR [eax+0x34]
+    1154:	01 c2                	add    edx,eax
+    1156:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    1159:	8b 40 38             	mov    eax,DWORD PTR [eax+0x38]
 								printf("%20s %10lu\n", mi->mi_name, mi->sz_secs[0] +
-    10e4:	01 c2                	add    edx,eax
-    10e6:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    10e9:	83 ec 04             	sub    esp,0x4
-    10ec:	52                   	push   edx
-    10ed:	50                   	push   eax
-    10ee:	68 55 04 00 00       	push   0x455
-    10f3:	e8 fc ff ff ff       	call   10f4 <list_modules+0x6c>
-    10f8:	83 c4 10             	add    esp,0x10
+    115c:	01 c2                	add    edx,eax
+    115e:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    1161:	89 54 24 08          	mov    DWORD PTR [esp+0x8],edx
+    1165:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    1169:	c7 04 24 55 04 00 00 	mov    DWORD PTR [esp],0x455
+    1170:	e8 fc ff ff ff       	call   1171 <list_modules+0x6d>
 				for (int i = 0; i < 7; i++)
-    10fb:	83 45 f0 01          	add    DWORD PTR [ebp-0x10],0x1
-    10ff:	83 7d f0 06          	cmp    DWORD PTR [ebp-0x10],0x6
-    1103:	7e aa                	jle    10af <list_modules+0x27>
-    1105:	eb 01                	jmp    1108 <list_modules+0x80>
+    1175:	83 45 f0 01          	add    DWORD PTR [ebp-0x10],0x1
+    1179:	83 7d f0 06          	cmp    DWORD PTR [ebp-0x10],0x6
+    117d:	7e a8                	jle    1127 <list_modules+0x23>
+    117f:	eb 01                	jmp    1182 <list_modules+0x7e>
 						} else
 								break;
-    1107:	90                   	nop
+    1181:	90                   	nop
 		} while ((mc = mc->next));
-    1108:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    110b:	8b 40 1c             	mov    eax,DWORD PTR [eax+0x1c]
-    110e:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
-    1111:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
-    1115:	75 8f                	jne    10a6 <list_modules+0x1e>
+    1182:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    1185:	8b 40 1c             	mov    eax,DWORD PTR [eax+0x1c]
+    1188:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
+    118b:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
+    118f:	75 8d                	jne    111e <list_modules+0x1a>
 		printf("TOTAL                %10lu\n", mod_tbl.sz_secs[0] +
-    1117:	8b 15 10 00 00 00    	mov    edx,DWORD PTR ds:0x10
+    1191:	8b 15 10 00 00 00    	mov    edx,DWORD PTR ds:0x10
 						mod_tbl.sz_secs[1] + mod_tbl.sz_secs[2] + mod_tbl.sz_secs[3]);
-    111d:	a1 14 00 00 00       	mov    eax,ds:0x14
+    1197:	a1 14 00 00 00       	mov    eax,ds:0x14
 		printf("TOTAL                %10lu\n", mod_tbl.sz_secs[0] +
-    1122:	01 c2                	add    edx,eax
+    119c:	01 c2                	add    edx,eax
 						mod_tbl.sz_secs[1] + mod_tbl.sz_secs[2] + mod_tbl.sz_secs[3]);
-    1124:	a1 18 00 00 00       	mov    eax,ds:0x18
-    1129:	01 c2                	add    edx,eax
-    112b:	a1 1c 00 00 00       	mov    eax,ds:0x1c
+    119e:	a1 18 00 00 00       	mov    eax,ds:0x18
+    11a3:	01 c2                	add    edx,eax
+    11a5:	a1 1c 00 00 00       	mov    eax,ds:0x1c
 		printf("TOTAL                %10lu\n", mod_tbl.sz_secs[0] +
-    1130:	01 d0                	add    eax,edx
-    1132:	83 ec 08             	sub    esp,0x8
-    1135:	50                   	push   eax
-    1136:	68 61 04 00 00       	push   0x461
-    113b:	e8 fc ff ff ff       	call   113c <list_modules+0xb4>
-    1140:	83 c4 10             	add    esp,0x10
+    11aa:	01 d0                	add    eax,edx
+    11ac:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    11b0:	c7 04 24 61 04 00 00 	mov    DWORD PTR [esp],0x461
+    11b7:	e8 fc ff ff ff       	call   11b8 <list_modules+0xb4>
 }
-    1143:	90                   	nop
-    1144:	c9                   	leave
-    1145:	c3                   	ret
+    11bc:	90                   	nop
+    11bd:	c9                   	leave
+    11be:	c3                   	ret
 
-00001146 <list_module_info>:
+000011bf <list_module_info>:
 
 void list_module_info(const char* name)
 {
-    1146:	55                   	push   ebp
-    1147:	89 e5                	mov    ebp,esp
-    1149:	53                   	push   ebx
-    114a:	83 ec 14             	sub    esp,0x14
+    11bf:	55                   	push   ebp
+    11c0:	89 e5                	mov    ebp,esp
+    11c2:	53                   	push   ebx
+    11c3:	83 ec 34             	sub    esp,0x34
 		struct module_info_container* mc;
 		mc = mod_tbl.mt_mic;
-    114d:	a1 20 00 00 00       	mov    eax,ds:0x20
-    1152:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
+    11c6:	a1 20 00 00 00       	mov    eax,ds:0x20
+    11cb:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
 		do {
 				for (int i = 0; i < 7; i++)
-    1155:	c7 45 f0 00 00 00 00 	mov    DWORD PTR [ebp-0x10],0x0
-    115c:	e9 f6 00 00 00       	jmp    1257 <list_module_info+0x111>
+    11ce:	c7 45 f0 00 00 00 00 	mov    DWORD PTR [ebp-0x10],0x0
+    11d5:	e9 fc 00 00 00       	jmp    12d6 <list_module_info+0x117>
 						if (mc->ptrs[i]) {
-    1161:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    1164:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
-    1167:	8b 04 90             	mov    eax,DWORD PTR [eax+edx*4]
-    116a:	85 c0                	test   eax,eax
-    116c:	0f 84 f1 00 00 00    	je     1263 <list_module_info+0x11d>
+    11da:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    11dd:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
+    11e0:	8b 04 90             	mov    eax,DWORD PTR [eax+edx*4]
+    11e3:	85 c0                	test   eax,eax
+    11e5:	0f 84 f7 00 00 00    	je     12e2 <list_module_info+0x123>
 								struct module_info* mi = mc->ptrs[i];
-    1172:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    1175:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
-    1178:	8b 04 90             	mov    eax,DWORD PTR [eax+edx*4]
-    117b:	89 45 ec             	mov    DWORD PTR [ebp-0x14],eax
+    11eb:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    11ee:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
+    11f1:	8b 04 90             	mov    eax,DWORD PTR [eax+edx*4]
+    11f4:	89 45 ec             	mov    DWORD PTR [ebp-0x14],eax
 								if (strcmp(mi->mi_name, name) == 0) {
-    117e:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    1181:	83 ec 08             	sub    esp,0x8
-    1184:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-    1187:	50                   	push   eax
-    1188:	e8 fc ff ff ff       	call   1189 <list_module_info+0x43>
-    118d:	83 c4 10             	add    esp,0x10
-    1190:	85 c0                	test   eax,eax
-    1192:	0f 85 bb 00 00 00    	jne    1253 <list_module_info+0x10d>
+    11f7:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    11fa:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
+    11fd:	89 54 24 04          	mov    DWORD PTR [esp+0x4],edx
+    1201:	89 04 24             	mov    DWORD PTR [esp],eax
+    1204:	e8 fc ff ff ff       	call   1205 <list_module_info+0x46>
+    1209:	85 c0                	test   eax,eax
+    120b:	0f 85 c1 00 00 00    	jne    12d2 <list_module_info+0x113>
 										printf("module %s resides at:\n", name);
-    1198:	83 ec 08             	sub    esp,0x8
-    119b:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-    119e:	68 7d 04 00 00       	push   0x47d
-    11a3:	e8 fc ff ff ff       	call   11a4 <list_module_info+0x5e>
-    11a8:	83 c4 10             	add    esp,0x10
+    1211:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1214:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    1218:	c7 04 24 7d 04 00 00 	mov    DWORD PTR [esp],0x47d
+    121f:	e8 fc ff ff ff       	call   1220 <list_module_info+0x61>
 										printf("SECTION     .text    .data  .rodata     .bss\n");
-    11ab:	83 ec 0c             	sub    esp,0xc
-    11ae:	68 94 04 00 00       	push   0x494
-    11b3:	e8 fc ff ff ff       	call   11b4 <list_module_info+0x6e>
-    11b8:	83 c4 10             	add    esp,0x10
+    1224:	c7 04 24 94 04 00 00 	mov    DWORD PTR [esp],0x494
+    122b:	e8 fc ff ff ff       	call   122c <list_module_info+0x6d>
 										printf("OFFSET   %p %p %p %p\n", mi->vm_ofs[0],
-    11bb:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    11be:	8b 58 28             	mov    ebx,DWORD PTR [eax+0x28]
-    11c1:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    11c4:	8b 48 24             	mov    ecx,DWORD PTR [eax+0x24]
-    11c7:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    11ca:	8b 50 20             	mov    edx,DWORD PTR [eax+0x20]
-    11cd:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    11d0:	8b 40 1c             	mov    eax,DWORD PTR [eax+0x1c]
-    11d3:	83 ec 0c             	sub    esp,0xc
-    11d6:	53                   	push   ebx
-    11d7:	51                   	push   ecx
-    11d8:	52                   	push   edx
-    11d9:	50                   	push   eax
-    11da:	68 c2 04 00 00       	push   0x4c2
-    11df:	e8 fc ff ff ff       	call   11e0 <list_module_info+0x9a>
-    11e4:	83 c4 20             	add    esp,0x20
+    1230:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    1233:	8b 58 28             	mov    ebx,DWORD PTR [eax+0x28]
+    1236:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    1239:	8b 48 24             	mov    ecx,DWORD PTR [eax+0x24]
+    123c:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    123f:	8b 50 20             	mov    edx,DWORD PTR [eax+0x20]
+    1242:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    1245:	8b 40 1c             	mov    eax,DWORD PTR [eax+0x1c]
+    1248:	89 5c 24 10          	mov    DWORD PTR [esp+0x10],ebx
+    124c:	89 4c 24 0c          	mov    DWORD PTR [esp+0xc],ecx
+    1250:	89 54 24 08          	mov    DWORD PTR [esp+0x8],edx
+    1254:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    1258:	c7 04 24 c2 04 00 00 	mov    DWORD PTR [esp],0x4c2
+    125f:	e8 fc ff ff ff       	call   1260 <list_module_info+0xa1>
 												mi->vm_ofs[1], mi->vm_ofs[2], mi->vm_ofs[3]);
 										printf("SIZE     %8lu %8lu %8lu %8lu\n", mi->sz_secs[0],
-    11e7:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    11ea:	8b 58 38             	mov    ebx,DWORD PTR [eax+0x38]
-    11ed:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    11f0:	8b 48 34             	mov    ecx,DWORD PTR [eax+0x34]
-    11f3:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    11f6:	8b 50 30             	mov    edx,DWORD PTR [eax+0x30]
-    11f9:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    11fc:	8b 40 2c             	mov    eax,DWORD PTR [eax+0x2c]
-    11ff:	83 ec 0c             	sub    esp,0xc
-    1202:	53                   	push   ebx
-    1203:	51                   	push   ecx
-    1204:	52                   	push   edx
-    1205:	50                   	push   eax
-    1206:	68 d8 04 00 00       	push   0x4d8
-    120b:	e8 fc ff ff ff       	call   120c <list_module_info+0xc6>
-    1210:	83 c4 20             	add    esp,0x20
+    1264:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    1267:	8b 58 38             	mov    ebx,DWORD PTR [eax+0x38]
+    126a:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    126d:	8b 48 34             	mov    ecx,DWORD PTR [eax+0x34]
+    1270:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    1273:	8b 50 30             	mov    edx,DWORD PTR [eax+0x30]
+    1276:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    1279:	8b 40 2c             	mov    eax,DWORD PTR [eax+0x2c]
+    127c:	89 5c 24 10          	mov    DWORD PTR [esp+0x10],ebx
+    1280:	89 4c 24 0c          	mov    DWORD PTR [esp+0xc],ecx
+    1284:	89 54 24 08          	mov    DWORD PTR [esp+0x8],edx
+    1288:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    128c:	c7 04 24 d8 04 00 00 	mov    DWORD PTR [esp],0x4d8
+    1293:	e8 fc ff ff ff       	call   1294 <list_module_info+0xd5>
 												mi->sz_secs[1], mi->sz_secs[2], mi->sz_secs[3]);
 										printf("with the two functions\n");
-    1213:	83 ec 0c             	sub    esp,0xc
-    1216:	68 f6 04 00 00       	push   0x4f6
-    121b:	e8 fc ff ff ff       	call   121c <list_module_info+0xd6>
-    1220:	83 c4 10             	add    esp,0x10
+    1298:	c7 04 24 f6 04 00 00 	mov    DWORD PTR [esp],0x4f6
+    129f:	e8 fc ff ff ff       	call   12a0 <list_module_info+0xe1>
 										printf("module_init     at %p and\n", mi->mi_init);
-    1223:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    1226:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
-    1229:	83 ec 08             	sub    esp,0x8
-    122c:	50                   	push   eax
-    122d:	68 0e 05 00 00       	push   0x50e
-    1232:	e8 fc ff ff ff       	call   1233 <list_module_info+0xed>
-    1237:	83 c4 10             	add    esp,0x10
+    12a4:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    12a7:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
+    12aa:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    12ae:	c7 04 24 0e 05 00 00 	mov    DWORD PTR [esp],0x50e
+    12b5:	e8 fc ff ff ff       	call   12b6 <list_module_info+0xf7>
 										printf("module_cleanup  at %p\n", mi->mi_cleanup);
-    123a:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    123d:	8b 40 18             	mov    eax,DWORD PTR [eax+0x18]
-    1240:	83 ec 08             	sub    esp,0x8
-    1243:	50                   	push   eax
-    1244:	68 29 05 00 00       	push   0x529
-    1249:	e8 fc ff ff ff       	call   124a <list_module_info+0x104>
-    124e:	83 c4 10             	add    esp,0x10
+    12ba:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    12bd:	8b 40 18             	mov    eax,DWORD PTR [eax+0x18]
+    12c0:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    12c4:	c7 04 24 29 05 00 00 	mov    DWORD PTR [esp],0x529
+    12cb:	e8 fc ff ff ff       	call   12cc <list_module_info+0x10d>
 										return;
-    1251:	eb 37                	jmp    128a <list_module_info+0x144>
+    12d0:	eb 37                	jmp    1309 <list_module_info+0x14a>
 				for (int i = 0; i < 7; i++)
-    1253:	83 45 f0 01          	add    DWORD PTR [ebp-0x10],0x1
-    1257:	83 7d f0 06          	cmp    DWORD PTR [ebp-0x10],0x6
-    125b:	0f 8e 00 ff ff ff    	jle    1161 <list_module_info+0x1b>
-    1261:	eb 01                	jmp    1264 <list_module_info+0x11e>
+    12d2:	83 45 f0 01          	add    DWORD PTR [ebp-0x10],0x1
+    12d6:	83 7d f0 06          	cmp    DWORD PTR [ebp-0x10],0x6
+    12da:	0f 8e fa fe ff ff    	jle    11da <list_module_info+0x1b>
+    12e0:	eb 01                	jmp    12e3 <list_module_info+0x124>
 								}
 						} else
 								break;
-    1263:	90                   	nop
+    12e2:	90                   	nop
 		} while ((mc = mc->next));
-    1264:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    1267:	8b 40 1c             	mov    eax,DWORD PTR [eax+0x1c]
-    126a:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
-    126d:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
-    1271:	0f 85 de fe ff ff    	jne    1155 <list_module_info+0xf>
+    12e3:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    12e6:	8b 40 1c             	mov    eax,DWORD PTR [eax+0x1c]
+    12e9:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
+    12ec:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
+    12f0:	0f 85 d8 fe ff ff    	jne    11ce <list_module_info+0xf>
 		printf("modinfo: ERROR: Module %s not found.\n", name);
-    1277:	83 ec 08             	sub    esp,0x8
-    127a:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-    127d:	68 40 05 00 00       	push   0x540
-    1282:	e8 fc ff ff ff       	call   1283 <list_module_info+0x13d>
-    1287:	83 c4 10             	add    esp,0x10
+    12f6:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    12f9:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    12fd:	c7 04 24 40 05 00 00 	mov    DWORD PTR [esp],0x540
+    1304:	e8 fc ff ff ff       	call   1305 <list_module_info+0x146>
 }
-    128a:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
-    128d:	c9                   	leave
-    128e:	c3                   	ret
+    1309:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
+    130c:	c9                   	leave
+    130d:	c3                   	ret
 
-0000128f <elf_get_closest_symbol>:
+0000130e <elf_get_closest_symbol>:
 
 const char* elf_get_closest_symbol(void* ptr, size_t* offset)
 {
-    128f:	55                   	push   ebp
-    1290:	89 e5                	mov    ebp,esp
-    1292:	83 ec 10             	sub    esp,0x10
+    130e:	55                   	push   ebp
+    130f:	89 e5                	mov    ebp,esp
+    1311:	83 ec 10             	sub    esp,0x10
 		struct symbol_list* sl = gs_lst;
-    1295:	a1 00 00 00 00       	mov    eax,ds:0x0
-    129a:	89 45 fc             	mov    DWORD PTR [ebp-0x4],eax
+    1314:	a1 00 00 00 00       	mov    eax,ds:0x0
+    1319:	89 45 fc             	mov    DWORD PTR [ebp-0x4],eax
 		size_t i = 0; const char* rv = ""; void* base = NULL;
-    129d:	c7 45 f8 00 00 00 00 	mov    DWORD PTR [ebp-0x8],0x0
-    12a4:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
-    12ab:	c7 45 f0 00 00 00 00 	mov    DWORD PTR [ebp-0x10],0x0
+    131c:	c7 45 f8 00 00 00 00 	mov    DWORD PTR [ebp-0x8],0x0
+    1323:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
+    132a:	c7 45 f0 00 00 00 00 	mov    DWORD PTR [ebp-0x10],0x0
 		if (!sl) {
-    12b2:	83 7d fc 00          	cmp    DWORD PTR [ebp-0x4],0x0
-    12b6:	0f 85 96 00 00 00    	jne    1352 <elf_get_closest_symbol+0xc3>
+    1331:	83 7d fc 00          	cmp    DWORD PTR [ebp-0x4],0x0
+    1335:	0f 85 96 00 00 00    	jne    13d1 <elf_get_closest_symbol+0xc3>
 				*offset = (size_t)ptr;
-    12bc:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
-    12bf:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    12c2:	89 10                	mov    DWORD PTR [eax],edx
+    133b:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
+    133e:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    1341:	89 10                	mov    DWORD PTR [eax],edx
 				return "";
-    12c4:	b8 00 00 00 00       	mov    eax,0x0
-    12c9:	e9 a1 00 00 00       	jmp    136f <elf_get_closest_symbol+0xe0>
+    1343:	b8 00 00 00 00       	mov    eax,0x0
+    1348:	e9 a1 00 00 00       	jmp    13ee <elf_get_closest_symbol+0xe0>
 		}
 
 		while (sl) {
 				if (sl->entries[i].vma <= ptr && sl->entries[i].vma > base) {
-    12ce:	8b 4d fc             	mov    ecx,DWORD PTR [ebp-0x4]
-    12d1:	8b 55 f8             	mov    edx,DWORD PTR [ebp-0x8]
-    12d4:	89 d0                	mov    eax,edx
-    12d6:	01 c0                	add    eax,eax
-    12d8:	01 d0                	add    eax,edx
-    12da:	c1 e0 02             	shl    eax,0x2
-    12dd:	01 c8                	add    eax,ecx
-    12df:	8b 00                	mov    eax,DWORD PTR [eax]
-    12e1:	39 45 08             	cmp    DWORD PTR [ebp+0x8],eax
-    12e4:	72 4f                	jb     1335 <elf_get_closest_symbol+0xa6>
-    12e6:	8b 4d fc             	mov    ecx,DWORD PTR [ebp-0x4]
-    12e9:	8b 55 f8             	mov    edx,DWORD PTR [ebp-0x8]
-    12ec:	89 d0                	mov    eax,edx
-    12ee:	01 c0                	add    eax,eax
-    12f0:	01 d0                	add    eax,edx
-    12f2:	c1 e0 02             	shl    eax,0x2
-    12f5:	01 c8                	add    eax,ecx
-    12f7:	8b 00                	mov    eax,DWORD PTR [eax]
-    12f9:	39 45 f0             	cmp    DWORD PTR [ebp-0x10],eax
-    12fc:	73 37                	jae    1335 <elf_get_closest_symbol+0xa6>
+    134d:	8b 4d fc             	mov    ecx,DWORD PTR [ebp-0x4]
+    1350:	8b 55 f8             	mov    edx,DWORD PTR [ebp-0x8]
+    1353:	89 d0                	mov    eax,edx
+    1355:	01 c0                	add    eax,eax
+    1357:	01 d0                	add    eax,edx
+    1359:	c1 e0 02             	shl    eax,0x2
+    135c:	01 c8                	add    eax,ecx
+    135e:	8b 00                	mov    eax,DWORD PTR [eax]
+    1360:	39 45 08             	cmp    DWORD PTR [ebp+0x8],eax
+    1363:	72 4f                	jb     13b4 <elf_get_closest_symbol+0xa6>
+    1365:	8b 4d fc             	mov    ecx,DWORD PTR [ebp-0x4]
+    1368:	8b 55 f8             	mov    edx,DWORD PTR [ebp-0x8]
+    136b:	89 d0                	mov    eax,edx
+    136d:	01 c0                	add    eax,eax
+    136f:	01 d0                	add    eax,edx
+    1371:	c1 e0 02             	shl    eax,0x2
+    1374:	01 c8                	add    eax,ecx
+    1376:	8b 00                	mov    eax,DWORD PTR [eax]
+    1378:	39 45 f0             	cmp    DWORD PTR [ebp-0x10],eax
+    137b:	73 37                	jae    13b4 <elf_get_closest_symbol+0xa6>
 						/* found a new one */
 						rv = sl->entries[i].name;
-    12fe:	8b 4d fc             	mov    ecx,DWORD PTR [ebp-0x4]
-    1301:	8b 55 f8             	mov    edx,DWORD PTR [ebp-0x8]
-    1304:	89 d0                	mov    eax,edx
-    1306:	01 c0                	add    eax,eax
-    1308:	01 d0                	add    eax,edx
-    130a:	c1 e0 02             	shl    eax,0x2
-    130d:	01 c8                	add    eax,ecx
-    130f:	83 c0 04             	add    eax,0x4
-    1312:	8b 00                	mov    eax,DWORD PTR [eax]
-    1314:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
+    137d:	8b 4d fc             	mov    ecx,DWORD PTR [ebp-0x4]
+    1380:	8b 55 f8             	mov    edx,DWORD PTR [ebp-0x8]
+    1383:	89 d0                	mov    eax,edx
+    1385:	01 c0                	add    eax,eax
+    1387:	01 d0                	add    eax,edx
+    1389:	c1 e0 02             	shl    eax,0x2
+    138c:	01 c8                	add    eax,ecx
+    138e:	83 c0 04             	add    eax,0x4
+    1391:	8b 00                	mov    eax,DWORD PTR [eax]
+    1393:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
 						base = sl->entries[i].vma;
-    1317:	8b 4d fc             	mov    ecx,DWORD PTR [ebp-0x4]
-    131a:	8b 55 f8             	mov    edx,DWORD PTR [ebp-0x8]
-    131d:	89 d0                	mov    eax,edx
-    131f:	01 c0                	add    eax,eax
-    1321:	01 d0                	add    eax,edx
-    1323:	c1 e0 02             	shl    eax,0x2
-    1326:	01 c8                	add    eax,ecx
-    1328:	8b 00                	mov    eax,DWORD PTR [eax]
-    132a:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
+    1396:	8b 4d fc             	mov    ecx,DWORD PTR [ebp-0x4]
+    1399:	8b 55 f8             	mov    edx,DWORD PTR [ebp-0x8]
+    139c:	89 d0                	mov    eax,edx
+    139e:	01 c0                	add    eax,eax
+    13a0:	01 d0                	add    eax,edx
+    13a2:	c1 e0 02             	shl    eax,0x2
+    13a5:	01 c8                	add    eax,ecx
+    13a7:	8b 00                	mov    eax,DWORD PTR [eax]
+    13a9:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
 						if (base == ptr) /* abort on first exact match */
-    132d:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-    1330:	3b 45 08             	cmp    eax,DWORD PTR [ebp+0x8]
-    1333:	74 29                	je     135e <elf_get_closest_symbol+0xcf>
+    13ac:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+    13af:	3b 45 08             	cmp    eax,DWORD PTR [ebp+0x8]
+    13b2:	74 29                	je     13dd <elf_get_closest_symbol+0xcf>
 								break;
 				}
 				if (++i == 64) {
-    1335:	83 45 f8 01          	add    DWORD PTR [ebp-0x8],0x1
-    1339:	83 7d f8 40          	cmp    DWORD PTR [ebp-0x8],0x40
-    133d:	75 13                	jne    1352 <elf_get_closest_symbol+0xc3>
+    13b4:	83 45 f8 01          	add    DWORD PTR [ebp-0x8],0x1
+    13b8:	83 7d f8 40          	cmp    DWORD PTR [ebp-0x8],0x40
+    13bc:	75 13                	jne    13d1 <elf_get_closest_symbol+0xc3>
 						sl = sl->next;
-    133f:	8b 45 fc             	mov    eax,DWORD PTR [ebp-0x4]
-    1342:	8b 80 00 03 00 00    	mov    eax,DWORD PTR [eax+0x300]
-    1348:	89 45 fc             	mov    DWORD PTR [ebp-0x4],eax
+    13be:	8b 45 fc             	mov    eax,DWORD PTR [ebp-0x4]
+    13c1:	8b 80 00 03 00 00    	mov    eax,DWORD PTR [eax+0x300]
+    13c7:	89 45 fc             	mov    DWORD PTR [ebp-0x4],eax
 						i = 0;
-    134b:	c7 45 f8 00 00 00 00 	mov    DWORD PTR [ebp-0x8],0x0
+    13ca:	c7 45 f8 00 00 00 00 	mov    DWORD PTR [ebp-0x8],0x0
 		while (sl) {
-    1352:	83 7d fc 00          	cmp    DWORD PTR [ebp-0x4],0x0
-    1356:	0f 85 72 ff ff ff    	jne    12ce <elf_get_closest_symbol+0x3f>
-    135c:	eb 01                	jmp    135f <elf_get_closest_symbol+0xd0>
+    13d1:	83 7d fc 00          	cmp    DWORD PTR [ebp-0x4],0x0
+    13d5:	0f 85 72 ff ff ff    	jne    134d <elf_get_closest_symbol+0x3f>
+    13db:	eb 01                	jmp    13de <elf_get_closest_symbol+0xd0>
 								break;
-    135e:	90                   	nop
+    13dd:	90                   	nop
 				}
 		}
 
 		*offset = ptr - base;
-    135f:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1362:	2b 45 f0             	sub    eax,DWORD PTR [ebp-0x10]
-    1365:	89 c2                	mov    edx,eax
-    1367:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    136a:	89 10                	mov    DWORD PTR [eax],edx
+    13de:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    13e1:	2b 45 f0             	sub    eax,DWORD PTR [ebp-0x10]
+    13e4:	89 c2                	mov    edx,eax
+    13e6:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    13e9:	89 10                	mov    DWORD PTR [eax],edx
 		return rv;
-    136c:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    13eb:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
 }
-    136f:	c9                   	leave
-    1370:	c3                   	ret
+    13ee:	c9                   	leave
+    13ef:	c3                   	ret
 
-00001371 <elf_resolve_symbols>:
+000013f0 <elf_resolve_symbols>:
 
 /* bss_vmem is in/out parameter which points to the top of bss after call */
 void elf_resolve_symbols(Elf32_Ehdr* hdr, Elf32_Shdr* shdr, Elf32_Half symtab, void** bss_vmem, struct module_info* mi)
 {
-    1371:	55                   	push   ebp
-    1372:	89 e5                	mov    ebp,esp
-    1374:	56                   	push   esi
-    1375:	53                   	push   ebx
-    1376:	83 ec 40             	sub    esp,0x40
-    1379:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-    137c:	66 89 45 c4          	mov    WORD PTR [ebp-0x3c],ax
+    13f0:	55                   	push   ebp
+    13f1:	89 e5                	mov    ebp,esp
+    13f3:	56                   	push   esi
+    13f4:	53                   	push   ebx
+    13f5:	83 ec 50             	sub    esp,0x50
+    13f8:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    13fb:	66 89 45 c4          	mov    WORD PTR [ebp-0x3c],ax
 		void* ptr = ((void*)hdr + shdr[symtab].sh_offset);
-    1380:	0f b7 55 c4          	movzx  edx,WORD PTR [ebp-0x3c]
-    1384:	89 d0                	mov    eax,edx
-    1386:	c1 e0 02             	shl    eax,0x2
-    1389:	01 d0                	add    eax,edx
-    138b:	c1 e0 03             	shl    eax,0x3
-    138e:	89 c2                	mov    edx,eax
-    1390:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    1393:	01 d0                	add    eax,edx
-    1395:	8b 50 10             	mov    edx,DWORD PTR [eax+0x10]
-    1398:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    139b:	01 d0                	add    eax,edx
-    139d:	89 45 e4             	mov    DWORD PTR [ebp-0x1c],eax
+    13ff:	0f b7 55 c4          	movzx  edx,WORD PTR [ebp-0x3c]
+    1403:	89 d0                	mov    eax,edx
+    1405:	c1 e0 02             	shl    eax,0x2
+    1408:	01 d0                	add    eax,edx
+    140a:	c1 e0 03             	shl    eax,0x3
+    140d:	89 c2                	mov    edx,eax
+    140f:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    1412:	01 d0                	add    eax,edx
+    1414:	8b 50 10             	mov    edx,DWORD PTR [eax+0x10]
+    1417:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    141a:	01 d0                	add    eax,edx
+    141c:	89 45 e4             	mov    DWORD PTR [ebp-0x1c],eax
 		size_t i, ct = shdr[symtab].sh_size / shdr[symtab].sh_entsize;
-    13a0:	0f b7 55 c4          	movzx  edx,WORD PTR [ebp-0x3c]
-    13a4:	89 d0                	mov    eax,edx
-    13a6:	c1 e0 02             	shl    eax,0x2
-    13a9:	01 d0                	add    eax,edx
-    13ab:	c1 e0 03             	shl    eax,0x3
-    13ae:	89 c2                	mov    edx,eax
-    13b0:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    13b3:	01 d0                	add    eax,edx
-    13b5:	8b 48 14             	mov    ecx,DWORD PTR [eax+0x14]
-    13b8:	0f b7 55 c4          	movzx  edx,WORD PTR [ebp-0x3c]
-    13bc:	89 d0                	mov    eax,edx
-    13be:	c1 e0 02             	shl    eax,0x2
-    13c1:	01 d0                	add    eax,edx
-    13c3:	c1 e0 03             	shl    eax,0x3
-    13c6:	89 c2                	mov    edx,eax
-    13c8:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    13cb:	01 d0                	add    eax,edx
-    13cd:	8b 70 24             	mov    esi,DWORD PTR [eax+0x24]
-    13d0:	89 c8                	mov    eax,ecx
-    13d2:	ba 00 00 00 00       	mov    edx,0x0
-    13d7:	f7 f6                	div    esi
-    13d9:	89 45 e0             	mov    DWORD PTR [ebp-0x20],eax
+    141f:	0f b7 55 c4          	movzx  edx,WORD PTR [ebp-0x3c]
+    1423:	89 d0                	mov    eax,edx
+    1425:	c1 e0 02             	shl    eax,0x2
+    1428:	01 d0                	add    eax,edx
+    142a:	c1 e0 03             	shl    eax,0x3
+    142d:	89 c2                	mov    edx,eax
+    142f:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    1432:	01 d0                	add    eax,edx
+    1434:	8b 48 14             	mov    ecx,DWORD PTR [eax+0x14]
+    1437:	0f b7 55 c4          	movzx  edx,WORD PTR [ebp-0x3c]
+    143b:	89 d0                	mov    eax,edx
+    143d:	c1 e0 02             	shl    eax,0x2
+    1440:	01 d0                	add    eax,edx
+    1442:	c1 e0 03             	shl    eax,0x3
+    1445:	89 c2                	mov    edx,eax
+    1447:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    144a:	01 d0                	add    eax,edx
+    144c:	8b 70 24             	mov    esi,DWORD PTR [eax+0x24]
+    144f:	89 c8                	mov    eax,ecx
+    1451:	ba 00 00 00 00       	mov    edx,0x0
+    1456:	f7 f6                	div    esi
+    1458:	89 45 e0             	mov    DWORD PTR [ebp-0x20],eax
 		if (ct <= 1)
-    13dc:	83 7d e0 01          	cmp    DWORD PTR [ebp-0x20],0x1
-    13e0:	0f 86 1a 06 00 00    	jbe    1a00 <elf_resolve_symbols+0x68f>
+    145b:	83 7d e0 01          	cmp    DWORD PTR [ebp-0x20],0x1
+    145f:	0f 86 a7 06 00 00    	jbe    1b0c <elf_resolve_symbols+0x71c>
 				return;
 		sbprintf("Resolving symbols in symtab with %lu entries\n", ct);
-    13e6:	83 ec 08             	sub    esp,0x8
-    13e9:	ff 75 e0             	push   DWORD PTR [ebp-0x20]
-    13ec:	68 68 05 00 00       	push   0x568
-    13f1:	e8 fc ff ff ff       	call   13f2 <elf_resolve_symbols+0x81>
-    13f6:	83 c4 10             	add    esp,0x10
+    1465:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
+    1468:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    146c:	c7 04 24 68 05 00 00 	mov    DWORD PTR [esp],0x568
+    1473:	e8 fc ff ff ff       	call   1474 <elf_resolve_symbols+0x84>
 		for (i = 1; i < ct; i++) {
-    13f9:	c7 45 f4 01 00 00 00 	mov    DWORD PTR [ebp-0xc],0x1
-    1400:	e9 ed 05 00 00       	jmp    19f2 <elf_resolve_symbols+0x681>
+    1478:	c7 45 f4 01 00 00 00 	mov    DWORD PTR [ebp-0xc],0x1
+    147f:	e9 7a 06 00 00       	jmp    1afe <elf_resolve_symbols+0x70e>
 				Elf32_Sym* s = (ptr + i * shdr[symtab].sh_entsize);
-    1405:	0f b7 55 c4          	movzx  edx,WORD PTR [ebp-0x3c]
-    1409:	89 d0                	mov    eax,edx
-    140b:	c1 e0 02             	shl    eax,0x2
-    140e:	01 d0                	add    eax,edx
-    1410:	c1 e0 03             	shl    eax,0x3
-    1413:	89 c2                	mov    edx,eax
-    1415:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    1418:	01 d0                	add    eax,edx
-    141a:	8b 40 24             	mov    eax,DWORD PTR [eax+0x24]
-    141d:	0f af 45 f4          	imul   eax,DWORD PTR [ebp-0xc]
-    1421:	89 c2                	mov    edx,eax
-    1423:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
-    1426:	01 d0                	add    eax,edx
-    1428:	89 45 dc             	mov    DWORD PTR [ebp-0x24],eax
+    1484:	0f b7 55 c4          	movzx  edx,WORD PTR [ebp-0x3c]
+    1488:	89 d0                	mov    eax,edx
+    148a:	c1 e0 02             	shl    eax,0x2
+    148d:	01 d0                	add    eax,edx
+    148f:	c1 e0 03             	shl    eax,0x3
+    1492:	89 c2                	mov    edx,eax
+    1494:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    1497:	01 d0                	add    eax,edx
+    1499:	8b 40 24             	mov    eax,DWORD PTR [eax+0x24]
+    149c:	0f af 45 f4          	imul   eax,DWORD PTR [ebp-0xc]
+    14a0:	89 c2                	mov    edx,eax
+    14a2:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
+    14a5:	01 d0                	add    eax,edx
+    14a7:	89 45 dc             	mov    DWORD PTR [ebp-0x24],eax
 				if (s->st_shndx == SHN_UNDEF) {
-    142b:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    142e:	0f b7 40 0e          	movzx  eax,WORD PTR [eax+0xe]
-    1432:	66 85 c0             	test   ax,ax
-    1435:	0f 85 b9 00 00 00    	jne    14f4 <elf_resolve_symbols+0x183>
+    14aa:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    14ad:	0f b7 40 0e          	movzx  eax,WORD PTR [eax+0xe]
+    14b1:	66 85 c0             	test   ax,ax
+    14b4:	0f 85 ce 00 00 00    	jne    1588 <elf_resolve_symbols+0x198>
 						char* sn, tp = 'T';
-    143b:	c6 45 f3 54          	mov    BYTE PTR [ebp-0xd],0x54
+    14ba:	c6 45 f3 54          	mov    BYTE PTR [ebp-0xd],0x54
 						/* unresolved symbol -> find in map */
 						sbprintf("using external symbol with name %s\n",
 										(sn = elf_fetch_string(hdr, shdr, shdr[symtab].sh_link, s->st_name)));
-    143f:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    1442:	8b 08                	mov    ecx,DWORD PTR [eax]
-    1444:	0f b7 55 c4          	movzx  edx,WORD PTR [ebp-0x3c]
-    1448:	89 d0                	mov    eax,edx
-    144a:	c1 e0 02             	shl    eax,0x2
-    144d:	01 d0                	add    eax,edx
-    144f:	c1 e0 03             	shl    eax,0x3
-    1452:	89 c2                	mov    edx,eax
-    1454:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    1457:	01 d0                	add    eax,edx
-    1459:	8b 40 18             	mov    eax,DWORD PTR [eax+0x18]
-    145c:	0f b7 c0             	movzx  eax,ax
-    145f:	51                   	push   ecx
-    1460:	50                   	push   eax
-    1461:	ff 75 0c             	push   DWORD PTR [ebp+0xc]
-    1464:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-    1467:	e8 fc ff ff ff       	call   1468 <elf_resolve_symbols+0xf7>
-    146c:	83 c4 10             	add    esp,0x10
-    146f:	89 45 c8             	mov    DWORD PTR [ebp-0x38],eax
+    14be:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    14c1:	8b 08                	mov    ecx,DWORD PTR [eax]
+    14c3:	0f b7 55 c4          	movzx  edx,WORD PTR [ebp-0x3c]
+    14c7:	89 d0                	mov    eax,edx
+    14c9:	c1 e0 02             	shl    eax,0x2
+    14cc:	01 d0                	add    eax,edx
+    14ce:	c1 e0 03             	shl    eax,0x3
+    14d1:	89 c2                	mov    edx,eax
+    14d3:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    14d6:	01 d0                	add    eax,edx
+    14d8:	8b 40 18             	mov    eax,DWORD PTR [eax+0x18]
+    14db:	0f b7 c0             	movzx  eax,ax
+    14de:	89 4c 24 0c          	mov    DWORD PTR [esp+0xc],ecx
+    14e2:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    14e6:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    14e9:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    14ed:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    14f0:	89 04 24             	mov    DWORD PTR [esp],eax
+    14f3:	e8 fc ff ff ff       	call   14f4 <elf_resolve_symbols+0x104>
+    14f8:	89 45 c8             	mov    DWORD PTR [ebp-0x38],eax
 						sbprintf("using external symbol with name %s\n",
-    1472:	83 ec 08             	sub    esp,0x8
-    1475:	ff 75 c8             	push   DWORD PTR [ebp-0x38]
-    1478:	68 98 05 00 00       	push   0x598
-    147d:	e8 fc ff ff ff       	call   147e <elf_resolve_symbols+0x10d>
-    1482:	83 c4 10             	add    esp,0x10
+    14fb:	8b 45 c8             	mov    eax,DWORD PTR [ebp-0x38]
+    14fe:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    1502:	c7 04 24 98 05 00 00 	mov    DWORD PTR [esp],0x598
+    1509:	e8 fc ff ff ff       	call   150a <elf_resolve_symbols+0x11a>
 						if (ELF32_ST_TYPE(s->st_info) == STT_OBJECT)
-    1485:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    1488:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
-    148c:	0f b6 c0             	movzx  eax,al
-    148f:	83 e0 0f             	and    eax,0xf
-    1492:	83 f8 01             	cmp    eax,0x1
-    1495:	75 04                	jne    149b <elf_resolve_symbols+0x12a>
+    150e:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    1511:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
+    1515:	0f b6 c0             	movzx  eax,al
+    1518:	83 e0 0f             	and    eax,0xf
+    151b:	83 f8 01             	cmp    eax,0x1
+    151e:	75 04                	jne    1524 <elf_resolve_symbols+0x134>
 								tp = 'D';
-    1497:	c6 45 f3 44          	mov    BYTE PTR [ebp-0xd],0x44
+    1520:	c6 45 f3 44          	mov    BYTE PTR [ebp-0xd],0x44
 						s->st_value = elf_locate_global_symbol(sn, tp);
-    149b:	0f be 45 f3          	movsx  eax,BYTE PTR [ebp-0xd]
-    149f:	83 ec 08             	sub    esp,0x8
-    14a2:	50                   	push   eax
-    14a3:	ff 75 c8             	push   DWORD PTR [ebp-0x38]
-    14a6:	e8 fc ff ff ff       	call   14a7 <elf_resolve_symbols+0x136>
-    14ab:	83 c4 10             	add    esp,0x10
-    14ae:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
-    14b1:	89 42 04             	mov    DWORD PTR [edx+0x4],eax
+    1524:	0f be 45 f3          	movsx  eax,BYTE PTR [ebp-0xd]
+    1528:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    152c:	8b 45 c8             	mov    eax,DWORD PTR [ebp-0x38]
+    152f:	89 04 24             	mov    DWORD PTR [esp],eax
+    1532:	e8 fc ff ff ff       	call   1533 <elf_resolve_symbols+0x143>
+    1537:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
+    153a:	89 42 04             	mov    DWORD PTR [edx+0x4],eax
 						if (!s->st_value) {
-    14b4:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    14b7:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    14ba:	85 c0                	test   eax,eax
-    14bc:	75 1a                	jne    14d8 <elf_resolve_symbols+0x167>
+    153d:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    1540:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    1543:	85 c0                	test   eax,eax
+    1545:	75 26                	jne    156d <elf_resolve_symbols+0x17d>
 								cprintf(KFMT_ERROR, "unresolved external symbol %c \"%s\"\n", tp, sn);
-    14be:	0f be 45 f3          	movsx  eax,BYTE PTR [ebp-0xd]
-    14c2:	ff 75 c8             	push   DWORD PTR [ebp-0x38]
-    14c5:	50                   	push   eax
-    14c6:	68 bc 05 00 00       	push   0x5bc
-    14cb:	6a 0c                	push   0xc
-    14cd:	e8 fc ff ff ff       	call   14ce <elf_resolve_symbols+0x15d>
-    14d2:	83 c4 10             	add    esp,0x10
+    1547:	0f be 45 f3          	movsx  eax,BYTE PTR [ebp-0xd]
+    154b:	8b 55 c8             	mov    edx,DWORD PTR [ebp-0x38]
+    154e:	89 54 24 0c          	mov    DWORD PTR [esp+0xc],edx
+    1552:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    1556:	c7 44 24 04 bc 05 00 00 	mov    DWORD PTR [esp+0x4],0x5bc
+    155e:	c7 04 24 0c 00 00 00 	mov    DWORD PTR [esp],0xc
+    1565:	e8 fc ff ff ff       	call   1566 <elf_resolve_symbols+0x176>
 								while (1);
-    14d5:	90                   	nop
-    14d6:	eb fd                	jmp    14d5 <elf_resolve_symbols+0x164>
+    156a:	90                   	nop
+    156b:	eb fd                	jmp    156a <elf_resolve_symbols+0x17a>
 						} else
 								sbprintf("\twhich was resolved to %p\n", (void*)s->st_value);
-    14d8:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    14db:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    14de:	83 ec 08             	sub    esp,0x8
-    14e1:	50                   	push   eax
-    14e2:	68 e0 05 00 00       	push   0x5e0
-    14e7:	e8 fc ff ff ff       	call   14e8 <elf_resolve_symbols+0x177>
-    14ec:	83 c4 10             	add    esp,0x10
-    14ef:	e9 fa 04 00 00       	jmp    19ee <elf_resolve_symbols+0x67d>
+    156d:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    1570:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    1573:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    1577:	c7 04 24 e0 05 00 00 	mov    DWORD PTR [esp],0x5e0
+    157e:	e8 fc ff ff ff       	call   157f <elf_resolve_symbols+0x18f>
+    1583:	e9 72 05 00 00       	jmp    1afa <elf_resolve_symbols+0x70a>
 				} else if (s->st_shndx == SHN_COMMON) {
-    14f4:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    14f7:	0f b7 40 0e          	movzx  eax,WORD PTR [eax+0xe]
-    14fb:	66 83 f8 f2          	cmp    ax,0xfff2
-    14ff:	0f 85 9e 01 00 00    	jne    16a3 <elf_resolve_symbols+0x332>
+    1588:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    158b:	0f b7 40 0e          	movzx  eax,WORD PTR [eax+0xe]
+    158f:	66 83 f8 f2          	cmp    ax,0xfff2
+    1593:	0f 85 b4 01 00 00    	jne    174d <elf_resolve_symbols+0x35d>
 						char* sn, tp = 'D'; Elf32_Addr ad = (Elf32_Addr)NULL;
-    1505:	c6 45 d3 44          	mov    BYTE PTR [ebp-0x2d],0x44
-    1509:	c7 45 ec 00 00 00 00 	mov    DWORD PTR [ebp-0x14],0x0
+    1599:	c6 45 d3 44          	mov    BYTE PTR [ebp-0x2d],0x44
+    159d:	c7 45 ec 00 00 00 00 	mov    DWORD PTR [ebp-0x14],0x0
 						sbprintf("Common symbol with size %u and alignment %u with name %s\n",
 										s->st_size, s->st_value,
 										(sn = elf_fetch_string(hdr, shdr, shdr[symtab].sh_link, s->st_name)));
-    1510:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    1513:	8b 08                	mov    ecx,DWORD PTR [eax]
-    1515:	0f b7 55 c4          	movzx  edx,WORD PTR [ebp-0x3c]
-    1519:	89 d0                	mov    eax,edx
-    151b:	c1 e0 02             	shl    eax,0x2
-    151e:	01 d0                	add    eax,edx
-    1520:	c1 e0 03             	shl    eax,0x3
-    1523:	89 c2                	mov    edx,eax
-    1525:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    1528:	01 d0                	add    eax,edx
-    152a:	8b 40 18             	mov    eax,DWORD PTR [eax+0x18]
-    152d:	0f b7 c0             	movzx  eax,ax
-    1530:	51                   	push   ecx
-    1531:	50                   	push   eax
-    1532:	ff 75 0c             	push   DWORD PTR [ebp+0xc]
-    1535:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-    1538:	e8 fc ff ff ff       	call   1539 <elf_resolve_symbols+0x1c8>
-    153d:	83 c4 10             	add    esp,0x10
-    1540:	89 45 cc             	mov    DWORD PTR [ebp-0x34],eax
+    15a4:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    15a7:	8b 08                	mov    ecx,DWORD PTR [eax]
+    15a9:	0f b7 55 c4          	movzx  edx,WORD PTR [ebp-0x3c]
+    15ad:	89 d0                	mov    eax,edx
+    15af:	c1 e0 02             	shl    eax,0x2
+    15b2:	01 d0                	add    eax,edx
+    15b4:	c1 e0 03             	shl    eax,0x3
+    15b7:	89 c2                	mov    edx,eax
+    15b9:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    15bc:	01 d0                	add    eax,edx
+    15be:	8b 40 18             	mov    eax,DWORD PTR [eax+0x18]
+    15c1:	0f b7 c0             	movzx  eax,ax
+    15c4:	89 4c 24 0c          	mov    DWORD PTR [esp+0xc],ecx
+    15c8:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    15cc:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    15cf:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    15d3:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    15d6:	89 04 24             	mov    DWORD PTR [esp],eax
+    15d9:	e8 fc ff ff ff       	call   15da <elf_resolve_symbols+0x1ea>
+    15de:	89 45 cc             	mov    DWORD PTR [ebp-0x34],eax
 						sbprintf("Common symbol with size %u and alignment %u with name %s\n",
-    1543:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    1546:	8b 50 04             	mov    edx,DWORD PTR [eax+0x4]
-    1549:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    154c:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
-    154f:	ff 75 cc             	push   DWORD PTR [ebp-0x34]
-    1552:	52                   	push   edx
-    1553:	50                   	push   eax
-    1554:	68 fc 05 00 00       	push   0x5fc
-    1559:	e8 fc ff ff ff       	call   155a <elf_resolve_symbols+0x1e9>
-    155e:	83 c4 10             	add    esp,0x10
+    15e1:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    15e4:	8b 50 04             	mov    edx,DWORD PTR [eax+0x4]
+    15e7:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    15ea:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
+    15ed:	8b 4d cc             	mov    ecx,DWORD PTR [ebp-0x34]
+    15f0:	89 4c 24 0c          	mov    DWORD PTR [esp+0xc],ecx
+    15f4:	89 54 24 08          	mov    DWORD PTR [esp+0x8],edx
+    15f8:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    15fc:	c7 04 24 fc 05 00 00 	mov    DWORD PTR [esp],0x5fc
+    1603:	e8 fc ff ff ff       	call   1604 <elf_resolve_symbols+0x214>
 						if (ELF32_ST_BIND(s->st_info) == STB_GLOBAL ||
-    1561:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    1564:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
-    1568:	c0 e8 04             	shr    al,0x4
-    156b:	3c 01                	cmp    al,0x1
-    156d:	74 0e                	je     157d <elf_resolve_symbols+0x20c>
+    1608:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    160b:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
+    160f:	c0 e8 04             	shr    al,0x4
+    1612:	3c 01                	cmp    al,0x1
+    1614:	74 0e                	je     1624 <elf_resolve_symbols+0x234>
 										ELF32_ST_BIND(s->st_info) == STB_WEAK) {
-    156f:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    1572:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
-    1576:	c0 e8 04             	shr    al,0x4
+    1616:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    1619:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
+    161d:	c0 e8 04             	shr    al,0x4
 						if (ELF32_ST_BIND(s->st_info) == STB_GLOBAL ||
-    1579:	3c 02                	cmp    al,0x2
-    157b:	75 30                	jne    15ad <elf_resolve_symbols+0x23c>
+    1620:	3c 02                	cmp    al,0x2
+    1622:	75 2f                	jne    1653 <elf_resolve_symbols+0x263>
 								/* lookup on global symtab */
 								ad = elf_locate_global_symbol(sn, tp);
-    157d:	0f be 45 d3          	movsx  eax,BYTE PTR [ebp-0x2d]
-    1581:	83 ec 08             	sub    esp,0x8
-    1584:	50                   	push   eax
-    1585:	ff 75 cc             	push   DWORD PTR [ebp-0x34]
-    1588:	e8 fc ff ff ff       	call   1589 <elf_resolve_symbols+0x218>
-    158d:	83 c4 10             	add    esp,0x10
-    1590:	89 45 ec             	mov    DWORD PTR [ebp-0x14],eax
+    1624:	0f be 45 d3          	movsx  eax,BYTE PTR [ebp-0x2d]
+    1628:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    162c:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    162f:	89 04 24             	mov    DWORD PTR [esp],eax
+    1632:	e8 fc ff ff ff       	call   1633 <elf_resolve_symbols+0x243>
+    1637:	89 45 ec             	mov    DWORD PTR [ebp-0x14],eax
 								if (ad)
-    1593:	83 7d ec 00          	cmp    DWORD PTR [ebp-0x14],0x0
-    1597:	74 14                	je     15ad <elf_resolve_symbols+0x23c>
+    163a:	83 7d ec 00          	cmp    DWORD PTR [ebp-0x14],0x0
+    163e:	74 13                	je     1653 <elf_resolve_symbols+0x263>
 										sbprintf("global definition found at %p\n", (void*)ad);
-    1599:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    159c:	83 ec 08             	sub    esp,0x8
-    159f:	50                   	push   eax
-    15a0:	68 38 06 00 00       	push   0x638
-    15a5:	e8 fc ff ff ff       	call   15a6 <elf_resolve_symbols+0x235>
-    15aa:	83 c4 10             	add    esp,0x10
+    1640:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    1643:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    1647:	c7 04 24 38 06 00 00 	mov    DWORD PTR [esp],0x638
+    164e:	e8 fc ff ff ff       	call   164f <elf_resolve_symbols+0x25f>
 						}
 						/* lookup on symtab or else allocate */
 						if (!ad) {
-    15ad:	83 7d ec 00          	cmp    DWORD PTR [ebp-0x14],0x0
-    15b1:	0f 85 de 00 00 00    	jne    1695 <elf_resolve_symbols+0x324>
+    1653:	83 7d ec 00          	cmp    DWORD PTR [ebp-0x14],0x0
+    1657:	0f 85 e2 00 00 00    	jne    173f <elf_resolve_symbols+0x34f>
 								/* allocate rw bss (dumb align) */
 								if ((size_t)*bss_vmem % (size_t)s->st_value) {
-    15b7:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
-    15ba:	8b 00                	mov    eax,DWORD PTR [eax]
-    15bc:	89 c2                	mov    edx,eax
-    15be:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    15c1:	8b 48 04             	mov    ecx,DWORD PTR [eax+0x4]
-    15c4:	89 d0                	mov    eax,edx
-    15c6:	ba 00 00 00 00       	mov    edx,0x0
-    15cb:	f7 f1                	div    ecx
-    15cd:	89 d0                	mov    eax,edx
-    15cf:	85 c0                	test   eax,eax
-    15d1:	74 63                	je     1636 <elf_resolve_symbols+0x2c5>
+    165d:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
+    1660:	8b 00                	mov    eax,DWORD PTR [eax]
+    1662:	89 c2                	mov    edx,eax
+    1664:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    1667:	8b 48 04             	mov    ecx,DWORD PTR [eax+0x4]
+    166a:	89 d0                	mov    eax,edx
+    166c:	ba 00 00 00 00       	mov    edx,0x0
+    1671:	f7 f1                	div    ecx
+    1673:	89 d0                	mov    eax,edx
+    1675:	85 c0                	test   eax,eax
+    1677:	74 62                	je     16db <elf_resolve_symbols+0x2eb>
 										*bss_vmem += s->st_value - ((size_t)*bss_vmem % s->st_value);
-    15d3:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
-    15d6:	8b 08                	mov    ecx,DWORD PTR [eax]
-    15d8:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    15db:	8b 58 04             	mov    ebx,DWORD PTR [eax+0x4]
-    15de:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
-    15e1:	8b 00                	mov    eax,DWORD PTR [eax]
-    15e3:	89 c2                	mov    edx,eax
-    15e5:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    15e8:	8b 70 04             	mov    esi,DWORD PTR [eax+0x4]
-    15eb:	89 d0                	mov    eax,edx
-    15ed:	ba 00 00 00 00       	mov    edx,0x0
-    15f2:	f7 f6                	div    esi
-    15f4:	89 d8                	mov    eax,ebx
-    15f6:	29 d0                	sub    eax,edx
-    15f8:	8d 14 01             	lea    edx,[ecx+eax*1]
-    15fb:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
-    15fe:	89 10                	mov    DWORD PTR [eax],edx
+    1679:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
+    167c:	8b 08                	mov    ecx,DWORD PTR [eax]
+    167e:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    1681:	8b 58 04             	mov    ebx,DWORD PTR [eax+0x4]
+    1684:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
+    1687:	8b 00                	mov    eax,DWORD PTR [eax]
+    1689:	89 c2                	mov    edx,eax
+    168b:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    168e:	8b 70 04             	mov    esi,DWORD PTR [eax+0x4]
+    1691:	89 d0                	mov    eax,edx
+    1693:	ba 00 00 00 00       	mov    edx,0x0
+    1698:	f7 f6                	div    esi
+    169a:	89 d8                	mov    eax,ebx
+    169c:	29 d0                	sub    eax,edx
+    169e:	8d 14 01             	lea    edx,[ecx+eax*1]
+    16a1:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
+    16a4:	89 10                	mov    DWORD PTR [eax],edx
 										s->st_value = (Elf32_Addr)*bss_vmem;
-    1600:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
-    1603:	8b 00                	mov    eax,DWORD PTR [eax]
-    1605:	89 c2                	mov    edx,eax
-    1607:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    160a:	89 50 04             	mov    DWORD PTR [eax+0x4],edx
+    16a6:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
+    16a9:	8b 00                	mov    eax,DWORD PTR [eax]
+    16ab:	89 c2                	mov    edx,eax
+    16ad:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    16b0:	89 50 04             	mov    DWORD PTR [eax+0x4],edx
 										*bss_vmem += s->st_size;
-    160d:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
-    1610:	8b 10                	mov    edx,DWORD PTR [eax]
-    1612:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    1615:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
-    1618:	01 c2                	add    edx,eax
-    161a:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
-    161d:	89 10                	mov    DWORD PTR [eax],edx
+    16b3:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
+    16b6:	8b 10                	mov    edx,DWORD PTR [eax]
+    16b8:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    16bb:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
+    16be:	01 c2                	add    edx,eax
+    16c0:	8b 45 14             	mov    eax,DWORD PTR [ebp+0x14]
+    16c3:	89 10                	mov    DWORD PTR [eax],edx
 										sbprintf("will be allocated at %p\n", (void*)s->st_value);
-    161f:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    1622:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    1625:	83 ec 08             	sub    esp,0x8
-    1628:	50                   	push   eax
-    1629:	68 57 06 00 00       	push   0x657
-    162e:	e8 fc ff ff ff       	call   162f <elf_resolve_symbols+0x2be>
-    1633:	83 c4 10             	add    esp,0x10
+    16c5:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    16c8:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    16cb:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    16cf:	c7 04 24 57 06 00 00 	mov    DWORD PTR [esp],0x657
+    16d6:	e8 fc ff ff ff       	call   16d7 <elf_resolve_symbols+0x2e7>
 								}
 								/* publish the location if applicable */
 								if (ELF32_ST_BIND(s->st_info) == STB_GLOBAL ||
-    1636:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    1639:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
-    163d:	c0 e8 04             	shr    al,0x4
-    1640:	3c 01                	cmp    al,0x1
-    1642:	74 12                	je     1656 <elf_resolve_symbols+0x2e5>
+    16db:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    16de:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
+    16e2:	c0 e8 04             	shr    al,0x4
+    16e5:	3c 01                	cmp    al,0x1
+    16e7:	74 12                	je     16fb <elf_resolve_symbols+0x30b>
 												ELF32_ST_BIND(s->st_info) == STB_WEAK) {
-    1644:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    1647:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
-    164b:	c0 e8 04             	shr    al,0x4
+    16e9:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    16ec:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
+    16f0:	c0 e8 04             	shr    al,0x4
 								if (ELF32_ST_BIND(s->st_info) == STB_GLOBAL ||
-    164e:	3c 02                	cmp    al,0x2
-    1650:	0f 85 98 03 00 00    	jne    19ee <elf_resolve_symbols+0x67d>
+    16f3:	3c 02                	cmp    al,0x2
+    16f5:	0f 85 ff 03 00 00    	jne    1afa <elf_resolve_symbols+0x70a>
 										elf_store_global_symbol(sn, (void*)s->st_value, tp,
 													   	(ELF32_ST_BIND(s->st_info) == STB_WEAK));
-    1656:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    1659:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
+    16fb:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    16fe:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
 										elf_store_global_symbol(sn, (void*)s->st_value, tp,
-    165d:	c0 e8 04             	shr    al,0x4
-    1660:	3c 02                	cmp    al,0x2
-    1662:	0f 94 c0             	sete   al
-    1665:	0f b6 d0             	movzx  edx,al
-    1668:	0f be 45 d3          	movsx  eax,BYTE PTR [ebp-0x2d]
-    166c:	8b 4d dc             	mov    ecx,DWORD PTR [ebp-0x24]
-    166f:	8b 49 04             	mov    ecx,DWORD PTR [ecx+0x4]
-    1672:	52                   	push   edx
-    1673:	50                   	push   eax
-    1674:	51                   	push   ecx
-    1675:	ff 75 cc             	push   DWORD PTR [ebp-0x34]
-    1678:	e8 fc ff ff ff       	call   1679 <elf_resolve_symbols+0x308>
-    167d:	83 c4 10             	add    esp,0x10
+    1702:	c0 e8 04             	shr    al,0x4
+    1705:	3c 02                	cmp    al,0x2
+    1707:	0f 94 c0             	sete   al
+    170a:	0f b6 d0             	movzx  edx,al
+    170d:	0f be 45 d3          	movsx  eax,BYTE PTR [ebp-0x2d]
+    1711:	8b 4d dc             	mov    ecx,DWORD PTR [ebp-0x24]
+    1714:	8b 49 04             	mov    ecx,DWORD PTR [ecx+0x4]
+    1717:	89 54 24 0c          	mov    DWORD PTR [esp+0xc],edx
+    171b:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    171f:	89 4c 24 04          	mov    DWORD PTR [esp+0x4],ecx
+    1723:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    1726:	89 04 24             	mov    DWORD PTR [esp],eax
+    1729:	e8 fc ff ff ff       	call   172a <elf_resolve_symbols+0x33a>
 										sbprintf("and is global\n");
-    1680:	83 ec 0c             	sub    esp,0xc
-    1683:	68 70 06 00 00       	push   0x670
-    1688:	e8 fc ff ff ff       	call   1689 <elf_resolve_symbols+0x318>
-    168d:	83 c4 10             	add    esp,0x10
-    1690:	e9 59 03 00 00       	jmp    19ee <elf_resolve_symbols+0x67d>
+    172e:	c7 04 24 70 06 00 00 	mov    DWORD PTR [esp],0x670
+    1735:	e8 fc ff ff ff       	call   1736 <elf_resolve_symbols+0x346>
+    173a:	e9 bb 03 00 00       	jmp    1afa <elf_resolve_symbols+0x70a>
 								}
 						} else
 								s->st_value = ad;
-    1695:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    1698:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
-    169b:	89 50 04             	mov    DWORD PTR [eax+0x4],edx
-    169e:	e9 4b 03 00 00       	jmp    19ee <elf_resolve_symbols+0x67d>
+    173f:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    1742:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
+    1745:	89 50 04             	mov    DWORD PTR [eax+0x4],edx
+    1748:	e9 ad 03 00 00       	jmp    1afa <elf_resolve_symbols+0x70a>
 				} else if (s->st_shndx < SHN_LORESERVE) {
-    16a3:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    16a6:	0f b7 40 0e          	movzx  eax,WORD PTR [eax+0xe]
-    16aa:	66 3d ff fe          	cmp    ax,0xfeff
-    16ae:	0f 87 49 02 00 00    	ja     18fd <elf_resolve_symbols+0x58c>
+    174d:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    1750:	0f b7 40 0e          	movzx  eax,WORD PTR [eax+0xe]
+    1754:	66 3d ff fe          	cmp    ax,0xfeff
+    1758:	0f 87 88 02 00 00    	ja     19e6 <elf_resolve_symbols+0x5f6>
 						/* local symbol so get virtual address for relocations */
 						if (!(shdr[s->st_shndx].sh_flags & SHF_ALLOC))
-    16b4:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    16b7:	0f b7 40 0e          	movzx  eax,WORD PTR [eax+0xe]
-    16bb:	0f b7 d0             	movzx  edx,ax
-    16be:	89 d0                	mov    eax,edx
-    16c0:	c1 e0 02             	shl    eax,0x2
-    16c3:	01 d0                	add    eax,edx
-    16c5:	c1 e0 03             	shl    eax,0x3
-    16c8:	89 c2                	mov    edx,eax
-    16ca:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    16cd:	01 d0                	add    eax,edx
-    16cf:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
-    16d2:	83 e0 02             	and    eax,0x2
-    16d5:	85 c0                	test   eax,eax
-    16d7:	0f 84 10 03 00 00    	je     19ed <elf_resolve_symbols+0x67c>
+    175e:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    1761:	0f b7 40 0e          	movzx  eax,WORD PTR [eax+0xe]
+    1765:	0f b7 d0             	movzx  edx,ax
+    1768:	89 d0                	mov    eax,edx
+    176a:	c1 e0 02             	shl    eax,0x2
+    176d:	01 d0                	add    eax,edx
+    176f:	c1 e0 03             	shl    eax,0x3
+    1772:	89 c2                	mov    edx,eax
+    1774:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    1777:	01 d0                	add    eax,edx
+    1779:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
+    177c:	83 e0 02             	and    eax,0x2
+    177f:	85 c0                	test   eax,eax
+    1781:	0f 84 72 03 00 00    	je     1af9 <elf_resolve_symbols+0x709>
 								continue; /* skip symbols in unused sections */
 						s->st_value += shdr[s->st_shndx].sh_addr;
-    16dd:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    16e0:	8b 48 04             	mov    ecx,DWORD PTR [eax+0x4]
-    16e3:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    16e6:	0f b7 40 0e          	movzx  eax,WORD PTR [eax+0xe]
-    16ea:	0f b7 d0             	movzx  edx,ax
-    16ed:	89 d0                	mov    eax,edx
-    16ef:	c1 e0 02             	shl    eax,0x2
-    16f2:	01 d0                	add    eax,edx
-    16f4:	c1 e0 03             	shl    eax,0x3
-    16f7:	89 c2                	mov    edx,eax
-    16f9:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    16fc:	01 d0                	add    eax,edx
-    16fe:	8b 40 0c             	mov    eax,DWORD PTR [eax+0xc]
-    1701:	8d 14 01             	lea    edx,[ecx+eax*1]
-    1704:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    1707:	89 50 04             	mov    DWORD PTR [eax+0x4],edx
+    1787:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    178a:	8b 48 04             	mov    ecx,DWORD PTR [eax+0x4]
+    178d:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    1790:	0f b7 40 0e          	movzx  eax,WORD PTR [eax+0xe]
+    1794:	0f b7 d0             	movzx  edx,ax
+    1797:	89 d0                	mov    eax,edx
+    1799:	c1 e0 02             	shl    eax,0x2
+    179c:	01 d0                	add    eax,edx
+    179e:	c1 e0 03             	shl    eax,0x3
+    17a1:	89 c2                	mov    edx,eax
+    17a3:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    17a6:	01 d0                	add    eax,edx
+    17a8:	8b 40 0c             	mov    eax,DWORD PTR [eax+0xc]
+    17ab:	8d 14 01             	lea    edx,[ecx+eax*1]
+    17ae:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    17b1:	89 50 04             	mov    DWORD PTR [eax+0x4],edx
 						sbprintf("symbol %s from %s defined at vmem=%p\n",
 										elf_fetch_string(hdr, shdr, shdr[symtab].sh_link, s->st_name),
 										elf_fetch_string(hdr, shdr, hdr->e_shstrndx, shdr[s->st_shndx].sh_name),
 							  			(void*)s->st_value);
-    170a:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    170d:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    17b4:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    17b7:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
 						sbprintf("symbol %s from %s defined at vmem=%p\n",
-    1710:	89 c6                	mov    esi,eax
+    17ba:	89 c6                	mov    esi,eax
 										elf_fetch_string(hdr, shdr, hdr->e_shstrndx, shdr[s->st_shndx].sh_name),
-    1712:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    1715:	0f b7 40 0e          	movzx  eax,WORD PTR [eax+0xe]
-    1719:	0f b7 d0             	movzx  edx,ax
-    171c:	89 d0                	mov    eax,edx
-    171e:	c1 e0 02             	shl    eax,0x2
-    1721:	01 d0                	add    eax,edx
-    1723:	c1 e0 03             	shl    eax,0x3
-    1726:	89 c2                	mov    edx,eax
-    1728:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    172b:	01 d0                	add    eax,edx
+    17bc:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    17bf:	0f b7 40 0e          	movzx  eax,WORD PTR [eax+0xe]
+    17c3:	0f b7 d0             	movzx  edx,ax
+    17c6:	89 d0                	mov    eax,edx
+    17c8:	c1 e0 02             	shl    eax,0x2
+    17cb:	01 d0                	add    eax,edx
+    17cd:	c1 e0 03             	shl    eax,0x3
+    17d0:	89 c2                	mov    edx,eax
+    17d2:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    17d5:	01 d0                	add    eax,edx
 						sbprintf("symbol %s from %s defined at vmem=%p\n",
-    172d:	8b 10                	mov    edx,DWORD PTR [eax]
+    17d7:	8b 10                	mov    edx,DWORD PTR [eax]
 										elf_fetch_string(hdr, shdr, hdr->e_shstrndx, shdr[s->st_shndx].sh_name),
-    172f:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1732:	0f b7 40 32          	movzx  eax,WORD PTR [eax+0x32]
+    17d9:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    17dc:	0f b7 40 32          	movzx  eax,WORD PTR [eax+0x32]
 						sbprintf("symbol %s from %s defined at vmem=%p\n",
-    1736:	0f b7 c0             	movzx  eax,ax
-    1739:	52                   	push   edx
-    173a:	50                   	push   eax
-    173b:	ff 75 0c             	push   DWORD PTR [ebp+0xc]
-    173e:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-    1741:	e8 fc ff ff ff       	call   1742 <elf_resolve_symbols+0x3d1>
-    1746:	83 c4 10             	add    esp,0x10
-    1749:	89 c3                	mov    ebx,eax
-    174b:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    174e:	8b 08                	mov    ecx,DWORD PTR [eax]
+    17e0:	0f b7 c0             	movzx  eax,ax
+    17e3:	89 54 24 0c          	mov    DWORD PTR [esp+0xc],edx
+    17e7:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    17eb:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    17ee:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    17f2:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    17f5:	89 04 24             	mov    DWORD PTR [esp],eax
+    17f8:	e8 fc ff ff ff       	call   17f9 <elf_resolve_symbols+0x409>
+    17fd:	89 c3                	mov    ebx,eax
+    17ff:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    1802:	8b 08                	mov    ecx,DWORD PTR [eax]
 										elf_fetch_string(hdr, shdr, shdr[symtab].sh_link, s->st_name),
-    1750:	0f b7 55 c4          	movzx  edx,WORD PTR [ebp-0x3c]
-    1754:	89 d0                	mov    eax,edx
-    1756:	c1 e0 02             	shl    eax,0x2
-    1759:	01 d0                	add    eax,edx
-    175b:	c1 e0 03             	shl    eax,0x3
-    175e:	89 c2                	mov    edx,eax
-    1760:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    1763:	01 d0                	add    eax,edx
-    1765:	8b 40 18             	mov    eax,DWORD PTR [eax+0x18]
+    1804:	0f b7 55 c4          	movzx  edx,WORD PTR [ebp-0x3c]
+    1808:	89 d0                	mov    eax,edx
+    180a:	c1 e0 02             	shl    eax,0x2
+    180d:	01 d0                	add    eax,edx
+    180f:	c1 e0 03             	shl    eax,0x3
+    1812:	89 c2                	mov    edx,eax
+    1814:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    1817:	01 d0                	add    eax,edx
+    1819:	8b 40 18             	mov    eax,DWORD PTR [eax+0x18]
 						sbprintf("symbol %s from %s defined at vmem=%p\n",
-    1768:	0f b7 c0             	movzx  eax,ax
-    176b:	51                   	push   ecx
-    176c:	50                   	push   eax
-    176d:	ff 75 0c             	push   DWORD PTR [ebp+0xc]
-    1770:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-    1773:	e8 fc ff ff ff       	call   1774 <elf_resolve_symbols+0x403>
-    1778:	83 c4 10             	add    esp,0x10
-    177b:	56                   	push   esi
-    177c:	53                   	push   ebx
-    177d:	50                   	push   eax
-    177e:	68 80 06 00 00       	push   0x680
-    1783:	e8 fc ff ff ff       	call   1784 <elf_resolve_symbols+0x413>
-    1788:	83 c4 10             	add    esp,0x10
+    181c:	0f b7 c0             	movzx  eax,ax
+    181f:	89 4c 24 0c          	mov    DWORD PTR [esp+0xc],ecx
+    1823:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    1827:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    182a:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    182e:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1831:	89 04 24             	mov    DWORD PTR [esp],eax
+    1834:	e8 fc ff ff ff       	call   1835 <elf_resolve_symbols+0x445>
+    1839:	89 74 24 0c          	mov    DWORD PTR [esp+0xc],esi
+    183d:	89 5c 24 08          	mov    DWORD PTR [esp+0x8],ebx
+    1841:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    1845:	c7 04 24 80 06 00 00 	mov    DWORD PTR [esp],0x680
+    184c:	e8 fc ff ff ff       	call   184d <elf_resolve_symbols+0x45d>
 						if (strcmp(elf_fetch_string(hdr, shdr, shdr[symtab].sh_link, s->st_name), "module_init") == 0) {
-    178b:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    178e:	8b 08                	mov    ecx,DWORD PTR [eax]
-    1790:	0f b7 55 c4          	movzx  edx,WORD PTR [ebp-0x3c]
-    1794:	89 d0                	mov    eax,edx
-    1796:	c1 e0 02             	shl    eax,0x2
-    1799:	01 d0                	add    eax,edx
-    179b:	c1 e0 03             	shl    eax,0x3
-    179e:	89 c2                	mov    edx,eax
-    17a0:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    17a3:	01 d0                	add    eax,edx
-    17a5:	8b 40 18             	mov    eax,DWORD PTR [eax+0x18]
-    17a8:	0f b7 c0             	movzx  eax,ax
-    17ab:	51                   	push   ecx
-    17ac:	50                   	push   eax
-    17ad:	ff 75 0c             	push   DWORD PTR [ebp+0xc]
-    17b0:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-    17b3:	e8 fc ff ff ff       	call   17b4 <elf_resolve_symbols+0x443>
-    17b8:	83 c4 10             	add    esp,0x10
-    17bb:	83 ec 08             	sub    esp,0x8
-    17be:	68 a6 06 00 00       	push   0x6a6
-    17c3:	50                   	push   eax
-    17c4:	e8 fc ff ff ff       	call   17c5 <elf_resolve_symbols+0x454>
-    17c9:	83 c4 10             	add    esp,0x10
-    17cc:	85 c0                	test   eax,eax
-    17ce:	75 27                	jne    17f7 <elf_resolve_symbols+0x486>
+    1851:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    1854:	8b 08                	mov    ecx,DWORD PTR [eax]
+    1856:	0f b7 55 c4          	movzx  edx,WORD PTR [ebp-0x3c]
+    185a:	89 d0                	mov    eax,edx
+    185c:	c1 e0 02             	shl    eax,0x2
+    185f:	01 d0                	add    eax,edx
+    1861:	c1 e0 03             	shl    eax,0x3
+    1864:	89 c2                	mov    edx,eax
+    1866:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    1869:	01 d0                	add    eax,edx
+    186b:	8b 40 18             	mov    eax,DWORD PTR [eax+0x18]
+    186e:	0f b7 c0             	movzx  eax,ax
+    1871:	89 4c 24 0c          	mov    DWORD PTR [esp+0xc],ecx
+    1875:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    1879:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    187c:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    1880:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1883:	89 04 24             	mov    DWORD PTR [esp],eax
+    1886:	e8 fc ff ff ff       	call   1887 <elf_resolve_symbols+0x497>
+    188b:	c7 44 24 04 a6 06 00 00 	mov    DWORD PTR [esp+0x4],0x6a6
+    1893:	89 04 24             	mov    DWORD PTR [esp],eax
+    1896:	e8 fc ff ff ff       	call   1897 <elf_resolve_symbols+0x4a7>
+    189b:	85 c0                	test   eax,eax
+    189d:	75 26                	jne    18c5 <elf_resolve_symbols+0x4d5>
 								mi->mi_init = (mod_init)s->st_value;
-    17d0:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    17d3:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    17d6:	89 c2                	mov    edx,eax
-    17d8:	8b 45 18             	mov    eax,DWORD PTR [ebp+0x18]
-    17db:	89 50 14             	mov    DWORD PTR [eax+0x14],edx
+    189f:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    18a2:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    18a5:	89 c2                	mov    edx,eax
+    18a7:	8b 45 18             	mov    eax,DWORD PTR [ebp+0x18]
+    18aa:	89 50 14             	mov    DWORD PTR [eax+0x14],edx
 								sbprintf("found global entry module_init at %p\n", mi->mi_init);
-    17de:	8b 45 18             	mov    eax,DWORD PTR [ebp+0x18]
-    17e1:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
-    17e4:	83 ec 08             	sub    esp,0x8
-    17e7:	50                   	push   eax
-    17e8:	68 b4 06 00 00       	push   0x6b4
-    17ed:	e8 fc ff ff ff       	call   17ee <elf_resolve_symbols+0x47d>
-    17f2:	83 c4 10             	add    esp,0x10
-    17f5:	eb 6a                	jmp    1861 <elf_resolve_symbols+0x4f0>
+    18ad:	8b 45 18             	mov    eax,DWORD PTR [ebp+0x18]
+    18b0:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
+    18b3:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    18b7:	c7 04 24 b4 06 00 00 	mov    DWORD PTR [esp],0x6b4
+    18be:	e8 fc ff ff ff       	call   18bf <elf_resolve_symbols+0x4cf>
+    18c3:	eb 72                	jmp    1937 <elf_resolve_symbols+0x547>
 						} else if (strcmp(elf_fetch_string(hdr, shdr, shdr[symtab].sh_link, s->st_name), "module_cleanup") == 0) {
-    17f7:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    17fa:	8b 08                	mov    ecx,DWORD PTR [eax]
-    17fc:	0f b7 55 c4          	movzx  edx,WORD PTR [ebp-0x3c]
-    1800:	89 d0                	mov    eax,edx
-    1802:	c1 e0 02             	shl    eax,0x2
-    1805:	01 d0                	add    eax,edx
-    1807:	c1 e0 03             	shl    eax,0x3
-    180a:	89 c2                	mov    edx,eax
-    180c:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    180f:	01 d0                	add    eax,edx
-    1811:	8b 40 18             	mov    eax,DWORD PTR [eax+0x18]
-    1814:	0f b7 c0             	movzx  eax,ax
-    1817:	51                   	push   ecx
-    1818:	50                   	push   eax
-    1819:	ff 75 0c             	push   DWORD PTR [ebp+0xc]
-    181c:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-    181f:	e8 fc ff ff ff       	call   1820 <elf_resolve_symbols+0x4af>
-    1824:	83 c4 10             	add    esp,0x10
-    1827:	83 ec 08             	sub    esp,0x8
-    182a:	68 da 06 00 00       	push   0x6da
-    182f:	50                   	push   eax
-    1830:	e8 fc ff ff ff       	call   1831 <elf_resolve_symbols+0x4c0>
-    1835:	83 c4 10             	add    esp,0x10
-    1838:	85 c0                	test   eax,eax
-    183a:	75 25                	jne    1861 <elf_resolve_symbols+0x4f0>
+    18c5:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    18c8:	8b 08                	mov    ecx,DWORD PTR [eax]
+    18ca:	0f b7 55 c4          	movzx  edx,WORD PTR [ebp-0x3c]
+    18ce:	89 d0                	mov    eax,edx
+    18d0:	c1 e0 02             	shl    eax,0x2
+    18d3:	01 d0                	add    eax,edx
+    18d5:	c1 e0 03             	shl    eax,0x3
+    18d8:	89 c2                	mov    edx,eax
+    18da:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    18dd:	01 d0                	add    eax,edx
+    18df:	8b 40 18             	mov    eax,DWORD PTR [eax+0x18]
+    18e2:	0f b7 c0             	movzx  eax,ax
+    18e5:	89 4c 24 0c          	mov    DWORD PTR [esp+0xc],ecx
+    18e9:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    18ed:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    18f0:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    18f4:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    18f7:	89 04 24             	mov    DWORD PTR [esp],eax
+    18fa:	e8 fc ff ff ff       	call   18fb <elf_resolve_symbols+0x50b>
+    18ff:	c7 44 24 04 da 06 00 00 	mov    DWORD PTR [esp+0x4],0x6da
+    1907:	89 04 24             	mov    DWORD PTR [esp],eax
+    190a:	e8 fc ff ff ff       	call   190b <elf_resolve_symbols+0x51b>
+    190f:	85 c0                	test   eax,eax
+    1911:	75 24                	jne    1937 <elf_resolve_symbols+0x547>
 								mi->mi_cleanup = (mod_cleanup)s->st_value;
-    183c:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    183f:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    1842:	89 c2                	mov    edx,eax
-    1844:	8b 45 18             	mov    eax,DWORD PTR [ebp+0x18]
-    1847:	89 50 18             	mov    DWORD PTR [eax+0x18],edx
+    1913:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    1916:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    1919:	89 c2                	mov    edx,eax
+    191b:	8b 45 18             	mov    eax,DWORD PTR [ebp+0x18]
+    191e:	89 50 18             	mov    DWORD PTR [eax+0x18],edx
 								sbprintf("found global exit module_cleanup at %p\n", mi->mi_cleanup);
-    184a:	8b 45 18             	mov    eax,DWORD PTR [ebp+0x18]
-    184d:	8b 40 18             	mov    eax,DWORD PTR [eax+0x18]
-    1850:	83 ec 08             	sub    esp,0x8
-    1853:	50                   	push   eax
-    1854:	68 ec 06 00 00       	push   0x6ec
-    1859:	e8 fc ff ff ff       	call   185a <elf_resolve_symbols+0x4e9>
-    185e:	83 c4 10             	add    esp,0x10
+    1921:	8b 45 18             	mov    eax,DWORD PTR [ebp+0x18]
+    1924:	8b 40 18             	mov    eax,DWORD PTR [eax+0x18]
+    1927:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    192b:	c7 04 24 ec 06 00 00 	mov    DWORD PTR [esp],0x6ec
+    1932:	e8 fc ff ff ff       	call   1933 <elf_resolve_symbols+0x543>
 						}
 						if (ELF32_ST_BIND(s->st_info) == STB_GLOBAL ||
-    1861:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    1864:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
-    1868:	c0 e8 04             	shr    al,0x4
-    186b:	3c 01                	cmp    al,0x1
-    186d:	74 12                	je     1881 <elf_resolve_symbols+0x510>
+    1937:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    193a:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
+    193e:	c0 e8 04             	shr    al,0x4
+    1941:	3c 01                	cmp    al,0x1
+    1943:	74 12                	je     1957 <elf_resolve_symbols+0x567>
 										ELF32_ST_BIND(s->st_info) == STB_WEAK) {
-    186f:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    1872:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
-    1876:	c0 e8 04             	shr    al,0x4
+    1945:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    1948:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
+    194c:	c0 e8 04             	shr    al,0x4
 						if (ELF32_ST_BIND(s->st_info) == STB_GLOBAL ||
-    1879:	3c 02                	cmp    al,0x2
-    187b:	0f 85 6d 01 00 00    	jne    19ee <elf_resolve_symbols+0x67d>
+    194f:	3c 02                	cmp    al,0x2
+    1951:	0f 85 a3 01 00 00    	jne    1afa <elf_resolve_symbols+0x70a>
 								/* exported symbol -> to global symtab */
 								char tp = 'T', *sn;
-    1881:	c6 45 eb 54          	mov    BYTE PTR [ebp-0x15],0x54
+    1957:	c6 45 eb 54          	mov    BYTE PTR [ebp-0x15],0x54
 								if (ELF32_ST_TYPE(s->st_info) == STT_OBJECT)
-    1885:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    1888:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
-    188c:	0f b6 c0             	movzx  eax,al
-    188f:	83 e0 0f             	and    eax,0xf
-    1892:	83 f8 01             	cmp    eax,0x1
-    1895:	75 04                	jne    189b <elf_resolve_symbols+0x52a>
+    195b:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    195e:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
+    1962:	0f b6 c0             	movzx  eax,al
+    1965:	83 e0 0f             	and    eax,0xf
+    1968:	83 f8 01             	cmp    eax,0x1
+    196b:	75 04                	jne    1971 <elf_resolve_symbols+0x581>
 										tp = 'D';
-    1897:	c6 45 eb 44          	mov    BYTE PTR [ebp-0x15],0x44
+    196d:	c6 45 eb 44          	mov    BYTE PTR [ebp-0x15],0x44
 								sn = elf_fetch_string(hdr, shdr, shdr[symtab].sh_link, s->st_name);
-    189b:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    189e:	8b 08                	mov    ecx,DWORD PTR [eax]
-    18a0:	0f b7 55 c4          	movzx  edx,WORD PTR [ebp-0x3c]
-    18a4:	89 d0                	mov    eax,edx
-    18a6:	c1 e0 02             	shl    eax,0x2
-    18a9:	01 d0                	add    eax,edx
-    18ab:	c1 e0 03             	shl    eax,0x3
-    18ae:	89 c2                	mov    edx,eax
-    18b0:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    18b3:	01 d0                	add    eax,edx
-    18b5:	8b 40 18             	mov    eax,DWORD PTR [eax+0x18]
-    18b8:	0f b7 c0             	movzx  eax,ax
-    18bb:	51                   	push   ecx
-    18bc:	50                   	push   eax
-    18bd:	ff 75 0c             	push   DWORD PTR [ebp+0xc]
-    18c0:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-    18c3:	e8 fc ff ff ff       	call   18c4 <elf_resolve_symbols+0x553>
-    18c8:	83 c4 10             	add    esp,0x10
-    18cb:	89 45 d4             	mov    DWORD PTR [ebp-0x2c],eax
+    1971:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    1974:	8b 08                	mov    ecx,DWORD PTR [eax]
+    1976:	0f b7 55 c4          	movzx  edx,WORD PTR [ebp-0x3c]
+    197a:	89 d0                	mov    eax,edx
+    197c:	c1 e0 02             	shl    eax,0x2
+    197f:	01 d0                	add    eax,edx
+    1981:	c1 e0 03             	shl    eax,0x3
+    1984:	89 c2                	mov    edx,eax
+    1986:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    1989:	01 d0                	add    eax,edx
+    198b:	8b 40 18             	mov    eax,DWORD PTR [eax+0x18]
+    198e:	0f b7 c0             	movzx  eax,ax
+    1991:	89 4c 24 0c          	mov    DWORD PTR [esp+0xc],ecx
+    1995:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    1999:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    199c:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    19a0:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    19a3:	89 04 24             	mov    DWORD PTR [esp],eax
+    19a6:	e8 fc ff ff ff       	call   19a7 <elf_resolve_symbols+0x5b7>
+    19ab:	89 45 d4             	mov    DWORD PTR [ebp-0x2c],eax
 								elf_store_global_symbol(sn, (void*)s->st_value, tp, ELF32_ST_BIND(s->st_info) == STB_WEAK);
-    18ce:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    18d1:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
-    18d5:	c0 e8 04             	shr    al,0x4
-    18d8:	3c 02                	cmp    al,0x2
-    18da:	0f 94 c0             	sete   al
-    18dd:	0f b6 d0             	movzx  edx,al
-    18e0:	0f be 45 eb          	movsx  eax,BYTE PTR [ebp-0x15]
-    18e4:	8b 4d dc             	mov    ecx,DWORD PTR [ebp-0x24]
-    18e7:	8b 49 04             	mov    ecx,DWORD PTR [ecx+0x4]
-    18ea:	52                   	push   edx
-    18eb:	50                   	push   eax
-    18ec:	51                   	push   ecx
-    18ed:	ff 75 d4             	push   DWORD PTR [ebp-0x2c]
-    18f0:	e8 fc ff ff ff       	call   18f1 <elf_resolve_symbols+0x580>
-    18f5:	83 c4 10             	add    esp,0x10
-    18f8:	e9 f1 00 00 00       	jmp    19ee <elf_resolve_symbols+0x67d>
+    19ae:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    19b1:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
+    19b5:	c0 e8 04             	shr    al,0x4
+    19b8:	3c 02                	cmp    al,0x2
+    19ba:	0f 94 c0             	sete   al
+    19bd:	0f b6 d0             	movzx  edx,al
+    19c0:	0f be 45 eb          	movsx  eax,BYTE PTR [ebp-0x15]
+    19c4:	8b 4d dc             	mov    ecx,DWORD PTR [ebp-0x24]
+    19c7:	8b 49 04             	mov    ecx,DWORD PTR [ecx+0x4]
+    19ca:	89 54 24 0c          	mov    DWORD PTR [esp+0xc],edx
+    19ce:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    19d2:	89 4c 24 04          	mov    DWORD PTR [esp+0x4],ecx
+    19d6:	8b 45 d4             	mov    eax,DWORD PTR [ebp-0x2c]
+    19d9:	89 04 24             	mov    DWORD PTR [esp],eax
+    19dc:	e8 fc ff ff ff       	call   19dd <elf_resolve_symbols+0x5ed>
+    19e1:	e9 14 01 00 00       	jmp    1afa <elf_resolve_symbols+0x70a>
 						}
 				} else if (s->st_shndx == SHN_ABS) {
-    18fd:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    1900:	0f b7 40 0e          	movzx  eax,WORD PTR [eax+0xe]
-    1904:	66 83 f8 f1          	cmp    ax,0xfff1
-    1908:	0f 85 e0 00 00 00    	jne    19ee <elf_resolve_symbols+0x67d>
+    19e6:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    19e9:	0f b7 40 0e          	movzx  eax,WORD PTR [eax+0xe]
+    19ed:	66 83 f8 f1          	cmp    ax,0xfff1
+    19f1:	0f 85 03 01 00 00    	jne    1afa <elf_resolve_symbols+0x70a>
 						sbprintf("absolute symbol with name %s and value %p\n",
 										elf_fetch_string(hdr, shdr, shdr[symtab].sh_link, s->st_name),
 							  			(void*)s->st_value);
-    190e:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    1911:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    19f7:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    19fa:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
 						sbprintf("absolute symbol with name %s and value %p\n",
-    1914:	89 c3                	mov    ebx,eax
-    1916:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    1919:	8b 08                	mov    ecx,DWORD PTR [eax]
+    19fd:	89 c3                	mov    ebx,eax
+    19ff:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    1a02:	8b 08                	mov    ecx,DWORD PTR [eax]
 										elf_fetch_string(hdr, shdr, shdr[symtab].sh_link, s->st_name),
-    191b:	0f b7 55 c4          	movzx  edx,WORD PTR [ebp-0x3c]
-    191f:	89 d0                	mov    eax,edx
-    1921:	c1 e0 02             	shl    eax,0x2
-    1924:	01 d0                	add    eax,edx
-    1926:	c1 e0 03             	shl    eax,0x3
-    1929:	89 c2                	mov    edx,eax
-    192b:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    192e:	01 d0                	add    eax,edx
-    1930:	8b 40 18             	mov    eax,DWORD PTR [eax+0x18]
+    1a04:	0f b7 55 c4          	movzx  edx,WORD PTR [ebp-0x3c]
+    1a08:	89 d0                	mov    eax,edx
+    1a0a:	c1 e0 02             	shl    eax,0x2
+    1a0d:	01 d0                	add    eax,edx
+    1a0f:	c1 e0 03             	shl    eax,0x3
+    1a12:	89 c2                	mov    edx,eax
+    1a14:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    1a17:	01 d0                	add    eax,edx
+    1a19:	8b 40 18             	mov    eax,DWORD PTR [eax+0x18]
 						sbprintf("absolute symbol with name %s and value %p\n",
-    1933:	0f b7 c0             	movzx  eax,ax
-    1936:	51                   	push   ecx
-    1937:	50                   	push   eax
-    1938:	ff 75 0c             	push   DWORD PTR [ebp+0xc]
-    193b:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-    193e:	e8 fc ff ff ff       	call   193f <elf_resolve_symbols+0x5ce>
-    1943:	83 c4 10             	add    esp,0x10
-    1946:	83 ec 04             	sub    esp,0x4
-    1949:	53                   	push   ebx
-    194a:	50                   	push   eax
-    194b:	68 14 07 00 00       	push   0x714
-    1950:	e8 fc ff ff ff       	call   1951 <elf_resolve_symbols+0x5e0>
-    1955:	83 c4 10             	add    esp,0x10
+    1a1c:	0f b7 c0             	movzx  eax,ax
+    1a1f:	89 4c 24 0c          	mov    DWORD PTR [esp+0xc],ecx
+    1a23:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    1a27:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    1a2a:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    1a2e:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1a31:	89 04 24             	mov    DWORD PTR [esp],eax
+    1a34:	e8 fc ff ff ff       	call   1a35 <elf_resolve_symbols+0x645>
+    1a39:	89 5c 24 08          	mov    DWORD PTR [esp+0x8],ebx
+    1a3d:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    1a41:	c7 04 24 14 07 00 00 	mov    DWORD PTR [esp],0x714
+    1a48:	e8 fc ff ff ff       	call   1a49 <elf_resolve_symbols+0x659>
 						if (ELF32_ST_BIND(s->st_info) == STB_GLOBAL ||
-    1958:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    195b:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
-    195f:	c0 e8 04             	shr    al,0x4
-    1962:	3c 01                	cmp    al,0x1
-    1964:	74 0e                	je     1974 <elf_resolve_symbols+0x603>
+    1a4d:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    1a50:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
+    1a54:	c0 e8 04             	shr    al,0x4
+    1a57:	3c 01                	cmp    al,0x1
+    1a59:	74 12                	je     1a6d <elf_resolve_symbols+0x67d>
 										ELF32_ST_BIND(s->st_info) == STB_WEAK) {
-    1966:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    1969:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
-    196d:	c0 e8 04             	shr    al,0x4
+    1a5b:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    1a5e:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
+    1a62:	c0 e8 04             	shr    al,0x4
 						if (ELF32_ST_BIND(s->st_info) == STB_GLOBAL ||
-    1970:	3c 02                	cmp    al,0x2
-    1972:	75 7a                	jne    19ee <elf_resolve_symbols+0x67d>
+    1a65:	3c 02                	cmp    al,0x2
+    1a67:	0f 85 8d 00 00 00    	jne    1afa <elf_resolve_symbols+0x70a>
 								char tp = 'T', *sn;
-    1974:	c6 45 ea 54          	mov    BYTE PTR [ebp-0x16],0x54
+    1a6d:	c6 45 ea 54          	mov    BYTE PTR [ebp-0x16],0x54
 								if (ELF32_ST_TYPE(s->st_info) == STT_OBJECT)
-    1978:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    197b:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
-    197f:	0f b6 c0             	movzx  eax,al
-    1982:	83 e0 0f             	and    eax,0xf
-    1985:	83 f8 01             	cmp    eax,0x1
-    1988:	75 04                	jne    198e <elf_resolve_symbols+0x61d>
+    1a71:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    1a74:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
+    1a78:	0f b6 c0             	movzx  eax,al
+    1a7b:	83 e0 0f             	and    eax,0xf
+    1a7e:	83 f8 01             	cmp    eax,0x1
+    1a81:	75 04                	jne    1a87 <elf_resolve_symbols+0x697>
 										tp = 'D';
-    198a:	c6 45 ea 44          	mov    BYTE PTR [ebp-0x16],0x44
+    1a83:	c6 45 ea 44          	mov    BYTE PTR [ebp-0x16],0x44
 								sn = elf_fetch_string(hdr, shdr, shdr[symtab].sh_link, s->st_name);
-    198e:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    1991:	8b 08                	mov    ecx,DWORD PTR [eax]
-    1993:	0f b7 55 c4          	movzx  edx,WORD PTR [ebp-0x3c]
-    1997:	89 d0                	mov    eax,edx
-    1999:	c1 e0 02             	shl    eax,0x2
-    199c:	01 d0                	add    eax,edx
-    199e:	c1 e0 03             	shl    eax,0x3
-    19a1:	89 c2                	mov    edx,eax
-    19a3:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    19a6:	01 d0                	add    eax,edx
-    19a8:	8b 40 18             	mov    eax,DWORD PTR [eax+0x18]
-    19ab:	0f b7 c0             	movzx  eax,ax
-    19ae:	51                   	push   ecx
-    19af:	50                   	push   eax
-    19b0:	ff 75 0c             	push   DWORD PTR [ebp+0xc]
-    19b3:	ff 75 08             	push   DWORD PTR [ebp+0x8]
-    19b6:	e8 fc ff ff ff       	call   19b7 <elf_resolve_symbols+0x646>
-    19bb:	83 c4 10             	add    esp,0x10
-    19be:	89 45 d8             	mov    DWORD PTR [ebp-0x28],eax
+    1a87:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    1a8a:	8b 08                	mov    ecx,DWORD PTR [eax]
+    1a8c:	0f b7 55 c4          	movzx  edx,WORD PTR [ebp-0x3c]
+    1a90:	89 d0                	mov    eax,edx
+    1a92:	c1 e0 02             	shl    eax,0x2
+    1a95:	01 d0                	add    eax,edx
+    1a97:	c1 e0 03             	shl    eax,0x3
+    1a9a:	89 c2                	mov    edx,eax
+    1a9c:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    1a9f:	01 d0                	add    eax,edx
+    1aa1:	8b 40 18             	mov    eax,DWORD PTR [eax+0x18]
+    1aa4:	0f b7 c0             	movzx  eax,ax
+    1aa7:	89 4c 24 0c          	mov    DWORD PTR [esp+0xc],ecx
+    1aab:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    1aaf:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    1ab2:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    1ab6:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1ab9:	89 04 24             	mov    DWORD PTR [esp],eax
+    1abc:	e8 fc ff ff ff       	call   1abd <elf_resolve_symbols+0x6cd>
+    1ac1:	89 45 d8             	mov    DWORD PTR [ebp-0x28],eax
 								elf_store_global_symbol(sn, (void*)s->st_value, tp, ELF32_ST_BIND(s->st_info) == STB_WEAK);
-    19c1:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    19c4:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
-    19c8:	c0 e8 04             	shr    al,0x4
-    19cb:	3c 02                	cmp    al,0x2
-    19cd:	0f 94 c0             	sete   al
-    19d0:	0f b6 d0             	movzx  edx,al
-    19d3:	0f be 45 ea          	movsx  eax,BYTE PTR [ebp-0x16]
-    19d7:	8b 4d dc             	mov    ecx,DWORD PTR [ebp-0x24]
-    19da:	8b 49 04             	mov    ecx,DWORD PTR [ecx+0x4]
-    19dd:	52                   	push   edx
-    19de:	50                   	push   eax
-    19df:	51                   	push   ecx
-    19e0:	ff 75 d8             	push   DWORD PTR [ebp-0x28]
-    19e3:	e8 fc ff ff ff       	call   19e4 <elf_resolve_symbols+0x673>
-    19e8:	83 c4 10             	add    esp,0x10
-    19eb:	eb 01                	jmp    19ee <elf_resolve_symbols+0x67d>
+    1ac4:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    1ac7:	0f b6 40 0c          	movzx  eax,BYTE PTR [eax+0xc]
+    1acb:	c0 e8 04             	shr    al,0x4
+    1ace:	3c 02                	cmp    al,0x2
+    1ad0:	0f 94 c0             	sete   al
+    1ad3:	0f b6 d0             	movzx  edx,al
+    1ad6:	0f be 45 ea          	movsx  eax,BYTE PTR [ebp-0x16]
+    1ada:	8b 4d dc             	mov    ecx,DWORD PTR [ebp-0x24]
+    1add:	8b 49 04             	mov    ecx,DWORD PTR [ecx+0x4]
+    1ae0:	89 54 24 0c          	mov    DWORD PTR [esp+0xc],edx
+    1ae4:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    1ae8:	89 4c 24 04          	mov    DWORD PTR [esp+0x4],ecx
+    1aec:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+    1aef:	89 04 24             	mov    DWORD PTR [esp],eax
+    1af2:	e8 fc ff ff ff       	call   1af3 <elf_resolve_symbols+0x703>
+    1af7:	eb 01                	jmp    1afa <elf_resolve_symbols+0x70a>
 								continue; /* skip symbols in unused sections */
-    19ed:	90                   	nop
+    1af9:	90                   	nop
 		for (i = 1; i < ct; i++) {
-    19ee:	83 45 f4 01          	add    DWORD PTR [ebp-0xc],0x1
-    19f2:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    19f5:	3b 45 e0             	cmp    eax,DWORD PTR [ebp-0x20]
-    19f8:	0f 82 07 fa ff ff    	jb     1405 <elf_resolve_symbols+0x94>
-    19fe:	eb 01                	jmp    1a01 <elf_resolve_symbols+0x690>
+    1afa:	83 45 f4 01          	add    DWORD PTR [ebp-0xc],0x1
+    1afe:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    1b01:	3b 45 e0             	cmp    eax,DWORD PTR [ebp-0x20]
+    1b04:	0f 82 7a f9 ff ff    	jb     1484 <elf_resolve_symbols+0x94>
+    1b0a:	eb 01                	jmp    1b0d <elf_resolve_symbols+0x71d>
 				return;
-    1a00:	90                   	nop
+    1b0c:	90                   	nop
 						}
 				}
 		}
 }
-    1a01:	8d 65 f8             	lea    esp,[ebp-0x8]
-    1a04:	5b                   	pop    ebx
-    1a05:	5e                   	pop    esi
-    1a06:	5d                   	pop    ebp
-    1a07:	c3                   	ret
+    1b0d:	83 c4 50             	add    esp,0x50
+    1b10:	5b                   	pop    ebx
+    1b11:	5e                   	pop    esi
+    1b12:	5d                   	pop    ebp
+    1b13:	c3                   	ret
 
-00001a08 <load_elf>:
+00001b14 <load_elf>:
 
 /*#define ELF_DIAG*/
 
 enum elferr load_elf(void* mem, uint32_t sz, struct module_info* mi)
 {
-    1a08:	55                   	push   ebp
-    1a09:	89 e5                	mov    ebp,esp
-    1a0b:	53                   	push   ebx
-    1a0c:	81 ec d4 00 00 00    	sub    esp,0xd4
+    1b14:	55                   	push   ebp
+    1b15:	89 e5                	mov    ebp,esp
+    1b17:	53                   	push   ebx
+    1b18:	81 ec f4 00 00 00    	sub    esp,0xf4
 		Elf32_Ehdr* hdr = (Elf32_Ehdr*)mem;
-    1a12:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1a15:	89 45 d0             	mov    DWORD PTR [ebp-0x30],eax
+    1b1e:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1b21:	89 45 d0             	mov    DWORD PTR [ebp-0x30],eax
 		Elf32_Shdr* shdr; size_t i;
 
 		/* perform basic checks */
 		if (strncmp((const char*)hdr->e_ident, ELFMAG, 4) != 0)
-    1a18:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-    1a1b:	83 ec 04             	sub    esp,0x4
-    1a1e:	6a 04                	push   0x4
-    1a20:	68 3f 07 00 00       	push   0x73f
-    1a25:	50                   	push   eax
-    1a26:	e8 fc ff ff ff       	call   1a27 <load_elf+0x1f>
-    1a2b:	83 c4 10             	add    esp,0x10
-    1a2e:	85 c0                	test   eax,eax
-    1a30:	74 0a                	je     1a3c <load_elf+0x34>
+    1b24:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+    1b27:	c7 44 24 08 04 00 00 00 	mov    DWORD PTR [esp+0x8],0x4
+    1b2f:	c7 44 24 04 3f 07 00 00 	mov    DWORD PTR [esp+0x4],0x73f
+    1b37:	89 04 24             	mov    DWORD PTR [esp],eax
+    1b3a:	e8 fc ff ff ff       	call   1b3b <load_elf+0x27>
+    1b3f:	85 c0                	test   eax,eax
+    1b41:	74 0a                	je     1b4d <load_elf+0x39>
 				return ELF_WRONG_MAGIC;
-    1a32:	b8 01 00 00 00       	mov    eax,0x1
-    1a37:	e9 7f 0b 00 00       	jmp    25bb <load_elf+0xbb3>
+    1b43:	b8 01 00 00 00       	mov    eax,0x1
+    1b48:	e9 f5 0b 00 00       	jmp    2742 <load_elf+0xc2e>
 		if (hdr->e_ident[EI_CLASS] != ELFCLASS32)
-    1a3c:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-    1a3f:	0f b6 40 04          	movzx  eax,BYTE PTR [eax+0x4]
-    1a43:	3c 01                	cmp    al,0x1
-    1a45:	74 0a                	je     1a51 <load_elf+0x49>
+    1b4d:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+    1b50:	0f b6 40 04          	movzx  eax,BYTE PTR [eax+0x4]
+    1b54:	3c 01                	cmp    al,0x1
+    1b56:	74 0a                	je     1b62 <load_elf+0x4e>
 				return ELF_NOT_CLASS32;
-    1a47:	b8 02 00 00 00       	mov    eax,0x2
-    1a4c:	e9 6a 0b 00 00       	jmp    25bb <load_elf+0xbb3>
+    1b58:	b8 02 00 00 00       	mov    eax,0x2
+    1b5d:	e9 e0 0b 00 00       	jmp    2742 <load_elf+0xc2e>
 		if (hdr->e_ident[EI_DATA] != ELFDATA2LSB)
-    1a51:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-    1a54:	0f b6 40 05          	movzx  eax,BYTE PTR [eax+0x5]
-    1a58:	3c 01                	cmp    al,0x1
-    1a5a:	74 0a                	je     1a66 <load_elf+0x5e>
+    1b62:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+    1b65:	0f b6 40 05          	movzx  eax,BYTE PTR [eax+0x5]
+    1b69:	3c 01                	cmp    al,0x1
+    1b6b:	74 0a                	je     1b77 <load_elf+0x63>
 				return ELF_NOT_LE;
-    1a5c:	b8 03 00 00 00       	mov    eax,0x3
-    1a61:	e9 55 0b 00 00       	jmp    25bb <load_elf+0xbb3>
+    1b6d:	b8 03 00 00 00       	mov    eax,0x3
+    1b72:	e9 cb 0b 00 00       	jmp    2742 <load_elf+0xc2e>
 		if (hdr->e_ident[EI_VERSION] != EV_CURRENT)
-    1a66:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-    1a69:	0f b6 40 06          	movzx  eax,BYTE PTR [eax+0x6]
-    1a6d:	3c 01                	cmp    al,0x1
-    1a6f:	74 0a                	je     1a7b <load_elf+0x73>
+    1b77:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+    1b7a:	0f b6 40 06          	movzx  eax,BYTE PTR [eax+0x6]
+    1b7e:	3c 01                	cmp    al,0x1
+    1b80:	74 0a                	je     1b8c <load_elf+0x78>
 				return ELF_VERSION_NOT_SUPPORTED;
-    1a71:	b8 05 00 00 00       	mov    eax,0x5
-    1a76:	e9 40 0b 00 00       	jmp    25bb <load_elf+0xbb3>
+    1b82:	b8 05 00 00 00       	mov    eax,0x5
+    1b87:	e9 b6 0b 00 00       	jmp    2742 <load_elf+0xc2e>
 		if (hdr->e_ident[EI_OSABI] != ELFOSABI_NONE)
-    1a7b:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-    1a7e:	0f b6 40 07          	movzx  eax,BYTE PTR [eax+0x7]
-    1a82:	84 c0                	test   al,al
-    1a84:	74 0a                	je     1a90 <load_elf+0x88>
+    1b8c:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+    1b8f:	0f b6 40 07          	movzx  eax,BYTE PTR [eax+0x7]
+    1b93:	84 c0                	test   al,al
+    1b95:	74 0a                	je     1ba1 <load_elf+0x8d>
 				return ELF_WRONG_OSABI;
-    1a86:	b8 06 00 00 00       	mov    eax,0x6
-    1a8b:	e9 2b 0b 00 00       	jmp    25bb <load_elf+0xbb3>
+    1b97:	b8 06 00 00 00       	mov    eax,0x6
+    1b9c:	e9 a1 0b 00 00       	jmp    2742 <load_elf+0xc2e>
 
 		/* matching ELF32 found -> check for object file */
 		if (hdr->e_type != ET_REL)
-    1a90:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-    1a93:	0f b7 40 10          	movzx  eax,WORD PTR [eax+0x10]
-    1a97:	66 83 f8 01          	cmp    ax,0x1
-    1a9b:	74 0a                	je     1aa7 <load_elf+0x9f>
+    1ba1:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+    1ba4:	0f b7 40 10          	movzx  eax,WORD PTR [eax+0x10]
+    1ba8:	66 83 f8 01          	cmp    ax,0x1
+    1bac:	74 0a                	je     1bb8 <load_elf+0xa4>
 				return ELF_NOT_REL;
-    1a9d:	b8 07 00 00 00       	mov    eax,0x7
-    1aa2:	e9 14 0b 00 00       	jmp    25bb <load_elf+0xbb3>
+    1bae:	b8 07 00 00 00       	mov    eax,0x7
+    1bb3:	e9 8a 0b 00 00       	jmp    2742 <load_elf+0xc2e>
 		if (hdr->e_machine != EM_386)
-    1aa7:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-    1aaa:	0f b7 40 12          	movzx  eax,WORD PTR [eax+0x12]
-    1aae:	66 83 f8 03          	cmp    ax,0x3
-    1ab2:	74 0a                	je     1abe <load_elf+0xb6>
+    1bb8:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+    1bbb:	0f b7 40 12          	movzx  eax,WORD PTR [eax+0x12]
+    1bbf:	66 83 f8 03          	cmp    ax,0x3
+    1bc3:	74 0a                	je     1bcf <load_elf+0xbb>
 				return ELF_NOT_386;
-    1ab4:	b8 08 00 00 00       	mov    eax,0x8
-    1ab9:	e9 fd 0a 00 00       	jmp    25bb <load_elf+0xbb3>
+    1bc5:	b8 08 00 00 00       	mov    eax,0x8
+    1bca:	e9 73 0b 00 00       	jmp    2742 <load_elf+0xc2e>
 		if (hdr->e_ehsize != sizeof(*hdr))
-    1abe:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-    1ac1:	0f b7 40 28          	movzx  eax,WORD PTR [eax+0x28]
-    1ac5:	66 83 f8 34          	cmp    ax,0x34
-    1ac9:	74 0a                	je     1ad5 <load_elf+0xcd>
+    1bcf:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+    1bd2:	0f b7 40 28          	movzx  eax,WORD PTR [eax+0x28]
+    1bd6:	66 83 f8 34          	cmp    ax,0x34
+    1bda:	74 0a                	je     1be6 <load_elf+0xd2>
 				return ELF_INCOMPATIBLE_HEADER;
-    1acb:	b8 09 00 00 00       	mov    eax,0x9
-    1ad0:	e9 e6 0a 00 00       	jmp    25bb <load_elf+0xbb3>
+    1bdc:	b8 09 00 00 00       	mov    eax,0x9
+    1be1:	e9 5c 0b 00 00       	jmp    2742 <load_elf+0xc2e>
 		if (hdr->e_phnum)
-    1ad5:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-    1ad8:	0f b7 40 2c          	movzx  eax,WORD PTR [eax+0x2c]
-    1adc:	66 85 c0             	test   ax,ax
-    1adf:	74 0a                	je     1aeb <load_elf+0xe3>
+    1be6:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+    1be9:	0f b7 40 2c          	movzx  eax,WORD PTR [eax+0x2c]
+    1bed:	66 85 c0             	test   ax,ax
+    1bf0:	74 0a                	je     1bfc <load_elf+0xe8>
 				return ELF_CONTAINS_PROG_HEADERS;
-    1ae1:	b8 0a 00 00 00       	mov    eax,0xa
-    1ae6:	e9 d0 0a 00 00       	jmp    25bb <load_elf+0xbb3>
+    1bf2:	b8 0a 00 00 00       	mov    eax,0xa
+    1bf7:	e9 46 0b 00 00       	jmp    2742 <load_elf+0xc2e>
 		if (!hdr->e_shnum)
-    1aeb:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-    1aee:	0f b7 40 30          	movzx  eax,WORD PTR [eax+0x30]
-    1af2:	66 85 c0             	test   ax,ax
-    1af5:	75 0a                	jne    1b01 <load_elf+0xf9>
+    1bfc:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+    1bff:	0f b7 40 30          	movzx  eax,WORD PTR [eax+0x30]
+    1c03:	66 85 c0             	test   ax,ax
+    1c06:	75 0a                	jne    1c12 <load_elf+0xfe>
 				return ELF_NO_SECTIONS_DEFINED;
-    1af7:	b8 0b 00 00 00       	mov    eax,0xb
-    1afc:	e9 ba 0a 00 00       	jmp    25bb <load_elf+0xbb3>
+    1c08:	b8 0b 00 00 00       	mov    eax,0xb
+    1c0d:	e9 30 0b 00 00       	jmp    2742 <load_elf+0xc2e>
 		if (hdr->e_shentsize != sizeof(Elf32_Shdr))
-    1b01:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-    1b04:	0f b7 40 2e          	movzx  eax,WORD PTR [eax+0x2e]
-    1b08:	66 83 f8 28          	cmp    ax,0x28
-    1b0c:	74 0a                	je     1b18 <load_elf+0x110>
+    1c12:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+    1c15:	0f b7 40 2e          	movzx  eax,WORD PTR [eax+0x2e]
+    1c19:	66 83 f8 28          	cmp    ax,0x28
+    1c1d:	74 0a                	je     1c29 <load_elf+0x115>
 				return ELF_WRONG_SHDR_SIZE;
-    1b0e:	b8 0c 00 00 00       	mov    eax,0xc
-    1b13:	e9 a3 0a 00 00       	jmp    25bb <load_elf+0xbb3>
+    1c1f:	b8 0c 00 00 00       	mov    eax,0xc
+    1c24:	e9 19 0b 00 00       	jmp    2742 <load_elf+0xc2e>
 		if (hdr->e_shstrndx == SHN_UNDEF)
-    1b18:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-    1b1b:	0f b7 40 32          	movzx  eax,WORD PTR [eax+0x32]
-    1b1f:	66 85 c0             	test   ax,ax
-    1b22:	75 0a                	jne    1b2e <load_elf+0x126>
+    1c29:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+    1c2c:	0f b7 40 32          	movzx  eax,WORD PTR [eax+0x32]
+    1c30:	66 85 c0             	test   ax,ax
+    1c33:	75 0a                	jne    1c3f <load_elf+0x12b>
 				return ELF_NO_SECTION_STRTAB;
-    1b24:	b8 0d 00 00 00       	mov    eax,0xd
-    1b29:	e9 8d 0a 00 00       	jmp    25bb <load_elf+0xbb3>
+    1c35:	b8 0d 00 00 00       	mov    eax,0xd
+    1c3a:	e9 03 0b 00 00       	jmp    2742 <load_elf+0xc2e>
 
 		/* set the initial offsets */
 		for (i = 0; i < 4; i++)
-    1b2e:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
-    1b35:	eb 1b                	jmp    1b52 <load_elf+0x14a>
+    1c3f:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
+    1c46:	eb 1b                	jmp    1c63 <load_elf+0x14f>
 				mi->vm_ofs[i] = mod_tbl.vm_ofs[i];
-    1b37:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    1b3a:	8b 14 85 00 00 00 00 	mov    edx,DWORD PTR [eax*4+0x0]
-    1b41:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-    1b44:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
-    1b47:	83 c1 04             	add    ecx,0x4
-    1b4a:	89 54 88 0c          	mov    DWORD PTR [eax+ecx*4+0xc],edx
+    1c48:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    1c4b:	8b 14 85 00 00 00 00 	mov    edx,DWORD PTR [eax*4+0x0]
+    1c52:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    1c55:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
+    1c58:	83 c1 04             	add    ecx,0x4
+    1c5b:	89 54 88 0c          	mov    DWORD PTR [eax+ecx*4+0xc],edx
 		for (i = 0; i < 4; i++)
-    1b4e:	83 45 f4 01          	add    DWORD PTR [ebp-0xc],0x1
-    1b52:	83 7d f4 03          	cmp    DWORD PTR [ebp-0xc],0x3
-    1b56:	76 df                	jbe    1b37 <load_elf+0x12f>
+    1c5f:	83 45 f4 01          	add    DWORD PTR [ebp-0xc],0x1
+    1c63:	83 7d f4 03          	cmp    DWORD PTR [ebp-0xc],0x3
+    1c67:	76 df                	jbe    1c48 <load_elf+0x134>
 
 		/* now first allocate the sections in memory */
 		shdr = mem + hdr->e_shoff;
-    1b58:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-    1b5b:	8b 50 20             	mov    edx,DWORD PTR [eax+0x20]
-    1b5e:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    1b61:	01 d0                	add    eax,edx
-    1b63:	89 45 cc             	mov    DWORD PTR [ebp-0x34],eax
+    1c69:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+    1c6c:	8b 50 20             	mov    edx,DWORD PTR [eax+0x20]
+    1c6f:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    1c72:	01 d0                	add    eax,edx
+    1c74:	89 45 cc             	mov    DWORD PTR [ebp-0x34],eax
 		for (i = 0; i < hdr->e_shnum; i++) {
-    1b66:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
-    1b6d:	e9 08 06 00 00       	jmp    217a <load_elf+0x772>
+    1c77:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
+    1c7e:	e9 3d 06 00 00       	jmp    22c0 <load_elf+0x7ac>
 				if (shdr[i].sh_type == SHT_NULL)
-    1b72:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-    1b75:	89 d0                	mov    eax,edx
-    1b77:	c1 e0 02             	shl    eax,0x2
-    1b7a:	01 d0                	add    eax,edx
-    1b7c:	c1 e0 03             	shl    eax,0x3
-    1b7f:	89 c2                	mov    edx,eax
-    1b81:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-    1b84:	01 d0                	add    eax,edx
-    1b86:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    1b89:	85 c0                	test   eax,eax
-    1b8b:	0f 84 e4 05 00 00    	je     2175 <load_elf+0x76d>
+    1c83:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+    1c86:	89 d0                	mov    eax,edx
+    1c88:	c1 e0 02             	shl    eax,0x2
+    1c8b:	01 d0                	add    eax,edx
+    1c8d:	c1 e0 03             	shl    eax,0x3
+    1c90:	89 c2                	mov    edx,eax
+    1c92:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    1c95:	01 d0                	add    eax,edx
+    1c97:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    1c9a:	85 c0                	test   eax,eax
+    1c9c:	0f 84 19 06 00 00    	je     22bb <load_elf+0x7a7>
 						continue;
 
 				/* only allocate alloc section */
 				if (shdr[i].sh_flags & SHF_ALLOC) {
-    1b91:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-    1b94:	89 d0                	mov    eax,edx
-    1b96:	c1 e0 02             	shl    eax,0x2
-    1b99:	01 d0                	add    eax,edx
-    1b9b:	c1 e0 03             	shl    eax,0x3
-    1b9e:	89 c2                	mov    edx,eax
-    1ba0:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-    1ba3:	01 d0                	add    eax,edx
-    1ba5:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
-    1ba8:	83 e0 02             	and    eax,0x2
-    1bab:	85 c0                	test   eax,eax
-    1bad:	0f 84 c3 05 00 00    	je     2176 <load_elf+0x76e>
+    1ca2:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+    1ca5:	89 d0                	mov    eax,edx
+    1ca7:	c1 e0 02             	shl    eax,0x2
+    1caa:	01 d0                	add    eax,edx
+    1cac:	c1 e0 03             	shl    eax,0x3
+    1caf:	89 c2                	mov    edx,eax
+    1cb1:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    1cb4:	01 d0                	add    eax,edx
+    1cb6:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
+    1cb9:	83 e0 02             	and    eax,0x2
+    1cbc:	85 c0                	test   eax,eax
+    1cbe:	0f 84 f8 05 00 00    	je     22bc <load_elf+0x7a8>
 						size_t pg_ct; struct page_range pr[10];
 						Elf32_Word algn = shdr[i].sh_addralign;
-    1bb3:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-    1bb6:	89 d0                	mov    eax,edx
-    1bb8:	c1 e0 02             	shl    eax,0x2
-    1bbb:	01 d0                	add    eax,edx
-    1bbd:	c1 e0 03             	shl    eax,0x3
-    1bc0:	89 c2                	mov    edx,eax
-    1bc2:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-    1bc5:	01 d0                	add    eax,edx
-    1bc7:	8b 40 20             	mov    eax,DWORD PTR [eax+0x20]
-    1bca:	89 45 b8             	mov    DWORD PTR [ebp-0x48],eax
+    1cc4:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+    1cc7:	89 d0                	mov    eax,edx
+    1cc9:	c1 e0 02             	shl    eax,0x2
+    1ccc:	01 d0                	add    eax,edx
+    1cce:	c1 e0 03             	shl    eax,0x3
+    1cd1:	89 c2                	mov    edx,eax
+    1cd3:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    1cd6:	01 d0                	add    eax,edx
+    1cd8:	8b 40 20             	mov    eax,DWORD PTR [eax+0x20]
+    1cdb:	89 45 b8             	mov    DWORD PTR [ebp-0x48],eax
 						Elf32_Addr addr; void* mapaddr; int reuse = 0;
-    1bcd:	c7 45 e4 00 00 00 00 	mov    DWORD PTR [ebp-0x1c],0x0
+    1cde:	c7 45 e4 00 00 00 00 	mov    DWORD PTR [ebp-0x1c],0x0
 						Elf32_Off ofs = shdr[i].sh_offset;
-    1bd4:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-    1bd7:	89 d0                	mov    eax,edx
-    1bd9:	c1 e0 02             	shl    eax,0x2
-    1bdc:	01 d0                	add    eax,edx
-    1bde:	c1 e0 03             	shl    eax,0x3
-    1be1:	89 c2                	mov    edx,eax
-    1be3:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-    1be6:	01 d0                	add    eax,edx
-    1be8:	8b 40 10             	mov    eax,DWORD PTR [eax+0x10]
-    1beb:	89 45 e0             	mov    DWORD PTR [ebp-0x20],eax
+    1ce5:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+    1ce8:	89 d0                	mov    eax,edx
+    1cea:	c1 e0 02             	shl    eax,0x2
+    1ced:	01 d0                	add    eax,edx
+    1cef:	c1 e0 03             	shl    eax,0x3
+    1cf2:	89 c2                	mov    edx,eax
+    1cf4:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    1cf7:	01 d0                	add    eax,edx
+    1cf9:	8b 40 10             	mov    eax,DWORD PTR [eax+0x10]
+    1cfc:	89 45 e0             	mov    DWORD PTR [ebp-0x20],eax
 						enum mt_sec sct;
 
 						pg_ct = shdr[i].sh_size / 4096 + ((shdr[i].sh_size % 4096) ? 1 : 0);
-    1bee:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-    1bf1:	89 d0                	mov    eax,edx
-    1bf3:	c1 e0 02             	shl    eax,0x2
-    1bf6:	01 d0                	add    eax,edx
-    1bf8:	c1 e0 03             	shl    eax,0x3
-    1bfb:	89 c2                	mov    edx,eax
-    1bfd:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-    1c00:	01 d0                	add    eax,edx
-    1c02:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
-    1c05:	c1 e8 0c             	shr    eax,0xc
-    1c08:	89 c1                	mov    ecx,eax
-    1c0a:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-    1c0d:	89 d0                	mov    eax,edx
-    1c0f:	c1 e0 02             	shl    eax,0x2
-    1c12:	01 d0                	add    eax,edx
-    1c14:	c1 e0 03             	shl    eax,0x3
-    1c17:	89 c2                	mov    edx,eax
-    1c19:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-    1c1c:	01 d0                	add    eax,edx
-    1c1e:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
-    1c21:	25 ff 0f 00 00       	and    eax,0xfff
-    1c26:	85 c0                	test   eax,eax
-    1c28:	74 07                	je     1c31 <load_elf+0x229>
-    1c2a:	b8 01 00 00 00       	mov    eax,0x1
-    1c2f:	eb 05                	jmp    1c36 <load_elf+0x22e>
-    1c31:	b8 00 00 00 00       	mov    eax,0x0
-    1c36:	01 c8                	add    eax,ecx
-    1c38:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
+    1cff:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+    1d02:	89 d0                	mov    eax,edx
+    1d04:	c1 e0 02             	shl    eax,0x2
+    1d07:	01 d0                	add    eax,edx
+    1d09:	c1 e0 03             	shl    eax,0x3
+    1d0c:	89 c2                	mov    edx,eax
+    1d0e:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    1d11:	01 d0                	add    eax,edx
+    1d13:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
+    1d16:	c1 e8 0c             	shr    eax,0xc
+    1d19:	89 c1                	mov    ecx,eax
+    1d1b:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+    1d1e:	89 d0                	mov    eax,edx
+    1d20:	c1 e0 02             	shl    eax,0x2
+    1d23:	01 d0                	add    eax,edx
+    1d25:	c1 e0 03             	shl    eax,0x3
+    1d28:	89 c2                	mov    edx,eax
+    1d2a:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    1d2d:	01 d0                	add    eax,edx
+    1d2f:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
+    1d32:	25 ff 0f 00 00       	and    eax,0xfff
+    1d37:	85 c0                	test   eax,eax
+    1d39:	74 07                	je     1d42 <load_elf+0x22e>
+    1d3b:	b8 01 00 00 00       	mov    eax,0x1
+    1d40:	eb 05                	jmp    1d47 <load_elf+0x233>
+    1d42:	b8 00 00 00 00       	mov    eax,0x0
+    1d47:	01 c8                	add    eax,ecx
+    1d49:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
 						/* get the section type */
 						if (shdr[i].sh_flags & SHF_WRITE) {
-    1c3b:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-    1c3e:	89 d0                	mov    eax,edx
-    1c40:	c1 e0 02             	shl    eax,0x2
-    1c43:	01 d0                	add    eax,edx
-    1c45:	c1 e0 03             	shl    eax,0x3
-    1c48:	89 c2                	mov    edx,eax
-    1c4a:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-    1c4d:	01 d0                	add    eax,edx
-    1c4f:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
-    1c52:	83 e0 01             	and    eax,0x1
-    1c55:	85 c0                	test   eax,eax
-    1c57:	74 56                	je     1caf <load_elf+0x2a7>
+    1d4c:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+    1d4f:	89 d0                	mov    eax,edx
+    1d51:	c1 e0 02             	shl    eax,0x2
+    1d54:	01 d0                	add    eax,edx
+    1d56:	c1 e0 03             	shl    eax,0x3
+    1d59:	89 c2                	mov    edx,eax
+    1d5b:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    1d5e:	01 d0                	add    eax,edx
+    1d60:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
+    1d63:	83 e0 01             	and    eax,0x1
+    1d66:	85 c0                	test   eax,eax
+    1d68:	74 56                	je     1dc0 <load_elf+0x2ac>
 								/* TODO: C-o-w bss */
 								if (shdr[i].sh_flags & SHF_EXECINSTR)
-    1c59:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-    1c5c:	89 d0                	mov    eax,edx
-    1c5e:	c1 e0 02             	shl    eax,0x2
-    1c61:	01 d0                	add    eax,edx
-    1c63:	c1 e0 03             	shl    eax,0x3
-    1c66:	89 c2                	mov    edx,eax
-    1c68:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-    1c6b:	01 d0                	add    eax,edx
-    1c6d:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
-    1c70:	83 e0 04             	and    eax,0x4
-    1c73:	85 c0                	test   eax,eax
-    1c75:	74 0a                	je     1c81 <load_elf+0x279>
+    1d6a:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+    1d6d:	89 d0                	mov    eax,edx
+    1d6f:	c1 e0 02             	shl    eax,0x2
+    1d72:	01 d0                	add    eax,edx
+    1d74:	c1 e0 03             	shl    eax,0x3
+    1d77:	89 c2                	mov    edx,eax
+    1d79:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    1d7c:	01 d0                	add    eax,edx
+    1d7e:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
+    1d81:	83 e0 04             	and    eax,0x4
+    1d84:	85 c0                	test   eax,eax
+    1d86:	74 0a                	je     1d92 <load_elf+0x27e>
 										return ELF_SECTION_RWX;
-    1c77:	b8 0e 00 00 00       	mov    eax,0xe
-    1c7c:	e9 3a 09 00 00       	jmp    25bb <load_elf+0xbb3>
+    1d88:	b8 0e 00 00 00       	mov    eax,0xe
+    1d8d:	e9 b0 09 00 00       	jmp    2742 <load_elf+0xc2e>
 								if (shdr[i].sh_type == SHT_NOBITS)
-    1c81:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-    1c84:	89 d0                	mov    eax,edx
-    1c86:	c1 e0 02             	shl    eax,0x2
-    1c89:	01 d0                	add    eax,edx
-    1c8b:	c1 e0 03             	shl    eax,0x3
-    1c8e:	89 c2                	mov    edx,eax
-    1c90:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-    1c93:	01 d0                	add    eax,edx
-    1c95:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    1c98:	83 f8 08             	cmp    eax,0x8
-    1c9b:	75 09                	jne    1ca6 <load_elf+0x29e>
+    1d92:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+    1d95:	89 d0                	mov    eax,edx
+    1d97:	c1 e0 02             	shl    eax,0x2
+    1d9a:	01 d0                	add    eax,edx
+    1d9c:	c1 e0 03             	shl    eax,0x3
+    1d9f:	89 c2                	mov    edx,eax
+    1da1:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    1da4:	01 d0                	add    eax,edx
+    1da6:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    1da9:	83 f8 08             	cmp    eax,0x8
+    1dac:	75 09                	jne    1db7 <load_elf+0x2a3>
 										sct = MT_SEC_BSS;
-    1c9d:	c7 45 dc 03 00 00 00 	mov    DWORD PTR [ebp-0x24],0x3
-    1ca4:	eb 66                	jmp    1d0c <load_elf+0x304>
+    1dae:	c7 45 dc 03 00 00 00 	mov    DWORD PTR [ebp-0x24],0x3
+    1db5:	eb 62                	jmp    1e19 <load_elf+0x305>
 								else
 										sct = MT_SEC_DATA;
-    1ca6:	c7 45 dc 01 00 00 00 	mov    DWORD PTR [ebp-0x24],0x1
-    1cad:	eb 5d                	jmp    1d0c <load_elf+0x304>
+    1db7:	c7 45 dc 01 00 00 00 	mov    DWORD PTR [ebp-0x24],0x1
+    1dbe:	eb 59                	jmp    1e19 <load_elf+0x305>
 						} else if (shdr[i].sh_flags & SHF_EXECINSTR)
-    1caf:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-    1cb2:	89 d0                	mov    eax,edx
-    1cb4:	c1 e0 02             	shl    eax,0x2
-    1cb7:	01 d0                	add    eax,edx
-    1cb9:	c1 e0 03             	shl    eax,0x3
-    1cbc:	89 c2                	mov    edx,eax
-    1cbe:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-    1cc1:	01 d0                	add    eax,edx
-    1cc3:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
-    1cc6:	83 e0 04             	and    eax,0x4
-    1cc9:	85 c0                	test   eax,eax
-    1ccb:	74 09                	je     1cd6 <load_elf+0x2ce>
+    1dc0:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+    1dc3:	89 d0                	mov    eax,edx
+    1dc5:	c1 e0 02             	shl    eax,0x2
+    1dc8:	01 d0                	add    eax,edx
+    1dca:	c1 e0 03             	shl    eax,0x3
+    1dcd:	89 c2                	mov    edx,eax
+    1dcf:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    1dd2:	01 d0                	add    eax,edx
+    1dd4:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
+    1dd7:	83 e0 04             	and    eax,0x4
+    1dda:	85 c0                	test   eax,eax
+    1ddc:	74 09                	je     1de7 <load_elf+0x2d3>
 								sct = MT_SEC_TEXT;
-    1ccd:	c7 45 dc 00 00 00 00 	mov    DWORD PTR [ebp-0x24],0x0
-    1cd4:	eb 36                	jmp    1d0c <load_elf+0x304>
+    1dde:	c7 45 dc 00 00 00 00 	mov    DWORD PTR [ebp-0x24],0x0
+    1de5:	eb 32                	jmp    1e19 <load_elf+0x305>
 						else {
 								/* rodata, robss? */
 								if (shdr[i].sh_type == SHT_NOBITS) {
-    1cd6:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-    1cd9:	89 d0                	mov    eax,edx
-    1cdb:	c1 e0 02             	shl    eax,0x2
-    1cde:	01 d0                	add    eax,edx
-    1ce0:	c1 e0 03             	shl    eax,0x3
-    1ce3:	89 c2                	mov    edx,eax
-    1ce5:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-    1ce8:	01 d0                	add    eax,edx
-    1cea:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    1ced:	83 f8 08             	cmp    eax,0x8
-    1cf0:	75 13                	jne    1d05 <load_elf+0x2fd>
+    1de7:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+    1dea:	89 d0                	mov    eax,edx
+    1dec:	c1 e0 02             	shl    eax,0x2
+    1def:	01 d0                	add    eax,edx
+    1df1:	c1 e0 03             	shl    eax,0x3
+    1df4:	89 c2                	mov    edx,eax
+    1df6:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    1df9:	01 d0                	add    eax,edx
+    1dfb:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    1dfe:	83 f8 08             	cmp    eax,0x8
+    1e01:	75 0f                	jne    1e12 <load_elf+0x2fe>
 										printf("Implement zero page!\n");
-    1cf2:	83 ec 0c             	sub    esp,0xc
-    1cf5:	68 44 07 00 00       	push   0x744
-    1cfa:	e8 fc ff ff ff       	call   1cfb <load_elf+0x2f3>
-    1cff:	83 c4 10             	add    esp,0x10
+    1e03:	c7 04 24 44 07 00 00 	mov    DWORD PTR [esp],0x744
+    1e0a:	e8 fc ff ff ff       	call   1e0b <load_elf+0x2f7>
 										while (1); /* c-o-w? nope! */
-    1d02:	90                   	nop
-    1d03:	eb fd                	jmp    1d02 <load_elf+0x2fa>
+    1e0f:	90                   	nop
+    1e10:	eb fd                	jmp    1e0f <load_elf+0x2fb>
 								}
 								sct = MT_SEC_RODATA;
-    1d05:	c7 45 dc 02 00 00 00 	mov    DWORD PTR [ebp-0x24],0x2
+    1e12:	c7 45 dc 02 00 00 00 	mov    DWORD PTR [ebp-0x24],0x2
 						}
 						/* get the raw (unaligned) address */
 						addr = (Elf32_Addr)mod_tbl.vm_ofs[sct] + mi->sz_secs[sct];
-    1d0c:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    1d0f:	8b 04 85 00 00 00 00 	mov    eax,DWORD PTR [eax*4+0x0]
-    1d16:	89 c1                	mov    ecx,eax
-    1d18:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-    1d1b:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
-    1d1e:	83 c2 08             	add    edx,0x8
-    1d21:	8b 44 90 0c          	mov    eax,DWORD PTR [eax+edx*4+0xc]
-    1d25:	01 c8                	add    eax,ecx
-    1d27:	89 45 ec             	mov    DWORD PTR [ebp-0x14],eax
+    1e19:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    1e1c:	8b 04 85 00 00 00 00 	mov    eax,DWORD PTR [eax*4+0x0]
+    1e23:	89 c1                	mov    ecx,eax
+    1e25:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    1e28:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
+    1e2b:	83 c2 08             	add    edx,0x8
+    1e2e:	8b 44 90 0c          	mov    eax,DWORD PTR [eax+edx*4+0xc]
+    1e32:	01 c8                	add    eax,ecx
+    1e34:	89 45 ec             	mov    DWORD PTR [ebp-0x14],eax
 						mbprintf("unaligned address for %s: %p\n", elf_fetch_string(hdr, shdr, hdr->e_shstrndx, shdr[i].sh_name), (void*)addr);
-    1d2a:	8b 5d ec             	mov    ebx,DWORD PTR [ebp-0x14]
-    1d2d:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-    1d30:	89 d0                	mov    eax,edx
-    1d32:	c1 e0 02             	shl    eax,0x2
-    1d35:	01 d0                	add    eax,edx
-    1d37:	c1 e0 03             	shl    eax,0x3
-    1d3a:	89 c2                	mov    edx,eax
-    1d3c:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-    1d3f:	01 d0                	add    eax,edx
-    1d41:	8b 10                	mov    edx,DWORD PTR [eax]
-    1d43:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-    1d46:	0f b7 40 32          	movzx  eax,WORD PTR [eax+0x32]
-    1d4a:	0f b7 c0             	movzx  eax,ax
-    1d4d:	52                   	push   edx
-    1d4e:	50                   	push   eax
-    1d4f:	ff 75 cc             	push   DWORD PTR [ebp-0x34]
-    1d52:	ff 75 d0             	push   DWORD PTR [ebp-0x30]
-    1d55:	e8 fc ff ff ff       	call   1d56 <load_elf+0x34e>
-    1d5a:	83 c4 10             	add    esp,0x10
-    1d5d:	83 ec 04             	sub    esp,0x4
-    1d60:	53                   	push   ebx
-    1d61:	50                   	push   eax
-    1d62:	68 5a 07 00 00       	push   0x75a
-    1d67:	e8 fc ff ff ff       	call   1d68 <load_elf+0x360>
-    1d6c:	83 c4 10             	add    esp,0x10
+    1e37:	8b 5d ec             	mov    ebx,DWORD PTR [ebp-0x14]
+    1e3a:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+    1e3d:	89 d0                	mov    eax,edx
+    1e3f:	c1 e0 02             	shl    eax,0x2
+    1e42:	01 d0                	add    eax,edx
+    1e44:	c1 e0 03             	shl    eax,0x3
+    1e47:	89 c2                	mov    edx,eax
+    1e49:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    1e4c:	01 d0                	add    eax,edx
+    1e4e:	8b 10                	mov    edx,DWORD PTR [eax]
+    1e50:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+    1e53:	0f b7 40 32          	movzx  eax,WORD PTR [eax+0x32]
+    1e57:	0f b7 c0             	movzx  eax,ax
+    1e5a:	89 54 24 0c          	mov    DWORD PTR [esp+0xc],edx
+    1e5e:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    1e62:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    1e65:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    1e69:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+    1e6c:	89 04 24             	mov    DWORD PTR [esp],eax
+    1e6f:	e8 fc ff ff ff       	call   1e70 <load_elf+0x35c>
+    1e74:	89 5c 24 08          	mov    DWORD PTR [esp+0x8],ebx
+    1e78:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    1e7c:	c7 04 24 5a 07 00 00 	mov    DWORD PTR [esp],0x75a
+    1e83:	e8 fc ff ff ff       	call   1e84 <load_elf+0x370>
 
 						/* now do the alignment calculations */
 						if (addr % algn)
-    1d6f:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    1d72:	ba 00 00 00 00       	mov    edx,0x0
-    1d77:	f7 75 b8             	div    DWORD PTR [ebp-0x48]
-    1d7a:	89 d0                	mov    eax,edx
-    1d7c:	85 c0                	test   eax,eax
-    1d7e:	74 13                	je     1d93 <load_elf+0x38b>
+    1e88:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    1e8b:	ba 00 00 00 00       	mov    edx,0x0
+    1e90:	f7 75 b8             	div    DWORD PTR [ebp-0x48]
+    1e93:	89 d0                	mov    eax,edx
+    1e95:	85 c0                	test   eax,eax
+    1e97:	74 13                	je     1eac <load_elf+0x398>
 								addr += algn - addr % algn;
-    1d80:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    1d83:	ba 00 00 00 00       	mov    edx,0x0
-    1d88:	f7 75 b8             	div    DWORD PTR [ebp-0x48]
-    1d8b:	8b 45 b8             	mov    eax,DWORD PTR [ebp-0x48]
-    1d8e:	29 d0                	sub    eax,edx
-    1d90:	01 45 ec             	add    DWORD PTR [ebp-0x14],eax
+    1e99:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    1e9c:	ba 00 00 00 00       	mov    edx,0x0
+    1ea1:	f7 75 b8             	div    DWORD PTR [ebp-0x48]
+    1ea4:	8b 45 b8             	mov    eax,DWORD PTR [ebp-0x48]
+    1ea7:	29 d0                	sub    eax,edx
+    1ea9:	01 45 ec             	add    DWORD PTR [ebp-0x14],eax
 						if (algn < 0x1000 && (addr % 4096)) {
-    1d93:	81 7d b8 ff 0f 00 00 	cmp    DWORD PTR [ebp-0x48],0xfff
-    1d9a:	77 62                	ja     1dfe <load_elf+0x3f6>
-    1d9c:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    1d9f:	25 ff 0f 00 00       	and    eax,0xfff
-    1da4:	85 c0                	test   eax,eax
-    1da6:	74 56                	je     1dfe <load_elf+0x3f6>
+    1eac:	81 7d b8 ff 0f 00 00 	cmp    DWORD PTR [ebp-0x48],0xfff
+    1eb3:	77 5e                	ja     1f13 <load_elf+0x3ff>
+    1eb5:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    1eb8:	25 ff 0f 00 00       	and    eax,0xfff
+    1ebd:	85 c0                	test   eax,eax
+    1ebf:	74 52                	je     1f13 <load_elf+0x3ff>
 								/* maybe save up to a single page by reusing an existing one of the same module */
 								size_t ovs = shdr[i].sh_size % 4096; /* "oversize" */
-    1da8:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-    1dab:	89 d0                	mov    eax,edx
-    1dad:	c1 e0 02             	shl    eax,0x2
-    1db0:	01 d0                	add    eax,edx
-    1db2:	c1 e0 03             	shl    eax,0x3
-    1db5:	89 c2                	mov    edx,eax
-    1db7:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-    1dba:	01 d0                	add    eax,edx
-    1dbc:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
-    1dbf:	25 ff 0f 00 00       	and    eax,0xfff
-    1dc4:	89 45 b4             	mov    DWORD PTR [ebp-0x4c],eax
+    1ec1:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+    1ec4:	89 d0                	mov    eax,edx
+    1ec6:	c1 e0 02             	shl    eax,0x2
+    1ec9:	01 d0                	add    eax,edx
+    1ecb:	c1 e0 03             	shl    eax,0x3
+    1ece:	89 c2                	mov    edx,eax
+    1ed0:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    1ed3:	01 d0                	add    eax,edx
+    1ed5:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
+    1ed8:	25 ff 0f 00 00       	and    eax,0xfff
+    1edd:	89 45 b4             	mov    DWORD PTR [ebp-0x4c],eax
 								if (ovs && ovs < (4096 - (addr % 4096))) {
-    1dc7:	83 7d b4 00          	cmp    DWORD PTR [ebp-0x4c],0x0
-    1dcb:	74 31                	je     1dfe <load_elf+0x3f6>
-    1dcd:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    1dd0:	25 ff 0f 00 00       	and    eax,0xfff
-    1dd5:	89 c2                	mov    edx,eax
-    1dd7:	b8 00 10 00 00       	mov    eax,0x1000
-    1ddc:	29 d0                	sub    eax,edx
-    1dde:	39 45 b4             	cmp    DWORD PTR [ebp-0x4c],eax
-    1de1:	73 1b                	jae    1dfe <load_elf+0x3f6>
+    1ee0:	83 7d b4 00          	cmp    DWORD PTR [ebp-0x4c],0x0
+    1ee4:	74 2d                	je     1f13 <load_elf+0x3ff>
+    1ee6:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    1ee9:	25 ff 0f 00 00       	and    eax,0xfff
+    1eee:	89 c2                	mov    edx,eax
+    1ef0:	b8 00 10 00 00       	mov    eax,0x1000
+    1ef5:	29 d0                	sub    eax,edx
+    1ef7:	39 45 b4             	cmp    DWORD PTR [ebp-0x4c],eax
+    1efa:	73 17                	jae    1f13 <load_elf+0x3ff>
 										/* oversize fits into existing page */
 										mbprintf("reuse\n");
-    1de3:	83 ec 0c             	sub    esp,0xc
-    1de6:	68 78 07 00 00       	push   0x778
-    1deb:	e8 fc ff ff ff       	call   1dec <load_elf+0x3e4>
-    1df0:	83 c4 10             	add    esp,0x10
+    1efc:	c7 04 24 78 07 00 00 	mov    DWORD PTR [esp],0x778
+    1f03:	e8 fc ff ff ff       	call   1f04 <load_elf+0x3f0>
 										pg_ct--;
-    1df3:	83 6d f0 01          	sub    DWORD PTR [ebp-0x10],0x1
+    1f08:	83 6d f0 01          	sub    DWORD PTR [ebp-0x10],0x1
 										reuse = 1;
-    1df7:	c7 45 e4 01 00 00 00 	mov    DWORD PTR [ebp-0x1c],0x1
+    1f0c:	c7 45 e4 01 00 00 00 	mov    DWORD PTR [ebp-0x1c],0x1
 								}
 						}
 						if (addr % 4096)
-    1dfe:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    1e01:	25 ff 0f 00 00       	and    eax,0xfff
-    1e06:	85 c0                	test   eax,eax
-    1e08:	74 57                	je     1e61 <load_elf+0x459>
+    1f13:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    1f16:	25 ff 0f 00 00       	and    eax,0xfff
+    1f1b:	85 c0                	test   eax,eax
+    1f1d:	74 57                	je     1f76 <load_elf+0x462>
 								if (reuse) /* first use partially present page */
-    1e0a:	83 7d e4 00          	cmp    DWORD PTR [ebp-0x1c],0x0
-    1e0e:	74 12                	je     1e22 <load_elf+0x41a>
+    1f1f:	83 7d e4 00          	cmp    DWORD PTR [ebp-0x1c],0x0
+    1f23:	74 12                	je     1f37 <load_elf+0x423>
 										mapaddr = (void*)(addr + 4096 - addr % 4096);
-    1e10:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    1e13:	25 00 f0 ff ff       	and    eax,0xfffff000
-    1e18:	05 00 10 00 00       	add    eax,0x1000
-    1e1d:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
-    1e20:	eb 45                	jmp    1e67 <load_elf+0x45f>
+    1f25:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    1f28:	25 00 f0 ff ff       	and    eax,0xfffff000
+    1f2d:	05 00 10 00 00       	add    eax,0x1000
+    1f32:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
+    1f35:	eb 45                	jmp    1f7c <load_elf+0x468>
 								else { /* alignment leaves page partially unused */
 										mapaddr = (void*)(addr - addr % 4096);
-    1e22:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    1e25:	25 00 f0 ff ff       	and    eax,0xfffff000
-    1e2a:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
+    1f37:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    1f3a:	25 00 f0 ff ff       	and    eax,0xfffff000
+    1f3f:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
 										if (pg_ct * 4096 < shdr[i].sh_size + addr % 4096)
-    1e2d:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-    1e30:	c1 e0 0c             	shl    eax,0xc
-    1e33:	89 c1                	mov    ecx,eax
-    1e35:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-    1e38:	89 d0                	mov    eax,edx
-    1e3a:	c1 e0 02             	shl    eax,0x2
-    1e3d:	01 d0                	add    eax,edx
-    1e3f:	c1 e0 03             	shl    eax,0x3
-    1e42:	89 c2                	mov    edx,eax
-    1e44:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-    1e47:	01 d0                	add    eax,edx
-    1e49:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
-    1e4c:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
-    1e4f:	81 e2 ff 0f 00 00    	and    edx,0xfff
-    1e55:	01 d0                	add    eax,edx
-    1e57:	39 c1                	cmp    ecx,eax
-    1e59:	73 0c                	jae    1e67 <load_elf+0x45f>
+    1f42:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+    1f45:	c1 e0 0c             	shl    eax,0xc
+    1f48:	89 c1                	mov    ecx,eax
+    1f4a:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+    1f4d:	89 d0                	mov    eax,edx
+    1f4f:	c1 e0 02             	shl    eax,0x2
+    1f52:	01 d0                	add    eax,edx
+    1f54:	c1 e0 03             	shl    eax,0x3
+    1f57:	89 c2                	mov    edx,eax
+    1f59:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    1f5c:	01 d0                	add    eax,edx
+    1f5e:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
+    1f61:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
+    1f64:	81 e2 ff 0f 00 00    	and    edx,0xfff
+    1f6a:	01 d0                	add    eax,edx
+    1f6c:	39 c1                	cmp    ecx,eax
+    1f6e:	73 0c                	jae    1f7c <load_elf+0x468>
 												pg_ct++; /* adjust space accordingly */
-    1e5b:	83 45 f0 01          	add    DWORD PTR [ebp-0x10],0x1
-    1e5f:	eb 06                	jmp    1e67 <load_elf+0x45f>
+    1f70:	83 45 f0 01          	add    DWORD PTR [ebp-0x10],0x1
+    1f74:	eb 06                	jmp    1f7c <load_elf+0x468>
 								}
 						else
 								mapaddr = (void*)addr;
-    1e61:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    1e64:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
+    1f76:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    1f79:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
 
 						shdr[i].sh_addr = addr;
-    1e67:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-    1e6a:	89 d0                	mov    eax,edx
-    1e6c:	c1 e0 02             	shl    eax,0x2
-    1e6f:	01 d0                	add    eax,edx
-    1e71:	c1 e0 03             	shl    eax,0x3
-    1e74:	89 c2                	mov    edx,eax
-    1e76:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-    1e79:	01 c2                	add    edx,eax
-    1e7b:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    1e7e:	89 42 0c             	mov    DWORD PTR [edx+0xc],eax
+    1f7c:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+    1f7f:	89 d0                	mov    eax,edx
+    1f81:	c1 e0 02             	shl    eax,0x2
+    1f84:	01 d0                	add    eax,edx
+    1f86:	c1 e0 03             	shl    eax,0x3
+    1f89:	89 c2                	mov    edx,eax
+    1f8b:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    1f8e:	01 c2                	add    edx,eax
+    1f90:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    1f93:	89 42 0c             	mov    DWORD PTR [edx+0xc],eax
 						mbprintf("aligned address: %p\n", (void*)addr);
-    1e81:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    1e84:	83 ec 08             	sub    esp,0x8
-    1e87:	50                   	push   eax
-    1e88:	68 7f 07 00 00       	push   0x77f
-    1e8d:	e8 fc ff ff ff       	call   1e8e <load_elf+0x486>
-    1e92:	83 c4 10             	add    esp,0x10
+    1f96:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    1f99:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    1f9d:	c7 04 24 7f 07 00 00 	mov    DWORD PTR [esp],0x77f
+    1fa4:	e8 fc ff ff ff       	call   1fa5 <load_elf+0x491>
 						if (!mi->vm_ofs[sct])
-    1e95:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-    1e98:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
-    1e9b:	83 c2 04             	add    edx,0x4
-    1e9e:	8b 44 90 0c          	mov    eax,DWORD PTR [eax+edx*4+0xc]
-    1ea2:	85 c0                	test   eax,eax
-    1ea4:	75 10                	jne    1eb6 <load_elf+0x4ae>
+    1fa9:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    1fac:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
+    1faf:	83 c2 04             	add    edx,0x4
+    1fb2:	8b 44 90 0c          	mov    eax,DWORD PTR [eax+edx*4+0xc]
+    1fb6:	85 c0                	test   eax,eax
+    1fb8:	75 10                	jne    1fca <load_elf+0x4b6>
 								mi->vm_ofs[sct] = (void*)addr;
-    1ea6:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
-    1ea9:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-    1eac:	8b 4d dc             	mov    ecx,DWORD PTR [ebp-0x24]
-    1eaf:	83 c1 04             	add    ecx,0x4
-    1eb2:	89 54 88 0c          	mov    DWORD PTR [eax+ecx*4+0xc],edx
+    1fba:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
+    1fbd:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    1fc0:	8b 4d dc             	mov    ecx,DWORD PTR [ebp-0x24]
+    1fc3:	83 c1 04             	add    ecx,0x4
+    1fc6:	89 54 88 0c          	mov    DWORD PTR [eax+ecx*4+0xc],edx
 						mi->sz_secs[sct] += shdr[i].sh_size;
-    1eb6:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-    1eb9:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
-    1ebc:	83 c2 08             	add    edx,0x8
-    1ebf:	8b 4c 90 0c          	mov    ecx,DWORD PTR [eax+edx*4+0xc]
-    1ec3:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-    1ec6:	89 d0                	mov    eax,edx
-    1ec8:	c1 e0 02             	shl    eax,0x2
-    1ecb:	01 d0                	add    eax,edx
-    1ecd:	c1 e0 03             	shl    eax,0x3
-    1ed0:	89 c2                	mov    edx,eax
-    1ed2:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-    1ed5:	01 d0                	add    eax,edx
-    1ed7:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
-    1eda:	01 c1                	add    ecx,eax
-    1edc:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-    1edf:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
-    1ee2:	83 c2 08             	add    edx,0x8
-    1ee5:	89 4c 90 0c          	mov    DWORD PTR [eax+edx*4+0xc],ecx
+    1fca:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    1fcd:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
+    1fd0:	83 c2 08             	add    edx,0x8
+    1fd3:	8b 4c 90 0c          	mov    ecx,DWORD PTR [eax+edx*4+0xc]
+    1fd7:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+    1fda:	89 d0                	mov    eax,edx
+    1fdc:	c1 e0 02             	shl    eax,0x2
+    1fdf:	01 d0                	add    eax,edx
+    1fe1:	c1 e0 03             	shl    eax,0x3
+    1fe4:	89 c2                	mov    edx,eax
+    1fe6:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    1fe9:	01 d0                	add    eax,edx
+    1feb:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
+    1fee:	01 c1                	add    ecx,eax
+    1ff0:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    1ff3:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
+    1ff6:	83 c2 08             	add    edx,0x8
+    1ff9:	89 4c 90 0c          	mov    DWORD PTR [eax+edx*4+0xc],ecx
 
 						/* fill the half-used page (if PROGBITS) */
 						if (((void*)addr < mapaddr) && (shdr[i].sh_type != SHT_NOBITS)) {
-    1ee9:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    1eec:	3b 45 e8             	cmp    eax,DWORD PTR [ebp-0x18]
-    1eef:	73 6e                	jae    1f5f <load_elf+0x557>
-    1ef1:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-    1ef4:	89 d0                	mov    eax,edx
-    1ef6:	c1 e0 02             	shl    eax,0x2
-    1ef9:	01 d0                	add    eax,edx
-    1efb:	c1 e0 03             	shl    eax,0x3
-    1efe:	89 c2                	mov    edx,eax
-    1f00:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-    1f03:	01 d0                	add    eax,edx
-    1f05:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    1f08:	83 f8 08             	cmp    eax,0x8
-    1f0b:	74 52                	je     1f5f <load_elf+0x557>
+    1ffd:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    2000:	3b 45 e8             	cmp    eax,DWORD PTR [ebp-0x18]
+    2003:	73 72                	jae    2077 <load_elf+0x563>
+    2005:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+    2008:	89 d0                	mov    eax,edx
+    200a:	c1 e0 02             	shl    eax,0x2
+    200d:	01 d0                	add    eax,edx
+    200f:	c1 e0 03             	shl    eax,0x3
+    2012:	89 c2                	mov    edx,eax
+    2014:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    2017:	01 d0                	add    eax,edx
+    2019:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    201c:	83 f8 08             	cmp    eax,0x8
+    201f:	74 56                	je     2077 <load_elf+0x563>
 								size_t n = (size_t)mapaddr - (size_t)addr;
-    1f0d:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
-    1f10:	2b 45 ec             	sub    eax,DWORD PTR [ebp-0x14]
-    1f13:	89 45 b0             	mov    DWORD PTR [ebp-0x50],eax
+    2021:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
+    2024:	2b 45 ec             	sub    eax,DWORD PTR [ebp-0x14]
+    2027:	89 45 b0             	mov    DWORD PTR [ebp-0x50],eax
 								n = min(n, shdr[i].sh_size);
-    1f16:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-    1f19:	89 d0                	mov    eax,edx
-    1f1b:	c1 e0 02             	shl    eax,0x2
-    1f1e:	01 d0                	add    eax,edx
-    1f20:	c1 e0 03             	shl    eax,0x3
-    1f23:	89 c2                	mov    edx,eax
-    1f25:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-    1f28:	01 d0                	add    eax,edx
-    1f2a:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
-    1f2d:	8b 55 b0             	mov    edx,DWORD PTR [ebp-0x50]
-    1f30:	39 c2                	cmp    edx,eax
-    1f32:	0f 46 c2             	cmovbe eax,edx
-    1f35:	89 45 b0             	mov    DWORD PTR [ebp-0x50],eax
+    202a:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+    202d:	89 d0                	mov    eax,edx
+    202f:	c1 e0 02             	shl    eax,0x2
+    2032:	01 d0                	add    eax,edx
+    2034:	c1 e0 03             	shl    eax,0x3
+    2037:	89 c2                	mov    edx,eax
+    2039:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    203c:	01 d0                	add    eax,edx
+    203e:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
+    2041:	8b 55 b0             	mov    edx,DWORD PTR [ebp-0x50]
+    2044:	39 c2                	cmp    edx,eax
+    2046:	0f 46 c2             	cmovbe eax,edx
+    2049:	89 45 b0             	mov    DWORD PTR [ebp-0x50],eax
 								memcpy((void*)addr, (void*)hdr + ofs, n);
-    1f38:	8b 55 d0             	mov    edx,DWORD PTR [ebp-0x30]
-    1f3b:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
-    1f3e:	01 c2                	add    edx,eax
-    1f40:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    1f43:	83 ec 04             	sub    esp,0x4
-    1f46:	ff 75 b0             	push   DWORD PTR [ebp-0x50]
-    1f49:	52                   	push   edx
-    1f4a:	50                   	push   eax
-    1f4b:	e8 b0 e0 ff ff       	call   0 <memcpy>
-    1f50:	83 c4 10             	add    esp,0x10
+    204c:	8b 55 d0             	mov    edx,DWORD PTR [ebp-0x30]
+    204f:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
+    2052:	8d 0c 02             	lea    ecx,[edx+eax*1]
+    2055:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    2058:	8b 55 b0             	mov    edx,DWORD PTR [ebp-0x50]
+    205b:	89 54 24 08          	mov    DWORD PTR [esp+0x8],edx
+    205f:	89 4c 24 04          	mov    DWORD PTR [esp+0x4],ecx
+    2063:	89 04 24             	mov    DWORD PTR [esp],eax
+    2066:	e8 95 df ff ff       	call   0 <memcpy>
 								ofs += n;
-    1f53:	8b 45 b0             	mov    eax,DWORD PTR [ebp-0x50]
-    1f56:	01 45 e0             	add    DWORD PTR [ebp-0x20],eax
+    206b:	8b 45 b0             	mov    eax,DWORD PTR [ebp-0x50]
+    206e:	01 45 e0             	add    DWORD PTR [ebp-0x20],eax
 								addr += n;
-    1f59:	8b 45 b0             	mov    eax,DWORD PTR [ebp-0x50]
-    1f5c:	01 45 ec             	add    DWORD PTR [ebp-0x14],eax
+    2071:	8b 45 b0             	mov    eax,DWORD PTR [ebp-0x50]
+    2074:	01 45 ec             	add    DWORD PTR [ebp-0x14],eax
 						}
 						/* allocate the physical memory and map it to virtual memory */
 						mbprintf("allocating %lu pages for size=%u\n", pg_ct, shdr[i].sh_size);
-    1f5f:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-    1f62:	89 d0                	mov    eax,edx
-    1f64:	c1 e0 02             	shl    eax,0x2
-    1f67:	01 d0                	add    eax,edx
-    1f69:	c1 e0 03             	shl    eax,0x3
-    1f6c:	89 c2                	mov    edx,eax
-    1f6e:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-    1f71:	01 d0                	add    eax,edx
-    1f73:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
-    1f76:	83 ec 04             	sub    esp,0x4
-    1f79:	50                   	push   eax
-    1f7a:	ff 75 f0             	push   DWORD PTR [ebp-0x10]
-    1f7d:	68 94 07 00 00       	push   0x794
-    1f82:	e8 fc ff ff ff       	call   1f83 <load_elf+0x57b>
-    1f87:	83 c4 10             	add    esp,0x10
+    2077:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+    207a:	89 d0                	mov    eax,edx
+    207c:	c1 e0 02             	shl    eax,0x2
+    207f:	01 d0                	add    eax,edx
+    2081:	c1 e0 03             	shl    eax,0x3
+    2084:	89 c2                	mov    edx,eax
+    2086:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    2089:	01 d0                	add    eax,edx
+    208b:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
+    208e:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    2092:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+    2095:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    2099:	c7 04 24 94 07 00 00 	mov    DWORD PTR [esp],0x794
+    20a0:	e8 fc ff ff ff       	call   20a1 <load_elf+0x58d>
 						while (pg_ct) {
-    1f8a:	e9 da 01 00 00       	jmp    2169 <load_elf+0x761>
+    20a5:	e9 05 02 00 00       	jmp    22af <load_elf+0x79b>
 								int flags = MMGR_MAP_KERNEL, remap = 0;
-    1f8f:	c7 45 d8 08 00 00 00 	mov    DWORD PTR [ebp-0x28],0x8
-    1f96:	c7 45 ac 00 00 00 00 	mov    DWORD PTR [ebp-0x54],0x0
+    20aa:	c7 45 d8 08 00 00 00 	mov    DWORD PTR [ebp-0x28],0x8
+    20b1:	c7 45 ac 00 00 00 00 	mov    DWORD PTR [ebp-0x54],0x0
 								size_t np = mm_alloc_pm(pg_ct, pr, countof(pr));
-    1f9d:	83 ec 04             	sub    esp,0x4
-    1fa0:	6a 0a                	push   0xa
-    1fa2:	8d 85 2c ff ff ff    	lea    eax,[ebp-0xd4]
-    1fa8:	50                   	push   eax
-    1fa9:	ff 75 f0             	push   DWORD PTR [ebp-0x10]
-    1fac:	e8 fc ff ff ff       	call   1fad <load_elf+0x5a5>
-    1fb1:	83 c4 10             	add    esp,0x10
-    1fb4:	89 45 a8             	mov    DWORD PTR [ebp-0x58],eax
+    20b8:	c7 44 24 08 0a 00 00 00 	mov    DWORD PTR [esp+0x8],0xa
+    20c0:	8d 85 2c ff ff ff    	lea    eax,[ebp-0xd4]
+    20c6:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    20ca:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+    20cd:	89 04 24             	mov    DWORD PTR [esp],eax
+    20d0:	e8 fc ff ff ff       	call   20d1 <load_elf+0x5bd>
+    20d5:	89 45 a8             	mov    DWORD PTR [ebp-0x58],eax
 								if (shdr[i].sh_flags & SHF_EXECINSTR)
-    1fb7:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-    1fba:	89 d0                	mov    eax,edx
-    1fbc:	c1 e0 02             	shl    eax,0x2
-    1fbf:	01 d0                	add    eax,edx
-    1fc1:	c1 e0 03             	shl    eax,0x3
-    1fc4:	89 c2                	mov    edx,eax
-    1fc6:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-    1fc9:	01 d0                	add    eax,edx
-    1fcb:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
-    1fce:	83 e0 04             	and    eax,0x4
-    1fd1:	85 c0                	test   eax,eax
-    1fd3:	74 04                	je     1fd9 <load_elf+0x5d1>
+    20d8:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+    20db:	89 d0                	mov    eax,edx
+    20dd:	c1 e0 02             	shl    eax,0x2
+    20e0:	01 d0                	add    eax,edx
+    20e2:	c1 e0 03             	shl    eax,0x3
+    20e5:	89 c2                	mov    edx,eax
+    20e7:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    20ea:	01 d0                	add    eax,edx
+    20ec:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
+    20ef:	83 e0 04             	and    eax,0x4
+    20f2:	85 c0                	test   eax,eax
+    20f4:	74 04                	je     20fa <load_elf+0x5e6>
 										flags |= MMGR_MAP_EXECUTE;
-    1fd5:	83 4d d8 02          	or     DWORD PTR [ebp-0x28],0x2
+    20f6:	83 4d d8 02          	or     DWORD PTR [ebp-0x28],0x2
 								if (shdr[i].sh_flags & SHF_WRITE)
-    1fd9:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-    1fdc:	89 d0                	mov    eax,edx
-    1fde:	c1 e0 02             	shl    eax,0x2
-    1fe1:	01 d0                	add    eax,edx
-    1fe3:	c1 e0 03             	shl    eax,0x3
-    1fe6:	89 c2                	mov    edx,eax
-    1fe8:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-    1feb:	01 d0                	add    eax,edx
-    1fed:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
-    1ff0:	83 e0 01             	and    eax,0x1
-    1ff3:	85 c0                	test   eax,eax
-    1ff5:	74 06                	je     1ffd <load_elf+0x5f5>
+    20fa:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+    20fd:	89 d0                	mov    eax,edx
+    20ff:	c1 e0 02             	shl    eax,0x2
+    2102:	01 d0                	add    eax,edx
+    2104:	c1 e0 03             	shl    eax,0x3
+    2107:	89 c2                	mov    edx,eax
+    2109:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    210c:	01 d0                	add    eax,edx
+    210e:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
+    2111:	83 e0 01             	and    eax,0x1
+    2114:	85 c0                	test   eax,eax
+    2116:	74 06                	je     211e <load_elf+0x60a>
 										flags |= MMGR_MAP_WRITE;
-    1ff7:	83 4d d8 04          	or     DWORD PTR [ebp-0x28],0x4
-    1ffb:	eb 20                	jmp    201d <load_elf+0x615>
+    2118:	83 4d d8 04          	or     DWORD PTR [ebp-0x28],0x4
+    211c:	eb 20                	jmp    213e <load_elf+0x62a>
 								else if (shdr[i].sh_type != SHT_NOBITS) {
-    1ffd:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-    2000:	89 d0                	mov    eax,edx
-    2002:	c1 e0 02             	shl    eax,0x2
-    2005:	01 d0                	add    eax,edx
-    2007:	c1 e0 03             	shl    eax,0x3
-    200a:	89 c2                	mov    edx,eax
-    200c:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-    200f:	01 d0                	add    eax,edx
-    2011:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    2014:	83 f8 08             	cmp    eax,0x8
-    2017:	74 04                	je     201d <load_elf+0x615>
+    211e:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+    2121:	89 d0                	mov    eax,edx
+    2123:	c1 e0 02             	shl    eax,0x2
+    2126:	01 d0                	add    eax,edx
+    2128:	c1 e0 03             	shl    eax,0x3
+    212b:	89 c2                	mov    edx,eax
+    212d:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    2130:	01 d0                	add    eax,edx
+    2132:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    2135:	83 f8 08             	cmp    eax,0x8
+    2138:	74 04                	je     213e <load_elf+0x62a>
 										flags |= MMGR_MAP_WRITE;
-    2019:	83 4d d8 04          	or     DWORD PTR [ebp-0x28],0x4
+    213a:	83 4d d8 04          	or     DWORD PTR [ebp-0x28],0x4
 								}
 
 								mbprintf("mapping %lu pages to %p\n", np, mapaddr);
-    201d:	83 ec 04             	sub    esp,0x4
-    2020:	ff 75 e8             	push   DWORD PTR [ebp-0x18]
-    2023:	ff 75 a8             	push   DWORD PTR [ebp-0x58]
-    2026:	68 b6 07 00 00       	push   0x7b6
-    202b:	e8 fc ff ff ff       	call   202c <load_elf+0x624>
-    2030:	83 c4 10             	add    esp,0x10
+    213e:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
+    2141:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    2145:	8b 45 a8             	mov    eax,DWORD PTR [ebp-0x58]
+    2148:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    214c:	c7 04 24 b6 07 00 00 	mov    DWORD PTR [esp],0x7b6
+    2153:	e8 fc ff ff ff       	call   2154 <load_elf+0x640>
 								if (mm_map(&mm_kernel, mapaddr, pr, countof(pr), flags) != mapaddr) {
-    2033:	83 ec 0c             	sub    esp,0xc
-    2036:	ff 75 d8             	push   DWORD PTR [ebp-0x28]
-    2039:	6a 0a                	push   0xa
-    203b:	8d 85 2c ff ff ff    	lea    eax,[ebp-0xd4]
-    2041:	50                   	push   eax
-    2042:	ff 75 e8             	push   DWORD PTR [ebp-0x18]
-    2045:	68 00 00 00 00       	push   0x0
-    204a:	e8 fc ff ff ff       	call   204b <load_elf+0x643>
-    204f:	83 c4 20             	add    esp,0x20
-    2052:	39 45 e8             	cmp    DWORD PTR [ebp-0x18],eax
-    2055:	74 13                	je     206a <load_elf+0x662>
+    2158:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+    215b:	89 44 24 10          	mov    DWORD PTR [esp+0x10],eax
+    215f:	c7 44 24 0c 0a 00 00 00 	mov    DWORD PTR [esp+0xc],0xa
+    2167:	8d 85 2c ff ff ff    	lea    eax,[ebp-0xd4]
+    216d:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    2171:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
+    2174:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    2178:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+    217f:	e8 fc ff ff ff       	call   2180 <load_elf+0x66c>
+    2184:	39 45 e8             	cmp    DWORD PTR [ebp-0x18],eax
+    2187:	74 0f                	je     2198 <load_elf+0x684>
 										printf("unexpected error mapping pmem to vmem\n");
-    2057:	83 ec 0c             	sub    esp,0xc
-    205a:	68 d0 07 00 00       	push   0x7d0
-    205f:	e8 fc ff ff ff       	call   2060 <load_elf+0x658>
-    2064:	83 c4 10             	add    esp,0x10
+    2189:	c7 04 24 d0 07 00 00 	mov    DWORD PTR [esp],0x7d0
+    2190:	e8 fc ff ff ff       	call   2191 <load_elf+0x67d>
 										while (1);
-    2067:	90                   	nop
-    2068:	eb fd                	jmp    2067 <load_elf+0x65f>
+    2195:	90                   	nop
+    2196:	eb fd                	jmp    2195 <load_elf+0x681>
 								}
 								/* copy data if present */
 								if (shdr[i].sh_type != SHT_NOBITS) {
-    206a:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-    206d:	89 d0                	mov    eax,edx
-    206f:	c1 e0 02             	shl    eax,0x2
-    2072:	01 d0                	add    eax,edx
-    2074:	c1 e0 03             	shl    eax,0x3
-    2077:	89 c2                	mov    edx,eax
-    2079:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-    207c:	01 d0                	add    eax,edx
-    207e:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    2081:	83 f8 08             	cmp    eax,0x8
-    2084:	0f 84 d0 00 00 00    	je     215a <load_elf+0x752>
+    2198:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+    219b:	89 d0                	mov    eax,edx
+    219d:	c1 e0 02             	shl    eax,0x2
+    21a0:	01 d0                	add    eax,edx
+    21a2:	c1 e0 03             	shl    eax,0x3
+    21a5:	89 c2                	mov    edx,eax
+    21a7:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    21aa:	01 d0                	add    eax,edx
+    21ac:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    21af:	83 f8 08             	cmp    eax,0x8
+    21b2:	0f 84 e8 00 00 00    	je     22a0 <load_elf+0x78c>
 										size_t n = min(np * 4096, shdr[i].sh_size - (ofs - shdr[i].sh_offset));
-    208a:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-    208d:	89 d0                	mov    eax,edx
-    208f:	c1 e0 02             	shl    eax,0x2
-    2092:	01 d0                	add    eax,edx
-    2094:	c1 e0 03             	shl    eax,0x3
-    2097:	89 c2                	mov    edx,eax
-    2099:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-    209c:	01 d0                	add    eax,edx
-    209e:	8b 48 14             	mov    ecx,DWORD PTR [eax+0x14]
-    20a1:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-    20a4:	89 d0                	mov    eax,edx
-    20a6:	c1 e0 02             	shl    eax,0x2
-    20a9:	01 d0                	add    eax,edx
-    20ab:	c1 e0 03             	shl    eax,0x3
-    20ae:	89 c2                	mov    edx,eax
-    20b0:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-    20b3:	01 d0                	add    eax,edx
-    20b5:	8b 40 10             	mov    eax,DWORD PTR [eax+0x10]
-    20b8:	2b 45 e0             	sub    eax,DWORD PTR [ebp-0x20]
-    20bb:	8d 14 01             	lea    edx,[ecx+eax*1]
-    20be:	8b 45 a8             	mov    eax,DWORD PTR [ebp-0x58]
-    20c1:	c1 e0 0c             	shl    eax,0xc
-    20c4:	39 c2                	cmp    edx,eax
-    20c6:	0f 46 c2             	cmovbe eax,edx
-    20c9:	89 45 d4             	mov    DWORD PTR [ebp-0x2c],eax
+    21b8:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+    21bb:	89 d0                	mov    eax,edx
+    21bd:	c1 e0 02             	shl    eax,0x2
+    21c0:	01 d0                	add    eax,edx
+    21c2:	c1 e0 03             	shl    eax,0x3
+    21c5:	89 c2                	mov    edx,eax
+    21c7:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    21ca:	01 d0                	add    eax,edx
+    21cc:	8b 48 14             	mov    ecx,DWORD PTR [eax+0x14]
+    21cf:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+    21d2:	89 d0                	mov    eax,edx
+    21d4:	c1 e0 02             	shl    eax,0x2
+    21d7:	01 d0                	add    eax,edx
+    21d9:	c1 e0 03             	shl    eax,0x3
+    21dc:	89 c2                	mov    edx,eax
+    21de:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    21e1:	01 d0                	add    eax,edx
+    21e3:	8b 40 10             	mov    eax,DWORD PTR [eax+0x10]
+    21e6:	2b 45 e0             	sub    eax,DWORD PTR [ebp-0x20]
+    21e9:	8d 14 01             	lea    edx,[ecx+eax*1]
+    21ec:	8b 45 a8             	mov    eax,DWORD PTR [ebp-0x58]
+    21ef:	c1 e0 0c             	shl    eax,0xc
+    21f2:	39 c2                	cmp    edx,eax
+    21f4:	0f 46 c2             	cmovbe eax,edx
+    21f7:	89 45 d4             	mov    DWORD PTR [ebp-0x2c],eax
 										mbprintf("n=%lu, ofs=%u\n", n, ofs);
-    20cc:	83 ec 04             	sub    esp,0x4
-    20cf:	ff 75 e0             	push   DWORD PTR [ebp-0x20]
-    20d2:	ff 75 d4             	push   DWORD PTR [ebp-0x2c]
-    20d5:	68 f7 07 00 00       	push   0x7f7
-    20da:	e8 fc ff ff ff       	call   20db <load_elf+0x6d3>
-    20df:	83 c4 10             	add    esp,0x10
+    21fa:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
+    21fd:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    2201:	8b 45 d4             	mov    eax,DWORD PTR [ebp-0x2c]
+    2204:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    2208:	c7 04 24 f7 07 00 00 	mov    DWORD PTR [esp],0x7f7
+    220f:	e8 fc ff ff ff       	call   2210 <load_elf+0x6fc>
 										if ((void*)addr > mapaddr)
-    20e2:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    20e5:	39 45 e8             	cmp    DWORD PTR [ebp-0x18],eax
-    20e8:	73 09                	jae    20f3 <load_elf+0x6eb>
+    2214:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    2217:	39 45 e8             	cmp    DWORD PTR [ebp-0x18],eax
+    221a:	73 09                	jae    2225 <load_elf+0x711>
 												n -= (size_t)addr - (size_t)mapaddr;
-    20ea:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
-    20ed:	2b 45 ec             	sub    eax,DWORD PTR [ebp-0x14]
-    20f0:	01 45 d4             	add    DWORD PTR [ebp-0x2c],eax
+    221c:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
+    221f:	2b 45 ec             	sub    eax,DWORD PTR [ebp-0x14]
+    2222:	01 45 d4             	add    DWORD PTR [ebp-0x2c],eax
 										memcpy((void*)addr, (void*)hdr + ofs, n);
-    20f3:	8b 55 d0             	mov    edx,DWORD PTR [ebp-0x30]
-    20f6:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
-    20f9:	01 c2                	add    edx,eax
-    20fb:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    20fe:	83 ec 04             	sub    esp,0x4
-    2101:	ff 75 d4             	push   DWORD PTR [ebp-0x2c]
-    2104:	52                   	push   edx
-    2105:	50                   	push   eax
-    2106:	e8 f5 de ff ff       	call   0 <memcpy>
-    210b:	83 c4 10             	add    esp,0x10
+    2225:	8b 55 d0             	mov    edx,DWORD PTR [ebp-0x30]
+    2228:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
+    222b:	8d 0c 02             	lea    ecx,[edx+eax*1]
+    222e:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    2231:	8b 55 d4             	mov    edx,DWORD PTR [ebp-0x2c]
+    2234:	89 54 24 08          	mov    DWORD PTR [esp+0x8],edx
+    2238:	89 4c 24 04          	mov    DWORD PTR [esp+0x4],ecx
+    223c:	89 04 24             	mov    DWORD PTR [esp],eax
+    223f:	e8 bc dd ff ff       	call   0 <memcpy>
 										mbprintf("copying %lu bytes to %p\n", n, (void*)addr);
-    210e:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    2111:	83 ec 04             	sub    esp,0x4
-    2114:	50                   	push   eax
-    2115:	ff 75 d4             	push   DWORD PTR [ebp-0x2c]
-    2118:	68 06 08 00 00       	push   0x806
-    211d:	e8 fc ff ff ff       	call   211e <load_elf+0x716>
-    2122:	83 c4 10             	add    esp,0x10
+    2244:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    2247:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    224b:	8b 45 d4             	mov    eax,DWORD PTR [ebp-0x2c]
+    224e:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    2252:	c7 04 24 06 08 00 00 	mov    DWORD PTR [esp],0x806
+    2259:	e8 fc ff ff ff       	call   225a <load_elf+0x746>
 										ofs += n;
-    2125:	8b 45 d4             	mov    eax,DWORD PTR [ebp-0x2c]
-    2128:	01 45 e0             	add    DWORD PTR [ebp-0x20],eax
+    225e:	8b 45 d4             	mov    eax,DWORD PTR [ebp-0x2c]
+    2261:	01 45 e0             	add    DWORD PTR [ebp-0x20],eax
 										addr += n;
-    212b:	8b 45 d4             	mov    eax,DWORD PTR [ebp-0x2c]
-    212e:	01 45 ec             	add    DWORD PTR [ebp-0x14],eax
+    2264:	8b 45 d4             	mov    eax,DWORD PTR [ebp-0x2c]
+    2267:	01 45 ec             	add    DWORD PTR [ebp-0x14],eax
 										if (remap) {
-    2131:	83 7d ac 00          	cmp    DWORD PTR [ebp-0x54],0x0
-    2135:	74 23                	je     215a <load_elf+0x752>
+    226a:	83 7d ac 00          	cmp    DWORD PTR [ebp-0x54],0x0
+    226e:	74 30                	je     22a0 <load_elf+0x78c>
 												flags &= ~MMGR_MAP_WRITE;
-    2137:	83 65 d8 fb          	and    DWORD PTR [ebp-0x28],0xfffffffb
+    2270:	83 65 d8 fb          	and    DWORD PTR [ebp-0x28],0xfffffffb
 												mm_map(&mm_kernel, mapaddr, pr, countof(pr), flags);
-    213b:	83 ec 0c             	sub    esp,0xc
-    213e:	ff 75 d8             	push   DWORD PTR [ebp-0x28]
-    2141:	6a 0a                	push   0xa
-    2143:	8d 85 2c ff ff ff    	lea    eax,[ebp-0xd4]
-    2149:	50                   	push   eax
-    214a:	ff 75 e8             	push   DWORD PTR [ebp-0x18]
-    214d:	68 00 00 00 00       	push   0x0
-    2152:	e8 fc ff ff ff       	call   2153 <load_elf+0x74b>
-    2157:	83 c4 20             	add    esp,0x20
+    2274:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+    2277:	89 44 24 10          	mov    DWORD PTR [esp+0x10],eax
+    227b:	c7 44 24 0c 0a 00 00 00 	mov    DWORD PTR [esp+0xc],0xa
+    2283:	8d 85 2c ff ff ff    	lea    eax,[ebp-0xd4]
+    2289:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    228d:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
+    2290:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    2294:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+    229b:	e8 fc ff ff ff       	call   229c <load_elf+0x788>
 										}
 								}
 								mapaddr += np * 4096;
-    215a:	8b 45 a8             	mov    eax,DWORD PTR [ebp-0x58]
-    215d:	c1 e0 0c             	shl    eax,0xc
-    2160:	01 45 e8             	add    DWORD PTR [ebp-0x18],eax
+    22a0:	8b 45 a8             	mov    eax,DWORD PTR [ebp-0x58]
+    22a3:	c1 e0 0c             	shl    eax,0xc
+    22a6:	01 45 e8             	add    DWORD PTR [ebp-0x18],eax
 								pg_ct -= np;
-    2163:	8b 45 a8             	mov    eax,DWORD PTR [ebp-0x58]
-    2166:	29 45 f0             	sub    DWORD PTR [ebp-0x10],eax
+    22a9:	8b 45 a8             	mov    eax,DWORD PTR [ebp-0x58]
+    22ac:	29 45 f0             	sub    DWORD PTR [ebp-0x10],eax
 						while (pg_ct) {
-    2169:	83 7d f0 00          	cmp    DWORD PTR [ebp-0x10],0x0
-    216d:	0f 85 1c fe ff ff    	jne    1f8f <load_elf+0x587>
-    2173:	eb 01                	jmp    2176 <load_elf+0x76e>
+    22af:	83 7d f0 00          	cmp    DWORD PTR [ebp-0x10],0x0
+    22b3:	0f 85 f1 fd ff ff    	jne    20aa <load_elf+0x596>
+    22b9:	eb 01                	jmp    22bc <load_elf+0x7a8>
 						continue;
-    2175:	90                   	nop
+    22bb:	90                   	nop
 		for (i = 0; i < hdr->e_shnum; i++) {
-    2176:	83 45 f4 01          	add    DWORD PTR [ebp-0xc],0x1
-    217a:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-    217d:	0f b7 40 30          	movzx  eax,WORD PTR [eax+0x30]
-    2181:	0f b7 c0             	movzx  eax,ax
-    2184:	39 45 f4             	cmp    DWORD PTR [ebp-0xc],eax
-    2187:	0f 82 e5 f9 ff ff    	jb     1b72 <load_elf+0x16a>
+    22bc:	83 45 f4 01          	add    DWORD PTR [ebp-0xc],0x1
+    22c0:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+    22c3:	0f b7 40 30          	movzx  eax,WORD PTR [eax+0x30]
+    22c7:	0f b7 c0             	movzx  eax,ax
+    22ca:	39 45 f4             	cmp    DWORD PTR [ebp-0xc],eax
+    22cd:	0f 82 b0 f9 ff ff    	jb     1c83 <load_elf+0x16f>
 				}
 #endif
 		}
 
 		/* Now determine the symbol values*/
 		for (i = 0; i < hdr->e_shnum; i++)
-    218d:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
-    2194:	e9 33 01 00 00       	jmp    22cc <load_elf+0x8c4>
+    22d3:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
+    22da:	e9 4f 01 00 00       	jmp    242e <load_elf+0x91a>
 				if (shdr[i].sh_type == SHT_SYMTAB) {
-    2199:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-    219c:	89 d0                	mov    eax,edx
-    219e:	c1 e0 02             	shl    eax,0x2
-    21a1:	01 d0                	add    eax,edx
-    21a3:	c1 e0 03             	shl    eax,0x3
-    21a6:	89 c2                	mov    edx,eax
-    21a8:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-    21ab:	01 d0                	add    eax,edx
-    21ad:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    21b0:	83 f8 02             	cmp    eax,0x2
-    21b3:	0f 85 0f 01 00 00    	jne    22c8 <load_elf+0x8c0>
+    22df:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+    22e2:	89 d0                	mov    eax,edx
+    22e4:	c1 e0 02             	shl    eax,0x2
+    22e7:	01 d0                	add    eax,edx
+    22e9:	c1 e0 03             	shl    eax,0x3
+    22ec:	89 c2                	mov    edx,eax
+    22ee:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    22f1:	01 d0                	add    eax,edx
+    22f3:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    22f6:	83 f8 02             	cmp    eax,0x2
+    22f9:	0f 85 2b 01 00 00    	jne    242a <load_elf+0x916>
 						void* vm_bss = mi->vm_ofs[MT_SEC_BSS] + mi->sz_secs[MT_SEC_BSS];
-    21b9:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-    21bc:	8b 50 28             	mov    edx,DWORD PTR [eax+0x28]
-    21bf:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-    21c2:	8b 40 38             	mov    eax,DWORD PTR [eax+0x38]
-    21c5:	01 d0                	add    eax,edx
-    21c7:	89 45 a4             	mov    DWORD PTR [ebp-0x5c],eax
+    22ff:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    2302:	8b 50 28             	mov    edx,DWORD PTR [eax+0x28]
+    2305:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    2308:	8b 40 38             	mov    eax,DWORD PTR [eax+0x38]
+    230b:	01 d0                	add    eax,edx
+    230d:	89 45 a4             	mov    DWORD PTR [ebp-0x5c],eax
 						void* vm_aold = vm_bss + (((size_t)vm_bss % 4096) ? (4096 - ((size_t)vm_bss % 4096)) : 0);
-    21ca:	8b 55 a4             	mov    edx,DWORD PTR [ebp-0x5c]
-    21cd:	8b 45 a4             	mov    eax,DWORD PTR [ebp-0x5c]
-    21d0:	25 ff 0f 00 00       	and    eax,0xfff
-    21d5:	85 c0                	test   eax,eax
-    21d7:	74 13                	je     21ec <load_elf+0x7e4>
-    21d9:	8b 45 a4             	mov    eax,DWORD PTR [ebp-0x5c]
-    21dc:	25 ff 0f 00 00       	and    eax,0xfff
-    21e1:	89 c1                	mov    ecx,eax
-    21e3:	b8 00 10 00 00       	mov    eax,0x1000
-    21e8:	29 c8                	sub    eax,ecx
-    21ea:	eb 05                	jmp    21f1 <load_elf+0x7e9>
-    21ec:	b8 00 00 00 00       	mov    eax,0x0
-    21f1:	01 d0                	add    eax,edx
-    21f3:	89 45 c0             	mov    DWORD PTR [ebp-0x40],eax
+    2310:	8b 55 a4             	mov    edx,DWORD PTR [ebp-0x5c]
+    2313:	8b 45 a4             	mov    eax,DWORD PTR [ebp-0x5c]
+    2316:	25 ff 0f 00 00       	and    eax,0xfff
+    231b:	85 c0                	test   eax,eax
+    231d:	74 13                	je     2332 <load_elf+0x81e>
+    231f:	8b 45 a4             	mov    eax,DWORD PTR [ebp-0x5c]
+    2322:	25 ff 0f 00 00       	and    eax,0xfff
+    2327:	89 c1                	mov    ecx,eax
+    2329:	b8 00 10 00 00       	mov    eax,0x1000
+    232e:	29 c8                	sub    eax,ecx
+    2330:	eb 05                	jmp    2337 <load_elf+0x823>
+    2332:	b8 00 00 00 00       	mov    eax,0x0
+    2337:	01 d0                	add    eax,edx
+    2339:	89 45 c0             	mov    DWORD PTR [ebp-0x40],eax
 						elf_resolve_symbols(hdr, shdr, i, &vm_bss, mi);
-    21f6:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    21f9:	0f b7 c0             	movzx  eax,ax
-    21fc:	83 ec 0c             	sub    esp,0xc
-    21ff:	ff 75 10             	push   DWORD PTR [ebp+0x10]
-    2202:	8d 55 a4             	lea    edx,[ebp-0x5c]
-    2205:	52                   	push   edx
-    2206:	50                   	push   eax
-    2207:	ff 75 cc             	push   DWORD PTR [ebp-0x34]
-    220a:	ff 75 d0             	push   DWORD PTR [ebp-0x30]
-    220d:	e8 fc ff ff ff       	call   220e <load_elf+0x806>
-    2212:	83 c4 20             	add    esp,0x20
+    233c:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    233f:	0f b7 c0             	movzx  eax,ax
+    2342:	8b 55 10             	mov    edx,DWORD PTR [ebp+0x10]
+    2345:	89 54 24 10          	mov    DWORD PTR [esp+0x10],edx
+    2349:	8d 55 a4             	lea    edx,[ebp-0x5c]
+    234c:	89 54 24 0c          	mov    DWORD PTR [esp+0xc],edx
+    2350:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    2354:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    2357:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    235b:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+    235e:	89 04 24             	mov    DWORD PTR [esp],eax
+    2361:	e8 fc ff ff ff       	call   2362 <load_elf+0x84e>
 						if (vm_bss > vm_aold) {
-    2215:	8b 45 a4             	mov    eax,DWORD PTR [ebp-0x5c]
-    2218:	39 45 c0             	cmp    DWORD PTR [ebp-0x40],eax
-    221b:	0f 83 a7 00 00 00    	jae    22c8 <load_elf+0x8c0>
+    2366:	8b 45 a4             	mov    eax,DWORD PTR [ebp-0x5c]
+    2369:	39 45 c0             	cmp    DWORD PTR [ebp-0x40],eax
+    236c:	0f 83 b8 00 00 00    	jae    242a <load_elf+0x916>
 								size_t pgc = 0; struct page_range pr[10];
-    2221:	c7 45 bc 00 00 00 00 	mov    DWORD PTR [ebp-0x44],0x0
+    2372:	c7 45 bc 00 00 00 00 	mov    DWORD PTR [ebp-0x44],0x0
 								/* allocate new bss sections */
 								pgc = vm_bss - vm_aold;
-    2228:	8b 45 a4             	mov    eax,DWORD PTR [ebp-0x5c]
-    222b:	2b 45 c0             	sub    eax,DWORD PTR [ebp-0x40]
-    222e:	89 45 bc             	mov    DWORD PTR [ebp-0x44],eax
+    2379:	8b 45 a4             	mov    eax,DWORD PTR [ebp-0x5c]
+    237c:	2b 45 c0             	sub    eax,DWORD PTR [ebp-0x40]
+    237f:	89 45 bc             	mov    DWORD PTR [ebp-0x44],eax
 								pgc = pgc / 4096 + (pgc % 4096) ? 1 : 0;
-    2231:	8b 45 bc             	mov    eax,DWORD PTR [ebp-0x44]
-    2234:	c1 e8 0c             	shr    eax,0xc
-    2237:	89 c2                	mov    edx,eax
-    2239:	8b 45 bc             	mov    eax,DWORD PTR [ebp-0x44]
-    223c:	25 ff 0f 00 00       	and    eax,0xfff
-    2241:	01 d0                	add    eax,edx
-    2243:	85 c0                	test   eax,eax
-    2245:	0f 95 c0             	setne  al
-    2248:	0f b6 c0             	movzx  eax,al
-    224b:	89 45 bc             	mov    DWORD PTR [ebp-0x44],eax
+    2382:	8b 45 bc             	mov    eax,DWORD PTR [ebp-0x44]
+    2385:	c1 e8 0c             	shr    eax,0xc
+    2388:	89 c2                	mov    edx,eax
+    238a:	8b 45 bc             	mov    eax,DWORD PTR [ebp-0x44]
+    238d:	25 ff 0f 00 00       	and    eax,0xfff
+    2392:	01 d0                	add    eax,edx
+    2394:	85 c0                	test   eax,eax
+    2396:	0f 95 c0             	setne  al
+    2399:	0f b6 c0             	movzx  eax,al
+    239c:	89 45 bc             	mov    DWORD PTR [ebp-0x44],eax
 								if (mm_alloc_pm(pgc, pr, 10) == pgc) {
-    224e:	83 ec 04             	sub    esp,0x4
-    2251:	6a 0a                	push   0xa
-    2253:	8d 85 2c ff ff ff    	lea    eax,[ebp-0xd4]
-    2259:	50                   	push   eax
-    225a:	ff 75 bc             	push   DWORD PTR [ebp-0x44]
-    225d:	e8 fc ff ff ff       	call   225e <load_elf+0x856>
-    2262:	83 c4 10             	add    esp,0x10
-    2265:	39 45 bc             	cmp    DWORD PTR [ebp-0x44],eax
-    2268:	75 4b                	jne    22b5 <load_elf+0x8ad>
+    239f:	c7 44 24 08 0a 00 00 00 	mov    DWORD PTR [esp+0x8],0xa
+    23a7:	8d 85 2c ff ff ff    	lea    eax,[ebp-0xd4]
+    23ad:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    23b1:	8b 45 bc             	mov    eax,DWORD PTR [ebp-0x44]
+    23b4:	89 04 24             	mov    DWORD PTR [esp],eax
+    23b7:	e8 fc ff ff ff       	call   23b8 <load_elf+0x8a4>
+    23bc:	39 45 bc             	cmp    DWORD PTR [ebp-0x44],eax
+    23bf:	75 5a                	jne    241b <load_elf+0x907>
 										/* success */
 										if (!mm_map(&mm_kernel, vm_aold, pr, 10, MMGR_MAP_WRITE | MMGR_MAP_KERNEL)) {
-    226a:	83 ec 0c             	sub    esp,0xc
-    226d:	6a 0c                	push   0xc
-    226f:	6a 0a                	push   0xa
-    2271:	8d 85 2c ff ff ff    	lea    eax,[ebp-0xd4]
-    2277:	50                   	push   eax
-    2278:	ff 75 c0             	push   DWORD PTR [ebp-0x40]
-    227b:	68 00 00 00 00       	push   0x0
-    2280:	e8 fc ff ff ff       	call   2281 <load_elf+0x879>
-    2285:	83 c4 20             	add    esp,0x20
-    2288:	85 c0                	test   eax,eax
-    228a:	75 16                	jne    22a2 <load_elf+0x89a>
+    23c1:	c7 44 24 10 0c 00 00 00 	mov    DWORD PTR [esp+0x10],0xc
+    23c9:	c7 44 24 0c 0a 00 00 00 	mov    DWORD PTR [esp+0xc],0xa
+    23d1:	8d 85 2c ff ff ff    	lea    eax,[ebp-0xd4]
+    23d7:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    23db:	8b 45 c0             	mov    eax,DWORD PTR [ebp-0x40]
+    23de:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    23e2:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+    23e9:	e8 fc ff ff ff       	call   23ea <load_elf+0x8d6>
+    23ee:	85 c0                	test   eax,eax
+    23f0:	75 16                	jne    2408 <load_elf+0x8f4>
 												printf("unable to map new bss pages to %p\n", vm_aold);
-    228c:	83 ec 08             	sub    esp,0x8
-    228f:	ff 75 c0             	push   DWORD PTR [ebp-0x40]
-    2292:	68 20 08 00 00       	push   0x820
-    2297:	e8 fc ff ff ff       	call   2298 <load_elf+0x890>
-    229c:	83 c4 10             	add    esp,0x10
+    23f2:	8b 45 c0             	mov    eax,DWORD PTR [ebp-0x40]
+    23f5:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    23f9:	c7 04 24 20 08 00 00 	mov    DWORD PTR [esp],0x820
+    2400:	e8 fc ff ff ff       	call   2401 <load_elf+0x8ed>
 												while (1);
-    229f:	90                   	nop
-    22a0:	eb fd                	jmp    229f <load_elf+0x897>
+    2405:	90                   	nop
+    2406:	eb fd                	jmp    2405 <load_elf+0x8f1>
 										}
 										mi->sz_secs[MT_SEC_BSS] = vm_bss - mi->vm_ofs[MT_SEC_BSS];
-    22a2:	8b 55 a4             	mov    edx,DWORD PTR [ebp-0x5c]
-    22a5:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-    22a8:	8b 40 28             	mov    eax,DWORD PTR [eax+0x28]
-    22ab:	29 c2                	sub    edx,eax
-    22ad:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-    22b0:	89 50 38             	mov    DWORD PTR [eax+0x38],edx
-    22b3:	eb 13                	jmp    22c8 <load_elf+0x8c0>
+    2408:	8b 55 a4             	mov    edx,DWORD PTR [ebp-0x5c]
+    240b:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    240e:	8b 40 28             	mov    eax,DWORD PTR [eax+0x28]
+    2411:	29 c2                	sub    edx,eax
+    2413:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    2416:	89 50 38             	mov    DWORD PTR [eax+0x38],edx
+    2419:	eb 0f                	jmp    242a <load_elf+0x916>
 								} else {
 										printf("failed to extend bss section\n");
-    22b5:	83 ec 0c             	sub    esp,0xc
-    22b8:	68 43 08 00 00       	push   0x843
-    22bd:	e8 fc ff ff ff       	call   22be <load_elf+0x8b6>
-    22c2:	83 c4 10             	add    esp,0x10
+    241b:	c7 04 24 43 08 00 00 	mov    DWORD PTR [esp],0x843
+    2422:	e8 fc ff ff ff       	call   2423 <load_elf+0x90f>
 										while (1);
-    22c5:	90                   	nop
-    22c6:	eb fd                	jmp    22c5 <load_elf+0x8bd>
+    2427:	90                   	nop
+    2428:	eb fd                	jmp    2427 <load_elf+0x913>
 		for (i = 0; i < hdr->e_shnum; i++)
-    22c8:	83 45 f4 01          	add    DWORD PTR [ebp-0xc],0x1
-    22cc:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-    22cf:	0f b7 40 30          	movzx  eax,WORD PTR [eax+0x30]
-    22d3:	0f b7 c0             	movzx  eax,ax
-    22d6:	39 45 f4             	cmp    DWORD PTR [ebp-0xc],eax
-    22d9:	0f 82 ba fe ff ff    	jb     2199 <load_elf+0x791>
+    242a:	83 45 f4 01          	add    DWORD PTR [ebp-0xc],0x1
+    242e:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+    2431:	0f b7 40 30          	movzx  eax,WORD PTR [eax+0x30]
+    2435:	0f b7 c0             	movzx  eax,ax
+    2438:	39 45 f4             	cmp    DWORD PTR [ebp-0xc],eax
+    243b:	0f 82 9e fe ff ff    	jb     22df <load_elf+0x7cb>
 								}
 						}
 				}
 
 		/* and perform the relocations */
 		for (i = 0; i < hdr->e_shnum; i++)
-    22df:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
-    22e6:	e9 0e 02 00 00       	jmp    24f9 <load_elf+0xaf1>
+    2441:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
+    2448:	e9 33 02 00 00       	jmp    2680 <load_elf+0xb6c>
 				if (shdr[i].sh_type == SHT_REL || shdr[i].sh_type == SHT_RELA) {
-    22eb:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-    22ee:	89 d0                	mov    eax,edx
-    22f0:	c1 e0 02             	shl    eax,0x2
-    22f3:	01 d0                	add    eax,edx
-    22f5:	c1 e0 03             	shl    eax,0x3
-    22f8:	89 c2                	mov    edx,eax
-    22fa:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-    22fd:	01 d0                	add    eax,edx
-    22ff:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    2302:	83 f8 09             	cmp    eax,0x9
-    2305:	74 20                	je     2327 <load_elf+0x91f>
-    2307:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-    230a:	89 d0                	mov    eax,edx
-    230c:	c1 e0 02             	shl    eax,0x2
-    230f:	01 d0                	add    eax,edx
-    2311:	c1 e0 03             	shl    eax,0x3
-    2314:	89 c2                	mov    edx,eax
-    2316:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-    2319:	01 d0                	add    eax,edx
-    231b:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
-    231e:	83 f8 04             	cmp    eax,0x4
-    2321:	0f 85 ce 01 00 00    	jne    24f5 <load_elf+0xaed>
+    244d:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+    2450:	89 d0                	mov    eax,edx
+    2452:	c1 e0 02             	shl    eax,0x2
+    2455:	01 d0                	add    eax,edx
+    2457:	c1 e0 03             	shl    eax,0x3
+    245a:	89 c2                	mov    edx,eax
+    245c:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    245f:	01 d0                	add    eax,edx
+    2461:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    2464:	83 f8 09             	cmp    eax,0x9
+    2467:	74 20                	je     2489 <load_elf+0x975>
+    2469:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+    246c:	89 d0                	mov    eax,edx
+    246e:	c1 e0 02             	shl    eax,0x2
+    2471:	01 d0                	add    eax,edx
+    2473:	c1 e0 03             	shl    eax,0x3
+    2476:	89 c2                	mov    edx,eax
+    2478:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    247b:	01 d0                	add    eax,edx
+    247d:	8b 40 04             	mov    eax,DWORD PTR [eax+0x4]
+    2480:	83 f8 04             	cmp    eax,0x4
+    2483:	0f 85 f3 01 00 00    	jne    267c <load_elf+0xb68>
 						if (shdr[shdr[i].sh_info].sh_flags & SHF_ALLOC) {
-    2327:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-    232a:	89 d0                	mov    eax,edx
-    232c:	c1 e0 02             	shl    eax,0x2
-    232f:	01 d0                	add    eax,edx
-    2331:	c1 e0 03             	shl    eax,0x3
-    2334:	89 c2                	mov    edx,eax
-    2336:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-    2339:	01 d0                	add    eax,edx
-    233b:	8b 50 1c             	mov    edx,DWORD PTR [eax+0x1c]
-    233e:	89 d0                	mov    eax,edx
-    2340:	c1 e0 02             	shl    eax,0x2
-    2343:	01 d0                	add    eax,edx
-    2345:	c1 e0 03             	shl    eax,0x3
-    2348:	89 c2                	mov    edx,eax
-    234a:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-    234d:	01 d0                	add    eax,edx
-    234f:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
-    2352:	83 e0 02             	and    eax,0x2
-    2355:	85 c0                	test   eax,eax
-    2357:	0f 84 98 01 00 00    	je     24f5 <load_elf+0xaed>
+    2489:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+    248c:	89 d0                	mov    eax,edx
+    248e:	c1 e0 02             	shl    eax,0x2
+    2491:	01 d0                	add    eax,edx
+    2493:	c1 e0 03             	shl    eax,0x3
+    2496:	89 c2                	mov    edx,eax
+    2498:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    249b:	01 d0                	add    eax,edx
+    249d:	8b 50 1c             	mov    edx,DWORD PTR [eax+0x1c]
+    24a0:	89 d0                	mov    eax,edx
+    24a2:	c1 e0 02             	shl    eax,0x2
+    24a5:	01 d0                	add    eax,edx
+    24a7:	c1 e0 03             	shl    eax,0x3
+    24aa:	89 c2                	mov    edx,eax
+    24ac:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    24af:	01 d0                	add    eax,edx
+    24b1:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
+    24b4:	83 e0 02             	and    eax,0x2
+    24b7:	85 c0                	test   eax,eax
+    24b9:	0f 84 bd 01 00 00    	je     267c <load_elf+0xb68>
 								void* vm_begin = (void*)shdr[shdr[i].sh_info].sh_addr;
-    235d:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-    2360:	89 d0                	mov    eax,edx
-    2362:	c1 e0 02             	shl    eax,0x2
-    2365:	01 d0                	add    eax,edx
-    2367:	c1 e0 03             	shl    eax,0x3
-    236a:	89 c2                	mov    edx,eax
-    236c:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-    236f:	01 d0                	add    eax,edx
-    2371:	8b 50 1c             	mov    edx,DWORD PTR [eax+0x1c]
-    2374:	89 d0                	mov    eax,edx
-    2376:	c1 e0 02             	shl    eax,0x2
-    2379:	01 d0                	add    eax,edx
-    237b:	c1 e0 03             	shl    eax,0x3
-    237e:	89 c2                	mov    edx,eax
-    2380:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-    2383:	01 d0                	add    eax,edx
-    2385:	8b 40 0c             	mov    eax,DWORD PTR [eax+0xc]
-    2388:	89 45 c8             	mov    DWORD PTR [ebp-0x38],eax
-								size_t pgc = shdr[shdr[i].sh_info].sh_size;
-    238b:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-    238e:	89 d0                	mov    eax,edx
-    2390:	c1 e0 02             	shl    eax,0x2
-    2393:	01 d0                	add    eax,edx
-    2395:	c1 e0 03             	shl    eax,0x3
-    2398:	89 c2                	mov    edx,eax
-    239a:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-    239d:	01 d0                	add    eax,edx
-    239f:	8b 50 1c             	mov    edx,DWORD PTR [eax+0x1c]
-    23a2:	89 d0                	mov    eax,edx
-    23a4:	c1 e0 02             	shl    eax,0x2
-    23a7:	01 d0                	add    eax,edx
-    23a9:	c1 e0 03             	shl    eax,0x3
-    23ac:	89 c2                	mov    edx,eax
-    23ae:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-    23b1:	01 d0                	add    eax,edx
-    23b3:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
-    23b6:	89 45 c4             	mov    DWORD PTR [ebp-0x3c],eax
-								pgc = pgc / 4096 + ((pgc % 4096) ? 1 : 0);
-    23b9:	8b 45 c4             	mov    eax,DWORD PTR [ebp-0x3c]
-    23bc:	c1 e8 0c             	shr    eax,0xc
-    23bf:	89 c2                	mov    edx,eax
-    23c1:	8b 45 c4             	mov    eax,DWORD PTR [ebp-0x3c]
-    23c4:	25 ff 0f 00 00       	and    eax,0xfff
-    23c9:	85 c0                	test   eax,eax
-    23cb:	74 07                	je     23d4 <load_elf+0x9cc>
-    23cd:	b8 01 00 00 00       	mov    eax,0x1
-    23d2:	eb 05                	jmp    23d9 <load_elf+0x9d1>
-    23d4:	b8 00 00 00 00       	mov    eax,0x0
-    23d9:	01 d0                	add    eax,edx
-    23db:	89 45 c4             	mov    DWORD PTR [ebp-0x3c],eax
-								printf("performing relocations on section %s:\n",
-										elf_fetch_string(hdr, shdr, hdr->e_shstrndx, shdr[shdr[i].sh_info].sh_name));
-    23de:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-    23e1:	89 d0                	mov    eax,edx
-    23e3:	c1 e0 02             	shl    eax,0x2
-    23e6:	01 d0                	add    eax,edx
-    23e8:	c1 e0 03             	shl    eax,0x3
-    23eb:	89 c2                	mov    edx,eax
-    23ed:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-    23f0:	01 d0                	add    eax,edx
-    23f2:	8b 50 1c             	mov    edx,DWORD PTR [eax+0x1c]
-    23f5:	89 d0                	mov    eax,edx
-    23f7:	c1 e0 02             	shl    eax,0x2
-    23fa:	01 d0                	add    eax,edx
-    23fc:	c1 e0 03             	shl    eax,0x3
-    23ff:	89 c2                	mov    edx,eax
-    2401:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-    2404:	01 d0                	add    eax,edx
-								printf("performing relocations on section %s:\n",
-    2406:	8b 10                	mov    edx,DWORD PTR [eax]
-										elf_fetch_string(hdr, shdr, hdr->e_shstrndx, shdr[shdr[i].sh_info].sh_name));
-    2408:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-    240b:	0f b7 40 32          	movzx  eax,WORD PTR [eax+0x32]
-								printf("performing relocations on section %s:\n",
-    240f:	0f b7 c0             	movzx  eax,ax
-    2412:	52                   	push   edx
-    2413:	50                   	push   eax
-    2414:	ff 75 cc             	push   DWORD PTR [ebp-0x34]
-    2417:	ff 75 d0             	push   DWORD PTR [ebp-0x30]
-    241a:	e8 fc ff ff ff       	call   241b <load_elf+0xa13>
-    241f:	83 c4 10             	add    esp,0x10
-    2422:	83 ec 08             	sub    esp,0x8
-    2425:	50                   	push   eax
-    2426:	68 64 08 00 00       	push   0x864
-    242b:	e8 fc ff ff ff       	call   242c <load_elf+0xa24>
-    2430:	83 c4 10             	add    esp,0x10
-								/* unguard the section */
-								printf("modifying %lu pages at %p\n", pgc, vm_begin);
-    2433:	83 ec 04             	sub    esp,0x4
-    2436:	ff 75 c8             	push   DWORD PTR [ebp-0x38]
-    2439:	ff 75 c4             	push   DWORD PTR [ebp-0x3c]
-    243c:	68 8b 08 00 00       	push   0x88b
-    2441:	e8 fc ff ff ff       	call   2442 <load_elf+0xa3a>
-    2446:	83 c4 10             	add    esp,0x10
-								if (!(shdr[shdr[i].sh_info].sh_flags & SHF_WRITE))
-    2449:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-    244c:	89 d0                	mov    eax,edx
-    244e:	c1 e0 02             	shl    eax,0x2
-    2451:	01 d0                	add    eax,edx
-    2453:	c1 e0 03             	shl    eax,0x3
-    2456:	89 c2                	mov    edx,eax
-    2458:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-    245b:	01 d0                	add    eax,edx
-    245d:	8b 50 1c             	mov    edx,DWORD PTR [eax+0x1c]
-    2460:	89 d0                	mov    eax,edx
-    2462:	c1 e0 02             	shl    eax,0x2
-    2465:	01 d0                	add    eax,edx
-    2467:	c1 e0 03             	shl    eax,0x3
-    246a:	89 c2                	mov    edx,eax
-    246c:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-    246f:	01 d0                	add    eax,edx
-    2471:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
-    2474:	83 e0 01             	and    eax,0x1
-    2477:	85 c0                	test   eax,eax
-    2479:	75 18                	jne    2493 <load_elf+0xa8b>
-										mm_protect(&mm_kernel, vm_begin, pgc, MMGR_MAP_WRITE | MMGR_MAP_SET);
-    247b:	68 04 10 00 00       	push   0x1004
-    2480:	ff 75 c4             	push   DWORD PTR [ebp-0x3c]
-    2483:	ff 75 c8             	push   DWORD PTR [ebp-0x38]
-    2486:	68 00 00 00 00       	push   0x0
-    248b:	e8 fc ff ff ff       	call   248c <load_elf+0xa84>
-    2490:	83 c4 10             	add    esp,0x10
-								/* relocate */
-								elf_relocate_section(hdr, shdr, i);
-    2493:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    2496:	0f b7 c0             	movzx  eax,ax
-    2499:	83 ec 04             	sub    esp,0x4
-    249c:	50                   	push   eax
-    249d:	ff 75 cc             	push   DWORD PTR [ebp-0x34]
-    24a0:	ff 75 d0             	push   DWORD PTR [ebp-0x30]
-    24a3:	e8 fc ff ff ff       	call   24a4 <load_elf+0xa9c>
-    24a8:	83 c4 10             	add    esp,0x10
-								/* reguard the section */
-								if (!(shdr[shdr[i].sh_info].sh_flags & SHF_WRITE))
-    24ab:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-    24ae:	89 d0                	mov    eax,edx
-    24b0:	c1 e0 02             	shl    eax,0x2
-    24b3:	01 d0                	add    eax,edx
-    24b5:	c1 e0 03             	shl    eax,0x3
-    24b8:	89 c2                	mov    edx,eax
-    24ba:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-    24bd:	01 d0                	add    eax,edx
-    24bf:	8b 50 1c             	mov    edx,DWORD PTR [eax+0x1c]
+    24bf:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
     24c2:	89 d0                	mov    eax,edx
     24c4:	c1 e0 02             	shl    eax,0x2
     24c7:	01 d0                	add    eax,edx
@@ -3941,732 +3716,819 @@ enum elferr load_elf(void* mem, uint32_t sz, struct module_info* mi)
     24cc:	89 c2                	mov    edx,eax
     24ce:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
     24d1:	01 d0                	add    eax,edx
-    24d3:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
-    24d6:	83 e0 01             	and    eax,0x1
-    24d9:	85 c0                	test   eax,eax
-    24db:	75 18                	jne    24f5 <load_elf+0xaed>
+    24d3:	8b 50 1c             	mov    edx,DWORD PTR [eax+0x1c]
+    24d6:	89 d0                	mov    eax,edx
+    24d8:	c1 e0 02             	shl    eax,0x2
+    24db:	01 d0                	add    eax,edx
+    24dd:	c1 e0 03             	shl    eax,0x3
+    24e0:	89 c2                	mov    edx,eax
+    24e2:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    24e5:	01 d0                	add    eax,edx
+    24e7:	8b 40 0c             	mov    eax,DWORD PTR [eax+0xc]
+    24ea:	89 45 c8             	mov    DWORD PTR [ebp-0x38],eax
+								size_t pgc = shdr[shdr[i].sh_info].sh_size;
+    24ed:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+    24f0:	89 d0                	mov    eax,edx
+    24f2:	c1 e0 02             	shl    eax,0x2
+    24f5:	01 d0                	add    eax,edx
+    24f7:	c1 e0 03             	shl    eax,0x3
+    24fa:	89 c2                	mov    edx,eax
+    24fc:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    24ff:	01 d0                	add    eax,edx
+    2501:	8b 50 1c             	mov    edx,DWORD PTR [eax+0x1c]
+    2504:	89 d0                	mov    eax,edx
+    2506:	c1 e0 02             	shl    eax,0x2
+    2509:	01 d0                	add    eax,edx
+    250b:	c1 e0 03             	shl    eax,0x3
+    250e:	89 c2                	mov    edx,eax
+    2510:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    2513:	01 d0                	add    eax,edx
+    2515:	8b 40 14             	mov    eax,DWORD PTR [eax+0x14]
+    2518:	89 45 c4             	mov    DWORD PTR [ebp-0x3c],eax
+								pgc = pgc / 4096 + ((pgc % 4096) ? 1 : 0);
+    251b:	8b 45 c4             	mov    eax,DWORD PTR [ebp-0x3c]
+    251e:	c1 e8 0c             	shr    eax,0xc
+    2521:	89 c2                	mov    edx,eax
+    2523:	8b 45 c4             	mov    eax,DWORD PTR [ebp-0x3c]
+    2526:	25 ff 0f 00 00       	and    eax,0xfff
+    252b:	85 c0                	test   eax,eax
+    252d:	74 07                	je     2536 <load_elf+0xa22>
+    252f:	b8 01 00 00 00       	mov    eax,0x1
+    2534:	eb 05                	jmp    253b <load_elf+0xa27>
+    2536:	b8 00 00 00 00       	mov    eax,0x0
+    253b:	01 d0                	add    eax,edx
+    253d:	89 45 c4             	mov    DWORD PTR [ebp-0x3c],eax
+								printf("performing relocations on section %s:\n",
+										elf_fetch_string(hdr, shdr, hdr->e_shstrndx, shdr[shdr[i].sh_info].sh_name));
+    2540:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+    2543:	89 d0                	mov    eax,edx
+    2545:	c1 e0 02             	shl    eax,0x2
+    2548:	01 d0                	add    eax,edx
+    254a:	c1 e0 03             	shl    eax,0x3
+    254d:	89 c2                	mov    edx,eax
+    254f:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    2552:	01 d0                	add    eax,edx
+    2554:	8b 50 1c             	mov    edx,DWORD PTR [eax+0x1c]
+    2557:	89 d0                	mov    eax,edx
+    2559:	c1 e0 02             	shl    eax,0x2
+    255c:	01 d0                	add    eax,edx
+    255e:	c1 e0 03             	shl    eax,0x3
+    2561:	89 c2                	mov    edx,eax
+    2563:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    2566:	01 d0                	add    eax,edx
+								printf("performing relocations on section %s:\n",
+    2568:	8b 10                	mov    edx,DWORD PTR [eax]
+										elf_fetch_string(hdr, shdr, hdr->e_shstrndx, shdr[shdr[i].sh_info].sh_name));
+    256a:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+    256d:	0f b7 40 32          	movzx  eax,WORD PTR [eax+0x32]
+								printf("performing relocations on section %s:\n",
+    2571:	0f b7 c0             	movzx  eax,ax
+    2574:	89 54 24 0c          	mov    DWORD PTR [esp+0xc],edx
+    2578:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    257c:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    257f:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    2583:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+    2586:	89 04 24             	mov    DWORD PTR [esp],eax
+    2589:	e8 fc ff ff ff       	call   258a <load_elf+0xa76>
+    258e:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    2592:	c7 04 24 64 08 00 00 	mov    DWORD PTR [esp],0x864
+    2599:	e8 fc ff ff ff       	call   259a <load_elf+0xa86>
+								/* unguard the section */
+								printf("modifying %lu pages at %p\n", pgc, vm_begin);
+    259e:	8b 45 c8             	mov    eax,DWORD PTR [ebp-0x38]
+    25a1:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    25a5:	8b 45 c4             	mov    eax,DWORD PTR [ebp-0x3c]
+    25a8:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    25ac:	c7 04 24 8b 08 00 00 	mov    DWORD PTR [esp],0x88b
+    25b3:	e8 fc ff ff ff       	call   25b4 <load_elf+0xaa0>
+								if (!(shdr[shdr[i].sh_info].sh_flags & SHF_WRITE))
+    25b8:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+    25bb:	89 d0                	mov    eax,edx
+    25bd:	c1 e0 02             	shl    eax,0x2
+    25c0:	01 d0                	add    eax,edx
+    25c2:	c1 e0 03             	shl    eax,0x3
+    25c5:	89 c2                	mov    edx,eax
+    25c7:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    25ca:	01 d0                	add    eax,edx
+    25cc:	8b 50 1c             	mov    edx,DWORD PTR [eax+0x1c]
+    25cf:	89 d0                	mov    eax,edx
+    25d1:	c1 e0 02             	shl    eax,0x2
+    25d4:	01 d0                	add    eax,edx
+    25d6:	c1 e0 03             	shl    eax,0x3
+    25d9:	89 c2                	mov    edx,eax
+    25db:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    25de:	01 d0                	add    eax,edx
+    25e0:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
+    25e3:	83 e0 01             	and    eax,0x1
+    25e6:	85 c0                	test   eax,eax
+    25e8:	75 22                	jne    260c <load_elf+0xaf8>
+										mm_protect(&mm_kernel, vm_begin, pgc, MMGR_MAP_WRITE | MMGR_MAP_SET);
+    25ea:	c7 44 24 0c 04 10 00 00 	mov    DWORD PTR [esp+0xc],0x1004
+    25f2:	8b 45 c4             	mov    eax,DWORD PTR [ebp-0x3c]
+    25f5:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    25f9:	8b 45 c8             	mov    eax,DWORD PTR [ebp-0x38]
+    25fc:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    2600:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+    2607:	e8 fc ff ff ff       	call   2608 <load_elf+0xaf4>
+								/* relocate */
+								elf_relocate_section(hdr, shdr, i);
+    260c:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    260f:	0f b7 c0             	movzx  eax,ax
+    2612:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    2616:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    2619:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    261d:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+    2620:	89 04 24             	mov    DWORD PTR [esp],eax
+    2623:	e8 fc ff ff ff       	call   2624 <load_elf+0xb10>
+								/* reguard the section */
+								if (!(shdr[shdr[i].sh_info].sh_flags & SHF_WRITE))
+    2628:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+    262b:	89 d0                	mov    eax,edx
+    262d:	c1 e0 02             	shl    eax,0x2
+    2630:	01 d0                	add    eax,edx
+    2632:	c1 e0 03             	shl    eax,0x3
+    2635:	89 c2                	mov    edx,eax
+    2637:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    263a:	01 d0                	add    eax,edx
+    263c:	8b 50 1c             	mov    edx,DWORD PTR [eax+0x1c]
+    263f:	89 d0                	mov    eax,edx
+    2641:	c1 e0 02             	shl    eax,0x2
+    2644:	01 d0                	add    eax,edx
+    2646:	c1 e0 03             	shl    eax,0x3
+    2649:	89 c2                	mov    edx,eax
+    264b:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    264e:	01 d0                	add    eax,edx
+    2650:	8b 40 08             	mov    eax,DWORD PTR [eax+0x8]
+    2653:	83 e0 01             	and    eax,0x1
+    2656:	85 c0                	test   eax,eax
+    2658:	75 22                	jne    267c <load_elf+0xb68>
 										mm_protect(&mm_kernel, vm_begin, pgc, MMGR_MAP_WRITE | MMGR_MAP_UNSET);
-    24dd:	68 04 20 00 00       	push   0x2004
-    24e2:	ff 75 c4             	push   DWORD PTR [ebp-0x3c]
-    24e5:	ff 75 c8             	push   DWORD PTR [ebp-0x38]
-    24e8:	68 00 00 00 00       	push   0x0
-    24ed:	e8 fc ff ff ff       	call   24ee <load_elf+0xae6>
-    24f2:	83 c4 10             	add    esp,0x10
+    265a:	c7 44 24 0c 04 20 00 00 	mov    DWORD PTR [esp+0xc],0x2004
+    2662:	8b 45 c4             	mov    eax,DWORD PTR [ebp-0x3c]
+    2665:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    2669:	8b 45 c8             	mov    eax,DWORD PTR [ebp-0x38]
+    266c:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    2670:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+    2677:	e8 fc ff ff ff       	call   2678 <load_elf+0xb64>
 		for (i = 0; i < hdr->e_shnum; i++)
-    24f5:	83 45 f4 01          	add    DWORD PTR [ebp-0xc],0x1
-    24f9:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
-    24fc:	0f b7 40 30          	movzx  eax,WORD PTR [eax+0x30]
-    2500:	0f b7 c0             	movzx  eax,ax
-    2503:	39 45 f4             	cmp    DWORD PTR [ebp-0xc],eax
-    2506:	0f 82 df fd ff ff    	jb     22eb <load_elf+0x8e3>
+    267c:	83 45 f4 01          	add    DWORD PTR [ebp-0xc],0x1
+    2680:	8b 45 d0             	mov    eax,DWORD PTR [ebp-0x30]
+    2683:	0f b7 40 30          	movzx  eax,WORD PTR [eax+0x30]
+    2687:	0f b7 c0             	movzx  eax,ax
+    268a:	39 45 f4             	cmp    DWORD PTR [ebp-0xc],eax
+    268d:	0f 82 ba fd ff ff    	jb     244d <load_elf+0x939>
 						}
 				}
 
 		/* page-align for the next module */
 		/* DBG: and insert a guard-page */
 		for (i = 0; i < 4; i++) {
-    250c:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
-    2513:	e9 94 00 00 00       	jmp    25ac <load_elf+0xba4>
+    2693:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
+    269a:	e9 94 00 00 00       	jmp    2733 <load_elf+0xc1f>
 				if (mi->sz_secs[i]) {
-    2518:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-    251b:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-    251e:	83 c2 08             	add    edx,0x8
-    2521:	8b 44 90 0c          	mov    eax,DWORD PTR [eax+edx*4+0xc]
-    2525:	85 c0                	test   eax,eax
-    2527:	74 7f                	je     25a8 <load_elf+0xba0>
+    269f:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    26a2:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+    26a5:	83 c2 08             	add    edx,0x8
+    26a8:	8b 44 90 0c          	mov    eax,DWORD PTR [eax+edx*4+0xc]
+    26ac:	85 c0                	test   eax,eax
+    26ae:	74 7f                	je     272f <load_elf+0xc1b>
 						mod_tbl.vm_ofs[i] = mi->vm_ofs[i] + mi->sz_secs[i];
-    2529:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-    252c:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-    252f:	83 c2 04             	add    edx,0x4
-    2532:	8b 54 90 0c          	mov    edx,DWORD PTR [eax+edx*4+0xc]
-    2536:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
-    2539:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
-    253c:	83 c1 08             	add    ecx,0x8
-    253f:	8b 44 88 0c          	mov    eax,DWORD PTR [eax+ecx*4+0xc]
-    2543:	01 c2                	add    edx,eax
-    2545:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    2548:	89 14 85 00 00 00 00 	mov    DWORD PTR [eax*4+0x0],edx
+    26b0:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    26b3:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+    26b6:	83 c2 04             	add    edx,0x4
+    26b9:	8b 54 90 0c          	mov    edx,DWORD PTR [eax+edx*4+0xc]
+    26bd:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+    26c0:	8b 4d f4             	mov    ecx,DWORD PTR [ebp-0xc]
+    26c3:	83 c1 08             	add    ecx,0x8
+    26c6:	8b 44 88 0c          	mov    eax,DWORD PTR [eax+ecx*4+0xc]
+    26ca:	01 c2                	add    edx,eax
+    26cc:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    26cf:	89 14 85 00 00 00 00 	mov    DWORD PTR [eax*4+0x0],edx
 						if ((size_t)mod_tbl.vm_ofs[i] % 4096) {
-    254f:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    2552:	8b 04 85 00 00 00 00 	mov    eax,DWORD PTR [eax*4+0x0]
-    2559:	25 ff 0f 00 00       	and    eax,0xfff
-    255e:	85 c0                	test   eax,eax
-    2560:	74 2c                	je     258e <load_elf+0xb86>
+    26d6:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    26d9:	8b 04 85 00 00 00 00 	mov    eax,DWORD PTR [eax*4+0x0]
+    26e0:	25 ff 0f 00 00       	and    eax,0xfff
+    26e5:	85 c0                	test   eax,eax
+    26e7:	74 2c                	je     2715 <load_elf+0xc01>
 								/* section align */
 								mod_tbl.vm_ofs[i] += 4096 - (size_t)mod_tbl.vm_ofs[i] % 4096;
-    2562:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    2565:	8b 14 85 00 00 00 00 	mov    edx,DWORD PTR [eax*4+0x0]
-    256c:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    256f:	8b 04 85 00 00 00 00 	mov    eax,DWORD PTR [eax*4+0x0]
-    2576:	25 ff 0f 00 00       	and    eax,0xfff
-    257b:	b9 00 10 00 00       	mov    ecx,0x1000
-    2580:	29 c1                	sub    ecx,eax
-    2582:	01 ca                	add    edx,ecx
-    2584:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    2587:	89 14 85 00 00 00 00 	mov    DWORD PTR [eax*4+0x0],edx
+    26e9:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    26ec:	8b 14 85 00 00 00 00 	mov    edx,DWORD PTR [eax*4+0x0]
+    26f3:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    26f6:	8b 04 85 00 00 00 00 	mov    eax,DWORD PTR [eax*4+0x0]
+    26fd:	25 ff 0f 00 00       	and    eax,0xfff
+    2702:	b9 00 10 00 00       	mov    ecx,0x1000
+    2707:	29 c1                	sub    ecx,eax
+    2709:	01 ca                	add    edx,ecx
+    270b:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    270e:	89 14 85 00 00 00 00 	mov    DWORD PTR [eax*4+0x0],edx
 						}
 						/* add guard page */
 						mod_tbl.vm_ofs[i] += 4096;
-    258e:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    2591:	8b 04 85 00 00 00 00 	mov    eax,DWORD PTR [eax*4+0x0]
-    2598:	8d 90 00 10 00 00    	lea    edx,[eax+0x1000]
-    259e:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    25a1:	89 14 85 00 00 00 00 	mov    DWORD PTR [eax*4+0x0],edx
+    2715:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    2718:	8b 04 85 00 00 00 00 	mov    eax,DWORD PTR [eax*4+0x0]
+    271f:	8d 90 00 10 00 00    	lea    edx,[eax+0x1000]
+    2725:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    2728:	89 14 85 00 00 00 00 	mov    DWORD PTR [eax*4+0x0],edx
 		for (i = 0; i < 4; i++) {
-    25a8:	83 45 f4 01          	add    DWORD PTR [ebp-0xc],0x1
-    25ac:	83 7d f4 03          	cmp    DWORD PTR [ebp-0xc],0x3
-    25b0:	0f 86 62 ff ff ff    	jbe    2518 <load_elf+0xb10>
+    272f:	83 45 f4 01          	add    DWORD PTR [ebp-0xc],0x1
+    2733:	83 7d f4 03          	cmp    DWORD PTR [ebp-0xc],0x3
+    2737:	0f 86 62 ff ff ff    	jbe    269f <load_elf+0xb8b>
 				}
 		}
 
 		return ELF_OK;
-    25b6:	b8 00 00 00 00       	mov    eax,0x0
+    273d:	b8 00 00 00 00       	mov    eax,0x0
 }
-    25bb:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
-    25be:	c9                   	leave
-    25bf:	c3                   	ret
+    2742:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
+    2745:	c9                   	leave
+    2746:	c3                   	ret
 
-000025c0 <get_elferr_string>:
+00002747 <get_elferr_string>:
 
 const char* get_elferr_string(enum elferr e)
 {
-    25c0:	55                   	push   ebp
-    25c1:	89 e5                	mov    ebp,esp
+    2747:	55                   	push   ebp
+    2748:	89 e5                	mov    ebp,esp
 		switch (e) {
-    25c3:	83 7d 08 11          	cmp    DWORD PTR [ebp+0x8],0x11
-    25c7:	0f 87 86 00 00 00    	ja     2653 <get_elferr_string+0x93>
-    25cd:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    25d0:	c1 e0 02             	shl    eax,0x2
-    25d3:	05 e4 0a 00 00       	add    eax,0xae4
-    25d8:	8b 00                	mov    eax,DWORD PTR [eax]
-    25da:	ff e0                	jmp    eax
+    274a:	83 7d 08 11          	cmp    DWORD PTR [ebp+0x8],0x11
+    274e:	0f 87 86 00 00 00    	ja     27da <get_elferr_string+0x93>
+    2754:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    2757:	c1 e0 02             	shl    eax,0x2
+    275a:	05 e4 0a 00 00       	add    eax,0xae4
+    275f:	8b 00                	mov    eax,DWORD PTR [eax]
+    2761:	ff e0                	jmp    eax
 		case ELF_WRONG_MAGIC:
 				return "not ELF file";
-    25dc:	b8 a6 08 00 00       	mov    eax,0x8a6
-    25e1:	eb 75                	jmp    2658 <get_elferr_string+0x98>
+    2763:	b8 a6 08 00 00       	mov    eax,0x8a6
+    2768:	eb 75                	jmp    27df <get_elferr_string+0x98>
 		case ELF_NOT_CLASS32:
 				return "not a 32-bit ELF file";
-    25e3:	b8 b3 08 00 00       	mov    eax,0x8b3
-    25e8:	eb 6e                	jmp    2658 <get_elferr_string+0x98>
+    276a:	b8 b3 08 00 00       	mov    eax,0x8b3
+    276f:	eb 6e                	jmp    27df <get_elferr_string+0x98>
 		case ELF_NOMEM:
 				return "out of memory";
-    25ea:	b8 c9 08 00 00       	mov    eax,0x8c9
-    25ef:	eb 67                	jmp    2658 <get_elferr_string+0x98>
+    2771:	b8 c9 08 00 00       	mov    eax,0x8c9
+    2776:	eb 67                	jmp    27df <get_elferr_string+0x98>
 		case ELF_NOT_LE:
 				return "not a little-endian file";
-    25f1:	b8 d7 08 00 00       	mov    eax,0x8d7
-    25f6:	eb 60                	jmp    2658 <get_elferr_string+0x98>
+    2778:	b8 d7 08 00 00       	mov    eax,0x8d7
+    277d:	eb 60                	jmp    27df <get_elferr_string+0x98>
 		case ELF_VERSION_NOT_SUPPORTED:
 				return "unsupported ELF version";
-    25f8:	b8 f0 08 00 00       	mov    eax,0x8f0
-    25fd:	eb 59                	jmp    2658 <get_elferr_string+0x98>
+    277f:	b8 f0 08 00 00       	mov    eax,0x8f0
+    2784:	eb 59                	jmp    27df <get_elferr_string+0x98>
 		case ELF_WRONG_OSABI:
 				return "unsupported OS ABI";
-    25ff:	b8 08 09 00 00       	mov    eax,0x908
-    2604:	eb 52                	jmp    2658 <get_elferr_string+0x98>
+    2786:	b8 08 09 00 00       	mov    eax,0x908
+    278b:	eb 52                	jmp    27df <get_elferr_string+0x98>
 		case ELF_NOT_REL:
 				return "modules have to be relocatable object files";
-    2606:	b8 1c 09 00 00       	mov    eax,0x91c
-    260b:	eb 4b                	jmp    2658 <get_elferr_string+0x98>
+    278d:	b8 1c 09 00 00       	mov    eax,0x91c
+    2792:	eb 4b                	jmp    27df <get_elferr_string+0x98>
 		case ELF_NOT_386:
 				return "only i386 modules can be loaded";
-    260d:	b8 48 09 00 00       	mov    eax,0x948
-    2612:	eb 44                	jmp    2658 <get_elferr_string+0x98>
+    2794:	b8 48 09 00 00       	mov    eax,0x948
+    2799:	eb 44                	jmp    27df <get_elferr_string+0x98>
 		case ELF_INCOMPATIBLE_HEADER:
 				return "unexpected size of ELF header";
-    2614:	b8 68 09 00 00       	mov    eax,0x968
-    2619:	eb 3d                	jmp    2658 <get_elferr_string+0x98>
+    279b:	b8 68 09 00 00       	mov    eax,0x968
+    27a0:	eb 3d                	jmp    27df <get_elferr_string+0x98>
 		case ELF_CONTAINS_PROG_HEADERS:
 				return "ELF contains program heades (no object file)";
-    261b:	b8 88 09 00 00       	mov    eax,0x988
-    2620:	eb 36                	jmp    2658 <get_elferr_string+0x98>
+    27a2:	b8 88 09 00 00       	mov    eax,0x988
+    27a7:	eb 36                	jmp    27df <get_elferr_string+0x98>
 		case ELF_NO_SECTIONS_DEFINED:
 				return "ELF contains no defined sections";
-    2622:	b8 b8 09 00 00       	mov    eax,0x9b8
-    2627:	eb 2f                	jmp    2658 <get_elferr_string+0x98>
+    27a9:	b8 b8 09 00 00       	mov    eax,0x9b8
+    27ae:	eb 2f                	jmp    27df <get_elferr_string+0x98>
 		case ELF_WRONG_SHDR_SIZE:
 				return "no matching ELF section header size";
-    2629:	b8 dc 09 00 00       	mov    eax,0x9dc
-    262e:	eb 28                	jmp    2658 <get_elferr_string+0x98>
+    27b0:	b8 dc 09 00 00       	mov    eax,0x9dc
+    27b5:	eb 28                	jmp    27df <get_elferr_string+0x98>
 		case ELF_NO_SECTION_STRTAB:
 				return "no ELF STRTAB for section names";
-    2630:	b8 00 0a 00 00       	mov    eax,0xa00
-    2635:	eb 21                	jmp    2658 <get_elferr_string+0x98>
+    27b7:	b8 00 0a 00 00       	mov    eax,0xa00
+    27bc:	eb 21                	jmp    27df <get_elferr_string+0x98>
 		case ELF_SECTION_RWX:
 				return "module contains rwx secton";
-    2637:	b8 20 0a 00 00       	mov    eax,0xa20
-    263c:	eb 1a                	jmp    2658 <get_elferr_string+0x98>
+    27be:	b8 20 0a 00 00       	mov    eax,0xa20
+    27c3:	eb 1a                	jmp    27df <get_elferr_string+0x98>
 		case ELF_GSTAB_ALREADY_PRESENT:
 				return "the global symbol table has already been loaded";
-    263e:	b8 3c 0a 00 00       	mov    eax,0xa3c
-    2643:	eb 13                	jmp    2658 <get_elferr_string+0x98>
+    27c5:	b8 3c 0a 00 00       	mov    eax,0xa3c
+    27ca:	eb 13                	jmp    27df <get_elferr_string+0x98>
 		case ELF_STRING_PARSE_NUMBER:
 				return "the string parser expected a number but found none";
-    2645:	b8 6c 0a 00 00       	mov    eax,0xa6c
-    264a:	eb 0c                	jmp    2658 <get_elferr_string+0x98>
+    27cc:	b8 6c 0a 00 00       	mov    eax,0xa6c
+    27d1:	eb 0c                	jmp    27df <get_elferr_string+0x98>
 		case ELF_PARSE_FORMAT_NOT_NM:
 				return "the provided symbol mapping file is not in the nm format";
-    264c:	b8 a0 0a 00 00       	mov    eax,0xaa0
-    2651:	eb 05                	jmp    2658 <get_elferr_string+0x98>
+    27d3:	b8 a0 0a 00 00       	mov    eax,0xaa0
+    27d8:	eb 05                	jmp    27df <get_elferr_string+0x98>
 		default:
 				return "unknown";
-    2653:	b8 d9 0a 00 00       	mov    eax,0xad9
+    27da:	b8 d9 0a 00 00       	mov    eax,0xad9
 		}
 }
-    2658:	5d                   	pop    ebp
-    2659:	c3                   	ret
+    27df:	5d                   	pop    ebp
+    27e0:	c3                   	ret
 
-0000265a <elf_parse_global_symtab>:
+000027e1 <elf_parse_global_symtab>:
 
 enum elferr elf_parse_global_symtab(void* addr, size_t sz)
 {
-    265a:	55                   	push   ebp
-    265b:	89 e5                	mov    ebp,esp
-    265d:	53                   	push   ebx
-    265e:	83 ec 24             	sub    esp,0x24
+    27e1:	55                   	push   ebp
+    27e2:	89 e5                	mov    ebp,esp
+    27e4:	53                   	push   ebx
+    27e5:	83 ec 34             	sub    esp,0x34
 		const char* str = (const char*)addr; size_t cap = 64;
-    2661:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-    2664:	89 45 dc             	mov    DWORD PTR [ebp-0x24],eax
-    2667:	c7 45 f4 40 00 00 00 	mov    DWORD PTR [ebp-0xc],0x40
+    27e8:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+    27eb:	89 45 dc             	mov    DWORD PTR [ebp-0x24],eax
+    27ee:	c7 45 f4 40 00 00 00 	mov    DWORD PTR [ebp-0xc],0x40
 		struct symbol_list* sl;
 		if (gs_lst)
-    266e:	a1 00 00 00 00       	mov    eax,ds:0x0
-    2673:	85 c0                	test   eax,eax
-    2675:	74 0a                	je     2681 <elf_parse_global_symtab+0x27>
+    27f5:	a1 00 00 00 00       	mov    eax,ds:0x0
+    27fa:	85 c0                	test   eax,eax
+    27fc:	74 0a                	je     2808 <elf_parse_global_symtab+0x27>
 				return ELF_GSTAB_ALREADY_PRESENT;
-    2677:	b8 0f 00 00 00       	mov    eax,0xf
-    267c:	e9 80 02 00 00       	jmp    2901 <elf_parse_global_symtab+0x2a7>
+    27fe:	b8 0f 00 00 00       	mov    eax,0xf
+    2803:	e9 7c 02 00 00       	jmp    2a84 <elf_parse_global_symtab+0x2a3>
 
 		/* allocate the initial capacity */
 		sl = gs_lst = kmalloc(sizeof(struct symbol_list));
-    2681:	83 ec 0c             	sub    esp,0xc
-    2684:	68 04 03 00 00       	push   0x304
-    2689:	e8 fc ff ff ff       	call   268a <elf_parse_global_symtab+0x30>
-    268e:	83 c4 10             	add    esp,0x10
-    2691:	a3 00 00 00 00       	mov    ds:0x0,eax
-    2696:	a1 00 00 00 00       	mov    eax,ds:0x0
-    269b:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
+    2808:	c7 04 24 04 03 00 00 	mov    DWORD PTR [esp],0x304
+    280f:	e8 fc ff ff ff       	call   2810 <elf_parse_global_symtab+0x2f>
+    2814:	a3 00 00 00 00       	mov    ds:0x0,eax
+    2819:	a1 00 00 00 00       	mov    eax,ds:0x0
+    281e:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
 		if (!sl)
-    269e:	83 7d f0 00          	cmp    DWORD PTR [ebp-0x10],0x0
-    26a2:	75 0a                	jne    26ae <elf_parse_global_symtab+0x54>
+    2821:	83 7d f0 00          	cmp    DWORD PTR [ebp-0x10],0x0
+    2825:	75 0a                	jne    2831 <elf_parse_global_symtab+0x50>
 				return ELF_NOMEM;
-    26a4:	b8 04 00 00 00       	mov    eax,0x4
-    26a9:	e9 53 02 00 00       	jmp    2901 <elf_parse_global_symtab+0x2a7>
+    2827:	b8 04 00 00 00       	mov    eax,0x4
+    282c:	e9 53 02 00 00       	jmp    2a84 <elf_parse_global_symtab+0x2a3>
 		sl->next = NULL;
-    26ae:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-    26b1:	c7 80 00 03 00 00 00 00 00 00 	mov    DWORD PTR [eax+0x300],0x0
+    2831:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+    2834:	c7 80 00 03 00 00 00 00 00 00 	mov    DWORD PTR [eax+0x300],0x0
 
 		while ((size_t)((void*)str - addr) < sz) {
-    26bb:	e9 e8 01 00 00       	jmp    28a8 <elf_parse_global_symtab+0x24e>
+    283e:	e9 e8 01 00 00       	jmp    2a2b <elf_parse_global_symtab+0x24a>
 				const char* s1 = str; char *s2; char tp = ' ';
-    26c0:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    26c3:	89 45 ec             	mov    DWORD PTR [ebp-0x14],eax
-    26c6:	c6 45 eb 20          	mov    BYTE PTR [ebp-0x15],0x20
+    2843:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    2846:	89 45 ec             	mov    DWORD PTR [ebp-0x14],eax
+    2849:	c6 45 eb 20          	mov    BYTE PTR [ebp-0x15],0x20
 				long val = strtol(str, (char**)&str, 16);
-    26ca:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    26cd:	83 ec 04             	sub    esp,0x4
-    26d0:	6a 10                	push   0x10
-    26d2:	8d 55 dc             	lea    edx,[ebp-0x24]
-    26d5:	52                   	push   edx
-    26d6:	50                   	push   eax
-    26d7:	e8 fc ff ff ff       	call   26d8 <elf_parse_global_symtab+0x7e>
-    26dc:	83 c4 10             	add    esp,0x10
-    26df:	89 45 e4             	mov    DWORD PTR [ebp-0x1c],eax
+    284d:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    2850:	c7 44 24 08 10 00 00 00 	mov    DWORD PTR [esp+0x8],0x10
+    2858:	8d 55 dc             	lea    edx,[ebp-0x24]
+    285b:	89 54 24 04          	mov    DWORD PTR [esp+0x4],edx
+    285f:	89 04 24             	mov    DWORD PTR [esp],eax
+    2862:	e8 fc ff ff ff       	call   2863 <elf_parse_global_symtab+0x82>
+    2867:	89 45 e4             	mov    DWORD PTR [ebp-0x1c],eax
 				
 				if (s1 == str)
-    26e2:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    26e5:	39 45 ec             	cmp    DWORD PTR [ebp-0x14],eax
-    26e8:	75 0a                	jne    26f4 <elf_parse_global_symtab+0x9a>
+    286a:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    286d:	39 45 ec             	cmp    DWORD PTR [ebp-0x14],eax
+    2870:	75 0a                	jne    287c <elf_parse_global_symtab+0x9b>
 						return ELF_STRING_PARSE_NUMBER;
-    26ea:	b8 10 00 00 00       	mov    eax,0x10
-    26ef:	e9 0d 02 00 00       	jmp    2901 <elf_parse_global_symtab+0x2a7>
+    2872:	b8 10 00 00 00       	mov    eax,0x10
+    2877:	e9 08 02 00 00       	jmp    2a84 <elf_parse_global_symtab+0x2a3>
 				if (*str++ != ' ')
-    26f4:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    26f7:	8d 50 01             	lea    edx,[eax+0x1]
-    26fa:	89 55 dc             	mov    DWORD PTR [ebp-0x24],edx
-    26fd:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-    2700:	3c 20                	cmp    al,0x20
-    2702:	74 0a                	je     270e <elf_parse_global_symtab+0xb4>
+    287c:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    287f:	8d 50 01             	lea    edx,[eax+0x1]
+    2882:	89 55 dc             	mov    DWORD PTR [ebp-0x24],edx
+    2885:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+    2888:	3c 20                	cmp    al,0x20
+    288a:	74 0a                	je     2896 <elf_parse_global_symtab+0xb5>
 						return ELF_PARSE_FORMAT_NOT_NM;
-    2704:	b8 11 00 00 00       	mov    eax,0x11
-    2709:	e9 f3 01 00 00       	jmp    2901 <elf_parse_global_symtab+0x2a7>
+    288c:	b8 11 00 00 00       	mov    eax,0x11
+    2891:	e9 ee 01 00 00       	jmp    2a84 <elf_parse_global_symtab+0x2a3>
 				tp = *str++;
-    270e:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    2711:	8d 50 01             	lea    edx,[eax+0x1]
-    2714:	89 55 dc             	mov    DWORD PTR [ebp-0x24],edx
-    2717:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-    271a:	88 45 eb             	mov    BYTE PTR [ebp-0x15],al
+    2896:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    2899:	8d 50 01             	lea    edx,[eax+0x1]
+    289c:	89 55 dc             	mov    DWORD PTR [ebp-0x24],edx
+    289f:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+    28a2:	88 45 eb             	mov    BYTE PTR [ebp-0x15],al
 				if (*str++ != ' ')
-    271d:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    2720:	8d 50 01             	lea    edx,[eax+0x1]
-    2723:	89 55 dc             	mov    DWORD PTR [ebp-0x24],edx
-    2726:	0f b6 00             	movzx  eax,BYTE PTR [eax]
-    2729:	3c 20                	cmp    al,0x20
-    272b:	74 0a                	je     2737 <elf_parse_global_symtab+0xdd>
+    28a5:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    28a8:	8d 50 01             	lea    edx,[eax+0x1]
+    28ab:	89 55 dc             	mov    DWORD PTR [ebp-0x24],edx
+    28ae:	0f b6 00             	movzx  eax,BYTE PTR [eax]
+    28b1:	3c 20                	cmp    al,0x20
+    28b3:	74 0a                	je     28bf <elf_parse_global_symtab+0xde>
 						return ELF_PARSE_FORMAT_NOT_NM;
-    272d:	b8 11 00 00 00       	mov    eax,0x11
-    2732:	e9 ca 01 00 00       	jmp    2901 <elf_parse_global_symtab+0x2a7>
+    28b5:	b8 11 00 00 00       	mov    eax,0x11
+    28ba:	e9 c5 01 00 00       	jmp    2a84 <elf_parse_global_symtab+0x2a3>
 				s1 = strchr(str, '\n');
-    2737:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    273a:	83 ec 08             	sub    esp,0x8
-    273d:	6a 0a                	push   0xa
-    273f:	50                   	push   eax
-    2740:	e8 fc ff ff ff       	call   2741 <elf_parse_global_symtab+0xe7>
-    2745:	83 c4 10             	add    esp,0x10
-    2748:	89 45 ec             	mov    DWORD PTR [ebp-0x14],eax
+    28bf:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    28c2:	c7 44 24 04 0a 00 00 00 	mov    DWORD PTR [esp+0x4],0xa
+    28ca:	89 04 24             	mov    DWORD PTR [esp],eax
+    28cd:	e8 fc ff ff ff       	call   28ce <elf_parse_global_symtab+0xed>
+    28d2:	89 45 ec             	mov    DWORD PTR [ebp-0x14],eax
 				if (!s1) {
-    274b:	83 7d ec 00          	cmp    DWORD PTR [ebp-0x14],0x0
-    274f:	75 1b                	jne    276c <elf_parse_global_symtab+0x112>
+    28d5:	83 7d ec 00          	cmp    DWORD PTR [ebp-0x14],0x0
+    28d9:	75 17                	jne    28f2 <elf_parse_global_symtab+0x111>
 						printf("strchr!\n");
-    2751:	83 ec 0c             	sub    esp,0xc
-    2754:	68 2c 0b 00 00       	push   0xb2c
-    2759:	e8 fc ff ff ff       	call   275a <elf_parse_global_symtab+0x100>
-    275e:	83 c4 10             	add    esp,0x10
+    28db:	c7 04 24 2c 0b 00 00 	mov    DWORD PTR [esp],0xb2c
+    28e2:	e8 fc ff ff ff       	call   28e3 <elf_parse_global_symtab+0x102>
 						s1 = (const char*)(addr + sz);
-    2761:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
-    2764:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
-    2767:	01 d0                	add    eax,edx
-    2769:	89 45 ec             	mov    DWORD PTR [ebp-0x14],eax
+    28e7:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
+    28ea:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+    28ed:	01 d0                	add    eax,edx
+    28ef:	89 45 ec             	mov    DWORD PTR [ebp-0x14],eax
 				}
 				s2 = strndup(str, s1 - str);
-    276c:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    276f:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
-    2772:	29 c2                	sub    edx,eax
-    2774:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    2777:	83 ec 08             	sub    esp,0x8
-    277a:	52                   	push   edx
-    277b:	50                   	push   eax
-    277c:	e8 fc ff ff ff       	call   277d <elf_parse_global_symtab+0x123>
-    2781:	83 c4 10             	add    esp,0x10
-    2784:	89 45 e0             	mov    DWORD PTR [ebp-0x20],eax
+    28f2:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    28f5:	8b 55 ec             	mov    edx,DWORD PTR [ebp-0x14]
+    28f8:	29 c2                	sub    edx,eax
+    28fa:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    28fd:	89 54 24 04          	mov    DWORD PTR [esp+0x4],edx
+    2901:	89 04 24             	mov    DWORD PTR [esp],eax
+    2904:	e8 fc ff ff ff       	call   2905 <elf_parse_global_symtab+0x124>
+    2909:	89 45 e0             	mov    DWORD PTR [ebp-0x20],eax
 
 				/*printf("symbol at %p: \"%s\" type %c\n", (void*)val, s2, tp);------------------*/
 				if (strcmp(s2, "printf") == 0)
-    2787:	83 ec 08             	sub    esp,0x8
-    278a:	68 35 0b 00 00       	push   0xb35
-    278f:	ff 75 e0             	push   DWORD PTR [ebp-0x20]
-    2792:	e8 fc ff ff ff       	call   2793 <elf_parse_global_symtab+0x139>
-    2797:	83 c4 10             	add    esp,0x10
-    279a:	85 c0                	test   eax,eax
-    279c:	75 45                	jne    27e3 <elf_parse_global_symtab+0x189>
+    290c:	c7 44 24 04 35 0b 00 00 	mov    DWORD PTR [esp+0x4],0xb35
+    2914:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
+    2917:	89 04 24             	mov    DWORD PTR [esp],eax
+    291a:	e8 fc ff ff ff       	call   291b <elf_parse_global_symtab+0x13a>
+    291f:	85 c0                	test   eax,eax
+    2921:	75 45                	jne    2968 <elf_parse_global_symtab+0x187>
 						if (&printf != (void*)val) {
-    279e:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
-    27a1:	3d 00 00 00 00       	cmp    eax,0x0
-    27a6:	74 3b                	je     27e3 <elf_parse_global_symtab+0x189>
+    2923:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
+    2926:	3d 00 00 00 00       	cmp    eax,0x0
+    292b:	74 3b                	je     2968 <elf_parse_global_symtab+0x187>
 								cprintf(KFMT_WARN, "WARNING! Loaded outdated symtab!\n");
-    27a8:	83 ec 08             	sub    esp,0x8
-    27ab:	68 3c 0b 00 00       	push   0xb3c
-    27b0:	6a 0e                	push   0xe
-    27b2:	e8 fc ff ff ff       	call   27b3 <elf_parse_global_symtab+0x159>
-    27b7:	83 c4 10             	add    esp,0x10
+    292d:	c7 44 24 04 3c 0b 00 00 	mov    DWORD PTR [esp+0x4],0xb3c
+    2935:	c7 04 24 0e 00 00 00 	mov    DWORD PTR [esp],0xe
+    293c:	e8 fc ff ff ff       	call   293d <elf_parse_global_symtab+0x15c>
 								printf("printf is located at %p but symtab says it's at %p\n",
-    27ba:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
-    27bd:	83 ec 04             	sub    esp,0x4
-    27c0:	50                   	push   eax
-    27c1:	68 00 00 00 00       	push   0x0
-    27c6:	68 60 0b 00 00       	push   0xb60
-    27cb:	e8 fc ff ff ff       	call   27cc <elf_parse_global_symtab+0x172>
-    27d0:	83 c4 10             	add    esp,0x10
+    2941:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
+    2944:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    2948:	c7 44 24 04 00 00 00 00 	mov    DWORD PTR [esp+0x4],0x0
+    2950:	c7 04 24 60 0b 00 00 	mov    DWORD PTR [esp],0xb60
+    2957:	e8 fc ff ff ff       	call   2958 <elf_parse_global_symtab+0x177>
 												&printf, (void*)val);
 								printf("expect modules to fail randomly as the\n"
-    27d3:	83 ec 0c             	sub    esp,0xc
-    27d6:	68 94 0b 00 00       	push   0xb94
-    27db:	e8 fc ff ff ff       	call   27dc <elf_parse_global_symtab+0x182>
-    27e0:	83 c4 10             	add    esp,0x10
+    295c:	c7 04 24 94 0b 00 00 	mov    DWORD PTR [esp],0xb94
+    2963:	e8 fc ff ff ff       	call   2964 <elf_parse_global_symtab+0x183>
 									   "symbols used therein will not be resolved correctly\n");
 						}
 
 				/* expand the capacity if needed */
 				if (!cap) {
-    27e3:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
-    27e7:	75 54                	jne    283d <elf_parse_global_symtab+0x1e3>
+    2968:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
+    296c:	75 52                	jne    29c0 <elf_parse_global_symtab+0x1df>
 						sl->next = kmalloc(sizeof(struct symbol_list));
-    27e9:	83 ec 0c             	sub    esp,0xc
-    27ec:	68 04 03 00 00       	push   0x304
-    27f1:	e8 fc ff ff ff       	call   27f2 <elf_parse_global_symtab+0x198>
-    27f6:	83 c4 10             	add    esp,0x10
-    27f9:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
-    27fc:	89 82 00 03 00 00    	mov    DWORD PTR [edx+0x300],eax
+    296e:	c7 04 24 04 03 00 00 	mov    DWORD PTR [esp],0x304
+    2975:	e8 fc ff ff ff       	call   2976 <elf_parse_global_symtab+0x195>
+    297a:	8b 55 f0             	mov    edx,DWORD PTR [ebp-0x10]
+    297d:	89 82 00 03 00 00    	mov    DWORD PTR [edx+0x300],eax
 						if (!sl) {
-    2802:	83 7d f0 00          	cmp    DWORD PTR [ebp-0x10],0x0
-    2806:	75 15                	jne    281d <elf_parse_global_symtab+0x1c3>
+    2983:	83 7d f0 00          	cmp    DWORD PTR [ebp-0x10],0x0
+    2987:	75 17                	jne    29a0 <elf_parse_global_symtab+0x1bf>
 								cprintf(KFMT_ERROR, "Out of memory for parsing global symbol table\n");
-    2808:	83 ec 08             	sub    esp,0x8
-    280b:	68 f0 0b 00 00       	push   0xbf0
-    2810:	6a 0c                	push   0xc
-    2812:	e8 fc ff ff ff       	call   2813 <elf_parse_global_symtab+0x1b9>
-    2817:	83 c4 10             	add    esp,0x10
+    2989:	c7 44 24 04 f0 0b 00 00 	mov    DWORD PTR [esp+0x4],0xbf0
+    2991:	c7 04 24 0c 00 00 00 	mov    DWORD PTR [esp],0xc
+    2998:	e8 fc ff ff ff       	call   2999 <elf_parse_global_symtab+0x1b8>
 								while (1);
-    281a:	90                   	nop
-    281b:	eb fd                	jmp    281a <elf_parse_global_symtab+0x1c0>
+    299d:	90                   	nop
+    299e:	eb fd                	jmp    299d <elf_parse_global_symtab+0x1bc>
 						}
 						sl = sl->next;
-    281d:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-    2820:	8b 80 00 03 00 00    	mov    eax,DWORD PTR [eax+0x300]
-    2826:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
+    29a0:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+    29a3:	8b 80 00 03 00 00    	mov    eax,DWORD PTR [eax+0x300]
+    29a9:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
 						sl->next = NULL;
-    2829:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-    282c:	c7 80 00 03 00 00 00 00 00 00 	mov    DWORD PTR [eax+0x300],0x0
+    29ac:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+    29af:	c7 80 00 03 00 00 00 00 00 00 	mov    DWORD PTR [eax+0x300],0x0
 						cap = 64;
-    2836:	c7 45 f4 40 00 00 00 	mov    DWORD PTR [ebp-0xc],0x40
+    29b9:	c7 45 f4 40 00 00 00 	mov    DWORD PTR [ebp-0xc],0x40
 				}
 
 				/* store the two values */
 				sl->entries[64 - cap].name = s2;
-    283d:	b8 40 00 00 00       	mov    eax,0x40
-    2842:	2b 45 f4             	sub    eax,DWORD PTR [ebp-0xc]
-    2845:	89 c2                	mov    edx,eax
-    2847:	8b 4d f0             	mov    ecx,DWORD PTR [ebp-0x10]
-    284a:	89 d0                	mov    eax,edx
-    284c:	01 c0                	add    eax,eax
-    284e:	01 d0                	add    eax,edx
-    2850:	c1 e0 02             	shl    eax,0x2
-    2853:	01 c8                	add    eax,ecx
-    2855:	8d 50 04             	lea    edx,[eax+0x4]
-    2858:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
-    285b:	89 02                	mov    DWORD PTR [edx],eax
+    29c0:	b8 40 00 00 00       	mov    eax,0x40
+    29c5:	2b 45 f4             	sub    eax,DWORD PTR [ebp-0xc]
+    29c8:	89 c2                	mov    edx,eax
+    29ca:	8b 4d f0             	mov    ecx,DWORD PTR [ebp-0x10]
+    29cd:	89 d0                	mov    eax,edx
+    29cf:	01 c0                	add    eax,eax
+    29d1:	01 d0                	add    eax,edx
+    29d3:	c1 e0 02             	shl    eax,0x2
+    29d6:	01 c8                	add    eax,ecx
+    29d8:	8d 50 04             	lea    edx,[eax+0x4]
+    29db:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
+    29de:	89 02                	mov    DWORD PTR [edx],eax
 				sl->entries[64 - cap].vma = (void*)val;
-    285d:	b8 40 00 00 00       	mov    eax,0x40
-    2862:	2b 45 f4             	sub    eax,DWORD PTR [ebp-0xc]
-    2865:	89 c2                	mov    edx,eax
-    2867:	8b 4d e4             	mov    ecx,DWORD PTR [ebp-0x1c]
-    286a:	8b 5d f0             	mov    ebx,DWORD PTR [ebp-0x10]
-    286d:	89 d0                	mov    eax,edx
-    286f:	01 c0                	add    eax,eax
-    2871:	01 d0                	add    eax,edx
-    2873:	c1 e0 02             	shl    eax,0x2
-    2876:	01 d8                	add    eax,ebx
-    2878:	89 08                	mov    DWORD PTR [eax],ecx
+    29e0:	b8 40 00 00 00       	mov    eax,0x40
+    29e5:	2b 45 f4             	sub    eax,DWORD PTR [ebp-0xc]
+    29e8:	89 c2                	mov    edx,eax
+    29ea:	8b 4d e4             	mov    ecx,DWORD PTR [ebp-0x1c]
+    29ed:	8b 5d f0             	mov    ebx,DWORD PTR [ebp-0x10]
+    29f0:	89 d0                	mov    eax,edx
+    29f2:	01 c0                	add    eax,eax
+    29f4:	01 d0                	add    eax,edx
+    29f6:	c1 e0 02             	shl    eax,0x2
+    29f9:	01 d8                	add    eax,ebx
+    29fb:	89 08                	mov    DWORD PTR [eax],ecx
 				sl->entries[64 - cap].type = tp;
-    287a:	b8 40 00 00 00       	mov    eax,0x40
-    287f:	2b 45 f4             	sub    eax,DWORD PTR [ebp-0xc]
-    2882:	89 c2                	mov    edx,eax
-    2884:	8b 4d f0             	mov    ecx,DWORD PTR [ebp-0x10]
-    2887:	89 d0                	mov    eax,edx
-    2889:	01 c0                	add    eax,eax
-    288b:	01 d0                	add    eax,edx
-    288d:	c1 e0 02             	shl    eax,0x2
-    2890:	01 c8                	add    eax,ecx
-    2892:	8d 50 08             	lea    edx,[eax+0x8]
-    2895:	0f b6 45 eb          	movzx  eax,BYTE PTR [ebp-0x15]
-    2899:	88 02                	mov    BYTE PTR [edx],al
+    29fd:	b8 40 00 00 00       	mov    eax,0x40
+    2a02:	2b 45 f4             	sub    eax,DWORD PTR [ebp-0xc]
+    2a05:	89 c2                	mov    edx,eax
+    2a07:	8b 4d f0             	mov    ecx,DWORD PTR [ebp-0x10]
+    2a0a:	89 d0                	mov    eax,edx
+    2a0c:	01 c0                	add    eax,eax
+    2a0e:	01 d0                	add    eax,edx
+    2a10:	c1 e0 02             	shl    eax,0x2
+    2a13:	01 c8                	add    eax,ecx
+    2a15:	8d 50 08             	lea    edx,[eax+0x8]
+    2a18:	0f b6 45 eb          	movzx  eax,BYTE PTR [ebp-0x15]
+    2a1c:	88 02                	mov    BYTE PTR [edx],al
 				cap--;
-    289b:	83 6d f4 01          	sub    DWORD PTR [ebp-0xc],0x1
+    2a1e:	83 6d f4 01          	sub    DWORD PTR [ebp-0xc],0x1
 				/* and advance */
 				str = s1 + 1;
-    289f:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
-    28a2:	83 c0 01             	add    eax,0x1
-    28a5:	89 45 dc             	mov    DWORD PTR [ebp-0x24],eax
+    2a22:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    2a25:	83 c0 01             	add    eax,0x1
+    2a28:	89 45 dc             	mov    DWORD PTR [ebp-0x24],eax
 		while ((size_t)((void*)str - addr) < sz) {
-    28a8:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
-    28ab:	2b 45 08             	sub    eax,DWORD PTR [ebp+0x8]
-    28ae:	3b 45 0c             	cmp    eax,DWORD PTR [ebp+0xc]
-    28b1:	0f 82 09 fe ff ff    	jb     26c0 <elf_parse_global_symtab+0x66>
+    2a2b:	8b 45 dc             	mov    eax,DWORD PTR [ebp-0x24]
+    2a2e:	2b 45 08             	sub    eax,DWORD PTR [ebp+0x8]
+    2a31:	3b 45 0c             	cmp    eax,DWORD PTR [ebp+0xc]
+    2a34:	0f 82 09 fe ff ff    	jb     2843 <elf_parse_global_symtab+0x62>
 		}
 
 		/* zero-terminate not fully used lists */
 		if (cap) {
-    28b7:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
-    28bb:	74 3f                	je     28fc <elf_parse_global_symtab+0x2a2>
+    2a3a:	83 7d f4 00          	cmp    DWORD PTR [ebp-0xc],0x0
+    2a3e:	74 3f                	je     2a7f <elf_parse_global_symtab+0x29e>
 				sl->entries[64 - cap].name = NULL;
-    28bd:	b8 40 00 00 00       	mov    eax,0x40
-    28c2:	2b 45 f4             	sub    eax,DWORD PTR [ebp-0xc]
-    28c5:	89 c2                	mov    edx,eax
-    28c7:	8b 4d f0             	mov    ecx,DWORD PTR [ebp-0x10]
-    28ca:	89 d0                	mov    eax,edx
-    28cc:	01 c0                	add    eax,eax
-    28ce:	01 d0                	add    eax,edx
-    28d0:	c1 e0 02             	shl    eax,0x2
-    28d3:	01 c8                	add    eax,ecx
-    28d5:	83 c0 04             	add    eax,0x4
-    28d8:	c7 00 00 00 00 00    	mov    DWORD PTR [eax],0x0
+    2a40:	b8 40 00 00 00       	mov    eax,0x40
+    2a45:	2b 45 f4             	sub    eax,DWORD PTR [ebp-0xc]
+    2a48:	89 c2                	mov    edx,eax
+    2a4a:	8b 4d f0             	mov    ecx,DWORD PTR [ebp-0x10]
+    2a4d:	89 d0                	mov    eax,edx
+    2a4f:	01 c0                	add    eax,eax
+    2a51:	01 d0                	add    eax,edx
+    2a53:	c1 e0 02             	shl    eax,0x2
+    2a56:	01 c8                	add    eax,ecx
+    2a58:	83 c0 04             	add    eax,0x4
+    2a5b:	c7 00 00 00 00 00    	mov    DWORD PTR [eax],0x0
 				sl->entries[64 - cap].vma = NULL;
-    28de:	b8 40 00 00 00       	mov    eax,0x40
-    28e3:	2b 45 f4             	sub    eax,DWORD PTR [ebp-0xc]
-    28e6:	89 c2                	mov    edx,eax
-    28e8:	8b 4d f0             	mov    ecx,DWORD PTR [ebp-0x10]
-    28eb:	89 d0                	mov    eax,edx
-    28ed:	01 c0                	add    eax,eax
-    28ef:	01 d0                	add    eax,edx
-    28f1:	c1 e0 02             	shl    eax,0x2
-    28f4:	01 c8                	add    eax,ecx
-    28f6:	c7 00 00 00 00 00    	mov    DWORD PTR [eax],0x0
+    2a61:	b8 40 00 00 00       	mov    eax,0x40
+    2a66:	2b 45 f4             	sub    eax,DWORD PTR [ebp-0xc]
+    2a69:	89 c2                	mov    edx,eax
+    2a6b:	8b 4d f0             	mov    ecx,DWORD PTR [ebp-0x10]
+    2a6e:	89 d0                	mov    eax,edx
+    2a70:	01 c0                	add    eax,eax
+    2a72:	01 d0                	add    eax,edx
+    2a74:	c1 e0 02             	shl    eax,0x2
+    2a77:	01 c8                	add    eax,ecx
+    2a79:	c7 00 00 00 00 00    	mov    DWORD PTR [eax],0x0
 		}
 		return ELF_OK;
-    28fc:	b8 00 00 00 00       	mov    eax,0x0
+    2a7f:	b8 00 00 00 00       	mov    eax,0x0
 }
-    2901:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
-    2904:	c9                   	leave
-    2905:	c3                   	ret
+    2a84:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
+    2a87:	c9                   	leave
+    2a88:	c3                   	ret
 
-00002906 <load_modules>:
+00002a89 <load_modules>:
 
 void load_modules()
 {
-    2906:	55                   	push   ebp
-    2907:	89 e5                	mov    ebp,esp
-    2909:	57                   	push   edi
-    290a:	83 ec 64             	sub    esp,0x64
+    2a89:	55                   	push   ebp
+    2a8a:	89 e5                	mov    ebp,esp
+    2a8c:	57                   	push   edi
+    2a8d:	83 ec 74             	sub    esp,0x74
 		void* mem = (void*)0x200000;
-    290d:	c7 45 f4 00 00 20 00 	mov    DWORD PTR [ebp-0xc],0x200000
+    2a90:	c7 45 f4 00 00 20 00 	mov    DWORD PTR [ebp-0xc],0x200000
 		uint32_t mct = *(uint32_t*)mem;
-    2914:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    2917:	8b 00                	mov    eax,DWORD PTR [eax]
-    2919:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
+    2a97:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    2a9a:	8b 00                	mov    eax,DWORD PTR [eax]
+    2a9c:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
 		enum elferr ee;
 		mem += sizeof(uint32_t);
-    291c:	83 45 f4 04          	add    DWORD PTR [ebp-0xc],0x4
+    2a9f:	83 45 f4 04          	add    DWORD PTR [ebp-0xc],0x4
 
 		if (strcmp(mem, "LD.MAP") != 0) {
-    2920:	83 ec 08             	sub    esp,0x8
-    2923:	68 1f 0c 00 00       	push   0xc1f
-    2928:	ff 75 f4             	push   DWORD PTR [ebp-0xc]
-    292b:	e8 fc ff ff ff       	call   292c <load_modules+0x26>
-    2930:	83 c4 10             	add    esp,0x10
-    2933:	85 c0                	test   eax,eax
-    2935:	74 15                	je     294c <load_modules+0x46>
+    2aa3:	c7 44 24 04 1f 0c 00 00 	mov    DWORD PTR [esp+0x4],0xc1f
+    2aab:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    2aae:	89 04 24             	mov    DWORD PTR [esp],eax
+    2ab1:	e8 fc ff ff ff       	call   2ab2 <load_modules+0x29>
+    2ab6:	85 c0                	test   eax,eax
+    2ab8:	74 17                	je     2ad1 <load_modules+0x48>
 				cprintf(KFMT_ERROR, "first file has to be global symbol map\n");
-    2937:	83 ec 08             	sub    esp,0x8
-    293a:	68 28 0c 00 00       	push   0xc28
-    293f:	6a 0c                	push   0xc
-    2941:	e8 fc ff ff ff       	call   2942 <load_modules+0x3c>
-    2946:	83 c4 10             	add    esp,0x10
+    2aba:	c7 44 24 04 28 0c 00 00 	mov    DWORD PTR [esp+0x4],0xc28
+    2ac2:	c7 04 24 0c 00 00 00 	mov    DWORD PTR [esp],0xc
+    2ac9:	e8 fc ff ff ff       	call   2aca <load_modules+0x41>
 				while (1);
-    2949:	90                   	nop
-    294a:	eb fd                	jmp    2949 <load_modules+0x43>
+    2ace:	90                   	nop
+    2acf:	eb fd                	jmp    2ace <load_modules+0x45>
 		} else
 				mem += 7;
-    294c:	83 45 f4 07          	add    DWORD PTR [ebp-0xc],0x7
+    2ad1:	83 45 f4 07          	add    DWORD PTR [ebp-0xc],0x7
 		/* parse the kernel symbol table supplied in nm format */
 		if ((ee = elf_parse_global_symtab(mem + sizeof(uint32_t), *(uint32_t*)mem))) {
-    2950:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    2953:	8b 00                	mov    eax,DWORD PTR [eax]
-    2955:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-    2958:	83 c2 04             	add    edx,0x4
-    295b:	83 ec 08             	sub    esp,0x8
-    295e:	50                   	push   eax
-    295f:	52                   	push   edx
-    2960:	e8 fc ff ff ff       	call   2961 <load_modules+0x5b>
-    2965:	83 c4 10             	add    esp,0x10
-    2968:	89 45 ec             	mov    DWORD PTR [ebp-0x14],eax
-    296b:	83 7d ec 00          	cmp    DWORD PTR [ebp-0x14],0x0
-    296f:	74 4e                	je     29bf <load_modules+0xb9>
+    2ad5:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    2ad8:	8b 00                	mov    eax,DWORD PTR [eax]
+    2ada:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+    2add:	83 c2 04             	add    edx,0x4
+    2ae0:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    2ae4:	89 14 24             	mov    DWORD PTR [esp],edx
+    2ae7:	e8 fc ff ff ff       	call   2ae8 <load_modules+0x5f>
+    2aec:	89 45 ec             	mov    DWORD PTR [ebp-0x14],eax
+    2aef:	83 7d ec 00          	cmp    DWORD PTR [ebp-0x14],0x0
+    2af3:	74 51                	je     2b46 <load_modules+0xbd>
 				cprintf(KFMT_ERROR, "Failed to parse global kernel symbol table ("
-    2971:	83 ec 08             	sub    esp,0x8
-    2974:	68 50 0c 00 00       	push   0xc50
-    2979:	6a 0c                	push   0xc
-    297b:	e8 fc ff ff ff       	call   297c <load_modules+0x76>
-    2980:	83 c4 10             	add    esp,0x10
+    2af5:	c7 44 24 04 50 0c 00 00 	mov    DWORD PTR [esp+0x4],0xc50
+    2afd:	c7 04 24 0c 00 00 00 	mov    DWORD PTR [esp],0xc
+    2b04:	e8 fc ff ff ff       	call   2b05 <load_modules+0x7c>
 					   "file ld.map in root directory)\n");
 				cprintf(KFMT_ERROR, "reason: %s\n", get_elferr_string(ee));
-    2983:	83 ec 0c             	sub    esp,0xc
-    2986:	ff 75 ec             	push   DWORD PTR [ebp-0x14]
-    2989:	e8 fc ff ff ff       	call   298a <load_modules+0x84>
-    298e:	83 c4 10             	add    esp,0x10
-    2991:	83 ec 04             	sub    esp,0x4
-    2994:	50                   	push   eax
-    2995:	68 9c 0c 00 00       	push   0xc9c
-    299a:	6a 0c                	push   0xc
-    299c:	e8 fc ff ff ff       	call   299d <load_modules+0x97>
-    29a1:	83 c4 10             	add    esp,0x10
+    2b09:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    2b0c:	89 04 24             	mov    DWORD PTR [esp],eax
+    2b0f:	e8 fc ff ff ff       	call   2b10 <load_modules+0x87>
+    2b14:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    2b18:	c7 44 24 04 9c 0c 00 00 	mov    DWORD PTR [esp+0x4],0xc9c
+    2b20:	c7 04 24 0c 00 00 00 	mov    DWORD PTR [esp],0xc
+    2b27:	e8 fc ff ff ff       	call   2b28 <load_modules+0x9f>
 				memdump(mem + sizeof(uint32_t), *(uint32_t*)mem);
-    29a4:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    29a7:	8b 00                	mov    eax,DWORD PTR [eax]
-    29a9:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
-    29ac:	83 c2 04             	add    edx,0x4
-    29af:	83 ec 08             	sub    esp,0x8
-    29b2:	50                   	push   eax
-    29b3:	52                   	push   edx
-    29b4:	e8 fc ff ff ff       	call   29b5 <load_modules+0xaf>
-    29b9:	83 c4 10             	add    esp,0x10
+    2b2c:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    2b2f:	8b 00                	mov    eax,DWORD PTR [eax]
+    2b31:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+    2b34:	83 c2 04             	add    edx,0x4
+    2b37:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    2b3b:	89 14 24             	mov    DWORD PTR [esp],edx
+    2b3e:	e8 fc ff ff ff       	call   2b3f <load_modules+0xb6>
 				while (1);
-    29bc:	90                   	nop
-    29bd:	eb fd                	jmp    29bc <load_modules+0xb6>
+    2b43:	90                   	nop
+    2b44:	eb fd                	jmp    2b43 <load_modules+0xba>
 		}
 		mem += sizeof(uint32_t) + *(uint32_t*)mem;
-    29bf:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    29c2:	8b 00                	mov    eax,DWORD PTR [eax]
-    29c4:	83 c0 04             	add    eax,0x4
-    29c7:	01 45 f4             	add    DWORD PTR [ebp-0xc],eax
+    2b46:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    2b49:	8b 00                	mov    eax,DWORD PTR [eax]
+    2b4b:	83 c0 04             	add    eax,0x4
+    2b4e:	01 45 f4             	add    DWORD PTR [ebp-0xc],eax
 		mct--;
-    29ca:	83 6d f0 01          	sub    DWORD PTR [ebp-0x10],0x1
+    2b51:	83 6d f0 01          	sub    DWORD PTR [ebp-0x10],0x1
 
 		/* try to load each module */
 		while (mct--) {
-    29ce:	e9 87 01 00 00       	jmp    2b5a <load_modules+0x254>
+    2b55:	e9 cc 01 00 00       	jmp    2d26 <load_modules+0x29d>
 				const char* name = (const char*)mem;
-    29d3:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    29d6:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
+    2b5a:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    2b5d:	89 45 e8             	mov    DWORD PTR [ebp-0x18],eax
 				uint32_t sz;
 				struct module_info mi = {0};
-    29d9:	8d 55 a4             	lea    edx,[ebp-0x5c]
-    29dc:	b8 00 00 00 00       	mov    eax,0x0
-    29e1:	b9 0f 00 00 00       	mov    ecx,0xf
-    29e6:	89 d7                	mov    edi,edx
-    29e8:	f3 ab                	rep stos DWORD PTR es:[edi],eax
+    2b60:	8d 55 a4             	lea    edx,[ebp-0x5c]
+    2b63:	b8 00 00 00 00       	mov    eax,0x0
+    2b68:	b9 0f 00 00 00       	mov    ecx,0xf
+    2b6d:	89 d7                	mov    edi,edx
+    2b6f:	f3 ab                	rep stos DWORD PTR es:[edi],eax
 				mem += strlen(name) + 1;
-    29ea:	83 ec 0c             	sub    esp,0xc
-    29ed:	ff 75 e8             	push   DWORD PTR [ebp-0x18]
-    29f0:	e8 fc ff ff ff       	call   29f1 <load_modules+0xeb>
-    29f5:	83 c4 10             	add    esp,0x10
-    29f8:	83 c0 01             	add    eax,0x1
-    29fb:	01 45 f4             	add    DWORD PTR [ebp-0xc],eax
+    2b71:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
+    2b74:	89 04 24             	mov    DWORD PTR [esp],eax
+    2b77:	e8 fc ff ff ff       	call   2b78 <load_modules+0xef>
+    2b7c:	83 c0 01             	add    eax,0x1
+    2b7f:	01 45 f4             	add    DWORD PTR [ebp-0xc],eax
 				sz = *(uint32_t*)mem;
-    29fe:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
-    2a01:	8b 00                	mov    eax,DWORD PTR [eax]
-    2a03:	89 45 e4             	mov    DWORD PTR [ebp-0x1c],eax
+    2b82:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    2b85:	8b 00                	mov    eax,DWORD PTR [eax]
+    2b87:	89 45 e4             	mov    DWORD PTR [ebp-0x1c],eax
 				mem += sizeof(uint32_t);
-    2a06:	83 45 f4 04          	add    DWORD PTR [ebp-0xc],0x4
+    2b8a:	83 45 f4 04          	add    DWORD PTR [ebp-0xc],0x4
 				strncpy(mi.mi_name, name, 20);
-    2a0a:	83 ec 04             	sub    esp,0x4
-    2a0d:	6a 14                	push   0x14
-    2a0f:	ff 75 e8             	push   DWORD PTR [ebp-0x18]
-    2a12:	8d 45 a4             	lea    eax,[ebp-0x5c]
-    2a15:	50                   	push   eax
-    2a16:	e8 fc ff ff ff       	call   2a17 <load_modules+0x111>
-    2a1b:	83 c4 10             	add    esp,0x10
+    2b8e:	c7 44 24 08 14 00 00 00 	mov    DWORD PTR [esp+0x8],0x14
+    2b96:	8b 45 e8             	mov    eax,DWORD PTR [ebp-0x18]
+    2b99:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    2b9d:	8d 45 a4             	lea    eax,[ebp-0x5c]
+    2ba0:	89 04 24             	mov    DWORD PTR [esp],eax
+    2ba3:	e8 fc ff ff ff       	call   2ba4 <load_modules+0x11b>
 				printf("loading module %.20s...\n", mi.mi_name);
-    2a1e:	83 ec 08             	sub    esp,0x8
-    2a21:	8d 45 a4             	lea    eax,[ebp-0x5c]
-    2a24:	50                   	push   eax
-    2a25:	68 a8 0c 00 00       	push   0xca8
-    2a2a:	e8 fc ff ff ff       	call   2a2b <load_modules+0x125>
-    2a2f:	83 c4 10             	add    esp,0x10
+    2ba8:	8d 45 a4             	lea    eax,[ebp-0x5c]
+    2bab:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    2baf:	c7 04 24 a8 0c 00 00 	mov    DWORD PTR [esp],0xca8
+    2bb6:	e8 fc ff ff ff       	call   2bb7 <load_modules+0x12e>
 				if ((ee = load_elf(mem, sz, &mi))) {
-    2a32:	83 ec 04             	sub    esp,0x4
-    2a35:	8d 45 a4             	lea    eax,[ebp-0x5c]
-    2a38:	50                   	push   eax
-    2a39:	ff 75 e4             	push   DWORD PTR [ebp-0x1c]
-    2a3c:	ff 75 f4             	push   DWORD PTR [ebp-0xc]
-    2a3f:	e8 fc ff ff ff       	call   2a40 <load_modules+0x13a>
-    2a44:	83 c4 10             	add    esp,0x10
-    2a47:	89 45 ec             	mov    DWORD PTR [ebp-0x14],eax
-    2a4a:	83 7d ec 00          	cmp    DWORD PTR [ebp-0x14],0x0
-    2a4e:	74 39                	je     2a89 <load_modules+0x183>
+    2bbb:	8d 45 a4             	lea    eax,[ebp-0x5c]
+    2bbe:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    2bc2:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
+    2bc5:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+    2bc9:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    2bcc:	89 04 24             	mov    DWORD PTR [esp],eax
+    2bcf:	e8 fc ff ff ff       	call   2bd0 <load_modules+0x147>
+    2bd4:	89 45 ec             	mov    DWORD PTR [ebp-0x14],eax
+    2bd7:	83 7d ec 00          	cmp    DWORD PTR [ebp-0x14],0x0
+    2bdb:	74 41                	je     2c1e <load_modules+0x195>
 						cprintf(KFMT_ERROR, "Failed to load ELF module at %p\n", mem);
-    2a50:	83 ec 04             	sub    esp,0x4
-    2a53:	ff 75 f4             	push   DWORD PTR [ebp-0xc]
-    2a56:	68 c4 0c 00 00       	push   0xcc4
-    2a5b:	6a 0c                	push   0xc
-    2a5d:	e8 fc ff ff ff       	call   2a5e <load_modules+0x158>
-    2a62:	83 c4 10             	add    esp,0x10
+    2bdd:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+    2be0:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    2be4:	c7 44 24 04 c4 0c 00 00 	mov    DWORD PTR [esp+0x4],0xcc4
+    2bec:	c7 04 24 0c 00 00 00 	mov    DWORD PTR [esp],0xc
+    2bf3:	e8 fc ff ff ff       	call   2bf4 <load_modules+0x16b>
 						cprintf(KFMT_ERROR, "reason: %s\n", get_elferr_string(ee));
-    2a65:	83 ec 0c             	sub    esp,0xc
-    2a68:	ff 75 ec             	push   DWORD PTR [ebp-0x14]
-    2a6b:	e8 fc ff ff ff       	call   2a6c <load_modules+0x166>
-    2a70:	83 c4 10             	add    esp,0x10
-    2a73:	83 ec 04             	sub    esp,0x4
-    2a76:	50                   	push   eax
-    2a77:	68 9c 0c 00 00       	push   0xc9c
-    2a7c:	6a 0c                	push   0xc
-    2a7e:	e8 fc ff ff ff       	call   2a7f <load_modules+0x179>
-    2a83:	83 c4 10             	add    esp,0x10
+    2bf8:	8b 45 ec             	mov    eax,DWORD PTR [ebp-0x14]
+    2bfb:	89 04 24             	mov    DWORD PTR [esp],eax
+    2bfe:	e8 fc ff ff ff       	call   2bff <load_modules+0x176>
+    2c03:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    2c07:	c7 44 24 04 9c 0c 00 00 	mov    DWORD PTR [esp+0x4],0xc9c
+    2c0f:	c7 04 24 0c 00 00 00 	mov    DWORD PTR [esp],0xc
+    2c16:	e8 fc ff ff ff       	call   2c17 <load_modules+0x18e>
 						while (1);
-    2a86:	90                   	nop
-    2a87:	eb fd                	jmp    2a86 <load_modules+0x180>
+    2c1b:	90                   	nop
+    2c1c:	eb fd                	jmp    2c1b <load_modules+0x192>
 				} else {
 						int errc;
 						cprintf(KFMT_INFO, "loaded module at the following offsets and sizes:\n");
-    2a89:	83 ec 08             	sub    esp,0x8
-    2a8c:	68 e8 0c 00 00       	push   0xce8
-    2a91:	6a 0b                	push   0xb
-    2a93:	e8 fc ff ff ff       	call   2a94 <load_modules+0x18e>
-    2a98:	83 c4 10             	add    esp,0x10
+    2c1e:	c7 44 24 04 e8 0c 00 00 	mov    DWORD PTR [esp+0x4],0xce8
+    2c26:	c7 04 24 0b 00 00 00 	mov    DWORD PTR [esp],0xb
+    2c2d:	e8 fc ff ff ff       	call   2c2e <load_modules+0x1a5>
 						cprintf(KFMT_INFO, ".text    %p %11lu\n", mi.vm_ofs[0], mi.sz_secs[0]);
-    2a9b:	8b 55 d0             	mov    edx,DWORD PTR [ebp-0x30]
-    2a9e:	8b 45 c0             	mov    eax,DWORD PTR [ebp-0x40]
-    2aa1:	52                   	push   edx
-    2aa2:	50                   	push   eax
-    2aa3:	68 1b 0d 00 00       	push   0xd1b
-    2aa8:	6a 0b                	push   0xb
-    2aaa:	e8 fc ff ff ff       	call   2aab <load_modules+0x1a5>
-    2aaf:	83 c4 10             	add    esp,0x10
+    2c32:	8b 55 d0             	mov    edx,DWORD PTR [ebp-0x30]
+    2c35:	8b 45 c0             	mov    eax,DWORD PTR [ebp-0x40]
+    2c38:	89 54 24 0c          	mov    DWORD PTR [esp+0xc],edx
+    2c3c:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    2c40:	c7 44 24 04 1b 0d 00 00 	mov    DWORD PTR [esp+0x4],0xd1b
+    2c48:	c7 04 24 0b 00 00 00 	mov    DWORD PTR [esp],0xb
+    2c4f:	e8 fc ff ff ff       	call   2c50 <load_modules+0x1c7>
 						cprintf(KFMT_INFO, ".data    %p %11lu\n", mi.vm_ofs[1], mi.sz_secs[1]);
-    2ab2:	8b 55 d4             	mov    edx,DWORD PTR [ebp-0x2c]
-    2ab5:	8b 45 c4             	mov    eax,DWORD PTR [ebp-0x3c]
-    2ab8:	52                   	push   edx
-    2ab9:	50                   	push   eax
-    2aba:	68 2e 0d 00 00       	push   0xd2e
-    2abf:	6a 0b                	push   0xb
-    2ac1:	e8 fc ff ff ff       	call   2ac2 <load_modules+0x1bc>
-    2ac6:	83 c4 10             	add    esp,0x10
+    2c54:	8b 55 d4             	mov    edx,DWORD PTR [ebp-0x2c]
+    2c57:	8b 45 c4             	mov    eax,DWORD PTR [ebp-0x3c]
+    2c5a:	89 54 24 0c          	mov    DWORD PTR [esp+0xc],edx
+    2c5e:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    2c62:	c7 44 24 04 2e 0d 00 00 	mov    DWORD PTR [esp+0x4],0xd2e
+    2c6a:	c7 04 24 0b 00 00 00 	mov    DWORD PTR [esp],0xb
+    2c71:	e8 fc ff ff ff       	call   2c72 <load_modules+0x1e9>
 						cprintf(KFMT_INFO, ".rodata  %p %11lu\n", mi.vm_ofs[2], mi.sz_secs[2]);
-    2ac9:	8b 55 d8             	mov    edx,DWORD PTR [ebp-0x28]
-    2acc:	8b 45 c8             	mov    eax,DWORD PTR [ebp-0x38]
-    2acf:	52                   	push   edx
-    2ad0:	50                   	push   eax
-    2ad1:	68 41 0d 00 00       	push   0xd41
-    2ad6:	6a 0b                	push   0xb
-    2ad8:	e8 fc ff ff ff       	call   2ad9 <load_modules+0x1d3>
-    2add:	83 c4 10             	add    esp,0x10
+    2c76:	8b 55 d8             	mov    edx,DWORD PTR [ebp-0x28]
+    2c79:	8b 45 c8             	mov    eax,DWORD PTR [ebp-0x38]
+    2c7c:	89 54 24 0c          	mov    DWORD PTR [esp+0xc],edx
+    2c80:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    2c84:	c7 44 24 04 41 0d 00 00 	mov    DWORD PTR [esp+0x4],0xd41
+    2c8c:	c7 04 24 0b 00 00 00 	mov    DWORD PTR [esp],0xb
+    2c93:	e8 fc ff ff ff       	call   2c94 <load_modules+0x20b>
 						cprintf(KFMT_INFO, ".bss     %p %11lu\n", mi.vm_ofs[3], mi.sz_secs[3]);
-    2ae0:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
-    2ae3:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
-    2ae6:	52                   	push   edx
-    2ae7:	50                   	push   eax
-    2ae8:	68 54 0d 00 00       	push   0xd54
-    2aed:	6a 0b                	push   0xb
-    2aef:	e8 fc ff ff ff       	call   2af0 <load_modules+0x1ea>
-    2af4:	83 c4 10             	add    esp,0x10
+    2c98:	8b 55 dc             	mov    edx,DWORD PTR [ebp-0x24]
+    2c9b:	8b 45 cc             	mov    eax,DWORD PTR [ebp-0x34]
+    2c9e:	89 54 24 0c          	mov    DWORD PTR [esp+0xc],edx
+    2ca2:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    2ca6:	c7 44 24 04 54 0d 00 00 	mov    DWORD PTR [esp+0x4],0xd54
+    2cae:	c7 04 24 0b 00 00 00 	mov    DWORD PTR [esp],0xb
+    2cb5:	e8 fc ff ff ff       	call   2cb6 <load_modules+0x22d>
 						cprintf(KFMT_INFO, "calling module_init()...\n");
-    2af7:	83 ec 08             	sub    esp,0x8
-    2afa:	68 67 0d 00 00       	push   0xd67
-    2aff:	6a 0b                	push   0xb
-    2b01:	e8 fc ff ff ff       	call   2b02 <load_modules+0x1fc>
-    2b06:	83 c4 10             	add    esp,0x10
+    2cba:	c7 44 24 04 67 0d 00 00 	mov    DWORD PTR [esp+0x4],0xd67
+    2cc2:	c7 04 24 0b 00 00 00 	mov    DWORD PTR [esp],0xb
+    2cc9:	e8 fc ff ff ff       	call   2cca <load_modules+0x241>
 						errc = mi.mi_init();
-    2b09:	8b 45 b8             	mov    eax,DWORD PTR [ebp-0x48]
-    2b0c:	ff d0                	call   eax
-    2b0e:	89 45 e0             	mov    DWORD PTR [ebp-0x20],eax
+    2cce:	8b 45 b8             	mov    eax,DWORD PTR [ebp-0x48]
+    2cd1:	ff d0                	call   eax
+    2cd3:	89 45 e0             	mov    DWORD PTR [ebp-0x20],eax
 						if (errc) {
-    2b11:	83 7d e0 00          	cmp    DWORD PTR [ebp-0x20],0x0
-    2b15:	74 18                	je     2b2f <load_modules+0x229>
+    2cd6:	83 7d e0 00          	cmp    DWORD PTR [ebp-0x20],0x0
+    2cda:	74 1e                	je     2cfa <load_modules+0x271>
 								cprintf(KFMT_ERROR, "init failed with error %d\n", errc);
-    2b17:	83 ec 04             	sub    esp,0x4
-    2b1a:	ff 75 e0             	push   DWORD PTR [ebp-0x20]
-    2b1d:	68 81 0d 00 00       	push   0xd81
-    2b22:	6a 0c                	push   0xc
-    2b24:	e8 fc ff ff ff       	call   2b25 <load_modules+0x21f>
-    2b29:	83 c4 10             	add    esp,0x10
+    2cdc:	8b 45 e0             	mov    eax,DWORD PTR [ebp-0x20]
+    2cdf:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    2ce3:	c7 44 24 04 81 0d 00 00 	mov    DWORD PTR [esp+0x4],0xd81
+    2ceb:	c7 04 24 0c 00 00 00 	mov    DWORD PTR [esp],0xc
+    2cf2:	e8 fc ff ff ff       	call   2cf3 <load_modules+0x26a>
 								while (1);
-    2b2c:	90                   	nop
-    2b2d:	eb fd                	jmp    2b2c <load_modules+0x226>
+    2cf7:	90                   	nop
+    2cf8:	eb fd                	jmp    2cf7 <load_modules+0x26e>
 						} else {
 								cprintf(KFMT_OK, "successfully initialized module \"%s\"\n", mi.mi_name);
-    2b2f:	83 ec 04             	sub    esp,0x4
-    2b32:	8d 45 a4             	lea    eax,[ebp-0x5c]
-    2b35:	50                   	push   eax
-    2b36:	68 9c 0d 00 00       	push   0xd9c
-    2b3b:	6a 0a                	push   0xa
-    2b3d:	e8 fc ff ff ff       	call   2b3e <load_modules+0x238>
-    2b42:	83 c4 10             	add    esp,0x10
+    2cfa:	8d 45 a4             	lea    eax,[ebp-0x5c]
+    2cfd:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+    2d01:	c7 44 24 04 9c 0d 00 00 	mov    DWORD PTR [esp+0x4],0xd9c
+    2d09:	c7 04 24 0a 00 00 00 	mov    DWORD PTR [esp],0xa
+    2d10:	e8 fc ff ff ff       	call   2d11 <load_modules+0x288>
 								store_module_info(&mi);
-    2b45:	83 ec 0c             	sub    esp,0xc
-    2b48:	8d 45 a4             	lea    eax,[ebp-0x5c]
-    2b4b:	50                   	push   eax
-    2b4c:	e8 fc ff ff ff       	call   2b4d <load_modules+0x247>
-    2b51:	83 c4 10             	add    esp,0x10
+    2d15:	8d 45 a4             	lea    eax,[ebp-0x5c]
+    2d18:	89 04 24             	mov    DWORD PTR [esp],eax
+    2d1b:	e8 fc ff ff ff       	call   2d1c <load_modules+0x293>
 						}
 				}
 
 				mem += sz;
-    2b54:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
-    2b57:	01 45 f4             	add    DWORD PTR [ebp-0xc],eax
+    2d20:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
+    2d23:	01 45 f4             	add    DWORD PTR [ebp-0xc],eax
 		while (mct--) {
-    2b5a:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
-    2b5d:	8d 50 ff             	lea    edx,[eax-0x1]
-    2b60:	89 55 f0             	mov    DWORD PTR [ebp-0x10],edx
-    2b63:	85 c0                	test   eax,eax
-    2b65:	0f 85 68 fe ff ff    	jne    29d3 <load_modules+0xcd>
+    2d26:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+    2d29:	8d 50 ff             	lea    edx,[eax-0x1]
+    2d2c:	89 55 f0             	mov    DWORD PTR [ebp-0x10],edx
+    2d2f:	85 c0                	test   eax,eax
+    2d31:	0f 85 23 fe ff ff    	jne    2b5a <load_modules+0xd1>
 		}
 
 		printf("done loading kernel modules\n");
-    2b6b:	83 ec 0c             	sub    esp,0xc
-    2b6e:	68 c2 0d 00 00       	push   0xdc2
-    2b73:	e8 fc ff ff ff       	call   2b74 <load_modules+0x26e>
-    2b78:	83 c4 10             	add    esp,0x10
+    2d37:	c7 04 24 c2 0d 00 00 	mov    DWORD PTR [esp],0xdc2
+    2d3e:	e8 fc ff ff ff       	call   2d3f <load_modules+0x2b6>
 }
-    2b7b:	90                   	nop
-    2b7c:	8b 7d fc             	mov    edi,DWORD PTR [ebp-0x4]
-    2b7f:	c9                   	leave
-    2b80:	c3                   	ret
+    2d43:	90                   	nop
+    2d44:	8b 7d fc             	mov    edi,DWORD PTR [ebp-0x4]
+    2d47:	c9                   	leave
+    2d48:	c3                   	ret

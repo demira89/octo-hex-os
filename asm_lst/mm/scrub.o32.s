@@ -18,7 +18,7 @@ Disassembly of section .text:
 {
   14:	55                   	push   ebp
   15:	89 e5                	mov    ebp,esp
-  17:	83 ec 38             	sub    esp,0x38
+  17:	83 ec 58             	sub    esp,0x58
   1a:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
   1d:	89 45 d0             	mov    DWORD PTR [ebp-0x30],eax
   20:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
@@ -42,164 +42,152 @@ Disassembly of section .text:
   52:	a1 00 00 00 00       	mov    eax,ds:0x0
   57:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
 		map = mm_map(&mm_kernel, ptr, &pr, 1, MMGR_MAP_WRITE /* no TLB shootdown */
-  5a:	83 ec 0c             	sub    esp,0xc
-  5d:	68 14 01 00 00       	push   0x114
-  62:	6a 01                	push   0x1
-  64:	8d 45 e4             	lea    eax,[ebp-0x1c]
-  67:	50                   	push   eax
-  68:	ff 75 f4             	push   DWORD PTR [ebp-0xc]
-  6b:	68 00 00 00 00       	push   0x0
-  70:	e8 fc ff ff ff       	call   71 <mm_scrub_single_page+0x5d>
-  75:	83 c4 20             	add    esp,0x20
-  78:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
+  5a:	c7 44 24 10 14 01 00 00 	mov    DWORD PTR [esp+0x10],0x114
+  62:	c7 44 24 0c 01 00 00 00 	mov    DWORD PTR [esp+0xc],0x1
+  6a:	8d 45 e4             	lea    eax,[ebp-0x1c]
+  6d:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+  71:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+  74:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+  78:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+  7f:	e8 fc ff ff ff       	call   80 <mm_scrub_single_page+0x6c>
+  84:	89 45 f0             	mov    DWORD PTR [ebp-0x10],eax
 		if (!map)
-  7b:	83 7d f0 00          	cmp    DWORD PTR [ebp-0x10],0x0
-  7f:	75 2b                	jne    ac <mm_scrub_single_page+0x98>
+  87:	83 7d f0 00          	cmp    DWORD PTR [ebp-0x10],0x0
+  8b:	75 29                	jne    b6 <mm_scrub_single_page+0xa2>
 				die("Unable to scrub!\n");
-  81:	83 ec 08             	sub    esp,0x8
-  84:	68 00 00 00 00       	push   0x0
-  89:	6a 0c                	push   0xc
-  8b:	e8 fc ff ff ff       	call   8c <mm_scrub_single_page+0x78>
-  90:	83 c4 10             	add    esp,0x10
-  93:	e8 fc ff ff ff       	call   94 <mm_scrub_single_page+0x80>
-  98:	83 ec 0c             	sub    esp,0xc
-  9b:	68 00 00 00 00       	push   0x0
-  a0:	e8 fc ff ff ff       	call   a1 <mm_scrub_single_page+0x8d>
-  a5:	83 c4 10             	add    esp,0x10
-  a8:	fa                   	cli
-  a9:	f4                   	hlt
-  aa:	eb fd                	jmp    a9 <mm_scrub_single_page+0x95>
+  8d:	c7 44 24 04 00 00 00 00 	mov    DWORD PTR [esp+0x4],0x0
+  95:	c7 04 24 0c 00 00 00 	mov    DWORD PTR [esp],0xc
+  9c:	e8 fc ff ff ff       	call   9d <mm_scrub_single_page+0x89>
+  a1:	e8 fc ff ff ff       	call   a2 <mm_scrub_single_page+0x8e>
+  a6:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+  ad:	e8 fc ff ff ff       	call   ae <mm_scrub_single_page+0x9a>
+  b2:	fa                   	cli
+  b3:	f4                   	hlt
+  b4:	eb fd                	jmp    b3 <mm_scrub_single_page+0x9f>
 		bzero(map, 4096);
-  ac:	83 ec 08             	sub    esp,0x8
-  af:	68 00 10 00 00       	push   0x1000
-  b4:	ff 75 f0             	push   DWORD PTR [ebp-0x10]
-  b7:	e8 fc ff ff ff       	call   b8 <mm_scrub_single_page+0xa4>
-  bc:	83 c4 10             	add    esp,0x10
+  b6:	c7 44 24 04 00 10 00 00 	mov    DWORD PTR [esp+0x4],0x1000
+  be:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+  c1:	89 04 24             	mov    DWORD PTR [esp],eax
+  c4:	e8 fc ff ff ff       	call   c5 <mm_scrub_single_page+0xb1>
 		mm_unmap(&mm_kernel, map, 1);
-  bf:	83 ec 04             	sub    esp,0x4
-  c2:	6a 01                	push   0x1
-  c4:	ff 75 f0             	push   DWORD PTR [ebp-0x10]
-  c7:	68 00 00 00 00       	push   0x0
-  cc:	e8 fc ff ff ff       	call   cd <mm_scrub_single_page+0xb9>
-  d1:	83 c4 10             	add    esp,0x10
+  c9:	c7 44 24 08 01 00 00 00 	mov    DWORD PTR [esp+0x8],0x1
+  d1:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+  d4:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+  d8:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+  df:	e8 fc ff ff ff       	call   e0 <mm_scrub_single_page+0xcc>
 }
-  d4:	90                   	nop
-  d5:	c9                   	leave
-  d6:	c3                   	ret
+  e4:	90                   	nop
+  e5:	c9                   	leave
+  e6:	c3                   	ret
 
-000000d7 <mm_scrub_pages>:
+000000e7 <mm_scrub_pages>:
 {
-  d7:	55                   	push   ebp
-  d8:	89 e5                	mov    ebp,esp
-  da:	83 ec 38             	sub    esp,0x38
+  e7:	55                   	push   ebp
+  e8:	89 e5                	mov    ebp,esp
+  ea:	83 ec 48             	sub    esp,0x48
 		size_t j, k, l, np = 0, npl = 0;
-  dd:	c7 45 f0 00 00 00 00 	mov    DWORD PTR [ebp-0x10],0x0
-  e4:	c7 45 ec 00 00 00 00 	mov    DWORD PTR [ebp-0x14],0x0
+  ed:	c7 45 f0 00 00 00 00 	mov    DWORD PTR [ebp-0x10],0x0
+  f4:	c7 45 ec 00 00 00 00 	mov    DWORD PTR [ebp-0x14],0x0
 		if (fmm[i].reclaimable_pages) {
-  eb:	8b 15 00 00 00 00    	mov    edx,DWORD PTR ds:0x0
-  f1:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
-  f4:	6b c0 38             	imul   eax,eax,0x38
-  f7:	01 d0                	add    eax,edx
-  f9:	8b 50 1c             	mov    edx,DWORD PTR [eax+0x1c]
-  fc:	8b 40 18             	mov    eax,DWORD PTR [eax+0x18]
-  ff:	89 c1                	mov    ecx,eax
- 101:	89 c8                	mov    eax,ecx
- 103:	09 d0                	or     eax,edx
- 105:	0f 84 91 00 00 00    	je     19c <mm_scrub_pages+0xc5>
+  fb:	8b 15 00 00 00 00    	mov    edx,DWORD PTR ds:0x0
+ 101:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+ 104:	6b c0 38             	imul   eax,eax,0x38
+ 107:	01 d0                	add    eax,edx
+ 109:	8b 50 1c             	mov    edx,DWORD PTR [eax+0x1c]
+ 10c:	8b 40 18             	mov    eax,DWORD PTR [eax+0x18]
+ 10f:	89 c1                	mov    ecx,eax
+ 111:	89 c8                	mov    eax,ecx
+ 113:	09 d0                	or     eax,edx
+ 115:	0f 84 8f 00 00 00    	je     1aa <mm_scrub_pages+0xc3>
 				uint64_t ofs = 0; size_t ct = 0;
- 10b:	c7 45 e0 00 00 00 00 	mov    DWORD PTR [ebp-0x20],0x0
- 112:	c7 45 e4 00 00 00 00 	mov    DWORD PTR [ebp-0x1c],0x0
- 119:	c7 45 dc 00 00 00 00 	mov    DWORD PTR [ebp-0x24],0x0
+ 11b:	c7 45 e0 00 00 00 00 	mov    DWORD PTR [ebp-0x20],0x0
+ 122:	c7 45 e4 00 00 00 00 	mov    DWORD PTR [ebp-0x1c],0x0
+ 129:	c7 45 dc 00 00 00 00 	mov    DWORD PTR [ebp-0x24],0x0
 				struct pmu* rc = (void*)fmm[i].rcp;
- 120:	8b 15 00 00 00 00    	mov    edx,DWORD PTR ds:0x0
- 126:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
- 129:	6b c0 38             	imul   eax,eax,0x38
- 12c:	01 d0                	add    eax,edx
- 12e:	8b 50 34             	mov    edx,DWORD PTR [eax+0x34]
- 131:	8b 40 30             	mov    eax,DWORD PTR [eax+0x30]
- 134:	89 45 d8             	mov    DWORD PTR [ebp-0x28],eax
+ 130:	8b 15 00 00 00 00    	mov    edx,DWORD PTR ds:0x0
+ 136:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+ 139:	6b c0 38             	imul   eax,eax,0x38
+ 13c:	01 d0                	add    eax,edx
+ 13e:	8b 50 34             	mov    edx,DWORD PTR [eax+0x34]
+ 141:	8b 40 30             	mov    eax,DWORD PTR [eax+0x30]
+ 144:	89 45 d8             	mov    DWORD PTR [ebp-0x28],eax
 				struct pmu* pu = (void*)fmm[i].pmu;
- 137:	8b 15 00 00 00 00    	mov    edx,DWORD PTR ds:0x0
- 13d:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
- 140:	6b c0 38             	imul   eax,eax,0x38
- 143:	01 d0                	add    eax,edx
- 145:	8b 50 2c             	mov    edx,DWORD PTR [eax+0x2c]
- 148:	8b 40 28             	mov    eax,DWORD PTR [eax+0x28]
- 14b:	89 45 d4             	mov    DWORD PTR [ebp-0x2c],eax
+ 147:	8b 15 00 00 00 00    	mov    edx,DWORD PTR ds:0x0
+ 14d:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+ 150:	6b c0 38             	imul   eax,eax,0x38
+ 153:	01 d0                	add    eax,edx
+ 155:	8b 50 2c             	mov    edx,DWORD PTR [eax+0x2c]
+ 158:	8b 40 28             	mov    eax,DWORD PTR [eax+0x28]
+ 15b:	89 45 d4             	mov    DWORD PTR [ebp-0x2c],eax
 				for (j = 0; j < 4; j++)
- 14e:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
- 155:	eb 3f                	jmp    196 <mm_scrub_pages+0xbf>
+ 15e:	c7 45 f4 00 00 00 00 	mov    DWORD PTR [ebp-0xc],0x0
+ 165:	eb 3d                	jmp    1a4 <mm_scrub_pages+0xbd>
 						if (rc->free_ct[j]) { /* reclaimable count */
- 157:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
- 15a:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
- 15d:	0f b7 44 50 08       	movzx  eax,WORD PTR [eax+edx*2+0x8]
- 162:	66 85 c0             	test   ax,ax
- 165:	74 2b                	je     192 <mm_scrub_pages+0xbb>
+ 167:	8b 45 d8             	mov    eax,DWORD PTR [ebp-0x28]
+ 16a:	8b 55 f4             	mov    edx,DWORD PTR [ebp-0xc]
+ 16d:	0f b7 44 50 08       	movzx  eax,WORD PTR [eax+edx*2+0x8]
+ 172:	66 85 c0             	test   ax,ax
+ 175:	74 29                	je     1a0 <mm_scrub_pages+0xb9>
 								die("iii");
- 167:	83 ec 08             	sub    esp,0x8
- 16a:	68 12 00 00 00       	push   0x12
- 16f:	6a 0c                	push   0xc
- 171:	e8 fc ff ff ff       	call   172 <mm_scrub_pages+0x9b>
- 176:	83 c4 10             	add    esp,0x10
- 179:	e8 fc ff ff ff       	call   17a <mm_scrub_pages+0xa3>
- 17e:	83 ec 0c             	sub    esp,0xc
- 181:	68 00 00 00 00       	push   0x0
- 186:	e8 fc ff ff ff       	call   187 <mm_scrub_pages+0xb0>
- 18b:	83 c4 10             	add    esp,0x10
- 18e:	fa                   	cli
- 18f:	f4                   	hlt
- 190:	eb fd                	jmp    18f <mm_scrub_pages+0xb8>
+ 177:	c7 44 24 04 12 00 00 00 	mov    DWORD PTR [esp+0x4],0x12
+ 17f:	c7 04 24 0c 00 00 00 	mov    DWORD PTR [esp],0xc
+ 186:	e8 fc ff ff ff       	call   187 <mm_scrub_pages+0xa0>
+ 18b:	e8 fc ff ff ff       	call   18c <mm_scrub_pages+0xa5>
+ 190:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+ 197:	e8 fc ff ff ff       	call   198 <mm_scrub_pages+0xb1>
+ 19c:	fa                   	cli
+ 19d:	f4                   	hlt
+ 19e:	eb fd                	jmp    19d <mm_scrub_pages+0xb6>
 				for (j = 0; j < 4; j++)
- 192:	83 45 f4 01          	add    DWORD PTR [ebp-0xc],0x1
- 196:	83 7d f4 03          	cmp    DWORD PTR [ebp-0xc],0x3
- 19a:	76 bb                	jbe    157 <mm_scrub_pages+0x80>
+ 1a0:	83 45 f4 01          	add    DWORD PTR [ebp-0xc],0x1
+ 1a4:	83 7d f4 03          	cmp    DWORD PTR [ebp-0xc],0x3
+ 1a8:	76 bd                	jbe    167 <mm_scrub_pages+0x80>
 done:
- 19c:	90                   	nop
+ 1aa:	90                   	nop
 		if (np) {
- 19d:	83 7d f0 00          	cmp    DWORD PTR [ebp-0x10],0x0
- 1a1:	74 18                	je     1bb <mm_scrub_pages+0xe4>
+ 1ab:	83 7d f0 00          	cmp    DWORD PTR [ebp-0x10],0x0
+ 1af:	74 1b                	je     1cc <mm_scrub_pages+0xe5>
 				rprintf(&kb_reg, "scrubbed %u pages\n", np);
- 1a3:	83 ec 04             	sub    esp,0x4
- 1a6:	ff 75 f0             	push   DWORD PTR [ebp-0x10]
- 1a9:	68 16 00 00 00       	push   0x16
- 1ae:	68 00 00 00 00       	push   0x0
- 1b3:	e8 fc ff ff ff       	call   1b4 <mm_scrub_pages+0xdd>
- 1b8:	83 c4 10             	add    esp,0x10
+ 1b1:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+ 1b4:	89 44 24 08          	mov    DWORD PTR [esp+0x8],eax
+ 1b8:	c7 44 24 04 16 00 00 00 	mov    DWORD PTR [esp+0x4],0x16
+ 1c0:	c7 04 24 00 00 00 00 	mov    DWORD PTR [esp],0x0
+ 1c7:	e8 fc ff ff ff       	call   1c8 <mm_scrub_pages+0xe1>
 		return np;
- 1bb:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+ 1cc:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
 }
- 1be:	c9                   	leave
- 1bf:	c3                   	ret
+ 1cf:	c9                   	leave
+ 1d0:	c3                   	ret
 
-000001c0 <mm_page_scrub>:
+000001d1 <mm_page_scrub>:
 {
- 1c0:	55                   	push   ebp
- 1c1:	89 e5                	mov    ebp,esp
- 1c3:	83 ec 18             	sub    esp,0x18
+ 1d1:	55                   	push   ebp
+ 1d2:	89 e5                	mov    ebp,esp
+ 1d4:	83 ec 28             	sub    esp,0x28
 		size_t i, lm = 128;
- 1c6:	c7 45 f0 80 00 00 00 	mov    DWORD PTR [ebp-0x10],0x80
+ 1d7:	c7 45 f0 80 00 00 00 	mov    DWORD PTR [ebp-0x10],0x80
 		for (i = fm_begin; i < fm_ofs && lm; i++) {
- 1cd:	a1 00 00 00 00       	mov    eax,ds:0x0
- 1d2:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
- 1d5:	eb 18                	jmp    1ef <mm_page_scrub+0x2f>
+ 1de:	a1 00 00 00 00       	mov    eax,ds:0x0
+ 1e3:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
+ 1e6:	eb 19                	jmp    201 <mm_page_scrub+0x30>
 				lm -= mm_scrub_pages(i, lm);
- 1d7:	83 ec 08             	sub    esp,0x8
- 1da:	ff 75 f0             	push   DWORD PTR [ebp-0x10]
- 1dd:	ff 75 f4             	push   DWORD PTR [ebp-0xc]
- 1e0:	e8 fc ff ff ff       	call   1e1 <mm_page_scrub+0x21>
- 1e5:	83 c4 10             	add    esp,0x10
- 1e8:	29 45 f0             	sub    DWORD PTR [ebp-0x10],eax
+ 1e8:	8b 45 f0             	mov    eax,DWORD PTR [ebp-0x10]
+ 1eb:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
+ 1ef:	8b 45 f4             	mov    eax,DWORD PTR [ebp-0xc]
+ 1f2:	89 04 24             	mov    DWORD PTR [esp],eax
+ 1f5:	e8 fc ff ff ff       	call   1f6 <mm_page_scrub+0x25>
+ 1fa:	29 45 f0             	sub    DWORD PTR [ebp-0x10],eax
 		for (i = fm_begin; i < fm_ofs && lm; i++) {
- 1eb:	83 45 f4 01          	add    DWORD PTR [ebp-0xc],0x1
- 1ef:	a1 00 00 00 00       	mov    eax,ds:0x0
- 1f4:	39 45 f4             	cmp    DWORD PTR [ebp-0xc],eax
- 1f7:	73 06                	jae    1ff <mm_page_scrub+0x3f>
- 1f9:	83 7d f0 00          	cmp    DWORD PTR [ebp-0x10],0x0
- 1fd:	75 d8                	jne    1d7 <mm_page_scrub+0x17>
+ 1fd:	83 45 f4 01          	add    DWORD PTR [ebp-0xc],0x1
+ 201:	a1 00 00 00 00       	mov    eax,ds:0x0
+ 206:	39 45 f4             	cmp    DWORD PTR [ebp-0xc],eax
+ 209:	73 06                	jae    211 <mm_page_scrub+0x40>
+ 20b:	83 7d f0 00          	cmp    DWORD PTR [ebp-0x10],0x0
+ 20f:	75 d7                	jne    1e8 <mm_page_scrub+0x17>
 		return (lm != 128);
- 1ff:	81 7d f0 80 00 00 00 	cmp    DWORD PTR [ebp-0x10],0x80
- 206:	0f 95 c0             	setne  al
- 209:	0f b6 c0             	movzx  eax,al
+ 211:	81 7d f0 80 00 00 00 	cmp    DWORD PTR [ebp-0x10],0x80
+ 218:	0f 95 c0             	setne  al
+ 21b:	0f b6 c0             	movzx  eax,al
 }
- 20c:	c9                   	leave
- 20d:	c3                   	ret
+ 21e:	c9                   	leave
+ 21f:	c3                   	ret

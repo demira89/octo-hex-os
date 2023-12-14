@@ -13,14 +13,12 @@ struct disk_cache* create_disk_cache(struct disk_geometry* gm)
 {
    0:	55                   	push   ebp
    1:	89 e5                	mov    ebp,esp
-   3:	83 ec 18             	sub    esp,0x18
+   3:	83 ec 28             	sub    esp,0x28
 		struct disk_cache* rv = kzalloc(sizeof(*rv));
-   6:	83 ec 0c             	sub    esp,0xc
-   9:	6a 28                	push   0x28
-   b:	e8 fc ff ff ff       	call   c <create_disk_cache+0xc>
-  10:	83 c4 10             	add    esp,0x10
-  13:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
+   6:	c7 04 24 28 00 00 00 	mov    DWORD PTR [esp],0x28
+   d:	e8 fc ff ff ff       	call   e <create_disk_cache+0xe>
+  12:	89 45 f4             	mov    DWORD PTR [ebp-0xc],eax
 }
-  16:	90                   	nop
-  17:	c9                   	leave
-  18:	c3                   	ret
+  15:	90                   	nop
+  16:	c9                   	leave
+  17:	c3                   	ret

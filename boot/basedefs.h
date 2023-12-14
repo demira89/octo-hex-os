@@ -37,7 +37,7 @@ struct page_range {
 		uint64_t base;
 		uint32_t count;
 };
-void mm_initialize(int mode);
+void mm_initialize(int mode, int nx);
 void mm_enable_paging(int mode, uint64_t ep);
 void mm_perform_mapping(int mode, uint64_t ofs, struct page_range* pr, int prc,
 			   uint64_t vaddr, uint64_t fs, uint64_t ms, struct page_range* pr2,

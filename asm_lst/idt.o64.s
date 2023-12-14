@@ -1469,47 +1469,23 @@ idt_init:
 	lidt [idtr]
  6f9:	0f 01 1c 25 00 00 00 00 	lidt   ds:0x0
 
-	mov ecx,  ( idt_end - idt ) / 8 
- 701:	b9 00 04 00 00       	mov    ecx,0x400
-
-0000000000000706 <idt_i1>:
-
-#	mov ecx, 48 # zero extend in amd64
-
-idt_i1:
-	dec ecx
- 706:	ff c9                	dec    ecx
-	IGI ecx
- 708:	89 ca                	mov    edx,ecx
- 70a:	48 c1 e2 04          	shl    rdx,0x4
- 70e:	8b 82 00 00 00 00    	mov    eax,DWORD PTR [rdx+0x0]
- 714:	87 82 00 00 00 00    	xchg   DWORD PTR [rdx+0x0],eax
- 71a:	89 82 00 00 00 00    	mov    DWORD PTR [rdx+0x0],eax
- 720:	c1 e8 10             	shr    eax,0x10
- 723:	66 87 82 00 00 00 00 	xchg   WORD PTR [rdx+0x0],ax
- 72a:	66 89 82 00 00 00 00 	mov    WORD PTR [rdx+0x0],ax
-	test ecx, ecx
- 731:	85 c9                	test   ecx,ecx
-	jnz idt_i1
- 733:	75 d1                	jne    706 <idt_i1>
-
 	# reenable NMI
 	inb al, 0x70
- 735:	e4 70                	in     al,0x70
+ 701:	e4 70                	in     al,0x70
 	and al, 0x7f
- 737:	24 7f                	and    al,0x7f
+ 703:	24 7f                	and    al,0x7f
 	outb 0x70, al
- 739:	e6 70                	out    0x70,al
+ 705:	e6 70                	out    0x70,al
 
 #	leave <- none at all
 	ret
- 73b:	c3                   	ret
+ 707:	c3                   	ret
 
-000000000000073c <pc_shutdown>:
+0000000000000708 <pc_shutdown>:
 
 .global pc_shutdown
 pc_shutdown:
 	cli
- 73c:	fa                   	cli
+ 708:	fa                   	cli
 	hlt # TODO PM->RM or LM->RM
- 73d:	f4                   	hlt
+ 709:	f4                   	hlt
