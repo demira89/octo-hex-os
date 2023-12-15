@@ -1,3 +1,12 @@
 {
-    "C_Cpp.default.compilerPath": "c:\\msys64\\ucrt64\\bin\\x86_64-elf-gcc.exe"
+    "C_Cpp.default.compilerPath": "c:\\msys64\\ucrt64\\bin\\x86_64-elf-gcc.exe",
+    "terminal.integrated.defaultProfile.windows": "bash (MSYS2)",
+    "terminal.integrated.profiles.windows": {
+        "bash (MSYS2)": {
+          "path": "C:\\msys64\\usr\\bin\\bash.exe",
+          "args": ["--rcfile", "D:\\osdev\\.vscode\\init.sh"]
+        }
+      },
+      "terminal.integrated.cwd": "D:\\osdev",
+      "terminal.integrated.splitCwd": "workspaceRoot"
 }
